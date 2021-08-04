@@ -1,0 +1,2 @@
+describe('Thing Model', async () => {
+})
