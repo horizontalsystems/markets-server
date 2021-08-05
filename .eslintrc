@@ -9,7 +9,8 @@
     "comma-dangle": "off",
     "arrow-body-style": "off",
     "arrow-parens": "off",
-    "consistent-return": "off"
+    "consistent-return": "off",
+    "padded-blocks": "off"
   },
   "env": {
     "node": true,

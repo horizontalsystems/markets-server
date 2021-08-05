@@ -1,10 +1,11 @@
 const express = require('express')
-const thing = require('../api/thing')
+const coin = require('../api/coin')
 const error = require('./middlewares/error')
 
 module.exports = app => {
   app.use('/docs', express.static('docs'))
-  app.use('/thing', thing)
+
+  app.use('/coins', coin)
 
   // if error is not an instanceOf APIError, convert it.
   app.use(error.converter)

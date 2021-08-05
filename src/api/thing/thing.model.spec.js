@@ -1,2 +1,0 @@
-describe('Thing Model', async () => {
-})

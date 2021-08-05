@@ -1,0 +1,2 @@
+describe('Coin Model', async () => {
+})

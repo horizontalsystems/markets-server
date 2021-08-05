@@ -17,3 +17,6 @@ coverage
 
 # Optional npm cache directory
 .npm
+
+# IDE
+.idea
