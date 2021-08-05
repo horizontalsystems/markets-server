@@ -1,19 +1,7 @@
-const { Op } = require('sequelize');
 const Coin = require('./coin.model')
 
 exports.index = async (req, res) => {
-  const { query } = req.query
-  const where = {}
-
-  if (query) {
-    const condition = { [Op.iLike]: `%${query}%` }
-    where[Op.or] = [{ name: condition }, { code: condition }]
-  }
-
-  const coins = await Coin.findAll({
-    where
-  })
-
+  const coins = await Coin.search(req.query.filter)
   res.status(200).json(coins)
 }
 

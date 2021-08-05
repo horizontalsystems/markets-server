@@ -13,7 +13,8 @@
     },
     "logging": false,
     "define": {
-      "timestamps": false
+      "timestamps": false,
+      "underscored": true
     }
   },
   "test": {
@@ -21,7 +22,8 @@
     "storage": ":memory:",
     "logging": true,
     "define": {
-      "timestamps": true
+      "timestamps": true,
+      "underscored": true
     }
   },
   "production": {
@@ -38,7 +40,8 @@
     },
     "logging": false,
     "define": {
-      "timestamps": false
+      "timestamps": false,
+      "underscored": true
     }
   }
 }

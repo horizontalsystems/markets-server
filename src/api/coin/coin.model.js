@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize')
+const { Op } = require('sequelize');
 
 class Coin extends Sequelize.Model {
 
@@ -32,6 +33,19 @@ class Coin extends Sequelize.Model {
         sequelize
       }
     )
+  }
+
+  static search(filter) {
+    const where = {}
+
+    if (filter) {
+      const condition = { [Op.iLike]: `%${filter}%` }
+      where[Op.or] = [{ name: condition }, { code: condition }]
+    }
+
+    return Coin.findAll({
+      where
+    })
   }
 
 }
