@@ -1,6 +1,6 @@
-const Sequelize = require('sequelize')
+const { Model } = require('sequelize');
 
-class Category extends Sequelize.Model {
+class Category extends Model {
 
   static init(sequelize, DataTypes) {
     return super.init(
@@ -17,6 +17,10 @@ class Category extends Sequelize.Model {
       {
         timestamps: false,
         tableName: 'categories',
+        name: {
+          singular: 'category',
+          plural: 'categories',
+        },
         sequelize
       }
     )
@@ -26,6 +30,8 @@ class Category extends Sequelize.Model {
     Category.hasMany(models.CategoryDescription, {
       as: 'descriptions'
     })
+
+    Category.belongsToMany(models.Coin, { through: 'coin_categories' });
   }
 
 }

@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
 const { Op } = require('sequelize');
+const Category = require('../category/category.model');
 
 class Coin extends Sequelize.Model {
 
@@ -46,6 +47,22 @@ class Coin extends Sequelize.Model {
     return Coin.findAll({
       where
     })
+  }
+
+  static getById(id) {
+    console.log(id)
+    return Coin.findOne({
+      where: {
+        id
+      },
+      include: {
+        model: Category
+      }
+    })
+  }
+
+  static associate(models) {
+    Coin.belongsToMany(models.Category, { through: 'coin_categories' });
   }
 
 }

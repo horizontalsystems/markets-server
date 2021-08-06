@@ -6,11 +6,7 @@ exports.index = async (req, res) => {
 }
 
 exports.show = async (req, res, next) => {
-  const coin = await Coin.findOne({
-    where: {
-      id: req.params.id
-    }
-  })
+  const coin = await Coin.getById(req.params.id)
 
   if (coin) {
     res.status(200).json(coin)
