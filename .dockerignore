@@ -1,0 +1,13 @@
+logs
+node_modules/
+.git/
+.vscode/
+coverage/
+
+Dockerfile
+.dockerignore
+
+.gitignore
+.env
+.eslintrc
+.editorconfig
