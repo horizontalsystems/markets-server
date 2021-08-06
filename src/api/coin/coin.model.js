@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
 const { Op } = require('sequelize');
+const PlatformReference = require('../platform-reference/platform-reference');
 const Category = require('../category/category.model');
 
 class Coin extends Sequelize.Model {
@@ -17,16 +18,7 @@ class Coin extends Sequelize.Model {
         },
         code: {
           type: DataTypes.STRING(25)
-        },
-        erc20ContractAddress: {
-          type: DataTypes.STRING(42)
-        },
-        bep20ContractAddress: {
-          type: DataTypes.STRING(42)
-        },
-        bep2Symbol: {
-          type: DataTypes.STRING(10)
-        },
+        }
       },
       {
         timestamps: false,
@@ -55,14 +47,16 @@ class Coin extends Sequelize.Model {
       where: {
         id
       },
-      include: {
-        model: Category
-      }
+      include: [
+        { model: PlatformReference },
+        { model: Category },
+      ]
     })
   }
 
   static associate(models) {
-    Coin.belongsToMany(models.Category, { through: 'coin_categories' });
+    Coin.belongsToMany(models.Category, { through: 'coin_categories' })
+    Coin.hasMany(models.PlatformReference)
   }
 
 }

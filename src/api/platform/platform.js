@@ -1,35 +1,31 @@
 const { Model } = require('sequelize');
 
-class Category extends Model {
+class Platform extends Model {
 
   static init(sequelize, DataTypes) {
     return super.init(
       {
         id: {
-          type: DataTypes.STRING(50),
+          type: DataTypes.STRING(20),
           allowNull: false,
           primaryKey: true
         },
-        name: {
+        description: {
           type: DataTypes.STRING(100)
         }
       },
       {
         timestamps: false,
-        tableName: 'categories',
+        tableName: 'platforms',
         sequelize
       }
     )
   }
 
   static associate(models) {
-    Category.hasMany(models.CategoryDescription, {
-      as: 'descriptions'
-    })
-
-    Category.belongsToMany(models.Coin, { through: 'coin_categories' })
+    Platform.hasMany(models.PlatformReference)
   }
 
 }
 
-module.exports = Category
+module.exports = Platform

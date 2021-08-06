@@ -14,9 +14,7 @@ module.exports = {
       {
         id: 'tether',
         name: 'Tether',
-        code: 'USDT',
-        erc20_contract_address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-        bep20_contract_address: '0x55d398326f99059ff775485246999027b3197955'
+        code: 'USDT'
       },
     ], {})
 
@@ -82,6 +80,39 @@ module.exports = {
         category_id: 'dexes'
       },
     ], {})
+
+    await queryInterface.bulkInsert('platforms', [
+      {
+        id: 'erc20',
+        description: 'ERC20 token on Ethereum blockchain'
+      },
+      {
+        id: 'bep20',
+        description: 'BEP20 token on Binance Smart Chain'
+      },
+      {
+        id: 'bep2',
+        description: 'BEP2 token on Binance Chain'
+      },
+    ], {})
+
+    await queryInterface.bulkInsert('platform_references', [
+      {
+        platform_id: 'erc20',
+        coin_id: 'tether',
+        value: '0xdac17f958d2ee523a2206206994597c13d831ec7'
+      },
+      {
+        platform_id: 'bep20',
+        coin_id: 'tether',
+        value: '0x55d398326f99059ff775485246999027b3197955'
+      },
+      {
+        platform_id: 'bep20',
+        coin_id: 'ethereum',
+        value: '0x2170ed0880ac9a755fd29b2688956bd959f933f8'
+      },
+    ], {})
   },
 
   down: async (queryInterface) => {
@@ -90,5 +121,7 @@ module.exports = {
     await queryInterface.bulkDelete('categories', null, {})
     await queryInterface.bulkDelete('category_descriptions', null, {})
     await queryInterface.bulkDelete('coin_categories', null, {})
+    await queryInterface.bulkDelete('platforms', null, {})
+    await queryInterface.bulkDelete('platform_references', null, {})
   }
 }
