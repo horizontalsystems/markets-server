@@ -1,15 +1,10 @@
 require('dotenv').config()
 
-const express = require('express')
 const logger = require('./config/logger')
 const sequelize = require('./config/sequelize')
 
 // Setup server
-const app = express()
-
-// Configure Express & API routes
-require('./config/express')(app)
-require('./routes')(app)
+const app = require('./config/express')
 
 // Sync all defined models to the DB
 sequelize.sync(() => {

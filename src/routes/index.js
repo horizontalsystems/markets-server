@@ -4,19 +4,21 @@ const language = require('../api/language')
 const category = require('../api/category')
 const error = require('./middlewares/error')
 
-module.exports = app => {
-  app.use('/docs', express.static('docs'))
+const router = express.Router()
 
-  app.use('/coins', coin)
-  app.use('/languages', language)
-  app.use('/categories', category)
+router.use('/docs', express.static('docs'))
 
-  // if error is not an instanceOf APIError, convert it.
-  app.use(error.converter)
+router.use('/coins', coin)
+router.use('/languages', language)
+router.use('/categories', category)
 
-  // catch 404 and forward to error handler
-  app.use(error.notFound)
+// if error is not an instanceOf APIError, convert it.
+router.use(error.converter)
 
-  // error handler, send stacktrace only during development
-  app.use(error.handler)
-}
+// catch 404 and forward to error handler
+router.use(error.notFound)
+
+// error handler, send stacktrace only during development
+router.use(error.handler)
+
+module.exports = router

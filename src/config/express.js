@@ -4,25 +4,32 @@ const compress = require('compression')
 const methodOverride = require('method-override')
 const cors = require('cors')
 const helmet = require('helmet')
+const routes = require('../routes')
 
-module.exports = app => {
-  // request logging. dev: console | production: file
-  app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'))
+// create an express application
+const app = express()
 
-  // parse body params and attache them to req.body
-  app.use(express.json())
-  app.use(express.urlencoded({ extended: true }))
+// request logging. dev: console | production: file
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'))
 
-  // gzip compression
-  app.use(compress())
+// parse body params and attache them to req.body
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
-  // lets you use HTTP verbs such as PUT or DELETE
-  // in places where the client doesn't support it
-  app.use(methodOverride())
+// gzip compression
+app.use(compress())
 
-  // secure apps by setting various HTTP headers
-  app.use(helmet())
+// lets you use HTTP verbs such as PUT or DELETE
+// in places where the client doesn't support it
+app.use(methodOverride())
 
-  // enable CORS - Cross Origin Resource Sharing
-  app.use(cors())
-}
+// secure apps by setting various HTTP headers
+app.use(helmet())
+
+// enable CORS - Cross Origin Resource Sharing
+app.use(cors())
+
+// mount API v1 routes
+app.use('/v1', routes)
+
+module.exports = app
