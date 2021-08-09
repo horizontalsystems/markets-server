@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize')
-const database = require('./database.json')
+const configJson = require('./config.json')
 const Coin = require('../api/coin/coin.model')
 const Language = require('../api/language/language.model')
 const Category = require('../api/category/category.model')
@@ -7,7 +7,7 @@ const CategoryDescription = require('../api/category-description/category-descri
 const Platform = require('../api/platform/platform');
 const PlatformReference = require('../api/platform-reference/platform-reference');
 
-const config = database[process.env.NODE_ENV || 'development']
+const config = configJson[process.env.NODE_ENV || 'development']
 const sequelize = new Sequelize(
   config.database,
   config.username,

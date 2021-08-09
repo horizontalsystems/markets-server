@@ -4,7 +4,8 @@ const compress = require('compression')
 const methodOverride = require('method-override')
 const cors = require('cors')
 const helmet = require('helmet')
-const routes = require('../routes')
+const routes = require('./routes')
+const errors = require('./middlewares/error')
 
 // create an express application
 const app = express()
@@ -31,5 +32,14 @@ app.use(cors())
 
 // mount API v1 routes
 app.use('/v1', routes)
+
+// if error is not an instanceOf APIError, convert it.
+app.use(errors.converter)
+
+// catch 404 and forward to error handler
+app.use(errors.notFound)
+
+// error handler, send stacktrace only during development
+app.use(errors.handler)
 
 module.exports = app
