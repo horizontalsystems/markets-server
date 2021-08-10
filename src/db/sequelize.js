@@ -6,6 +6,7 @@ const Category = require('../api/category/category.model')
 const CategoryDescription = require('../api/category-description/category-description.model')
 const Platform = require('../api/platform/platform');
 const PlatformReference = require('../api/platform-reference/platform-reference');
+const CoinDescription = require('../api/coin-description/coin-description.model');
 
 const config = configJson[process.env.NODE_ENV || 'development']
 const sequelize = new Sequelize(
@@ -17,6 +18,7 @@ const sequelize = new Sequelize(
 
 const models = {
   Coin: Coin.init(sequelize, Sequelize),
+  CoinDescription: CoinDescription.init(sequelize, Sequelize),
   Language: Language.init(sequelize, Sequelize),
   Category: Category.init(sequelize, Sequelize),
   CategoryDescription: CategoryDescription.init(sequelize, Sequelize),
