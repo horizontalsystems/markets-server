@@ -4,14 +4,18 @@ const compress = require('compression')
 const methodOverride = require('method-override')
 const cors = require('cors')
 const helmet = require('helmet')
-const routes = require('./routes')
 const errors = require('./middlewares/error')
+const routes = require('./routes')
+const admin = require('./admin')
 
 // create an express application
 const app = express()
 
 // request logging. dev: console | production: file
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'))
+
+// mount admin routes
+app.use('/admin', admin)
 
 // parse body params and attache them to req.body
 app.use(express.json())
