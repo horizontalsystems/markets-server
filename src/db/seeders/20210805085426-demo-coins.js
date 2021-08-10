@@ -33,6 +33,24 @@ module.exports = {
       },
     ], {})
 
+    await queryInterface.bulkInsert('coin_descriptions', [
+      {
+        coin_id: 'bitcoin',
+        language_id: 'en',
+        content: 'Description for Bitcoin'
+      },
+      {
+        coin_id: 'ethereum',
+        language_id: 'en',
+        content: 'Description for Ethereum'
+      },
+      {
+        coin_id: 'bitcoin',
+        language_id: 'ru',
+        content: 'Описание для Bitcoin'
+      },
+    ], {})
+
     await queryInterface.bulkInsert('categories', [
       {
         id: 'dexes',
@@ -117,6 +135,7 @@ module.exports = {
 
   down: async (queryInterface) => {
     await queryInterface.bulkDelete('coins', null, {})
+    await queryInterface.bulkDelete('coin_descriptions', null, {})
     await queryInterface.bulkDelete('languages', null, {})
     await queryInterface.bulkDelete('categories', null, {})
     await queryInterface.bulkDelete('category_descriptions', null, {})

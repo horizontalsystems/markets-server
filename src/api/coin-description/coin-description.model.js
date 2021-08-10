@@ -12,7 +12,10 @@ class CoinDescription extends Model {
       {
         timestamps: false,
         tableName: 'coin_descriptions',
-        sequelize
+        sequelize,
+        indexes: [
+          { unique: true, fields: ['coin_id', 'language_id'] }
+        ]
       }
     )
   }

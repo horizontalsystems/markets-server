@@ -13,6 +13,9 @@ class PlatformReference extends Model {
         timestamps: false,
         tableName: 'platform_references',
         sequelize,
+        indexes: [
+          { unique: true, fields: ['coin_id', 'platform_id'] }
+        ]
       }
     )
   }

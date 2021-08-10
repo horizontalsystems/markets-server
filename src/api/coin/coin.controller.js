@@ -1,6 +1,7 @@
 const Coin = require('./coin.model')
-const CoinGeckoProvider = require('../../providers/CoinGeckoProvider')
-const Language = require('../language/language.model');
+const Language = require('../language/language.model')
+const coinGeckoProvider = require('../../providers/coin-gecko-provider')
+const serializer = require('./coin.serializer')
 
 exports.index = async (req, res) => {
   const coins = await Coin.search(req.query.filter)
@@ -8,58 +9,12 @@ exports.index = async (req, res) => {
 }
 
 exports.show = async (req, res, next) => {
-  const provider = new CoinGeckoProvider()
-
   const coin = await Coin.getById(req.params.id)
-  const coinInfo = await provider.getCoinInfo(req.params.id)
+  const coinInfo = await coinGeckoProvider.getCoinInfo(req.params.id)
+  const languages = await Language.findAll()
 
   if (coin && coinInfo) {
-    const languages = await Language.findAll()
-
-    const platforms = coin.PlatformReferences.map(reference => (
-      { id: reference.PlatformId, value: reference.value, }
-    ))
-
-    const categoryIds = coin.Categories.map(category => (category.id))
-
-    const hasDefinedDescriptions = coin.CoinDescriptions.length !== 0
-
-    const descriptions = languages.reduce((result, language) => {
-      let content
-
-      if (hasDefinedDescriptions) {
-        const description = coin.CoinDescriptions.find(desc => {
-          return desc.LanguageId === language.id
-        })
-
-        if (description) {
-          content = description.content
-        }
-      } else {
-        content = coinInfo.description[language.id]
-      }
-
-      if (content) {
-        result.push({
-          language_id: language.id,
-          content
-        })
-      }
-
-      return result
-    }, [])
-
-    const result = {
-      id: coin.id,
-      name: coin.name,
-      code: coin.code,
-      platforms,
-      category_ids: categoryIds,
-      descriptions,
-      // coinInfo
-    }
-
-    res.status(200).json(result)
+    res.status(200).json(serializer.serialize(coin, coinInfo, languages))
   } else {
     next()
   }

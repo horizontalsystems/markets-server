@@ -8,6 +8,14 @@ AdminJS.registerAdapter(AdminJSSequelize)
 const adminJs = new AdminJS({
   resources: [
     sequelize.Coin,
+    {
+      resource: sequelize.CoinDescription,
+      options: {
+        properties: {
+          content: { type: 'textarea' }
+        }
+      }
+    },
     sequelize.Language,
     sequelize.Platform,
     sequelize.PlatformReference,

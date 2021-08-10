@@ -43,7 +43,6 @@ class Coin extends Sequelize.Model {
   }
 
   static getById(id) {
-    console.log(id)
     return Coin.findOne({
       where: {
         id

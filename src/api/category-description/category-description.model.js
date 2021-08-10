@@ -12,7 +12,10 @@ class CategoryDescription extends Sequelize.Model {
       {
         timestamps: false,
         tableName: 'category_descriptions',
-        sequelize
+        sequelize,
+        indexes: [
+          { unique: true, fields: ['category_id', 'language_id'] }
+        ]
       }
     )
   }
