@@ -5,10 +5,10 @@ class Platform extends Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        id: {
+        uid: {
           type: DataTypes.STRING(20),
           allowNull: false,
-          primaryKey: true
+          unique: true
         },
         description: {
           type: DataTypes.STRING(100)

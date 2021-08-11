@@ -3,22 +3,26 @@ const { Op } = require('sequelize');
 const PlatformReference = require('../platform-reference/platform-reference');
 const Category = require('../category/category.model');
 const CoinDescription = require('../coin-description/coin-description.model');
+const Platform = require('../platform/platform');
+const Language = require('../language/language.model');
 
 class Coin extends Sequelize.Model {
 
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        id: {
+        uid: {
           type: DataTypes.STRING(100),
           allowNull: false,
-          primaryKey: true
+          unique: true
         },
         name: {
-          type: DataTypes.STRING(100)
+          type: DataTypes.STRING(100),
+          allowNull: false
         },
         code: {
-          type: DataTypes.STRING(25)
+          type: DataTypes.STRING(25),
+          allowNull: false
         }
       },
       {
@@ -42,15 +46,15 @@ class Coin extends Sequelize.Model {
     })
   }
 
-  static getById(id) {
+  static getByUid(uid) {
     return Coin.findOne({
       where: {
-        id
+        uid
       },
       include: [
-        { model: PlatformReference },
+        { model: PlatformReference, include: { model: Platform } },
         { model: Category },
-        { model: CoinDescription }
+        { model: CoinDescription, include: { model: Language } }
       ]
     })
   }

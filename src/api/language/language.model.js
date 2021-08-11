@@ -5,13 +5,14 @@ class Language extends Sequelize.Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        id: {
+        code: {
           type: DataTypes.STRING(5),
           allowNull: false,
-          primaryKey: true
+          unique: true
         },
         name: {
-          type: DataTypes.STRING(100)
+          type: DataTypes.STRING(100),
+          allowNull: false,
         }
       },
       {

@@ -5,13 +5,14 @@ class Category extends Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        id: {
+        uid: {
           type: DataTypes.STRING(50),
           allowNull: false,
-          primaryKey: true
+          unique: true
         },
         name: {
-          type: DataTypes.STRING(100)
+          type: DataTypes.STRING(100),
+          allowNull: false
         }
       },
       {

@@ -8,7 +8,7 @@ exports.index = async (req, res) => {
 }
 
 exports.show = async (req, res, next) => {
-  const coin = await Coin.getById(req.params.id)
+  const coin = await Coin.getByUid(req.params.id)
   const { language, currency } = req.query
   const coinInfo = await coinGeckoProvider.getCoinInfo(req.params.id)
 

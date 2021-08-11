@@ -1,8 +1,8 @@
 function descriptionFromCoin(coinDescriptions, language) {
-  let description = coinDescriptions.find(desc => desc.LanguageId === language)
+  let description = coinDescriptions.find(desc => desc.Language.code === language)
 
   if (!description) {
-    description = coinDescriptions.find(desc => desc.LanguageId === 'en')
+    description = coinDescriptions.find(desc => desc.Language.code === 'en')
   }
 
   return description ? description.content : null
@@ -16,17 +16,17 @@ module.exports = {
 
   serialize: (coin, coinInfo, language, currency) => {
     const platforms = coin.PlatformReferences.map(reference => ({
-      id: reference.PlatformId,
+      uid: reference.Platform.uid,
       value: reference.value,
     }))
 
-    const categoryIds = coin.Categories.map(category => (category.id))
+    const categoryUids = coin.Categories.map(category => (category.uid))
 
     const description = descriptionFromCoin(coin.CoinDescriptions, language)
       || descriptionFromCoinInfo(coinInfo, language)
 
     return {
-      id: coin.id,
+      uid: coin.uid,
       name: coin.name,
       code: coin.code,
       rate: coinInfo.market_data.current_price[currency],
@@ -37,7 +37,7 @@ module.exports = {
       fully_diluted_valuation: coinInfo.market_data.fully_diluted_valuation[currency],
       genesis_date: coinInfo.genesis_date,
       platforms,
-      category_ids: categoryIds,
+      category_uids: categoryUids,
       description,
       coinInfo
     }
