@@ -1,5 +1,4 @@
 const httpStatus = require('http-status')
-const expressValidation = require('express-validation')
 const APIError = require('./errors/api-error')
 
 /**
@@ -29,22 +28,11 @@ exports.handler = handler
  * @public
  */
 exports.converter = (err, req, res, next) => {
-  let convertedError = err
-
-  if (err instanceof expressValidation.ValidationError) {
-    convertedError = new APIError({
-      message: 'Validation Error',
-      errors: err.errors,
-      status: err.status,
-      stack: err.stack,
-    })
-  } else if (!(err instanceof APIError)) {
-    convertedError = new APIError({
-      message: err.message,
-      status: err.status,
-      stack: err.stack,
-    })
-  }
+  const convertedError = new APIError({
+    message: err.message,
+    status: err.status,
+    stack: err.stack,
+  })
 
   return handler(convertedError, req, res)
 }

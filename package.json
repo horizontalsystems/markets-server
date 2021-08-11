@@ -36,7 +36,7 @@
     "express": "^4.15.2",
     "express-formidable": "^1.2.0",
     "express-session": "^1.17.2",
-    "express-validation": "^3.0.8",
+    "express-validator": "^6.12.1",
     "helmet": "^4.6.0",
     "http-status": "^1.0.1",
     "joi": "^17.4.2",
