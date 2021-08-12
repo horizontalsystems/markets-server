@@ -1,7 +1,7 @@
 module.exports = {
   up: async (queryInterface) => {
     await queryInterface.bulkInsert('coins', [
-      { id: 1, uid: 'bitcoin', name: 'Bitcoin', code: 'BTC' },
+      { id: 1, uid: 'bitcoin', name: 'Bitcoin', code: 'BTC', privacy: 'medium', decentralized: true },
       { id: 2, uid: 'ethereum', name: 'Ethereum', code: 'ETH' },
       { id: 3, uid: 'tether', name: 'Tether', code: 'USDT' },
     ], {})

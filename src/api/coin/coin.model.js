@@ -23,7 +23,19 @@ class Coin extends Sequelize.Model {
         code: {
           type: DataTypes.STRING(25),
           allowNull: false
-        }
+        },
+        privacy: {
+          type: DataTypes.STRING(6)
+        },
+        decentralized: {
+          type: DataTypes.BOOLEAN
+        },
+        confiscation_resistance: {
+          type: DataTypes.BOOLEAN
+        },
+        censorship_resistance: {
+          type: DataTypes.BOOLEAN
+        },
       },
       {
         timestamps: false,

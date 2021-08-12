@@ -7,6 +7,6 @@ const instance = axios.create({
 
 module.exports = {
   getCoinInfo: (id) => {
-    return instance.get(`/coins/${id}`).then(resp => resp.data)
+    return instance.get(`/coins/${id}?tickers=false&community_data=false&developer_data=false&sparkline=false`).then(resp => resp.data)
   }
 }
