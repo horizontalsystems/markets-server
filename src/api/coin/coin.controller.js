@@ -4,7 +4,7 @@ const marketInfoProvider = require('../../providers/market-info-provider');
 
 exports.index = async (req, res) => {
   const coins = await Coin.search(req.query.filter)
-  res.status(200).json(coins)
+  res.status(200).json(serializer.serializeSearchResult(coins))
 }
 
 exports.show = async (req, res, next) => {

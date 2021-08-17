@@ -8,14 +8,25 @@ function descriptionFromCoin(coinDescriptions, language) {
   return description ? description.content : null
 }
 
+function platforms(coin) {
+  return coin.PlatformReferences.map(reference => ({
+    uid: reference.Platform.uid,
+    value: reference.value,
+  }))
+}
+
 module.exports = {
 
-  serialize: (coin, coinInfo, language) => {
-    const platforms = coin.PlatformReferences.map(reference => ({
-      uid: reference.Platform.uid,
-      value: reference.value,
+  serializeSearchResult: (coins) => {
+    return coins.map(coin => ({
+      uid: coin.uid,
+      name: coin.name,
+      code: coin.code,
+      platforms: platforms(coin),
     }))
+  },
 
+  serialize: (coin, coinInfo, language) => {
     const categoryUids = coin.Categories.map(category => (category.uid))
 
     const description = descriptionFromCoin(coin.CoinDescriptions, language)
@@ -35,7 +46,7 @@ module.exports = {
       genesis_date: coinInfo.genesis_date,
       links: coinInfo.links,
       price_change_percentage_in_currency: coinInfo.price_change_percentage_in_currency,
-      platforms,
+      platforms: platforms(coin),
       category_uids: categoryUids,
       description,
       security: {

@@ -54,7 +54,10 @@ class Coin extends Sequelize.Model {
     }
 
     return Coin.findAll({
-      where
+      where,
+      include: [
+        { model: PlatformReference, include: { model: Platform } },
+      ]
     })
   }
 
