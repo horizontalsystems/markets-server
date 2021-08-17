@@ -24,6 +24,10 @@ class Coin extends Sequelize.Model {
           type: DataTypes.STRING(25),
           allowNull: false
         },
+        decimal: {
+          type: DataTypes.INTEGER,
+          allowNull: false
+        },
         privacy: {
           type: DataTypes.STRING(6)
         },

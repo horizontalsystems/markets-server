@@ -22,6 +22,7 @@ module.exports = {
       uid: coin.uid,
       name: coin.name,
       code: coin.code,
+      decimal: coin.decimal,
       platforms: platforms(coin),
     }))
   },
