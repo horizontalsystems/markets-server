@@ -9,9 +9,9 @@ function descriptionFromCoin(coinDescriptions, language) {
 }
 
 function platforms(coin) {
-  return coin.PlatformReferences.map(reference => ({
-    uid: reference.Platform.uid,
-    value: reference.value,
+  return coin.Platforms.map(platform => ({
+    type: platform.PlatformType.uid,
+    value: platform.value,
   }))
 }
 

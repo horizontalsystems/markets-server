@@ -5,25 +5,24 @@ class Platform extends Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        uid: {
-          type: DataTypes.STRING(20),
-          allowNull: false,
-          unique: true
-        },
-        description: {
-          type: DataTypes.STRING(100)
+        value: {
+          type: DataTypes.STRING(42)
         }
       },
       {
         timestamps: false,
         tableName: 'platforms',
-        sequelize
+        sequelize,
+        indexes: [
+          { unique: true, fields: ['coin_id', 'platform_type_id'] }
+        ]
       }
     )
   }
 
   static associate(models) {
-    Platform.hasMany(models.PlatformReference)
+    Platform.belongsTo(models.Coin)
+    Platform.belongsTo(models.PlatformType)
   }
 
 }

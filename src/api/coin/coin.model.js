@@ -1,10 +1,10 @@
 const Sequelize = require('sequelize')
 const { Op } = require('sequelize');
-const PlatformReference = require('../platform-reference/platform-reference');
 const Category = require('../category/category.model');
 const CoinDescription = require('../coin-description/coin-description.model');
-const Platform = require('../platform/platform');
 const Language = require('../language/language.model');
+const Platform = require('../platform/platform.model');
+const PlatformType = require('../platform-type/platform-type.model');
 
 class Coin extends Sequelize.Model {
 
@@ -60,7 +60,7 @@ class Coin extends Sequelize.Model {
     return Coin.findAll({
       where,
       include: [
-        { model: PlatformReference, include: { model: Platform } },
+        { model: Platform, include: { model: PlatformType } },
       ]
     })
   }
@@ -71,7 +71,7 @@ class Coin extends Sequelize.Model {
         uid
       },
       include: [
-        { model: PlatformReference, include: { model: Platform } },
+        { model: Platform, include: { model: PlatformType } },
         { model: Category },
         { model: CoinDescription, include: { model: Language } }
       ]
@@ -80,7 +80,7 @@ class Coin extends Sequelize.Model {
 
   static associate(models) {
     Coin.belongsToMany(models.Category, { through: 'coin_categories' })
-    Coin.hasMany(models.PlatformReference)
+    Coin.hasMany(models.Platform)
     Coin.hasMany(models.CoinDescription)
   }
 

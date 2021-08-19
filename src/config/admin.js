@@ -17,8 +17,8 @@ const adminJs = new AdminJS({
       }
     },
     sequelize.Language,
+    sequelize.PlatformType,
     sequelize.Platform,
-    sequelize.PlatformReference,
     sequelize.Category,
     {
       resource: sequelize.CategoryDescription,
