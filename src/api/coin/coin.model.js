@@ -28,6 +28,14 @@ class Coin extends Sequelize.Model {
           type: DataTypes.INTEGER,
           allowNull: false
         },
+        market_cap_rank: {
+          type: DataTypes.INTEGER,
+          allowNull: false
+        },
+        coin_gecko_id: {
+          type: DataTypes.STRING,
+          allowNull: false
+        },
         privacy: {
           type: DataTypes.STRING(6)
         },

@@ -18,12 +18,18 @@ function platforms(coin) {
 module.exports = {
 
   serializeSearchResult: (coins) => {
+    // const sortedCoins = coins.sort((coinA, coinB) => (
+    //   coinA.market_cap_rank - coinB.market_cap_rank
+    // ))
+
     return coins.map(coin => ({
       uid: coin.uid,
       name: coin.name,
       code: coin.code,
       decimal: coin.decimal,
       platforms: platforms(coin),
+      market_cap_rank: coin.market_cap_rank,
+      coin_gecko_id: coin.coin_gecko_id,
     }))
   },
 
