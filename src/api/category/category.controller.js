@@ -1,14 +1,7 @@
 const Category = require('./category.model')
-const CategoryDescription = require('../category-description/category-description.model')
+const serializer = require('./category.serializer')
 
 exports.index = async (req, res) => {
-  const categories = await Category.findAll({
-    include: {
-      model: CategoryDescription,
-      as: 'descriptions',
-      attributes: ['language_id', 'content']
-    }
-  })
-
-  res.status(200).json(categories)
+  const categories = await Category.all()
+  res.status(200).json(serializer.serialize(categories))
 }
