@@ -23,3 +23,6 @@ coverage
 
 # adminjs components
 .adminjs
+
+# entity–relationship diagram
+erd-diagram.svg

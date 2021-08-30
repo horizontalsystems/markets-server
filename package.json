@@ -18,7 +18,8 @@
     "test": "cross-env PORT=9001 mocha --timeout 20000 --exit --recursive src/api/**/*.spec.js",
     "test:watch": "cross-env PORT=9001 mocha --watch src/api/**/*.spec.js",
     "coverage": "nyc --reporter=html --reporter=text npm run test",
-    "docs": "apidoc -i src/api -o docs"
+    "docs": "apidoc -i src/api -o docs",
+    "erd": "node ./src/db/erd-diagram.js"
   },
   "keywords": [
     "express",
@@ -62,6 +63,7 @@
     "nodemon": "^2.0.1",
     "nyc": "^15.1.0",
     "opn-cli": "^5.0.0",
+    "sequelize-erd": "^1.3.1",
     "sinon": "^11.1.2",
     "sinon-chai": "^3.0.0",
     "supertest": "^6.1.3"

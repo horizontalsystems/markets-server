@@ -15,7 +15,8 @@ const sequelize = new Sequelize(
   config
 )
 
-const models = {
+// Models
+const db = {
   Coin: Coin.init(sequelize, Sequelize),
   CoinDescription: CoinDescription.init(sequelize, Sequelize),
   Language: Language.init(sequelize, Sequelize),
@@ -25,15 +26,16 @@ const models = {
 }
 
 // This creates relationships in the ORM
-Object.values(models)
+Object.values(db)
   .filter(model => typeof model.associate === 'function')
-  .forEach(model => model.associate(models))
+  .forEach(model => model.associate(db))
 
-module.exports = Object.assign(models, {
-  // Sequelize sync
-  sync: (callback) => {
-    sequelize
-      .sync({ force: false })
-      .then(callback)
-  }
-})
+// Sequelize
+db.sequelize = sequelize
+db.sync = callback => {
+  sequelize
+    .sync({ force: false })
+    .then(callback)
+}
+
+module.exports = db
