@@ -1,9 +1,10 @@
 module.exports = {
   up: async (queryInterface) => {
     await queryInterface.bulkInsert('coins', [
-      { id: 1, uid: 'bitcoin', name: 'Bitcoin', code: 'BTC', decimal: 8, market_cap_rank: 1, coin_gecko_id: 'bitcoin', privacy: 'medium', decentralized: true },
-      { id: 2, uid: 'ethereum', name: 'Ethereum', code: 'ETH', decimal: 18, market_cap_rank: 2, coin_gecko_id: 'ethereum' },
-      { id: 3, uid: 'tether', name: 'Tether', code: 'USDT', decimal: 6, market_cap_rank: 5, coin_gecko_id: 'tether' },
+      { id: 1, uid: 'bitcoin', name: 'Bitcoin', code: 'BTC', market_cap_rank: 1, coin_gecko_id: 'bitcoin', privacy: 'medium', decentralized: true },
+      { id: 2, uid: 'ethereum', name: 'Ethereum', code: 'ETH', market_cap_rank: 2, coin_gecko_id: 'ethereum' },
+      { id: 3, uid: 'cardano', name: 'Cardano', code: 'ADA', market_cap_rank: 3, coin_gecko_id: 'cardano' },
+      { id: 4, uid: 'tether', name: 'Tether', code: 'USDT', market_cap_rank: 5, coin_gecko_id: 'tether' },
     ], {})
 
     await queryInterface.bulkInsert('languages', [
@@ -36,16 +37,13 @@ module.exports = {
       { coin_id: 2, category_id: 1 },
     ], {})
 
-    await queryInterface.bulkInsert('platform_types', [
-      { id: 1, uid: 'erc20', description: 'ERC20 token on Ethereum blockchain' },
-      { id: 2, uid: 'bep20', description: 'BEP20 token on Binance Smart Chain' },
-      { id: 3, uid: 'bep2', description: 'BEP2 token on Binance Chain' },
-    ], {})
-
     await queryInterface.bulkInsert('platforms', [
-      { platform_type_id: 1, coin_id: 3, value: '0xdac17f958d2ee523a2206206994597c13d831ec7' },
-      { platform_type_id: 2, coin_id: 3, value: '0x55d398326f99059ff775485246999027b3197955' },
-      { platform_type_id: 2, coin_id: 2, value: '0x2170ed0880ac9a755fd29b2688956bd959f933f8' },
+      { coin_id: 1, type: 'bitcoin', decimal: 8 },
+      { coin_id: 2, type: 'ethereum', decimal: 18 },
+      { coin_id: 2, type: 'bep20', decimal: 18, reference: '0x2170ed0880ac9a755fd29b2688956bd959f933f8' },
+      { coin_id: 3, type: 'cardano', decimal: 6 },
+      { coin_id: 4, type: 'erc20', decimal: 6, reference: '0xdac17f958d2ee523a2206206994597c13d831ec7' },
+      { coin_id: 4, type: 'bep20', decimal: 18, reference: '0x55d398326f99059ff775485246999027b3197955' },
     ], {})
   },
 
@@ -56,7 +54,6 @@ module.exports = {
     await queryInterface.bulkDelete('categories', null, {})
     await queryInterface.bulkDelete('category_descriptions', null, {})
     await queryInterface.bulkDelete('coin_categories', null, {})
-    await queryInterface.bulkDelete('platform_types', null, {})
     await queryInterface.bulkDelete('platforms', null, {})
   }
 }

@@ -4,7 +4,6 @@ const Category = require('../category/category.model');
 const CoinDescription = require('../coin-description/coin-description.model');
 const Language = require('../language/language.model');
 const Platform = require('../platform/platform.model');
-const PlatformType = require('../platform-type/platform-type.model');
 
 class Coin extends Sequelize.Model {
 
@@ -22,10 +21,6 @@ class Coin extends Sequelize.Model {
         },
         code: {
           type: DataTypes.STRING(25),
-          allowNull: false
-        },
-        decimal: {
-          type: DataTypes.INTEGER,
           allowNull: false
         },
         market_cap_rank: {
@@ -68,7 +63,7 @@ class Coin extends Sequelize.Model {
     return Coin.findAll({
       where,
       include: [
-        { model: Platform, include: { model: PlatformType } },
+        { model: Platform },
       ]
     })
   }
@@ -79,7 +74,7 @@ class Coin extends Sequelize.Model {
         uid
       },
       include: [
-        { model: Platform, include: { model: PlatformType } },
+        { model: Platform },
         { model: Category },
         { model: CoinDescription, include: { model: Language } }
       ]

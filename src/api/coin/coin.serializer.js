@@ -10,8 +10,9 @@ function descriptionFromCoin(coinDescriptions, language) {
 
 function platforms(coin) {
   return coin.Platforms.map(platform => ({
-    type: platform.PlatformType.uid,
-    value: platform.value,
+    type: platform.type,
+    decimal: platform.decimal,
+    reference: platform.reference,
   }))
 }
 
