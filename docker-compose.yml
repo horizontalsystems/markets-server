@@ -15,7 +15,7 @@ services:
   #    command: yarn start -- -L
 
   postgres:
-    image: postgres
+    image: postgres:12-alpine
     container_name: postgres
     restart: always
     ports:
@@ -23,6 +23,22 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: markets
+    volumes:
+      - markets-postgres-data:/var/lib/postgresql/data
+
+  mongodb:
+    image : mongo:4.0.26
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_DATABASE: markets
+      MONGO_INITDB_ROOT_USERNAME: mongodb
+      MONGO_INITDB_ROOT_PASSWORD: mongodb
+    ports:
+    - 27017:27017
+    restart: unless-stopped
+    volumes:
+        - markets-mongodb-data:/data/mongodb
 
   #  adminer:
   #    image: adminer
@@ -32,3 +48,7 @@ services:
   #      - "8080:8080"
   #    depends_on:
   #      - postgres
+volumes:
+    markets-postgres-data:
+    markets-mongodb-data:
+
