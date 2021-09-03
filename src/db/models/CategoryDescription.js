@@ -5,17 +5,16 @@ class CategoryDescription extends Sequelize.Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        content: {
-          type: DataTypes.STRING(100)
-        }
+        content: DataTypes.STRING(100)
       },
       {
         timestamps: false,
         tableName: 'category_descriptions',
         sequelize,
-        indexes: [
-          { unique: true, fields: ['category_id', 'language_id'] }
-        ]
+        indexes: [{
+          unique: true,
+          fields: ['category_id', 'language_id']
+        }]
       }
     )
   }

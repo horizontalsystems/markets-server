@@ -1,4 +1,4 @@
-const Language = require('./language.model')
+const Language = require('../../db/models/Language')
 
 exports.index = async (req, res) => {
   const languages = await Language.findAll()

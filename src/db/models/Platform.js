@@ -1,4 +1,4 @@
-const { Model } = require('sequelize');
+const { Model } = require('sequelize')
 
 class Platform extends Model {
 
@@ -13,17 +13,16 @@ class Platform extends Model {
           type: DataTypes.INTEGER,
           allowNull: false
         },
-        reference: {
-          type: DataTypes.STRING(42)
-        }
+        reference: DataTypes.STRING(42)
       },
       {
         timestamps: false,
         tableName: 'platforms',
         sequelize,
-        indexes: [
-          { unique: true, fields: ['coin_id', 'type'] }
-        ]
+        indexes: [{
+          unique: true,
+          fields: ['coin_id', 'type']
+        }]
       }
     )
   }

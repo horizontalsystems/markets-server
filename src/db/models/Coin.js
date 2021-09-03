@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize')
-const { Op } = require('sequelize');
-const Category = require('../category/category.model');
-const CoinDescription = require('../coin-description/coin-description.model');
-const Language = require('../language/language.model');
-const Platform = require('../platform/platform.model');
+const { Op } = require('sequelize')
+const Category = require('./Category')
+const CoinDescription = require('./CoinDescription')
+const Language = require('./Language')
+const Platform = require('./Platform')
 
 class Coin extends Sequelize.Model {
 
@@ -27,22 +27,14 @@ class Coin extends Sequelize.Model {
           type: DataTypes.INTEGER,
           allowNull: false
         },
-        coin_gecko_id: {
+        coingecko_id: {
           type: DataTypes.STRING,
           allowNull: false
         },
-        privacy: {
-          type: DataTypes.STRING(6)
-        },
-        decentralized: {
-          type: DataTypes.BOOLEAN
-        },
-        confiscation_resistance: {
-          type: DataTypes.BOOLEAN
-        },
-        censorship_resistance: {
-          type: DataTypes.BOOLEAN
-        },
+        privacy: DataTypes.STRING(6),
+        decentralized: DataTypes.BOOLEAN,
+        confiscation_resistance: DataTypes.BOOLEAN,
+        censorship_resistance: DataTypes.BOOLEAN
       },
       {
         timestamps: false,

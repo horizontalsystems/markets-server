@@ -12,7 +12,7 @@ class Language extends Sequelize.Model {
         },
         name: {
           type: DataTypes.STRING(100),
-          allowNull: false,
+          allowNull: false
         }
       },
       {

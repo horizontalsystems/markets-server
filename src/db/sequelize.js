@@ -1,11 +1,11 @@
 const Sequelize = require('sequelize')
 const configJson = require('./config.json')
-const Coin = require('../api/coin/coin.model')
-const Language = require('../api/language/language.model')
-const Category = require('../api/category/category.model')
-const CategoryDescription = require('../api/category-description/category-description.model')
-const CoinDescription = require('../api/coin-description/coin-description.model');
-const Platform = require('../api/platform/platform.model');
+const Coin = require('./models/Coin')
+const CoinDescription = require('./models/CoinDescription')
+const Language = require('./models/Language')
+const Category = require('./models/Category')
+const CategoryDescription = require('./models/CategoryDescription')
+const Platform = require('./models/Platform')
 
 const config = configJson[process.env.NODE_ENV || 'development']
 const sequelize = new Sequelize(

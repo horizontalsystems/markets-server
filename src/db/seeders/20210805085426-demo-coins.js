@@ -1,10 +1,10 @@
 module.exports = {
   up: async (queryInterface) => {
     await queryInterface.bulkInsert('coins', [
-      { id: 1, uid: 'bitcoin', name: 'Bitcoin', code: 'BTC', market_cap_rank: 1, coin_gecko_id: 'bitcoin', privacy: 'medium', decentralized: true },
-      { id: 2, uid: 'ethereum', name: 'Ethereum', code: 'ETH', market_cap_rank: 2, coin_gecko_id: 'ethereum' },
-      { id: 3, uid: 'cardano', name: 'Cardano', code: 'ADA', market_cap_rank: 3, coin_gecko_id: 'cardano' },
-      { id: 4, uid: 'tether', name: 'Tether', code: 'USDT', market_cap_rank: 5, coin_gecko_id: 'tether' },
+      { id: 1, uid: 'bitcoin', name: 'Bitcoin', code: 'BTC', market_cap_rank: 1, coingecko_id: 'bitcoin', privacy: 'medium', decentralized: true },
+      { id: 2, uid: 'ethereum', name: 'Ethereum', code: 'ETH', market_cap_rank: 2, coingecko_id: 'ethereum' },
+      { id: 3, uid: 'cardano', name: 'Cardano', code: 'ADA', market_cap_rank: 3, coingecko_id: 'cardano' },
+      { id: 4, uid: 'tether', name: 'Tether', code: 'USDT', market_cap_rank: 5, coingecko_id: 'tether' },
     ], {})
 
     await queryInterface.bulkInsert('languages', [

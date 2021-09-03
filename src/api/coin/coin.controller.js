@@ -1,4 +1,4 @@
-const Coin = require('./coin.model')
+const Coin = require('../../db/models/Coin')
 const serializer = require('./coin.serializer')
 const marketInfoProvider = require('../../providers/market-info-provider');
 

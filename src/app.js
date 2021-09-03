@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv/config')
 
 const logger = require('./config/logger')
 const sequelize = require('./db/sequelize')

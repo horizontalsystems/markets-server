@@ -1,6 +1,6 @@
 const { Model } = require('sequelize');
-const CategoryDescription = require('../category-description/category-description.model');
-const Language = require('../language/language.model');
+const CategoryDescription = require('./CategoryDescription')
+const Language = require('./Language')
 
 class Category extends Model {
 

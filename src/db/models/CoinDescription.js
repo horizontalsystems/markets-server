@@ -5,17 +5,16 @@ class CoinDescription extends Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        content: {
-          type: DataTypes.STRING(100)
-        }
+        content: DataTypes.STRING(100)
       },
       {
         timestamps: false,
         tableName: 'coin_descriptions',
         sequelize,
-        indexes: [
-          { unique: true, fields: ['coin_id', 'language_id'] }
-        ]
+        indexes: [{
+          unique: true,
+          fields: ['coin_id', 'language_id']
+        }]
       }
     )
   }

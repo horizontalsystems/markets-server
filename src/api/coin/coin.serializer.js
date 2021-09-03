@@ -30,7 +30,7 @@ module.exports = {
       decimal: coin.decimal,
       platforms: platforms(coin),
       market_cap_rank: coin.market_cap_rank,
-      coin_gecko_id: coin.coin_gecko_id,
+      coingecko_id: coin.coingecko_id,
     }))
   },
 
