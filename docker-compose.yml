@@ -28,27 +28,29 @@ services:
       - markets-postgres-data:/var/lib/postgresql/data
 
   mongodb:
-    image : mongo:4.0.26
+    image: mongo:4.0.26
     container_name: mongodb
     environment:
       MONGO_INITDB_DATABASE: markets
       MONGO_INITDB_ROOT_USERNAME: mongodb
       MONGO_INITDB_ROOT_PASSWORD: mongodb
     ports:
-    - 27017:27017
+      - 27017:27017
     restart: unless-stopped
     volumes:
-        - markets-mongodb-data:/data/mongodb
+      - markets-mongodb-data:/data/mongodb
 
-  #  adminer:
-  #    image: adminer
-  #    container_name: adminer
-  #    restart: always
-  #    ports:
-  #      - "8080:8080"
-  #    depends_on:
-  #      - postgres
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@mail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+
 volumes:
-    markets-postgres-data:
-    markets-mongodb-data:
+  markets-postgres-data:
+  markets-mongodb-data:
 
