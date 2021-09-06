@@ -28,6 +28,7 @@
   "dependencies": {
     "@adminjs/express": "^4.0.0",
     "@adminjs/sequelize": "^2.0.0",
+    "@google-cloud/bigquery": "^5.8.0",
     "adminjs": "^5.1.0",
     "axios": "^0.21.1",
     "compression": "^1.6.2",
@@ -45,6 +46,7 @@
     "method-override": "^3.0.0",
     "moment-timezone": "^0.5.13",
     "morgan": "^1.8.1",
+    "node-cron": "^3.0.0",
     "pg": "^8.7.1",
     "pm2": "^5.1.0",
     "sequelize": "^6.6.5",

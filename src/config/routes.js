@@ -7,5 +7,6 @@ router.use('/docs', express.static('docs'))
 router.use('/coins', require('../api/coin'))
 router.use('/languages', require('../api/language'))
 router.use('/categories', require('../api/category'))
+router.use('/transactions', require('../api/transaction'))
 
 module.exports = router
