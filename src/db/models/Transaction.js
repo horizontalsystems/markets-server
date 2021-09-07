@@ -6,7 +6,7 @@ class Transaction extends Sequelize.Model {
     return super.init(
       {
         date: {
-          type: DataTypes.STRING(10), // s
+          type: DataTypes.DATE,
           allowNull: false,
           unique: true
         },
@@ -29,7 +29,7 @@ class Transaction extends Sequelize.Model {
   static getLast() {
     return Transaction.findOne({
       order: [
-        ['id', 'DESC']
+        ['date', 'DESC']
       ]
     })
   }

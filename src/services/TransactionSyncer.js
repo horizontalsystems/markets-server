@@ -2,7 +2,7 @@ const cron = require('node-cron')
 const Transaction = require('../db/models/Transaction')
 const bigquery = require('../db/bigquery')
 
-class TransactionsSyncer {
+class TransactionSyncer {
 
   interval = '*/30 * * * *' // every 30 mins
   initialSyncDate = '2021-09-01'
@@ -16,7 +16,7 @@ class TransactionsSyncer {
     }
 
     // Schedule cron task
-    cron.schedule(this.interval, this.sync, {})
+    cron.schedule(this.interval, this.sync.bind(this), {})
   }
 
   async sync() {
@@ -34,15 +34,18 @@ class TransactionsSyncer {
 
   async getLastSyncDate() {
     const transaction = await Transaction.getLast()
-    return transaction ? transaction.date : this.initialSyncDate
+    return transaction ? transaction.date : new Date(this.initialSyncDate)
   }
 
-  isSameDay(dateStr) {
-    const today = new Date().toISOString()
-    const todayStr = today.substring(0, 10) // YYYY-MM-DD
-    return dateStr === todayStr
+  isSameDay(date) {
+    const today = new Date()
+    return (
+      today.getFullYear() === date.getFullYear() &&
+      today.getDate() === date.getDate() &&
+      today.getMonth() === date.getMonth()
+    )
   }
 
 }
 
-module.exports = TransactionsSyncer
+module.exports = TransactionSyncer

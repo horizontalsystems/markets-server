@@ -4,7 +4,7 @@ const logger = require('./config/logger')
 const sequelize = require('./db/sequelize')
 const app = require('./config/express')
 
-const TransactionSyncer = require('./services/TransactionsSyncer')
+const TransactionSyncer = require('./services/TransactionSyncer')
 
 async function start() {
   const transactionSyncer = new TransactionSyncer()

@@ -4,25 +4,19 @@ const logger = require('../config/logger')
 
 async function getTransactions(fromDate) {
   const bigquery = new BigQuery()
-  const query = [`
+  const query = `
     SELECT
       date(block_timestamp) as date,
       count(1) as count,
       sum(value) / power(10, 18) as volume
     from \`bigquery-public-data.crypto_ethereum.transactions\`
-  `]
-
-  if (fromDate) {
-    query.push(`WHERE DATE(block_timestamp) >= "${fromDate}"`)
-  }
-
-  query.push(`
+    WHERE block_timestamp >= "${fromDate.toISOString()}"
     GROUP BY date
     ORDER BY date ASC
-  `)
+  `
 
   const [job] = await bigquery.createQueryJob({
-    query: query.join(' '),
+    query,
     location: 'US'
   })
 
