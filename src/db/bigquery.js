@@ -29,6 +29,41 @@ async function getTransactions(fromDate) {
   }))
 }
 
+async function getAddresses(fromDate) {
+  const bigquery = new BigQuery()
+  const query = `
+    WITH entry_book AS (
+      SELECT
+        DISTINCT to_address AS address,
+        DATE(block_timestamp) as date
+      FROM \`bigquery-public-data.crypto_ethereum.traces\`
+      WHERE
+        to_address IS NOT NULL
+        AND status = 1
+        AND (call_type NOT IN ('delegatecall', 'callcode', 'staticcall') OR call_type IS NULL)
+        AND block_timestamp >= "${fromDate.toISOString()}"
+    )
+    SELECT COUNT(address) AS count, date
+    FROM entry_book
+    GROUP BY date
+    ORDER BY date DESC
+  `
+
+  const [job] = await bigquery.createQueryJob({
+    query,
+    location: 'US'
+  })
+
+  logger.info(`Job ${job.id} started.`)
+
+  const [rows] = await job.getQueryResults()
+  return rows.map(item => ({
+    ...item,
+    date: item.date.value
+  }))
+}
+
 module.exports = {
-  getTransactions
+  getTransactions,
+  getAddresses
 }

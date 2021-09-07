@@ -7,6 +7,7 @@ const Category = require('./models/Category')
 const CategoryDescription = require('./models/CategoryDescription')
 const Platform = require('./models/Platform')
 const Transaction = require('./models/Transaction')
+const Address = require('./models/Address')
 
 const config = configJson[process.env.NODE_ENV || 'development']
 const sequelize = new Sequelize(
@@ -24,7 +25,8 @@ const db = {
   Category: Category.init(sequelize, Sequelize),
   CategoryDescription: CategoryDescription.init(sequelize, Sequelize),
   Platform: Platform.init(sequelize, Sequelize),
-  Transaction: Transaction.init(sequelize, Sequelize)
+  Transaction: Transaction.init(sequelize, Sequelize),
+  Address: Address.init(sequelize, Sequelize)
 }
 
 // This creates relationships in the ORM
