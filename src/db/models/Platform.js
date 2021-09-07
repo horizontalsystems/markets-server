@@ -13,7 +13,7 @@ class Platform extends Model {
           type: DataTypes.INTEGER,
           allowNull: false
         },
-        reference: DataTypes.STRING(42)
+        reference: DataTypes.STRING(100)
       },
       {
         timestamps: false,
