@@ -1,11 +1,15 @@
-const cron = require('node-cron')
+const { CronJob } = require('cron')
 const Address = require('../db/models/Address')
 const bigquery = require('../db/bigquery')
 
 class AddressSyncer {
 
-  interval = '* */2 * * *' // every 2 hours
   initialSyncDate = '2021-09-01'
+  cronJob = new CronJob({
+    cronTime: '* */2 * * *', // every 2 hours
+    onTick: this.sync.bind(this),
+    start: false
+  })
 
   async start() {
     const lastSyncDate = await this.getLastSyncDate()
@@ -16,7 +20,7 @@ class AddressSyncer {
     }
 
     // Schedule cron task
-    cron.schedule(this.interval, this.sync.bind(this), {})
+    this.cronJob.start()
   }
 
   async sync() {

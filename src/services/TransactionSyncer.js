@@ -1,11 +1,15 @@
-const cron = require('node-cron')
+const { CronJob } = require('cron')
 const Transaction = require('../db/models/Transaction')
 const bigquery = require('../db/bigquery')
 
 class TransactionSyncer {
 
-  interval = '*/30 * * * *' // every 30 mins
   initialSyncDate = '2021-09-01'
+  cronJob = new CronJob({
+    cronTime: '*/30 * * * *', // every 30 mins
+    onTick: this.sync.bind(this),
+    start: false
+  })
 
   async start() {
     const lastSyncDate = await this.getLastSyncDate()
@@ -16,7 +20,7 @@ class TransactionSyncer {
     }
 
     // Schedule cron task
-    cron.schedule(this.interval, this.sync.bind(this), {})
+    this.cronJob.start()
   }
 
   async sync() {
