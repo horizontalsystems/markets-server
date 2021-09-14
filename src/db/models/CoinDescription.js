@@ -5,7 +5,7 @@ class CoinDescription extends Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        content: DataTypes.STRING(100)
+        content: DataTypes.TEXT
       },
       {
         timestamps: false,
@@ -20,8 +20,13 @@ class CoinDescription extends Model {
   }
 
   static associate(models) {
-    CoinDescription.belongsTo(models.Coin)
-    CoinDescription.belongsTo(models.Language)
+    CoinDescription.belongsTo(models.Coin, {
+      foreignKey: 'coin_id'
+    })
+
+    CoinDescription.belongsTo(models.Language, {
+      foreignKey: 'language_id'
+    })
   }
 
 }

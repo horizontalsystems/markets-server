@@ -15,26 +15,41 @@ class Coin extends Sequelize.Model {
           allowNull: false,
           unique: true
         },
-        name: {
-          type: DataTypes.STRING(100),
-          allowNull: false
-        },
-        code: {
-          type: DataTypes.STRING(25),
-          allowNull: false
-        },
-        market_cap_rank: {
-          type: DataTypes.INTEGER,
-          allowNull: false
-        },
-        coingecko_id: {
-          type: DataTypes.STRING,
-          allowNull: false
-        },
+
+        name: DataTypes.STRING,
+        code: DataTypes.STRING,
+        coingecko_id: DataTypes.STRING,
+
+        price: DataTypes.DECIMAL,
+        price_change_24h: DataTypes.DECIMAL,
+        price_change_7d: DataTypes.DECIMAL,
+        price_change_30d: DataTypes.DECIMAL,
+        price_change_1y: DataTypes.DECIMAL,
+
+        high_24h: DataTypes.DECIMAL,
+        low_24h: DataTypes.DECIMAL,
+        ath: DataTypes.DECIMAL,
+        ath_change_percentage: DataTypes.DECIMAL,
+        ath_date: DataTypes.DATE,
+        atl: DataTypes.DECIMAL,
+        atl_change_percentage: DataTypes.DECIMAL,
+        atl_date: DataTypes.DATE,
+
+        market_cap: DataTypes.DECIMAL,
+        market_cap_rank: DataTypes.INTEGER,
+        total_volume: DataTypes.DECIMAL,
+        total_supply: DataTypes.DECIMAL,
+        max_supply: DataTypes.DECIMAL,
+        circulating_supply: DataTypes.DECIMAL,
+        fully_diluted_valuation: DataTypes.DECIMAL,
+        total_value_locked: DataTypes.DECIMAL,
+        last_updated: DataTypes.DATE,
+
+        // Privacy
         privacy: DataTypes.STRING(6),
         decentralized: DataTypes.BOOLEAN,
         confiscation_resistance: DataTypes.BOOLEAN,
-        censorship_resistance: DataTypes.BOOLEAN
+        censorship_resistance: DataTypes.BOOLEAN,
       },
       {
         timestamps: false,
@@ -54,6 +69,10 @@ class Coin extends Sequelize.Model {
 
     return Coin.findAll({
       where,
+      order: [
+        ['market_cap', 'DESC']
+      ],
+      limit: 100,
       include: [
         { model: Platform },
       ]

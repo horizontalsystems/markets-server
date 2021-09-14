@@ -28,7 +28,9 @@ class Platform extends Model {
   }
 
   static associate(models) {
-    Platform.belongsTo(models.Coin)
+    Platform.belongsTo(models.Coin, {
+      foreignKey: 'coin_id'
+    })
   }
 
 }
