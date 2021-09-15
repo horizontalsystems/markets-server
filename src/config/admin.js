@@ -7,23 +7,28 @@ AdminJS.registerAdapter(AdminJSSequelize)
 
 const adminJs = new AdminJS({
   resources: [
-    sequelize.Coin,
     {
-      resource: sequelize.CoinDescription,
+      resource: sequelize.Coin,
       options: {
+        editProperties: ['name', 'code', 'coingecko_id', 'security'],
         properties: {
-          content: { type: 'textarea' }
+          security: { type: 'mixed' },
+          'security.privacy': { type: 'string' },
+          'security.decentralized': { type: 'boolean' },
+          'security.confiscation_resistance': { type: 'boolean' },
+          'security.censorship_resistance': { type: 'boolean' },
         }
       }
     },
     sequelize.Language,
     sequelize.Platform,
-    sequelize.Category,
     {
-      resource: sequelize.CategoryDescription,
+      resource: sequelize.Category,
       options: {
         properties: {
-          content: { type: 'textarea' }
+          description: { type: 'mixed' },
+          'description.en': { type: 'textarea' },
+          'description.ru': { type: 'textarea' },
         }
       }
     }

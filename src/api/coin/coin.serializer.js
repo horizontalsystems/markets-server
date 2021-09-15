@@ -1,13 +1,3 @@
-function descriptionFromCoin(coinDescriptions, language) {
-  let description = coinDescriptions.find(desc => desc.Language.code === language)
-
-  if (!description) {
-    description = coinDescriptions.find(desc => desc.Language.code === 'en')
-  }
-
-  return description ? description.content : null
-}
-
 function platforms(platforms) {
   return platforms.map(platform => ({
     type: platform.type,
@@ -18,27 +8,25 @@ function platforms(platforms) {
 
 module.exports = {
 
-  serializeSearchResult: (coins) => {
+  serializeSearchResult: coins => {
     return coins.map(coin => ({
       uid: coin.uid,
       name: coin.name,
       code: coin.code,
-      platforms: platforms(coin.Platforms),
       coingecko_id: coin.coingecko_id,
-      market_cap: coin.market_cap,
-      total_volume: coin.total_volume
+      price: coin.price,
+      price_change_24h: coin.price_change['24h'],
+      market_cap: coin.market_data.market_cap,
+      total_volume: coin.market_data.total_volume,
+      platforms: platforms(coin.Platforms),
     }))
   },
 
-  serialize: ({ Categories, CoinDescriptions, Platforms, ...coin }, language) => {
-    const categoryIds = Categories.map(category => (category.uid))
-    const description = descriptionFromCoin(CoinDescriptions, language)
-
+  serialize: ({ Categories, Platforms, ...coin }) => {
     return {
       ...coin,
       platforms: platforms(Platforms),
-      category_ids: categoryIds,
-      description
+      category_ids: Categories.map(category => category.uid)
     }
   }
 

@@ -1,8 +1,6 @@
 const Sequelize = require('sequelize')
 const { Op } = require('sequelize')
 const Category = require('./Category')
-const CoinDescription = require('./CoinDescription')
-const Language = require('./Language')
 const Platform = require('./Platform')
 
 class Coin extends Sequelize.Model {
@@ -20,36 +18,59 @@ class Coin extends Sequelize.Model {
         code: DataTypes.STRING,
         coingecko_id: DataTypes.STRING,
 
+        description: DataTypes.JSONB,
+        //  {
+        //    en: 'Description text',
+        //    ru: 'Description text'
+        //  }
+
+        links: DataTypes.JSONB,
+        //  {
+        //    website: http://domain.com
+        //    twitter: http://domain.com
+        //    github: http://domain.com
+        //    reddit: http://domain.com
+        //    telegram: http://domain.com
+        //  }
+
         price: DataTypes.DECIMAL,
-        price_change_24h: DataTypes.DECIMAL,
-        price_change_7d: DataTypes.DECIMAL,
-        price_change_30d: DataTypes.DECIMAL,
-        price_change_1y: DataTypes.DECIMAL,
+        price_change: DataTypes.JSONB,
+        //  {
+        //    1y:   345.8,
+        //    24h:  3.150,
+        //    30d:  2.194,
+        //    7d:   12.69
+        //    high_24h:                     90.00,
+        //    low_24h:                      10.00,
+        //    ath:                          4356.99,
+        //    ath_change_percentage:        23.11,
+        //    ath_date:                     2021-00-01T00:00:00.000Z,
+        //    atl:                          0.432,
+        //    atl_change_percentage:        773.10,
+        //    atl_date:                     2021-00-01T00:00:00.000Z,
+        //  }
 
-        high_24h: DataTypes.DECIMAL,
-        low_24h: DataTypes.DECIMAL,
-        ath: DataTypes.DECIMAL,
-        ath_change_percentage: DataTypes.DECIMAL,
-        ath_date: DataTypes.DATE,
-        atl: DataTypes.DECIMAL,
-        atl_change_percentage: DataTypes.DECIMAL,
-        atl_date: DataTypes.DATE,
+        market_data: DataTypes.JSONB,
+        //  {
+        //    market_cap: 1000000,
+        //    market_cap_rank: 1,
+        //    total_volume: 1000000,
+        //    total_supply: 80000,
+        //    max_supply: 80000,
+        //    circulating_supply: 78000,
+        //    fully_diluted_valuation: 1000000,
+        //    total_value_locked: 1000000
+        //  }
 
-        market_cap: DataTypes.DECIMAL,
-        market_cap_rank: DataTypes.INTEGER,
-        total_volume: DataTypes.DECIMAL,
-        total_supply: DataTypes.DECIMAL,
-        max_supply: DataTypes.DECIMAL,
-        circulating_supply: DataTypes.DECIMAL,
-        fully_diluted_valuation: DataTypes.DECIMAL,
-        total_value_locked: DataTypes.DECIMAL,
+        security: DataTypes.JSONB,
+        //  {
+        //    privacy: 'high',
+        //    decentralized: false,
+        //    confiscation_resistance: true,
+        //    censorship_resistance: false,
+        //  }
+
         last_updated: DataTypes.DATE,
-
-        // Privacy
-        privacy: DataTypes.STRING(6),
-        decentralized: DataTypes.BOOLEAN,
-        confiscation_resistance: DataTypes.BOOLEAN,
-        censorship_resistance: DataTypes.BOOLEAN,
       },
       {
         timestamps: false,
@@ -70,7 +91,7 @@ class Coin extends Sequelize.Model {
     return Coin.findAll({
       where,
       order: [
-        ['market_cap', 'DESC']
+        ['market_data.market_cap', 'DESC']
       ],
       limit: 100,
       include: [
@@ -86,8 +107,7 @@ class Coin extends Sequelize.Model {
       },
       include: [
         { model: Platform },
-        { model: Category },
-        { model: CoinDescription, include: { model: Language } }
+        { model: Category }
       ]
     })
   }
@@ -95,7 +115,6 @@ class Coin extends Sequelize.Model {
   static associate(models) {
     Coin.belongsToMany(models.Category, { through: 'coin_categories' })
     Coin.hasMany(models.Platform)
-    Coin.hasMany(models.CoinDescription)
   }
 
 }

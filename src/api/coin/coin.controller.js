@@ -10,7 +10,7 @@ exports.show = async (req, res, next) => {
   const coin = await Coin.getByUid(req.params.id)
 
   if (coin) {
-    res.status(200).json(serializer.serialize(coin.dataValues, req.query.language))
+    res.status(200).json(serializer.serialize(coin.dataValues))
   } else {
     next()
   }

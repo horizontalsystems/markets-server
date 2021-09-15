@@ -24,7 +24,6 @@ class Language extends Sequelize.Model {
   }
 
   static associate(models) {
-    Language.hasMany(models.CategoryDescription)
   }
 
 }

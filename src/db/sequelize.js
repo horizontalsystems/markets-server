@@ -1,10 +1,8 @@
 const Sequelize = require('sequelize')
 const configJson = require('./config.json')
 const Coin = require('./models/Coin')
-const CoinDescription = require('./models/CoinDescription')
 const Language = require('./models/Language')
 const Category = require('./models/Category')
-const CategoryDescription = require('./models/CategoryDescription')
 const Platform = require('./models/Platform')
 const Transaction = require('./models/Transaction')
 const Address = require('./models/Address')
@@ -20,10 +18,8 @@ const sequelize = new Sequelize(
 // Models
 const db = {
   Coin: Coin.init(sequelize, Sequelize),
-  CoinDescription: CoinDescription.init(sequelize, Sequelize),
   Language: Language.init(sequelize, Sequelize),
   Category: Category.init(sequelize, Sequelize),
-  CategoryDescription: CategoryDescription.init(sequelize, Sequelize),
   Platform: Platform.init(sequelize, Sequelize),
   Transaction: Transaction.init(sequelize, Sequelize),
   Address: Address.init(sequelize, Sequelize)

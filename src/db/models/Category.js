@@ -1,6 +1,4 @@
 const { Model } = require('sequelize');
-const CategoryDescription = require('./CategoryDescription')
-const Language = require('./Language')
 
 class Category extends Model {
 
@@ -15,7 +13,12 @@ class Category extends Model {
         name: {
           type: DataTypes.STRING(100),
           allowNull: false
-        }
+        },
+        description: DataTypes.JSONB,
+        //  {
+        //    en: 'Description text',
+        //    ru: 'Description text'
+        //  }
       },
       {
         timestamps: false,
@@ -25,21 +28,7 @@ class Category extends Model {
     )
   }
 
-  static all() {
-    return Category.findAll({
-      include: {
-        model: CategoryDescription,
-        as: 'descriptions',
-        include: { model: Language }
-      }
-    })
-  }
-
   static associate(models) {
-    Category.hasMany(models.CategoryDescription, {
-      as: 'descriptions'
-    })
-
     Category.belongsToMany(models.Coin, { through: 'coin_categories' })
   }
 

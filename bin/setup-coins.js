@@ -4,22 +4,16 @@ const sequelize = require('../src/db/sequelize')
 const Coin = require('../src/db/models/Coin')
 const Platform = require('../src/db/models/Platform')
 const Language = require('../src/db/models/Language')
-const CoinDescription = require('../src/db/models/CoinDescription')
 
 async function start() {
   await sequelize.sync()
 
+  const languages = await Language.findAll()
   const coins = await fetchCoins()
   console.log('Fetched new coins')
 
-  const languages = await Language.findAll()
-  const languagesMap = languages.reduce((memo, lang) => {
-    memo[lang.code] = lang
-    return memo
-  }, {})
-
   for (const coin of coins) {
-    await fetchInfo(coin.coingecko_id, languagesMap)
+    await fetchInfo(coin.coingecko_id, languages)
     await sleep(1100)
   }
 }
@@ -43,44 +37,17 @@ async function fetchInfo(id, languages) {
   console.log('fetching info for', id)
 
   try {
-    const {
-      links,
-      platforms,
-      description,
-      total_value_locked,
-      ...coinData
-    } = await coingecko.getCoinInfo(id)
+    const data = await coingecko.getCoinInfo(id)
+    data.description = descriptionsMap(data.description, languages)
 
-    const [coin] = await Coin.upsert(coinData)
-    await createPlatform(coin, platforms)
-    await createDescription(coin, description, languages)
+    const [coin] = await Coin.upsert(data)
+    await createPlatform(coin, data.platforms)
   } catch (error) {
     console.log(error.message)
     const response = error.response
     if (response && response.status === 429) {
       await sleep(10000)
       await fetchInfo(id, languages)
-    }
-  }
-}
-
-async function createDescription(coin, descriptions, languages) {
-  for (const key in descriptions) {
-    const language = languages[key]
-    const description = descriptions[key]
-
-    if (!language || !description) {
-      continue
-    }
-
-    try {
-      await CoinDescription.upsert({
-        content: description,
-        coin_id: coin.id,
-        language_id: language.id
-      })
-    } catch (e) {
-      console.error(e)
     }
   }
 }
@@ -122,6 +89,13 @@ async function createPlatform(coin, platforms) {
       console.error(err)
     }
   }
+}
+
+function descriptionsMap(descriptions, languages) {
+  return languages.reduce((memo, lang) => {
+    memo[lang.code] = descriptions[lang.code]
+    return memo
+  }, {})
 }
 
 start()

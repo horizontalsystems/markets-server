@@ -7,15 +7,9 @@ module.exports = {
     ], {})
 
     await queryInterface.bulkInsert('categories', [
-      { id: 1, uid: 'dexes', name: 'Dexes' },
-      { id: 2, uid: 'blockchains', name: 'Blockchains' },
+      { id: 1, uid: 'dexes', name: 'Dexes', description: JSON.stringify({ en: 'Description for dexes' }) },
+      { id: 2, uid: 'blockchains', name: 'Blockchains', description: JSON.stringify({ en: 'Blockchains' }) },
       { id: 3, uid: 'lending', name: 'Lending' },
-    ], {})
-
-    await queryInterface.bulkInsert('category_descriptions', [
-      { category_id: 1, language_id: 1, content: 'Description for dexes' },
-      { category_id: 3, language_id: 1, content: 'Description for lending' },
-      { category_id: 3, language_id: 2, content: 'Описание для lending' },
     ], {})
 
     await queryInterface.bulkInsert('coin_categories', [
@@ -28,7 +22,6 @@ module.exports = {
   down: async (queryInterface) => {
     await queryInterface.bulkDelete('languages', null, {})
     await queryInterface.bulkDelete('categories', null, {})
-    await queryInterface.bulkDelete('coin_descriptions', null, {})
-    await queryInterface.bulkDelete('category_descriptions', null, {})
+    await queryInterface.bulkDelete('coin_categories', null, {})
   }
 }
