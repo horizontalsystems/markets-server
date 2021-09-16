@@ -1,11 +1,12 @@
 const { CronJob } = require('cron')
+const { sleep } = require('../utils')
 const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
 
 class AddressSyncer {
 
   cronJob = new CronJob({
-    cronTime: '*/5 * * * * *', // every 5 seconds
+    cronTime: '*/1 * * * * *', // every second
     onTick: this.syncSchedule.bind(this),
     start: true
   })
@@ -40,48 +41,65 @@ class AddressSyncer {
 
     console.log(`Syncing coins: ${coinIdsChunk.length} from ${coinIds.length}`)
 
-    const data = await coingecko.getMarkets(coinIdsChunk)
+    const data = await this.fetchCoins(coinIdsChunk)
 
-    for (const item of data) {
-      const coin = map[item.coingecko_id]
-      if (coin) {
-        await coin.update(item, {
-          fields: [
-            'price',
-            'price_change_24h',
-            'price_change_7d',
-            'price_change_30d',
-            'price_change_1y',
-            'market_cap',
-            'market_cap_rank',
-            'total_volume',
-            'total_supply',
-            'max_supply',
-            'circulating_supply',
-            'fully_diluted_valuation',
-            'high_24h',
-            'low_24h',
-            'ath',
-            'ath_change_percentage',
-            'ath_date',
-            'atl',
-            'atl_change_percentage',
-            'atl_date',
-            'last_updated'
-          ]
-        })
-      } else {
-        await Coin.create(data)
-      }
-    }
+    console.log(`Synced coins: ${data.length}`)
 
-    console.log(`Received ${data.length}`)
+    this.upsertCoins(data, map)
 
     if (data.length >= (coinIdsChunk.length + coinIds.length) || coinIds.length < 1) {
       return
     }
 
+    await sleep(1000)
     await this.syncCoins(coinIds, map)
+  }
+
+  async fetchCoins(coinIds, retry = 0) {
+    if (retry >= 3) {
+      return []
+    }
+
+    try {
+      return await coingecko.getMarkets(coinIds)
+    } catch (err) {
+      console.error(err)
+
+      if (err.response && err.response.status === 429) {
+        await sleep(30000)
+        console.log('Retrying')
+        return await this.fetchCoins(coinIds, retry + 1)
+      } else {
+        return []
+      }
+    }
+  }
+
+  upsertCoins(data, map) {
+    const updateFields = {
+      fields: [
+        'price',
+        'price_change',
+        'market_data',
+        'security',
+        'last_updated'
+      ]
+    }
+
+    for (const item of data) {
+      const coin = map[item.coingecko_id]
+      if (coin) {
+        coin.update(item, updateFields)
+          .catch(err => {
+            console.error(err)
+          })
+      } else {
+        Coin.create(data)
+          .catch(err => {
+            console.error(err)
+          })
+      }
+    }
   }
 
 }
