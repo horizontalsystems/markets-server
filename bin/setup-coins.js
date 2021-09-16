@@ -4,16 +4,19 @@ const sequelize = require('../src/db/sequelize')
 const Coin = require('../src/db/models/Coin')
 const Platform = require('../src/db/models/Platform')
 const Language = require('../src/db/models/Language')
+const binanceDex = require('../src/providers/binance-dex')
+const web3Provider = require('../src/providers/web3')
 
 async function start() {
   await sequelize.sync()
 
   const languages = await Language.findAll()
+  const bep2tokens = await binanceDex.getBep2Tokens()
   const coins = await fetchCoins()
   console.log('Fetched new coins')
 
   for (const coin of coins) {
-    await fetchInfo(coin.coingecko_id, languages)
+    await fetchInfo(coin.coingecko_id, languages, bep2tokens)
     await sleep(1100)
   }
 }
@@ -33,7 +36,7 @@ async function fetchCoins(page = 1, limit = 4000) {
   )
 }
 
-async function fetchInfo(id, languages) {
+async function fetchInfo(id, languages, bep2tokens) {
   console.log('fetching info for', id)
 
   try {
@@ -41,18 +44,18 @@ async function fetchInfo(id, languages) {
     data.description = descriptionsMap(data.description, languages)
 
     const [coin] = await Coin.upsert(data)
-    await createPlatform(coin, data.platforms)
+    await createPlatform(coin, data.platforms, bep2tokens)
   } catch (error) {
     console.log(error.message)
     const response = error.response
     if (response && response.status === 429) {
-      await sleep(10000)
-      await fetchInfo(id, languages)
+      await sleep(30000)
+      await fetchInfo(id, languages, bep2tokens)
     }
   }
 }
 
-async function createPlatform(coin, platforms) {
+async function createPlatform(coin, platforms, bep2tokens) {
   switch (coin.uid) {
     case 'bitcoin':
     case 'ethereum':
@@ -60,29 +63,49 @@ async function createPlatform(coin, platforms) {
       return
   }
 
-  for (const [platform, contract] of Object.entries(platforms)) {
-    let type = platform
-    if (type === '') {
+  for (const platform in platforms) {
+    if (platform === '') {
       continue
     }
+
+    let address = platforms[platform]
+    let decimals
+    let symbol
+    let type
 
     switch (platform) {
       case 'ethereum':
         type = 'erc20'
+        decimals = await web3Provider.getERC20Decimals(address)
         break
-      case 'binancecoin':
-        type = 'bep2'
-        break
+
       case 'binance-smart-chain':
         type = 'bep20'
+        decimals = await web3Provider.getBEP20Decimals(address)
         break
+
+      case 'binancecoin':
+        type = 'bep20'
+        decimals = await web3Provider.getBEP20Decimals(address)
+        const token = bep2tokens[coin.code]
+
+        if (!decimals && token) {
+          type = 'bep2'
+          decimals = token.contract_decimals
+          symbol = token.symbol
+        }
+        break
+
+      default:
+        continue
     }
 
     try {
       await Platform.upsert({
-        type: platform,
-        reference: contract,
-        decimal: 18, // todo: Need to fetch decimal number from appropriate sources
+        type,
+        symbol,
+        address,
+        decimals,
         coin_id: coin.id
       })
     } catch (err) {

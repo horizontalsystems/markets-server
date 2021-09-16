@@ -9,11 +9,9 @@ class Platform extends Model {
           type: DataTypes.STRING(100),
           allowNull: false
         },
-        decimal: {
-          type: DataTypes.INTEGER,
-          allowNull: false
-        },
-        reference: DataTypes.STRING(100)
+        symbol: DataTypes.STRING(100),
+        address: DataTypes.STRING(100),
+        decimal: DataTypes.INTEGER
       },
       {
         timestamps: false,
