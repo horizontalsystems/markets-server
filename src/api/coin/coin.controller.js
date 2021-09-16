@@ -6,6 +6,13 @@ exports.index = async (req, res) => {
   res.status(200).json(serializer.serializeSearchResult(coins))
 }
 
+exports.prices = async (req, res) => {
+  const ids = req.query.ids.split(',')
+  const coins = await Coin.getPrices(ids)
+
+  res.status(200).json(serializer.serializePrices(coins))
+}
+
 exports.show = async (req, res, next) => {
   const coin = await Coin.getByUid(req.params.id)
 
@@ -14,20 +21,4 @@ exports.show = async (req, res, next) => {
   } else {
     next()
   }
-}
-
-exports.create = (req, res) => {
-  res.send('OK')
-}
-
-exports.upsert = (req, res) => {
-  res.send('OK')
-}
-
-exports.patch = (req, res) => {
-  res.send('OK')
-}
-
-exports.destroy = (req, res) => {
-  res.send('OK')
 }

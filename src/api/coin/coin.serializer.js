@@ -23,6 +23,13 @@ module.exports = {
     }))
   },
 
+  serializePrices: coins => {
+    return coins.reduce((memo, coin) => {
+      memo[coin.uid] = coin.price
+      return memo
+    }, {})
+  },
+
   serialize: ({ Categories, Platforms, ...coin }) => {
     return {
       ...coin,

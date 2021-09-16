@@ -100,6 +100,15 @@ class Coin extends Sequelize.Model {
     })
   }
 
+  static getPrices(ids) {
+    return Coin.findAll({
+      attributes: ['uid','price'],
+      where: {
+        uid: ids
+      },
+    })
+  }
+
   static getByUid(uid) {
     return Coin.findOne({
       where: {
