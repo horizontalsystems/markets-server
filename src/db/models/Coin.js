@@ -91,7 +91,7 @@ class Coin extends Sequelize.Model {
     return Coin.findAll({
       where,
       order: [
-        ['market_data.market_cap', 'DESC']
+        [Sequelize.json("market_data->'market_cap'"), 'DESC']
       ],
       limit: 100,
       include: [
