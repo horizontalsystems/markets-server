@@ -2,7 +2,8 @@ function platforms(platforms) {
   return platforms.map(platform => ({
     type: platform.type,
     decimal: platform.decimal,
-    reference: platform.reference,
+    address: platform.address,
+    symbol: platform.symbol
   }))
 }
 
