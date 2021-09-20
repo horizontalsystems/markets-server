@@ -107,7 +107,7 @@ class Coin extends sequelize.Model {
 
   static getPrices(ids) {
     return Coin.findAll({
-      attributes: ['uid', 'price'],
+      attributes: ['uid', 'price', 'price_change', 'last_updated'],
       where: {
         uid: ids.split(',')
       },

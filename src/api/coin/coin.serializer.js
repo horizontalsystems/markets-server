@@ -14,8 +14,12 @@ exports.serializeSearchResult = coins => {
 }
 
 exports.serializePrices = coins => {
-  return coins.reduce((memo, coin) => {
-    memo[coin.uid] = coin.price
+  return coins.reduce((memo, { uid, price, last_updated, price_change }) => {
+    memo[uid] = {
+      price: price,
+      price_change: price_change['24h'],
+      last_updated
+    }
     return memo
   }, {})
 }
