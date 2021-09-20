@@ -14,10 +14,10 @@ exports.prices = async (req, res) => {
 }
 
 exports.show = async (req, res, next) => {
-  const coin = await Coin.getByUid(req.params.id)
+  const coin = await Coin.getCoinInfo(req.params.id)
 
   if (coin) {
-    res.status(200).json(serializer.serialize(coin.dataValues))
+    res.status(200).json(serializer.serializeInfo(coin))
   } else {
     next()
   }

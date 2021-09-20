@@ -1,9 +1,9 @@
-const Sequelize = require('sequelize')
+const sequelize = require('sequelize')
 const { Op } = require('sequelize')
 const Category = require('./Category')
 const Platform = require('./Platform')
 
-class Coin extends Sequelize.Model {
+class Coin extends sequelize.Model {
 
   static init(sequelize, DataTypes) {
     return super.init(
@@ -80,6 +80,11 @@ class Coin extends Sequelize.Model {
     )
   }
 
+  static associate(models) {
+    Coin.belongsToMany(models.Category, { through: 'coin_categories' })
+    Coin.hasMany(models.Platform)
+  }
+
   static search(filter) {
     const where = {}
 
@@ -91,7 +96,7 @@ class Coin extends Sequelize.Model {
     return Coin.findAll({
       where,
       order: [
-        [Sequelize.json("market_data->'market_cap'"), 'DESC']
+        [sequelize.json(`market_data->'market_cap'`), 'DESC']
       ],
       limit: 100,
       include: [
@@ -102,9 +107,9 @@ class Coin extends Sequelize.Model {
 
   static getPrices(ids) {
     return Coin.findAll({
-      attributes: ['uid','price'],
+      attributes: ['uid', 'price'],
       where: {
-        uid: ids
+        uid: ids.split(',')
       },
     })
   }
@@ -121,9 +126,41 @@ class Coin extends Sequelize.Model {
     })
   }
 
-  static associate(models) {
-    Coin.belongsToMany(models.Category, { through: 'coin_categories' })
-    Coin.hasMany(models.Platform)
+  static async getCoinInfo(uid) {
+    const coin = await Coin.getByUid(uid)
+    return {
+      ...coin.dataValues,
+      performance: await Coin.getPerformance(coin.price_change['7d'], coin.price_change['30d'])
+    }
+  }
+
+  static async getPerformance(price7d, price30d) {
+    const [bitcoin, ethereum] = await Coin.findAll({
+      attributes: ['price_change'],
+      order: ['id'],
+      where: {
+        uid: ['bitcoin', 'ethereum']
+      }
+    })
+
+    const roi = (price1, price2) => {
+      return ((100 + price1) / (100 + price2) - 1) * 100
+    }
+
+    return {
+      usd: {
+        '7d': price7d,
+        '30d': price30d
+      },
+      btc: {
+        '7d': roi(price7d, bitcoin.price_change['7d']),
+        '30d': roi(price30d, bitcoin.price_change['30d']),
+      },
+      eth: {
+        '7d': roi(price7d, ethereum.price_change['7d']),
+        '30d': roi(price30d, ethereum.price_change['30d']),
+      }
+    }
   }
 
 }
