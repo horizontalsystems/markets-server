@@ -7,7 +7,7 @@ exports.index = async (req, res) => {
 }
 
 exports.prices = async (req, res) => {
-  const ids = req.query.ids.split(',')
+  const ids = req.query.ids
   const coins = await Coin.getPrices(ids)
 
   res.status(200).json(serializer.serializePrices(coins))
