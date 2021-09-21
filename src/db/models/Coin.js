@@ -83,6 +83,7 @@ class Coin extends sequelize.Model {
   static associate(models) {
     Coin.belongsToMany(models.Category, { through: 'coin_categories' })
     Coin.hasMany(models.Platform)
+    Coin.hasMany(models.FundsInvested)
   }
 
   static search(filter) {

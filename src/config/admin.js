@@ -1,4 +1,5 @@
 const AdminJS = require('adminjs')
+const CountryList = require('country-list')
 const AdminJSExpress = require('@adminjs/express')
 const AdminJSSequelize = require('@adminjs/sequelize')
 const sequelize = require('../db/sequelize')
@@ -31,7 +32,23 @@ const adminJs = new AdminJS({
           'description.ru': { type: 'textarea' },
         }
       }
-    }
+    },
+    {
+      resource: sequelize.Treasury,
+      options: {
+        properties: {
+          country: {
+            availableValues: CountryList.getData()
+              .map(item => ({
+                value: item.code,
+                label: item.name
+              }))
+          }
+        }
+      }
+    },
+    sequelize.Fund,
+    sequelize.FundsInvested
   ],
   dashboard: {},
   rootPath: '/admin',

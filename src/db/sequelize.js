@@ -4,6 +4,9 @@ const Coin = require('./models/Coin')
 const Language = require('./models/Language')
 const Category = require('./models/Category')
 const Platform = require('./models/Platform')
+const Fund = require('./models/Fund')
+const FundsInvested = require('./models/FundsInvested')
+const Treasury = require('./models/Trasures')
 const Transaction = require('./models/Transaction')
 const Address = require('./models/Address')
 
@@ -21,6 +24,9 @@ const db = {
   Language: Language.init(sequelize, Sequelize),
   Category: Category.init(sequelize, Sequelize),
   Platform: Platform.init(sequelize, Sequelize),
+  Fund: Fund.init(sequelize, Sequelize),
+  FundsInvested: FundsInvested.init(sequelize, Sequelize),
+  Treasury: Treasury.init(sequelize, Sequelize),
   Transaction: Transaction.init(sequelize, Sequelize),
   Address: Address.init(sequelize, Sequelize)
 }

@@ -33,6 +33,7 @@
     "axios": "^0.21.1",
     "compression": "^1.6.2",
     "cors": "^2.8.3",
+    "country-list": "^2.2.0",
     "cron": "^1.8.2",
     "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
