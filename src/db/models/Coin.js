@@ -108,7 +108,12 @@ class Coin extends sequelize.Model {
 
   static getPrices(ids) {
     return Coin.findAll({
-      attributes: ['uid', 'price', 'price_change', 'last_updated'],
+      attributes: [
+        'uid',
+        'price',
+        'price_change',
+        [sequelize.literal('EXTRACT(epoch FROM last_updated)::int'), 'last_updated']
+      ],
       where: {
         uid: ids.split(',')
       },
