@@ -1,4 +1,4 @@
-exports.serializeSearchResult = coins => {
+exports.serializeCoins = coins => {
   return coins.map(coin => ({
     uid: coin.uid,
     name: coin.name,
@@ -10,6 +10,14 @@ exports.serializeSearchResult = coins => {
     market_cap_rank: coin.market_data.market_cap_rank,
     total_volume: coin.market_data.total_volume,
     platforms: platforms(coin.Platforms),
+  }))
+}
+
+exports.serializeAllList = coins => {
+  return coins.map(coin => ({
+    uid: coin.uid,
+    name: coin.name,
+    code: coin.code
   }))
 }
 

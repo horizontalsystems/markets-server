@@ -1,5 +1,4 @@
 const sequelize = require('sequelize')
-const { Op } = require('sequelize')
 const Category = require('./Category')
 const Platform = require('./Platform')
 
@@ -86,23 +85,15 @@ class Coin extends sequelize.Model {
     Coin.hasMany(models.FundsInvested)
   }
 
-  static search(filter) {
-    const where = {}
-
-    if (filter) {
-      const condition = { [Op.iLike]: `%${filter}%` }
-      where[Op.or] = [{ name: condition }, { code: condition }]
-    }
-
+  static getByRank(limit) {
     return Coin.findAll({
-      where,
       order: [
         [sequelize.json(`market_data->'market_cap'`), 'DESC']
       ],
-      limit: 100,
       include: [
         { model: Platform },
-      ]
+      ],
+      limit
     })
   }
 

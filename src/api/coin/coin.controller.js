@@ -1,9 +1,14 @@
 const Coin = require('../../db/models/Coin')
 const serializer = require('./coin.serializer')
 
-exports.index = async (req, res) => {
-  const coins = await Coin.search(req.query.filter)
-  res.status(200).json(serializer.serializeSearchResult(coins))
+exports.coins = async (req, res) => {
+  const coins = await Coin.getByRank(100)
+  res.status(200).json(serializer.serializeCoins(coins))
+}
+
+exports.all = async (req, res) => {
+  const coins = await Coin.findAll()
+  res.status(200).json(serializer.serializeAllList(coins))
 }
 
 exports.prices = async (req, res) => {
