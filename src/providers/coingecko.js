@@ -43,10 +43,9 @@ exports.getCoinInfo = function getMarketInfo(id) {
 function normalizeMarkets(markets) {
   return markets.map(coin => ({
     uid: coin.id,
-
-    coingecko_id: coin.id,
     name: coin.name,
     code: coin.symbol,
+    coingecko_id: coin.id,
 
     price: coin.current_price,
     price_change: {
@@ -82,14 +81,15 @@ function normalizeMarkets(markets) {
 
 function normalizeCoin(coin) {
   const market = coin.market_data
+
   return {
     uid: coin.id,
-    coingecko_id: coin.id,
-
     name: coin.name,
     code: coin.symbol,
-    platforms: coin.platforms,
     description: coin.description,
+    coingecko_id: coin.id,
+    genesis_date: coin.genesis_date,
+    platforms: coin.platforms,
 
     links: {
       website: coin.links.homepage[0],
@@ -126,6 +126,6 @@ function normalizeCoin(coin) {
       total_value_locked: (market.total_value_locked || {}).usd,
     },
 
-    last_updated: coin.last_updated,
+    last_updated: coin.last_updated
   }
 }

@@ -17,7 +17,7 @@ class Coin extends sequelize.Model {
         name: DataTypes.STRING,
         code: DataTypes.STRING,
         coingecko_id: DataTypes.STRING,
-
+        genesis_date: DataTypes.DATEONLY,
         description: DataTypes.JSONB,
         //  {
         //    en: 'Description text',
