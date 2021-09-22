@@ -45,7 +45,7 @@ exports.serializeInfo = ({ Categories, Platforms, ...coin }) => {
 function platforms(platforms) {
   return platforms.map(platform => ({
     type: platform.type,
-    decimal: platform.decimal,
+    decimals: platform.decimals,
     address: platform.address,
     symbol: platform.symbol
   }))
