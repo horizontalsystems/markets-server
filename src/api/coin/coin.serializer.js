@@ -9,7 +9,6 @@ exports.serializeCoins = coins => {
     market_cap: coin.market_data.market_cap,
     market_cap_rank: coin.market_data.market_cap_rank,
     total_volume: coin.market_data.total_volume,
-    platforms: platforms(coin.Platforms),
   }))
 }
 
@@ -17,7 +16,10 @@ exports.serializeAllList = coins => {
   return coins.map(coin => ({
     uid: coin.uid,
     name: coin.name,
-    code: coin.code
+    code: coin.code,
+    coingecko_id: coin.coingecko_id,
+    market_cap_rank: coin.market_data.market_cap_rank,
+    platforms: platforms(coin.Platforms),
   }))
 }
 

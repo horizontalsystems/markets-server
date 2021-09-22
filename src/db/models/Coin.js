@@ -85,18 +85,6 @@ class Coin extends sequelize.Model {
     Coin.hasMany(models.FundsInvested)
   }
 
-  static getByRank(limit) {
-    return Coin.findAll({
-      order: [
-        [sequelize.json(`market_data->'market_cap'`), 'DESC']
-      ],
-      include: [
-        { model: Platform },
-      ],
-      limit
-    })
-  }
-
   static getPrices(ids) {
     return Coin.findAll({
       attributes: [
@@ -116,10 +104,7 @@ class Coin extends sequelize.Model {
       where: {
         uid
       },
-      include: [
-        { model: Platform },
-        { model: Category }
-      ]
+      include: [Platform, Category]
     })
   }
 
