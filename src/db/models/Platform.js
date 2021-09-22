@@ -11,7 +11,7 @@ class Platform extends Model {
         },
         symbol: DataTypes.STRING(100),
         address: DataTypes.STRING(100),
-        decimal: DataTypes.INTEGER
+        decimals: DataTypes.INTEGER
       },
       {
         timestamps: false,

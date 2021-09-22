@@ -101,13 +101,15 @@ async function createPlatform(coin, platforms, bep2tokens) {
     }
 
     try {
-      await Platform.upsert({
+      const values = {
         type,
         symbol,
         address,
         decimals,
         coin_id: coin.id
-      })
+      }
+      console.log(values)
+      await Platform.upsert(values)
     } catch (err) {
       console.error(err)
     }
