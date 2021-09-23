@@ -34,7 +34,6 @@ exports.serializeAllList = coins => {
 
 exports.serializePrices = coins => {
   return coins.reduce((memo, coin) => {
-    // eslint-disable-next-line no-param-reassign
     memo[coin.uid] = {
       price: coin.price,
       price_change: coin.price_change['24h'],

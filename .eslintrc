@@ -15,7 +15,10 @@
     "consistent-return": "off",
     "padded-blocks": "off",
     "object-curly-newline": "off",
-    "class-methods-use-this": "off"
+    "no-param-reassign": ["error", {
+      "props": true,
+      "ignorePropertyModificationsFor": ["memo"]
+    }]
   },
   "env": {
     "es6": true,
