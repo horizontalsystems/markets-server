@@ -6,6 +6,7 @@ const axios = require('axios')
 
 function mapBySymbol(data) {
   return data.reduce((memo, item) => {
+    // eslint-disable-next-line no-param-reassign
     memo[item.original_symbol.toLowerCase()] = item
     return memo
   }, {})

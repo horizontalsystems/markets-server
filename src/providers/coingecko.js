@@ -24,7 +24,7 @@ exports.getMarkets = function getMarkets(coinIds, page, perPage) {
 
   return axios
     .get(`/coins/markets?${querystring.stringify(params)}`)
-    .then(resp => normalizeMarkets(resp.data))
+    .then(resp => normalizeMarkets(resp.data)) // eslint-disable-line
 }
 
 exports.getCoinInfo = function getMarketInfo(id) {
@@ -37,7 +37,7 @@ exports.getCoinInfo = function getMarketInfo(id) {
 
   return axios
     .get(`/coins/${id}?${query}`)
-    .then(resp => normalizeCoin(resp.data))
+    .then(resp => normalizeCoin(resp.data)) // eslint-disable-line
 }
 
 function normalizeMarkets(markets) {

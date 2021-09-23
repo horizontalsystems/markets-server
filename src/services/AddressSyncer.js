@@ -1,21 +1,24 @@
 const { CronJob } = require('cron')
+const { isSameDay } = require('../utils')
 const Address = require('../db/models/Address')
 const bigquery = require('../db/bigquery')
 
 class AddressSyncer {
 
-  initialSyncDate = '2021-09-01'
-  cronJob = new CronJob({
-    cronTime: '* */2 * * *', // every 2 hours
-    onTick: this.sync.bind(this),
-    start: false
-  })
+  constructor() {
+    this.initialSyncDate = '2021-09-01'
+    this.cronJob = new CronJob({
+      cronTime: '* */2 * * *', // every 2 hours
+      onTick: this.sync.bind(this),
+      start: false
+    })
+  }
 
   async start() {
     const lastSyncDate = await this.getLastSyncDate()
 
     // This fetch is unnecessary for the app restart
-    if (!this.isSameDay(lastSyncDate)) {
+    if (!isSameDay(lastSyncDate)) {
       await this.fetchAndSave(lastSyncDate)
     }
 
@@ -39,15 +42,6 @@ class AddressSyncer {
   async getLastSyncDate() {
     const address = await Address.getLast()
     return address ? address.date : new Date(this.initialSyncDate)
-  }
-
-  isSameDay(date) {
-    const today = new Date()
-    return (
-      today.getFullYear() === date.getFullYear() &&
-      today.getDate() === date.getDate() &&
-      today.getMonth() === date.getMonth()
-    )
   }
 
 }

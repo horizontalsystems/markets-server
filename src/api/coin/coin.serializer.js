@@ -1,3 +1,12 @@
+function mapPlatforms(platforms) {
+  return platforms.map(platform => ({
+    type: platform.type,
+    decimals: platform.decimals,
+    address: platform.address,
+    symbol: platform.symbol
+  }))
+}
+
 exports.serializeCoins = coins => {
   return coins.map(coin => ({
     uid: coin.uid,
@@ -19,16 +28,17 @@ exports.serializeAllList = coins => {
     code: coin.code,
     coingecko_id: coin.coingecko_id,
     market_cap_rank: coin.market_data.market_cap_rank,
-    platforms: platforms(coin.Platforms),
+    platforms: mapPlatforms(coin.Platforms),
   }))
 }
 
 exports.serializePrices = coins => {
-  return coins.reduce((memo, { uid, price, last_updated, price_change= {} }) => {
-    memo[uid] = {
-      price,
-      price_change: price_change['24h'],
-      last_updated,
+  return coins.reduce((memo, coin) => {
+    // eslint-disable-next-line no-param-reassign
+    memo[coin.uid] = {
+      price: coin.price,
+      price_change: coin.price_change['24h'],
+      last_updated: coin.last_updated,
     }
     return memo
   }, {})
@@ -37,16 +47,7 @@ exports.serializePrices = coins => {
 exports.serializeInfo = ({ Categories, Platforms, ...coin }) => {
   return {
     ...coin,
-    platforms: platforms(Platforms),
+    platforms: mapPlatforms(Platforms),
     category_ids: Categories.map(category => category.uid)
   }
-}
-
-function platforms(platforms) {
-  return platforms.map(platform => ({
-    type: platform.type,
-    decimals: platform.decimals,
-    address: platform.address,
-    symbol: platform.symbol
-  }))
 }

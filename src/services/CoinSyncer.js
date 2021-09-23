@@ -5,11 +5,13 @@ const Coin = require('../db/models/Coin')
 
 class AddressSyncer {
 
-  cronJob = new CronJob({
-    cronTime: '*/1 * * * * *', // every second
-    onTick: this.syncSchedule.bind(this),
-    start: true
-  })
+  constructor() {
+    this.cronJob = new CronJob({
+      cronTime: '*/1 * * * * *', // every second
+      onTick: this.syncSchedule.bind(this),
+      start: true
+    })
+  }
 
   start() {
     this.cronJob.start()
@@ -68,10 +70,10 @@ class AddressSyncer {
       if (err.response && err.response.status === 429) {
         await sleep(30000)
         console.log('Retrying')
-        return await this.fetchCoins(coinIds, retry + 1)
-      } else {
-        return []
+        return this.fetchCoins(coinIds, retry + 1)
       }
+
+      return []
     }
   }
 
@@ -86,8 +88,10 @@ class AddressSyncer {
       ]
     }
 
-    for (const item of data) {
+    for (let key = 0; key < data.length; key += 1) {
+      const item = data[key];
       const coin = map[item.coingecko_id]
+
       if (coin) {
         coin.update(item, updateFields)
           .catch(err => {

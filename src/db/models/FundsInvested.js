@@ -1,6 +1,6 @@
-const sequelize = require('sequelize')
+const Sequelize = require('sequelize')
 
-class FundsInvested extends sequelize.Model {
+class FundsInvested extends Sequelize.Model {
 
   static init(sequelize, DataTypes) {
     return super.init(

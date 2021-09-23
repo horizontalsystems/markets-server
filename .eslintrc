@@ -1,4 +1,7 @@
 {
+  "extends": [
+    "airbnb-base"
+  ],
   "rules": {
     "no-console": 0,
     "no-underscore-dangle": 0,
@@ -10,16 +13,16 @@
     "arrow-body-style": "off",
     "arrow-parens": "off",
     "consistent-return": "off",
-    "padded-blocks": "off"
+    "padded-blocks": "off",
+    "object-curly-newline": "off",
+    "class-methods-use-this": "off"
   },
   "env": {
+    "es6": true,
     "node": true,
     "mocha": true
   },
   "parserOptions": {
-    "ecmaVersion": 8
-  },
-  "extends": [
-    "airbnb-base"
-  ]
+    "ecmaVersion": 9
+  }
 }

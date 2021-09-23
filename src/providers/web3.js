@@ -1,6 +1,6 @@
 const Web3 = require('web3')
-const erc20Abi = require('./abi/erc20-abi')
-const bep20Abi = require('./abi/bep20-abi')
+const erc20Abi = require('./abi/erc20-abi.json')
+const bep20Abi = require('./abi/bep20-abi.json')
 
 class Web3Provider {
 

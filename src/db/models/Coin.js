@@ -1,8 +1,8 @@
-const sequelize = require('sequelize')
+const Sequelize = require('sequelize')
 const Category = require('./Category')
 const Platform = require('./Platform')
 
-class Coin extends sequelize.Model {
+class Coin extends Sequelize.Model {
 
   static init(sequelize, DataTypes) {
     return super.init(
@@ -91,7 +91,7 @@ class Coin extends sequelize.Model {
         'uid',
         'price',
         'price_change',
-        [sequelize.literal('EXTRACT(epoch FROM last_updated)::int'), 'last_updated']
+        [Sequelize.literal('EXTRACT(epoch FROM last_updated)::int'), 'last_updated']
       ],
       where: {
         uid: ids.split(',')

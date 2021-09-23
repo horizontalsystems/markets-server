@@ -23,7 +23,7 @@ class Language extends Sequelize.Model {
     )
   }
 
-  static associate(models) {
+  static associate() {
   }
 
 }

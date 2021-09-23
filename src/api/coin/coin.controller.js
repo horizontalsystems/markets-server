@@ -5,7 +5,7 @@ const serializer = require('./coin.serializer')
 
 exports.coins = async (req, res) => {
   const coins = await Coin.findAll({
-    order: [sequelize.literal(`market_data->'market_cap' DESC`)],
+    order: [sequelize.literal('market_data->\'market_cap\' DESC')],
     limit: 100
   })
 
@@ -21,8 +21,7 @@ exports.all = async (req, res) => {
 }
 
 exports.prices = async (req, res) => {
-  const ids = req.query.ids
-  const coins = await Coin.getPrices(ids)
+  const coins = await Coin.getPrices(req.query.ids)
 
   res.send(serializer.serializePrices(coins))
 }
