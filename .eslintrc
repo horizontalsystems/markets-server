@@ -15,6 +15,9 @@
     "consistent-return": "off",
     "padded-blocks": "off",
     "object-curly-newline": "off",
+    "class-methods-use-this": "off",
+    "no-await-in-loop": "off",
+    "no-continue": "off",
     "no-param-reassign": ["error", {
       "props": true,
       "ignorePropertyModificationsFor": ["memo"]
