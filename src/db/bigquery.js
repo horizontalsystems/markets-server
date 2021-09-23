@@ -1,9 +1,10 @@
 const { BigQuery } = require('@google-cloud/bigquery')
-const transactionStatsSQL = require('./sql/transactions_stats.sql')
-const addressRankSQL = require('./sql/address_rank.sql')
-const addressStatsSQL = require('./sql/address_stats.sql')
-
+const { requireFile } = require('../utils')
 const logger = require('../config/logger')
+
+const transactionStatsSQL = requireFile('db/sql/transactions_stats.sql')
+const addressRankSQL = requireFile('db/sql/address_rank.sql')
+const addressStatsSQL = requireFile('db/sql/address_stats.sql')
 
 async function getTransactions(fromDate) {
   const bigquery = new BigQuery()
