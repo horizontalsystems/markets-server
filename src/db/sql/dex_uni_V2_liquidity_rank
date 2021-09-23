@@ -1,0 +1,49 @@
+With Burning as (
+select sum(cast(B.amount0 as BIGNUMERIC)) sum0, sum(cast(B.amount1 as BIGNUMERIC)) sum1, token0, token1
+from blockchain-etl.ethereum_uniswap.UniswapV2Pair_event_Burn B, blockchain-etl.ethereum_uniswap.UniswapV2Factory_event_PairCreated P
+where B.contract_address = P.pair
+and amount0 != '23231581084676133586316418271202624485545706709'
+group by token0, token1
+),
+Minting as (
+select sum(cast(M.amount0 as BIGNUMERIC)) sum0, sum(cast(M.amount1 as BIGNUMERIC)) sum1, token0, token1
+from blockchain-etl.ethereum_uniswap.UniswapV2Pair_event_Mint M, blockchain-etl.ethereum_uniswap.UniswapV2Factory_event_PairCreated P
+where M.contract_address = P.pair
+group by token0, token1
+), 
+
+V2 as (
+SELECT cast(S.amount0In as BIGNUMERIC) as amount0, cast(S.amount1Out as BIGNUMERIC)*(-1) as amount1, token0, token1
+FROM blockchain-etl.ethereum_uniswap.UniswapV2Pair_event_Swap S, blockchain-etl.ethereum_uniswap.UniswapV2Factory_event_PairCreated P
+where S.contract_address = P.pair
+and amount0In !='0' and amount0Out ='0' and amount1Out !='0'
+UNION ALL 
+SELECT cast(S.amount0Out as BIGNUMERIC)*(-1) as amount0, cast(S.amount1In as BIGNUMERIC) as amount1, token0, token1
+FROM blockchain-etl.ethereum_uniswap.UniswapV2Pair_event_Swap S, blockchain-etl.ethereum_uniswap.UniswapV2Factory_event_PairCreated P
+where S.contract_address = P.pair
+and amount1In !='0' and amount0Out !='0' and amount1Out ='0'
+), 
+Swapping as (
+select sum(cast(M.amount0 as BIGNUMERIC)) sum0, sum(cast(M.amount1 as BIGNUMERIC)) sum1, token0, token1
+from V2 M
+group by token0, token1
+),
+Final as (
+select 
+ M.sum0-B.sum0+S.sum0 as sum0, 
+M.sum1-B.sum1+S.sum1 as sum1, M.token0, M.token1
+from Burning B, Minting M, Swapping S
+where B.token0 = M.token0 and M.token0 = S.token0 and B.token1 = M.token1 and M.token1 = S.token1
+),
+Final2 as (
+SELECT sum0, token0
+from Final
+UNION ALL 
+SELECT sum1 as sum0, token1 as token0
+from Final 
+)
+Select sum(sum0) as total, token0 as token
+from Final2
+group by token0 
+
+
