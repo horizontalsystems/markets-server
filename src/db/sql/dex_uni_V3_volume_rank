@@ -1,0 +1,64 @@
+with V3 as (
+select S.amount0, S,amount1, P.token0, P.token1 
+from blockchain-etl.ethereum_uniswap.UniswapV3Pool_event_Swap S 
+,blockchain-etl.ethereum_uniswap.UniswapV3Factory_event_PoolCreated P
+where S.contract_address = P.pool
+and S.block_timestamp >= '2021-09-11' and S.block_timestamp < '2021-09-12'
+and (P.token1 in ('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', '0xdac17f958d2ee523a2206206994597c13d831ec7', '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', '0x6b175474e89094c44da98b954eedeac495271d0f')
+    or P.token0 in ('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', '0xdac17f958d2ee523a2206206994597c13d831ec7', '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', '0x6b175474e89094c44da98b954eedeac495271d0f'))
+),
+group1 as (
+Select amount0, amount1, token0, token1 from V3 
+UNION ALL 
+Select amount1 as amount0, amount0 as amount1, token1 as token0, token0 as token1 from V3
+),
+groupR1 as (
+select sum(abs(cast(amount0 as numeric))) as USD_sum, sum(abs(cast(amount1 as numeric))) as Eth_sum  from group1 
+where token0 in ('0xdac17f958d2ee523a2206206994597c13d831ec7', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48') 
+and token1 = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+),
+groupR2 as (
+select sum(abs(cast(amount1 as numeric))) as USD_sum, sum(abs(cast(amount0 as numeric))) as Btc_sum  from group1
+where token1 in ('0xdac17f958d2ee523a2206206994597c13d831ec7', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48') 
+and token0 = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
+),
+rate as (
+select (R2.USD_sum/1000000)/(R2.Btc_sum/100000000) as Btc_rate, (R1.USD_sum/1000000)/(R1.Eth_sum/1000000000000000000) as Eth_rate
+from groupR2 R2, groupR1 R1
+),
+group1A as (
+select token0, token1, sum(abs(cast(amount1 as numeric)))/1000000 as USD_sum from group1 
+where token1 in ('0xdac17f958d2ee523a2206206994597c13d831ec7', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48')
+group by token0,token1
+),
+group2A as (
+select token0, token1, sum(abs(cast(amount0 as numeric)/1000000000000000000)*Eth_rate) as USD_sum from group1, rate
+where token0 = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+and token1 not in ('0xdac17f958d2ee523a2206206994597c13d831ec7', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48')
+group by token0,token1
+),
+group3A as (
+select token0, token1, sum(abs(cast(amount0 as numeric)/100000000)*BTC_rate) as USD_sum from group1, rate
+where token0 = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
+and token1 not in ('0xdac17f958d2ee523a2206206994597c13d831ec7', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48','0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
+group by token0,token1
+),
+group4A as (
+    select token0, token1, sum(abs(cast(amount1 as numeric)))/1000000000000000000 as USD_sum from group1  
+    where token0 = '0x6b175474e89094c44da98b954eedeac495271d0f'
+    and token1 not in ('0xdac17f958d2ee523a2206206994597c13d831ec7', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48','0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599')
+    group by token0,token1
+),
+final as (
+select token0 as token, USD_sum from group1A
+UNION ALL
+select token0 as token, USD_sum from group2A
+UNION ALL
+select token0 as token, USD_sum from group3A
+UNION ALL
+select token0 as token, USD_sum from group4A
+)
+
+select token, sum(USD_sum) as USD_sum from final
+group by token 
+order by USD_sum desc
