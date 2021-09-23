@@ -1,9 +1,6 @@
 # dependencies
 /node_modules
 
-# Use yarn.lock instead
-package-lock.json
-
 # Environment variables
 .env*
 
