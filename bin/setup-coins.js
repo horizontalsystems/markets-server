@@ -22,7 +22,24 @@ async function fetchCoins(page = 1, limit = 4000) {
   )
 }
 
-async function createPlatform(coin, platforms, bep2tokens) {
+async function createPlatform(coinId, type, decimals, address, symbol) {
+  const record = {
+    type,
+    symbol,
+    address,
+    decimals,
+    coin_id: coinId
+  }
+
+  try {
+    console.log(record)
+    await Platform.upsert(record)
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function syncPlatform(coin, platforms, bep2tokens) {
   switch (coin.uid) {
     case 'bitcoin':
     case 'ethereum':
@@ -38,10 +55,10 @@ async function createPlatform(coin, platforms, bep2tokens) {
       continue
     }
 
-    const address = platforms[platform]
-    let decimals
+    let type = platform
     let symbol
-    let type
+    let decimals
+    const address = platforms[platform]
 
     switch (platform) {
       case 'ethereum':
@@ -55,12 +72,9 @@ async function createPlatform(coin, platforms, bep2tokens) {
         break
 
       case 'binancecoin': {
-        type = 'bep20'
-        decimals = await web3Provider.getBEP20Decimals(address)
+        type = 'bep2'
         const token = bep2tokens[coin.code]
-
-        if (!decimals && token) {
-          type = 'bep2'
+        if (token) {
           decimals = token.contract_decimals
           symbol = token.symbol
         }
@@ -68,22 +82,10 @@ async function createPlatform(coin, platforms, bep2tokens) {
       }
 
       default:
-        continue
+        break
     }
 
-    try {
-      const values = {
-        type,
-        symbol,
-        address,
-        decimals,
-        coin_id: coin.id
-      }
-      console.log(values)
-      await Platform.upsert(values)
-    } catch (err) {
-      console.error(err)
-    }
+    await createPlatform(coin.id, type, decimals, address, symbol)
   }
 }
 
@@ -94,7 +96,7 @@ function descriptionsMap(descriptions, languages) {
   }, {})
 }
 
-async function fetchInfo(id, languages, bep2tokens) {
+async function syncCoinInfo(id, languages, bep2tokens) {
   console.log('fetching info for', id)
 
   try {
@@ -102,12 +104,12 @@ async function fetchInfo(id, languages, bep2tokens) {
     data.description = descriptionsMap(data.description, languages)
 
     const [coin] = await Coin.upsert(data)
-    await createPlatform(coin, data.platforms, bep2tokens)
+    await syncPlatform(coin, data.platforms, bep2tokens)
   } catch ({ message, response }) {
     console.log(message)
     if (response && response.status === 429) {
       await sleep(30000)
-      await fetchInfo(id, languages, bep2tokens)
+      await syncCoinInfo(id, languages, bep2tokens)
     }
   }
 }
@@ -122,7 +124,7 @@ async function start() {
 
   for (let i = 0; i < coins.length; i += 1) {
     const coin = coins[i];
-    await fetchInfo(coin.coingecko_id, languages, bep2tokens)
+    await syncCoinInfo(coin.coingecko_id, languages, bep2tokens)
     await sleep(1100)
   }
 }
