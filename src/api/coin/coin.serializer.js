@@ -36,7 +36,7 @@ exports.serializePrices = coins => {
   return coins.reduce((memo, coin) => {
     memo[coin.uid] = {
       price: coin.price,
-      price_change: coin.price_change['24h'],
+      price_change_24h: coin.price_change['24h'],
       last_updated: coin.last_updated,
     }
     return memo
