@@ -9,7 +9,7 @@ exports.getMarkets = function getMarkets(coinIds, page, perPage) {
   const params = {
     vs_currency: 'usd',
     sparkline: false,
-    order: 'market_cap_desc',
+    order: 'market_cap_rank_desc',
     price_change_percentage: '24h,7d,30d,1y'
   }
 
