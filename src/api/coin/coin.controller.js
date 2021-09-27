@@ -1,13 +1,20 @@
-const sequelize = require('sequelize')
+const { sequelize } = require('../../db/sequelize')
 const Coin = require('../../db/models/Coin')
 const Platform = require('../../db/models/Platform')
 const serializer = require('./coin.serializer')
 
 exports.coins = async (req, res) => {
-  const coins = await Coin.findAll({
-    order: [sequelize.literal('market_data->\'market_cap\' DESC')],
-    limit: 100
-  })
+  const { top = 250, orderBy = 'price_change', limit = 250 } = req.query // todo: validate params
+  const coins = await sequelize.query(`
+    with top_coins as (
+      SELECT * FROM coins
+      ORDER BY market_data->'market_cap' DESC
+      LIMIT ${top}
+    )
+    SELECT * FROM top_coins
+    ORDER BY market_data->'${orderBy}' ASC
+    LIMIT ${limit}
+  `, { type: sequelize.QueryTypes.SELECT })
 
   res.send(serializer.serializeCoins(coins))
 }
