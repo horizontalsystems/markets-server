@@ -22,21 +22,26 @@ exports.serializeCoins = coins => {
 }
 
 exports.serializeAllList = coins => {
-  return coins.map(coin => ({
-    uid: coin.uid,
-    name: coin.name,
-    code: coin.code,
-    coingecko_id: coin.coingecko_id,
-    market_cap_rank: coin.market_data.market_cap_rank,
-    platforms: mapPlatforms(coin.Platforms),
-  }))
+  return coins.map(coin => {
+    const market = coin.market_data || {}
+
+    return ({
+      uid: coin.uid,
+      name: coin.name,
+      code: coin.code,
+      coingecko_id: coin.coingecko_id,
+      market_cap_rank: market.market_cap_rank,
+      platforms: mapPlatforms(coin.Platforms),
+    })
+  })
 }
 
 exports.serializePrices = coins => {
   return coins.reduce((memo, coin) => {
+    const change = coin.price_change || {}
     memo[coin.uid] = {
       price: coin.price,
-      price_change_24h: coin.price_change['24h'],
+      price_change_24h: change['24h'],
       last_updated: coin.last_updated,
     }
     return memo
