@@ -73,7 +73,7 @@ async function syncPlatform(coin, platforms, bep2tokens) {
 
       case 'binancecoin': {
         type = 'bep2'
-        const token = bep2tokens[coin.code]
+        const token = bep2tokens[coin.code.toUpperCase()]
         if (token) {
           decimals = token.contract_decimals
           symbol = token.symbol
