@@ -15,10 +15,41 @@ class Web3Provider {
     return contract.methods.decimals().call()
   }
 
+  getName(address) {
+    const contract = new this.Contract(this.abi, address)
+    return contract.methods.name().call()
+  }
+
+  getSymbol(address) {
+    const contract = new this.Contract(this.abi, address)
+    return contract.methods.symbol().call()
+  }
+
 }
 
 const ethereum = new Web3Provider('https://mainnet.infura.io/v3/d13bc12e6f5a4d3bad8d80291c74c1d3', erc20Abi)
 const binance = new Web3Provider('https://bsc-dataseed1.binance.org:443', bep20Abi)
+
+exports.getTokenInfo = async (contractAddress, type) => {
+  const provider = type === 'erc20'
+    ? ethereum
+    : binance
+
+  try {
+    const decimals = await provider.getDecimals(contractAddress)
+    const name = await provider.getName(contractAddress)
+    const symbol = await provider.getSymbol(contractAddress)
+
+    return {
+      decimals: parseInt(decimals, 10),
+      name,
+      symbol
+    }
+  } catch (e) {
+    console.error(e)
+    return null
+  }
+}
 
 exports.getERC20Decimals = async (contractAddress) => {
   try {

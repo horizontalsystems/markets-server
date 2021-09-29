@@ -4,6 +4,8 @@ const axios = require('axios')
     timeout: 180000
   })
 
+let cache = []
+
 function mapBySymbol(data) {
   return data.reduce((memo, item) => {
     memo[item.original_symbol.toLowerCase()] = item
@@ -11,12 +13,28 @@ function mapBySymbol(data) {
   }, {})
 }
 
-exports.getBep2Tokens = function getBep2Tokens() {
+function getBep2Tokens() {
   return axios
     .get('/tokens?limit=1000')
-    .then(resp => mapBySymbol(resp.data))
     .catch(err => {
       console.error(err)
       return {}
     })
+}
+
+exports.getTokenInfo = async symbol => {
+  if (!cache.length) {
+    cache = await getBep2Tokens().then(resp => resp.data)
+  }
+
+  return cache.find(item => item.symbol === symbol)
+}
+
+exports.getBep2Tokens = async () => {
+  if (cache.length) {
+    return mapBySymbol(cache)
+  }
+
+  return getBep2Tokens()
+    .then(resp => mapBySymbol(resp.data))
 }
