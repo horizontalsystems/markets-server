@@ -1,3 +1,5 @@
+const { nullOrString } = require('../../utils')
+
 function mapPlatforms(platforms) {
   return platforms.map(platform => ({
     type: platform.type,
@@ -7,21 +9,26 @@ function mapPlatforms(platforms) {
   }))
 }
 
-exports.serializeCoins = coins => {
-  return coins.map(coin => ({
-    uid: coin.uid,
-    name: coin.name,
-    code: coin.code,
-    coingecko_id: coin.coingecko_id,
-    price: coin.price,
-    price_change_24h: coin.price_change['24h'],
-    market_cap: coin.market_data.market_cap,
-    market_cap_rank: coin.market_data.market_cap_rank,
-    total_volume: coin.market_data.total_volume,
-  }))
+exports.serializeList = coins => {
+  return coins.map(coin => {
+    const market = coin.market_data || {}
+    const priceChange = coin.price_change || {}
+
+    return ({
+      uid: coin.uid,
+      name: coin.name,
+      code: coin.code,
+      coingecko_id: coin.coingecko_id,
+      price: coin.price,
+      price_change_24h: nullOrString(priceChange['24h']),
+      market_cap: nullOrString(market.market_cap),
+      market_cap_rank: market.market_cap_rank,
+      total_volume: nullOrString(market.total_volume),
+    })
+  })
 }
 
-exports.serializeAllList = coins => {
+exports.serializeAll = coins => {
   return coins.map(coin => {
     const market = coin.market_data || {}
 
@@ -41,17 +48,51 @@ exports.serializePrices = coins => {
     const change = coin.price_change || {}
     memo[coin.uid] = {
       price: coin.price,
-      price_change_24h: change['24h'],
+      price_change_24h: nullOrString(change['24h']),
       last_updated: coin.last_updated,
     }
     return memo
   }, {})
 }
 
-exports.serializeInfo = ({ Categories, Platforms, ...coin }) => {
+exports.serializeInfo = coin => {
+  const market = coin.market_data || {}
+  const priceChange = coin.price_change || {}
+
   return {
-    ...coin,
-    platforms: mapPlatforms(Platforms),
-    category_ids: Categories.map(category => category.uid)
+    uid: coin.uid,
+    name: coin.name,
+    code: coin.code,
+    coingecko_id: coin.coingecko_id,
+    genesis_date: coin.genesis_date,
+    description: coin.description,
+    links: coin.links,
+    price: coin.price,
+    price_change: {
+      '1y': nullOrString(priceChange['1y']),
+      '7d': nullOrString(priceChange['7d']),
+      '24h': nullOrString(priceChange['24h']),
+      '30d': nullOrString(priceChange['30d']),
+      ath: nullOrString(priceChange.ath),
+      atl: nullOrString(priceChange.atl),
+      low_24h: nullOrString(priceChange.low_24h),
+      ath_date: nullOrString(priceChange.ath_date),
+      atl_date: nullOrString(priceChange.atl_date),
+      high_24h: nullOrString(priceChange.high_24h),
+      ath_change_percentage: nullOrString(priceChange.ath_change_percentage),
+      atl_change_percentage: nullOrString(priceChange.atl_change_percentage),
+    },
+    market_data: {
+      max_supply: nullOrString(market.max_supply),
+      total_supply: nullOrString(market.total_supply),
+      total_volume: nullOrString(market.total_volume),
+      market_cap_rank: market.market_cap_rank,
+      circulating_supply: nullOrString(market.circulating_supply),
+      fully_diluted_valuation: nullOrString(market.fully_diluted_valuation)
+    },
+    security: coin.security,
+    performance: coin.performance,
+    platforms: mapPlatforms(coin.Platforms),
+    category_ids: coin.Categories.map(category => category.uid)
   }
 }

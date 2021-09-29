@@ -3,7 +3,7 @@ const Coin = require('../../db/models/Coin')
 const Platform = require('../../db/models/Platform')
 const serializer = require('./coin.serializer')
 
-exports.coins = async (req, res) => {
+exports.list = async (req, res) => {
   const { top = 250, orderField = 'market_cap', orderDirection = 'DESC', limit } = req.query // todo: validate params
   const orderBy = orderField === 'price_change'
     ? 'price_change->\'24h\''
@@ -20,7 +20,7 @@ exports.coins = async (req, res) => {
     LIMIT ${limit || top}
   `, { type: sequelize.QueryTypes.SELECT })
 
-  res.send(serializer.serializeCoins(coins))
+  res.send(serializer.serializeList(coins))
 }
 
 exports.all = async (req, res) => {
@@ -28,7 +28,7 @@ exports.all = async (req, res) => {
     include: Platform
   })
 
-  res.send(serializer.serializeAllList(coins))
+  res.send(serializer.serializeAll(coins))
 }
 
 exports.prices = async (req, res) => {

@@ -17,3 +17,7 @@ exports.isSameDay = date => {
 exports.requireFile = file => {
   return fs.readFileSync(path.resolve(__dirname, file), 'utf8')
 }
+
+exports.nullOrString = value => {
+  return value ? value.toString() : null
+}

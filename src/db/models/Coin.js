@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize')
 const Category = require('./Category')
 const Platform = require('./Platform')
+const utils = require('../../utils')
 
 class Coin extends Sequelize.Model {
 
@@ -110,9 +111,11 @@ class Coin extends Sequelize.Model {
 
   static async getCoinInfo(uid) {
     const coin = await Coin.getByUid(uid)
+    const priceChange = coin.price_change || {}
+
     return {
       ...coin.dataValues,
-      performance: await Coin.getPerformance(coin.price_change['7d'], coin.price_change['30d'])
+      performance: await Coin.getPerformance(priceChange['7d'], priceChange['30d'])
     }
   }
 
@@ -129,18 +132,21 @@ class Coin extends Sequelize.Model {
       return ((100 + price1) / (100 + price2) - 1) * 100
     }
 
+    const btcPriceChange = bitcoin.price_change || {}
+    const ethPriceChange = ethereum.price_change || {}
+
     return {
       usd: {
-        '7d': price7d,
-        '30d': price30d
+        '7d': utils.nullOrString(price7d),
+        '30d': utils.nullOrString(price30d)
       },
       btc: {
-        '7d': roi(price7d, bitcoin.price_change['7d']),
-        '30d': roi(price30d, bitcoin.price_change['30d']),
+        '7d': utils.nullOrString(roi(price7d, btcPriceChange['7d'])),
+        '30d': utils.nullOrString(roi(price30d, btcPriceChange['30d'])),
       },
       eth: {
-        '7d': roi(price7d, ethereum.price_change['7d']),
-        '30d': roi(price30d, ethereum.price_change['30d']),
+        '7d': utils.nullOrString(roi(price7d, ethPriceChange['7d'])),
+        '30d': utils.nullOrString(roi(price30d, ethPriceChange['30d'])),
       }
     }
   }

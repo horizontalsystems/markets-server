@@ -1,11 +1,11 @@
 const express = require('express')
-const controller = require('./coin.controller')
+const coins = require('./coin.controller')
 
 const router = express.Router()
 
-router.get('/', controller.coins)
-router.get('/all', controller.all)
-router.get('/prices', controller.prices)
-router.get('/:id', controller.show)
+router.get('/', coins.list)
+router.get('/all', coins.all)
+router.get('/prices', coins.prices)
+router.get('/:id', coins.show)
 
 module.exports = router
