@@ -5,11 +5,6 @@ class Transaction extends Sequelize.Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        date: {
-          type: DataTypes.DATE,
-          allowNull: false,
-          unique: true
-        },
         count: {
           type: DataTypes.INTEGER,
           allowNull: false
@@ -17,13 +12,31 @@ class Transaction extends Sequelize.Model {
         volume: {
           type: DataTypes.DECIMAL,
           allowNull: false
+        },
+        date: {
+          type: DataTypes.DATE,
+          allowNull: false
+        },
+        expires_at: {
+          type: DataTypes.DATE,
+          allowNull: false
         }
       },
       {
         sequelize,
-        tableName: 'transactions'
+        tableName: 'transactions',
+        indexes: [{
+          unique: true,
+          fields: ['date', 'platform_id']
+        }]
       }
     )
+  }
+
+  static associate(models) {
+    Transaction.belongsTo(models.Platform, {
+      foreignKey: 'platform_id'
+    })
   }
 
   static getLast() {
