@@ -32,10 +32,10 @@ async function createPlatform(coinId, type, decimals, address, symbol) {
   }
 
   try {
-    console.log(record)
+    console.log(JSON.stringify(record))
     await Platform.upsert(record)
   } catch (err) {
-    console.error(err)
+    console.log(err)
   }
 }
 
@@ -123,9 +123,13 @@ async function start() {
   console.log('Fetched new coins')
 
   for (let i = 0; i < coins.length; i += 1) {
-    const coin = coins[i];
-    await syncCoinInfo(coin.coingecko_id, languages, bep2tokens)
-    await sleep(1100)
+    try {
+      const coin = coins[i]
+      await syncCoinInfo(coin.coingecko_id, languages, bep2tokens)
+      await sleep(1100)
+    } catch (e) {
+      console.log(e)
+    }
   }
 }
 

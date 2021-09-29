@@ -46,7 +46,7 @@ exports.getTokenInfo = async (contractAddress, type) => {
       symbol
     }
   } catch (e) {
-    console.error(e)
+    console.log(e)
     return null
   }
 }
@@ -55,7 +55,7 @@ exports.getERC20Decimals = async (contractAddress) => {
   try {
     return await ethereum.getDecimals(contractAddress)
   } catch (e) {
-    console.error(e)
+    console.log(e)
     return null
   }
 }
@@ -64,7 +64,7 @@ exports.getBEP20Decimals = async (contractAddress) => {
   try {
     return await binance.getDecimals(contractAddress)
   } catch (e) {
-    console.error(e)
+    console.log(e)
     return null
   }
 }
