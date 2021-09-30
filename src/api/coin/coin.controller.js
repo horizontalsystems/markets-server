@@ -42,3 +42,22 @@ exports.show = async (req, res) => {
 
   res.send(serializer.serializeInfo(coin))
 }
+
+exports.transactions = async (req, res) => {
+  const { id: uid } = req.params
+
+  const query = (`
+    SELECT
+      transactions.date,
+      transactions.count,
+      transactions.volume
+    FROM coins
+    INNER JOIN platforms
+    ON coins.id = platforms.coin_id AND coins.uid = '${uid}'
+    INNER JOIN transactions
+    ON transactions.platform_id = platforms.id
+  `)
+
+  const transactions = await sequelize.query(query, { type: sequelize.QueryTypes.SELECT })
+  res.send(transactions)
+}
