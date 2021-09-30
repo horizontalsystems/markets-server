@@ -1,4 +1,3 @@
-const Sequelize = require('sequelize')
 const SequelizeModel = require('./SequelizeModel')
 const Category = require('./Category')
 const Platform = require('./Platform')
@@ -87,18 +86,30 @@ class Coin extends SequelizeModel {
     Coin.hasMany(models.FundsInvested)
   }
 
+  static getTopList(count, orderBy, orderDirection, limit) {
+    return Coin.query(`
+      with top_coins as (
+        SELECT * FROM coins
+        ORDER BY market_data->'market_cap' DESC NULLS LAST
+        LIMIT ${count}
+      )
+      SELECT * FROM top_coins
+      ORDER BY ${orderBy} ${orderDirection} NULLS LAST
+      LIMIT ${limit}
+    `)
+  }
+
   static getPrices(ids) {
-    return Coin.findAll({
-      attributes: [
-        'uid',
-        'price',
-        'price_change',
-        [Sequelize.literal('EXTRACT(epoch FROM last_updated)::int'), 'last_updated']
-      ],
-      where: {
-        uid: ids.split(',')
-      },
-    })
+    const uids = ids.map(id => `'${id}'`)
+    return Coin.query(`
+      SELECT
+        uid,
+        price,
+        price_change->'24h' as price_change_24h,
+        EXTRACT(epoch FROM last_updated)::int AS last_updated
+      FROM coins
+      WHERE uid in (${uids})
+    `)
   }
 
   static getByUid(uid) {
