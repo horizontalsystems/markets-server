@@ -1,9 +1,10 @@
 const Sequelize = require('sequelize')
+const SequelizeModel = require('./SequelizeModel')
 const Category = require('./Category')
 const Platform = require('./Platform')
 const utils = require('../../utils')
 
-class Coin extends Sequelize.Model {
+class Coin extends SequelizeModel {
 
   static init(sequelize, DataTypes) {
     return super.init(
@@ -107,6 +108,23 @@ class Coin extends Sequelize.Model {
       },
       include: [Platform, Category]
     })
+  }
+
+  static async getTransactions(uid, window = '1h') {
+    const platform = await Platform.findByCoinUID(uid)
+    if (!platform) {
+      return []
+    }
+
+    return Coin.query(`
+      SELECT 
+        ${Coin.truncateDateWindow('date', window)} as date,
+        SUM(count) AS count,
+        SUM(volume) AS volume
+      FROM transactions
+      WHERE platform_id = ${platform.id}
+      GROUP by 1
+    `)
   }
 
   static async getCoinInfo(uid) {

@@ -1,6 +1,6 @@
-const { Model } = require('sequelize')
+const SequelizeModel = require('./SequelizeModel')
 
-class Platform extends Model {
+class Platform extends SequelizeModel {
 
   static init(sequelize, DataTypes) {
     return super.init(
@@ -31,6 +31,15 @@ class Platform extends Model {
     })
   }
 
+  static async findByCoinUID(uid) {
+    const [platform] = await Platform.query(`
+      SELECT platforms.* FROM platforms
+      INNER JOIN coins
+      ON coins.id = platforms.coin_id AND coins.uid = '${uid}'
+    `)
+
+    return platform
+  }
 }
 
 module.exports = Platform

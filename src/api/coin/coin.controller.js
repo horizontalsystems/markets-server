@@ -44,20 +44,22 @@ exports.show = async (req, res) => {
 }
 
 exports.transactions = async (req, res) => {
-  const { id: uid } = req.params
+  const { id } = req.params
+  const { interval } = req.query
 
-  const query = (`
-    SELECT
-      transactions.date,
-      transactions.count,
-      transactions.volume
-    FROM coins
-    INNER JOIN platforms
-    ON coins.id = platforms.coin_id AND coins.uid = '${uid}'
-    INNER JOIN transactions
-    ON transactions.platform_id = platforms.id
-  `)
+  let window
+  switch (interval) {
+    case '1d':
+      window = '1h'
+      break
+    case '7d':
+      window = '4h'
+      break
+    default:
+      window = '1d'
+      break
+  }
 
-  const transactions = await sequelize.query(query, { type: sequelize.QueryTypes.SELECT })
+  const transactions = await Coin.getTransactions(id, window)
   res.send(transactions)
 }
