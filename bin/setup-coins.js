@@ -51,32 +51,34 @@ async function syncPlatform(coin, platforms, bep2tokens) {
 
   // eslint-disable-next-line no-restricted-syntax
   for (const platform in platforms) {
-    if (platform === '') {
+    if (!platform) {
       continue
     }
 
     let type = platform
     let symbol
     let decimals
-    const address = platforms[platform]
+    let address
 
     switch (platform) {
       case 'ethereum':
         type = 'erc20'
+        address = platforms[platform]
         decimals = await web3Provider.getERC20Decimals(address)
         break
 
       case 'binance-smart-chain':
         type = 'bep20'
+        address = platforms[platform]
         decimals = await web3Provider.getBEP20Decimals(address)
         break
 
       case 'binancecoin': {
         type = 'bep2'
+        symbol = platforms[platform]
         const token = bep2tokens[coin.code.toUpperCase()]
         if (token) {
           decimals = token.contract_decimals
-          symbol = token.symbol
         }
         break
       }

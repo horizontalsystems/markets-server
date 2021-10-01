@@ -1,13 +1,13 @@
 module.exports = {
   up: async (queryInterface) => {
     await queryInterface.bulkInsert('coins', [
-      { id: 1, uid: 'bitcoin', name: 'Bitcoin', code: 'BTC', coingecko_id: 'bitcoin' },
-      { id: 2, uid: 'ethereum', name: 'Ethereum', code: 'ETH', coingecko_id: 'ethereum' },
-      { id: 3, uid: 'bitcoin-cash', name: 'Bitcoin Cash', code: 'BCH', coingecko_id: 'bitcoin-cash' },
-      { id: 4, uid: 'litecoin', name: 'Litecoin', code: 'LTC', coingecko_id: 'litecoin' },
-      { id: 5, uid: 'dash', name: 'Dash', code: 'DASH', coingecko_id: 'dash' },
-      { id: 6, uid: 'zcash', name: 'Zcash', code: 'ZEC', coingecko_id: 'zcash' },
-      { id: 7, uid: 'binancecoin', name: 'Binance Coin', code: 'BNB', coingecko_id: 'binancecoin' }
+      { id: 1, uid: 'bitcoin', name: 'Bitcoin', code: 'btc', coingecko_id: 'bitcoin' },
+      { id: 2, uid: 'ethereum', name: 'Ethereum', code: 'eth', coingecko_id: 'ethereum' },
+      { id: 3, uid: 'bitcoin-cash', name: 'Bitcoin Cash', code: 'bch', coingecko_id: 'bitcoin-cash' },
+      { id: 4, uid: 'litecoin', name: 'Litecoin', code: 'ltc', coingecko_id: 'litecoin' },
+      { id: 5, uid: 'dash', name: 'Dash', code: 'dash', coingecko_id: 'dash' },
+      { id: 6, uid: 'zcash', name: 'Zcash', code: 'zec', coingecko_id: 'zcash' },
+      { id: 7, uid: 'binancecoin', name: 'Binance Coin', code: 'bnb', coingecko_id: 'binancecoin' }
     ], {})
 
     await queryInterface.bulkInsert('platforms', [
@@ -18,6 +18,7 @@ module.exports = {
       { coin_id: 5, type: 'dash', decimals: 8 },
       { coin_id: 6, type: 'zcash', decimals: 8 },
       { coin_id: 7, type: 'binance-smart-chain', decimals: 18 },
+      { coin_id: 7, type: 'bep2', decimals: 18 },
     ], {})
   },
 
