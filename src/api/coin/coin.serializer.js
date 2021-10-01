@@ -54,9 +54,10 @@ exports.serializePrices = coins => {
   }, {})
 }
 
-exports.serializeInfo = coin => {
+exports.serializeInfo = (coin, language) => {
   const market = coin.market_data || {}
   const priceChange = coin.price_change || {}
+  const descriptions = coin.description || {}
 
   return {
     uid: coin.uid,
@@ -64,7 +65,7 @@ exports.serializeInfo = coin => {
     code: coin.code,
     coingecko_id: coin.coingecko_id,
     genesis_date: coin.genesis_date,
-    description: coin.description,
+    description: descriptions[language],
     links: coin.links,
     price: coin.price,
     price_change: {

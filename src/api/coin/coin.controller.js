@@ -29,10 +29,11 @@ exports.prices = async (req, res) => {
 }
 
 exports.show = async (req, res, next) => {
+  const { language = 'en' } = req.query
   const coin = await Coin.getCoinInfo(req.params.id)
 
   if (coin) {
-    res.send(serializer.serializeInfo(coin))
+    res.send(serializer.serializeInfo(coin, language))
   } else {
     next()
   }
