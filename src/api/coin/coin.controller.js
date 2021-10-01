@@ -9,6 +9,7 @@ exports.list = async (req, res) => {
     : `market_data->'${orderField}'`
 
   const coins = await Coin.getTopList(top, orderBy, orderDirection, limit)
+
   res.send(serializer.serializeList(coins))
 }
 
@@ -21,16 +22,20 @@ exports.all = async (req, res) => {
 }
 
 exports.prices = async (req, res) => {
-  const { ids } = req.query
+  const { ids = '' } = req.query
   const coins = await Coin.getPrices(ids.split(','))
 
   res.send(serializer.serializePrices(coins))
 }
 
-exports.show = async (req, res) => {
+exports.show = async (req, res, next) => {
   const coin = await Coin.getCoinInfo(req.params.id)
 
-  res.send(serializer.serializeInfo(coin))
+  if (coin) {
+    res.send(serializer.serializeInfo(coin))
+  } else {
+    next()
+  }
 }
 
 exports.transactions = async (req, res) => {
@@ -51,5 +56,6 @@ exports.transactions = async (req, res) => {
   }
 
   const transactions = await Coin.getTransactions(id, window)
+
   res.send(transactions)
 }

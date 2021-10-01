@@ -112,15 +112,6 @@ class Coin extends SequelizeModel {
     `)
   }
 
-  static getByUid(uid) {
-    return Coin.findOne({
-      where: {
-        uid
-      },
-      include: [Platform, Category]
-    })
-  }
-
   static async getTransactions(uid, window = '1h') {
     const platform = await Platform.findByCoinUID(uid)
     if (!platform) {
@@ -139,23 +130,30 @@ class Coin extends SequelizeModel {
   }
 
   static async getCoinInfo(uid) {
-    const coin = await Coin.getByUid(uid)
-    const priceChange = coin.price_change || {}
+    const coin = await Coin.findOne({
+      include: [Platform, Category],
+      where: {
+        uid
+      }
+    })
+
+    if (!coin) {
+      return null
+    }
 
     return {
       ...coin.dataValues,
-      performance: await Coin.getPerformance(priceChange['7d'], priceChange['30d'])
+      performance: await Coin.getPerformance(coin.price_change['7d'], coin.price_change['30d'])
     }
   }
 
   static async getPerformance(price7d, price30d) {
-    const [bitcoin, ethereum] = await Coin.findAll({
-      attributes: ['price_change'],
-      order: ['id'],
-      where: {
-        uid: ['bitcoin', 'ethereum']
-      }
-    })
+    const [bitcoin, ethereum] = await Coin.query(`
+      SELECT price_change
+        FROM coins
+       WHERE coins.uid IN ('bitcoin', 'ethereum')
+       ORDER BY id
+    `)
 
     const roi = (price1, price2) => {
       return ((100 + price1) / (100 + price2) - 1) * 100
