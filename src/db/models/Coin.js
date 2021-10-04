@@ -86,7 +86,7 @@ class Coin extends SequelizeModel {
     Coin.hasMany(models.FundsInvested)
   }
 
-  static getTopList(count, orderBy, orderDirection, limit) {
+  static getTopMarkets(count, orderBy, orderDirection, limit) {
     return Coin.query(`
       with top_coins as (
         SELECT * FROM coins
@@ -96,6 +96,15 @@ class Coin extends SequelizeModel {
       SELECT * FROM top_coins
       ORDER BY ${orderBy} ${orderDirection} NULLS LAST
       LIMIT ${limit}
+    `)
+  }
+
+  static getMarkets(uids, orderBy, orderDirection) {
+    const uidList = `${uids.map(uid => `'${uid}'`)}`
+    return Coin.query(`
+      SELECT * FROM coins
+      WHERE uid IN (${uidList})
+      ORDER BY ${orderBy} ${orderDirection} NULLS LAST
     `)
   }
 

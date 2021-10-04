@@ -2,23 +2,34 @@ const Coin = require('../../db/models/Coin')
 const Platform = require('../../db/models/Platform')
 const serializer = require('./coin.serializer')
 
-exports.list = async (req, res) => {
-  const { top = 250, orderField = 'market_cap', orderDirection = 'DESC', limit = top } = req.query // todo: validate params
-  const orderBy = orderField === 'price_change'
-    ? 'price_change->\'24h\''
-    : `market_data->'${orderField}'`
-
-  const coins = await Coin.getTopList(top, orderBy, orderDirection, limit)
-
-  res.send(serializer.serializeList(coins))
-}
-
-exports.all = async (req, res) => {
+exports.index = async (req, res) => {
   const coins = await Coin.findAll({
     include: Platform
   })
 
   res.send(serializer.serializeAll(coins))
+}
+
+exports.markets = async (req, res) => {
+  const { uids = '', orderField = 'market_cap', orderDirection = 'DESC' } = req.query // todo: validate params
+  const orderBy = orderField === 'price_change'
+    ? 'price_change->\'24h\''
+    : `market_data->'${orderField}'`
+
+  const coins = await Coin.getMarkets(uids.split(','), orderBy, orderDirection)
+
+  res.send(serializer.serializeMarkets(coins))
+}
+
+exports.topMarkets = async (req, res) => {
+  const { top = 250, orderField = 'market_cap', orderDirection = 'DESC', limit = top } = req.query // todo: validate params
+  const orderBy = orderField === 'price_change'
+    ? 'price_change->\'24h\''
+    : `market_data->'${orderField}'`
+
+  const coins = await Coin.getTopMarkets(top, orderBy, orderDirection, limit)
+
+  res.send(serializer.serializeMarkets(coins))
 }
 
 exports.prices = async (req, res) => {

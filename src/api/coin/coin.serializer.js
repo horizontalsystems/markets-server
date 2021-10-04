@@ -9,7 +9,7 @@ function mapPlatforms(platforms) {
   }))
 }
 
-exports.serializeList = coins => {
+exports.serializeMarkets = coins => {
   return coins.map(coin => {
     const market = coin.market_data || {}
     const priceChange = coin.price_change || {}
