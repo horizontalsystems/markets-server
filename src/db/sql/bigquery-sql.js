@@ -22,39 +22,27 @@ exports.transactionStatsSQL = (date, window) => {
   `)
 }
 
-exports.tokensTransfersSQL = () => ({
-  query: (date, window, filterTokens) => {
-    return (`
-      with all_transfers as (
-        SELECT
-          value,
-          token_address as address,
-          ${extractDateWindow(window)} AS date
-        FROM \`bigquery-public-data.crypto_ethereum.token_transfers\`
-        WHERE block_timestamp ${window === '1h' ? '>=' : '='} '${date}'
-      ),
-      filtered_transfers as (
-        ${filterTokens}
-      )
-      SELECT 
-        date,
-        address,
-        SUM(volume) AS volume,
-        count(1) AS count
-      FROM filtered_transfers
-      GROUP BY address, date
-      ORDER BY date ASC
-    `)
-  },
-
-  filterTokens: (decimal, tokens) => {
-    return (`
-      SELECT 
-        date,
-        address,
-        safe_cast(value AS NUMERIC)/POW(10, ${decimal}) as volume
-      FROM all_transfers
-      WHERE address IN (${tokens})
-    `)
-  }
-})
+exports.tokensTransfersSQL = window => {
+  return (`
+    with supported_tokens as (
+      SELECT * FROM UNNEST(@supported_tokens)
+    ),
+    all_transfers as (
+      SELECT
+        token_address as address,
+        SAFE_CAST(value AS BIGNUMERIC)/POW(10,decimals) as volume,
+        ${extractDateWindow(window)} AS date 
+        FROM \`bigquery-public-data.crypto_ethereum.token_transfers\` transfers, supported_tokens tokens
+       WHERE token_address = tokens.address 
+         AND block_timestamp ${window === '1h' ? '>=' : '='} @date
+    )
+    SELECT 
+      date,
+      address,
+      sum(volume) as volume,
+      count(1) AS count
+    FROM all_transfers
+    GROUP BY address, date
+    ORDER BY date ASC
+  `)
+}

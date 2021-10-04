@@ -7,18 +7,14 @@ const addressRankSQL = requireFile('db/sql/address_rank.sql')
 const addressStatsSQL = requireFile('db/sql/address_stats.sql')
 const bigquery = new BigQuery()
 
-async function getTokenTransfers(dateFrom, tokensMap, window) {
-  const filters = []
-  const transferSQL = sql.tokensTransfersSQL()
-
-  Object.keys(tokensMap).forEach(decimal => {
-    const tokens = tokensMap[decimal].map(token => `'${token}'`)
-    filters.push(transferSQL.filterTokens(decimal, tokens))
-  })
-
+async function getTokenTransfers(dateFrom, tokens, window) {
   const [job] = await bigquery.createQueryJob({
-    query: transferSQL.query(dateFrom, window, filters.join(' UNION ALL ')),
-    location: 'US'
+    query: sql.tokensTransfersSQL(window),
+    location: 'US',
+    params: {
+      date: dateFrom,
+      supported_tokens: tokens
+    }
   })
 
   logger.info(`Job ${job.id} started.`)

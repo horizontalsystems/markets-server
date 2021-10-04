@@ -1,6 +1,6 @@
-const Sequelize = require('sequelize')
+const SequelizeModel = require('./SequelizeModel')
 
-class Transaction extends Sequelize.Model {
+class Transaction extends SequelizeModel {
 
   static init(sequelize, DataTypes) {
     return super.init(
@@ -46,6 +46,11 @@ class Transaction extends Sequelize.Model {
       ]
     })
   }
+
+  static deleteExpired() {
+    return Transaction.query('DELETE FROM transactions where expires_at <= NOW()')
+  }
+
 }
 
 module.exports = Transaction

@@ -1,4 +1,3 @@
-const sequelize = require('sequelize')
 const { Op } = require('sequelize')
 const { DateTime } = require('luxon')
 const { CronJob } = require('cron')
@@ -49,7 +48,7 @@ class TransactionSyncer {
       .minus({ hours: 1 })
       .toFormat('yyyy-MM-dd HH:00:00')
 
-    await this.syncPlatforms(dateFrom, dateExpiresIn, '1h')
+    await this.syncStats(dateFrom, dateExpiresIn, '1h')
   }
 
   async syncWeekly() {
@@ -58,7 +57,7 @@ class TransactionSyncer {
       .minus({ days: 1 }) /* -1 day because it's data synced by daily syncer */
       .toFormat('yyyy-MM-dd HH:00:00')
 
-    await this.syncPlatforms(dateFrom, dateExpiresIn, '4h')
+    await this.syncStats(dateFrom, dateExpiresIn, '4h')
   }
 
   async syncMonthly() {
@@ -67,22 +66,16 @@ class TransactionSyncer {
       .minus({ days: 7 }) /* -7 day because it's data synced by weekly syncer */
       .toFormat('yyyy-MM-dd')
 
-    await this.syncPlatforms(dateFrom, dateExpiresIn, '1d')
+    await this.syncStats(dateFrom, dateExpiresIn, '1d')
   }
 
   async clearExpired() {
-    await Transaction.destroy({
-      where: {
-        expires_at: {
-          [Op.lte]: sequelize.fn('NOW')
-        }
-      }
-    })
+    await Transaction.deleteExpired()
   }
 
-  async syncPlatforms(dateFrom, dateExpiresIn, dateWindow) {
+  async syncStats(dateFrom, dateExpiresIn, dateWindow) {
     const platforms = await this.getPlatforms()
-    const tokenTransfers = await bigquery.getTokenTransfers(dateFrom, platforms.map, dateWindow)
+    const tokenTransfers = await bigquery.getTokenTransfers(dateFrom, platforms.tokens, dateWindow)
     const etherTransactions = await bigquery.getEtherTransactions(dateFrom, dateWindow)
 
     tokenTransfers.forEach(transfer => {
@@ -90,7 +83,7 @@ class TransactionSyncer {
         transfer.count,
         transfer.volume,
         transfer.date.value,
-        platforms.ids[transfer.address],
+        platforms.tokensMap[transfer.address],
         dateExpiresIn
       )
     })
@@ -99,7 +92,7 @@ class TransactionSyncer {
       transaction.count,
       transaction.volume,
       transaction.date.value,
-      platforms.ids.ethereum,
+      platforms.tokensMap.ethereum,
       dateExpiresIn
     ))
   }
@@ -124,8 +117,8 @@ class TransactionSyncer {
   }
 
   async getPlatforms() {
-    const map = {}
-    const ids = {}
+    const tokens = []
+    const tokensMap = {}
 
     const platforms = await Platform.findAll({
       where: {
@@ -134,19 +127,21 @@ class TransactionSyncer {
       }
     })
 
-    platforms.forEach(platform => {
-      if (platform.type === 'ethereum') {
-        ids.ethereum = platform.id
-      } else if (platform.address) {
-        ids[platform.address] = platform.id
-        const addrs = (map[platform.decimals] || (map[platform.decimals] = []))
-        addrs.push(platform.address)
+    platforms.forEach(({ type, address, decimals, id }) => {
+      if (type === 'ethereum') {
+        tokensMap.ethereum = id
+      } else if (address) {
+        tokensMap[address] = id
+        tokens.push({
+          address,
+          decimals
+        })
       }
     })
 
     return {
-      map,
-      ids
+      tokens,
+      tokensMap
     }
   }
 
