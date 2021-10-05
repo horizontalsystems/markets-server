@@ -100,16 +100,14 @@ class Coin extends SequelizeModel {
   }
 
   static getMarkets(uids, orderBy, orderDirection) {
-    const uidList = `${uids.map(uid => `'${uid}'`)}`
     return Coin.query(`
       SELECT * FROM coins
-      WHERE uid IN (${uidList})
+      WHERE uid IN (${uids})
       ORDER BY ${orderBy} ${orderDirection} NULLS LAST
     `)
   }
 
-  static getPrices(ids) {
-    const uids = ids.map(id => `'${id}'`)
+  static getMarketsPrices(uids) {
     return Coin.query(`
       SELECT
         uid,

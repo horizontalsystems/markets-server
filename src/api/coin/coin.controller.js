@@ -10,33 +10,51 @@ exports.index = async (req, res) => {
   res.send(serializer.serializeAll(coins))
 }
 
-exports.markets = async (req, res) => {
-  const { uids = '', orderField = 'market_cap', orderDirection = 'DESC' } = req.query // todo: validate params
-  const orderBy = orderField === 'price_change'
-    ? 'price_change->\'24h\''
-    : `market_data->'${orderField}'`
+exports.markets = async ({ query }, res) => {
+  const {
+    orderDirection = 'desc',
+    orderField = 'price_change'
+  } = query
 
-  const coins = await Coin.getMarkets(uids.split(','), orderBy, orderDirection)
+  const uids = query.uids.split(',')
+    .map(uid => `'${uid}'`)
 
+  let orderBy
+  if (orderField === 'price_change') {
+    orderBy = 'price_change->\'24h\''
+  } else {
+    orderBy = `market_data->'${orderField}'`
+  }
+
+  const coins = await Coin.getMarkets(uids, orderBy, orderDirection)
   res.send(serializer.serializeMarkets(coins))
 }
 
-exports.topMarkets = async (req, res) => {
-  const { top = 250, orderField = 'market_cap', orderDirection = 'DESC', limit = top } = req.query // todo: validate params
-  const orderBy = orderField === 'price_change'
-    ? 'price_change->\'24h\''
-    : `market_data->'${orderField}'`
+exports.marketsPrices = async ({ query }, res) => {
+  const uids = query.uids.split(',')
+    .map(uid => `'${uid}'`)
+
+  const coins = await Coin.getMarketsPrices(uids)
+  res.send(serializer.serializePrices(coins))
+}
+
+exports.topMarkets = async ({ query }, res) => {
+  const {
+    top = 250,
+    orderDirection = 'desc',
+    orderField = 'price_change',
+    limit = top
+  } = query
+
+  let orderBy
+  if (orderField === 'price_change') {
+    orderBy = 'price_change->\'24h\''
+  } else {
+    orderBy = `market_data->'${orderField}'`
+  }
 
   const coins = await Coin.getTopMarkets(top, orderBy, orderDirection, limit)
-
   res.send(serializer.serializeMarkets(coins))
-}
-
-exports.prices = async (req, res) => {
-  const { ids = '' } = req.query
-  const coins = await Coin.getPrices(ids.split(','))
-
-  res.send(serializer.serializePrices(coins))
 }
 
 exports.show = async (req, res, next) => {
