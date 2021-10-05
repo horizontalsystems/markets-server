@@ -9,39 +9,35 @@ function extractDateWindow(window = '1h') {
   }
 }
 
-exports.transactionStatsSQL = (date, window) => {
-  return (`
-    SELECT
-      ${extractDateWindow(window)} AS date,
-      COUNT(1) AS count,
-      SUM(value / POW(10,18)) AS volume
-    FROM \`bigquery-public-data.crypto_ethereum.transactions\`
-    WHERE block_timestamp ${window === '1h' ? '>=' : '='} '${date}'
-    GROUP BY date
-    ORDER BY date ASC
-  `)
-}
-
-exports.tokensTransfersSQL = window => {
+exports.transactionStatsSQL = window => {
   return (`
     with supported_tokens as (
       SELECT * FROM UNNEST(@supported_tokens)
     ),
-    all_transfers as (
+    transactions as (
       SELECT
+        block_timestamp,
+        'ethereum' as address,
+        value / POW(10,18) AS volume
+      FROM \`bigquery-public-data.crypto_ethereum.transactions\`
+      WHERE block_timestamp >= @dateFrom
+        AND block_timestamp < @dateTo
+      UNION ALL
+      SELECT
+        block_timestamp,
         token_address as address,
-        SAFE_CAST(value AS BIGNUMERIC)/POW(10,decimals) as volume,
-        ${extractDateWindow(window)} AS date 
-        FROM \`bigquery-public-data.crypto_ethereum.token_transfers\` transfers, supported_tokens tokens
-       WHERE token_address = tokens.address 
-         AND block_timestamp ${window === '1h' ? '>=' : '='} @date
+        SAFE_CAST(value AS BIGNUMERIC) / POW(10,decimals) as volume
+        FROM \`bigquery-public-data.crypto_ethereum.token_transfers\`, supported_tokens tokens
+       WHERE token_address = tokens.address
+         AND block_timestamp >= @dateFrom
+         AND block_timestamp < @dateTo
     )
-    SELECT 
-      date,
+    SELECT
       address,
-      sum(volume) as volume,
-      count(1) AS count
-    FROM all_transfers
+      ${extractDateWindow(window)} as date,
+      SUM(volume) as volume,
+      COUNT(1) AS count
+    FROM transactions
     GROUP BY address, date
     ORDER BY date ASC
   `)

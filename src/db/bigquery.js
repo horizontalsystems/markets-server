@@ -7,26 +7,15 @@ const addressRankSQL = requireFile('db/sql/address_rank.sql')
 const addressStatsSQL = requireFile('db/sql/address_stats.sql')
 const bigquery = new BigQuery()
 
-async function getTokenTransfers(dateFrom, tokens, window) {
+async function getTransactionsStats(dateFrom, dateTo, tokens, window) {
   const [job] = await bigquery.createQueryJob({
-    query: sql.tokensTransfersSQL(window),
+    query: sql.transactionStatsSQL(window),
     location: 'US',
     params: {
-      date: dateFrom,
+      dateFrom,
+      dateTo,
       supported_tokens: tokens
     }
-  })
-
-  logger.info(`Job ${job.id} started.`)
-
-  const [rows] = await job.getQueryResults()
-  return rows
-}
-
-async function getEtherTransactions(dateFrom, window) {
-  const [job] = await bigquery.createQueryJob({
-    query: sql.transactionStatsSQL(dateFrom, window),
-    location: 'US'
   })
 
   logger.info(`Job ${job.id} started.`)
@@ -75,8 +64,7 @@ async function getAddressStats(fromDate) {
 }
 
 module.exports = {
-  getEtherTransactions,
-  getTokenTransfers,
+  getTransactionsStats,
   getTopAddresses,
   getAddressStats
 }

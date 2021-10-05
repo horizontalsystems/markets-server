@@ -8,28 +8,28 @@ const Platform = require('../db/models/Platform')
 class TransactionSyncer {
 
   constructor() {
-    this.dailyCronJob = new CronJob({
+    this.hourlyCronJob = new CronJob({
       cronTime: '0 * * * *', // every hour
       onTick: this.onTickHour.bind(this),
       start: false
     })
 
-    this.weeklyCronJob = new CronJob({
+    this.fourHourlyCronJob = new CronJob({
       cronTime: '0 */4 * * *', // every 4 hours
-      onTick: this.syncWeekly.bind(this),
+      onTick: this.syncFourHourly.bind(this),
       start: false
     })
 
-    this.monthlyCronJob = new CronJob({
+    this.dailyCronJob = new CronJob({
       cronTime: '0 0 * * *', // every day
-      onTick: this.syncMonthly.bind(this),
+      onTick: this.syncDaily.bind(this),
       start: false
     })
   }
 
   async onTickHour() {
     try {
-      await this.syncDaily()
+      await this.syncHourly()
       await this.clearExpired()
     } catch (e) {
       console.error(e)
@@ -37,48 +37,63 @@ class TransactionSyncer {
   }
 
   async start() {
+    this.hourlyCronJob.start()
+    this.fourHourlyCronJob.start()
     this.dailyCronJob.start()
-    this.weeklyCronJob.start()
-    this.monthlyCronJob.start()
   }
 
-  async syncDaily() {
-    const dateExpiresIn = { hours: 24 }
+  async syncHourly() {
+    const dateExpiresIn = { hours: 23 }
     const dateFrom = DateTime.utc()
       .minus({ hours: 1 })
       .toFormat('yyyy-MM-dd HH:00:00')
 
-    await this.syncStats(dateFrom, dateExpiresIn, '1h')
-  }
-
-  async syncWeekly() {
-    const dateExpiresIn = { days: 7 }
-    const dateFrom = DateTime.utc()
-      .minus({ days: 1 }) /* -1 day because it's data synced by daily syncer */
+    const dateTo = DateTime.utc()
       .toFormat('yyyy-MM-dd HH:00:00')
 
-    await this.syncStats(dateFrom, dateExpiresIn, '4h')
+    await this.syncStats(dateFrom, dateTo, dateExpiresIn, '1h')
   }
 
-  async syncMonthly() {
-    const dateExpiresIn = { days: 30 }
-    const dateFrom = DateTime.utc()
-      .minus({ days: 7 }) /* -7 day because it's data synced by weekly syncer */
-      .toFormat('yyyy-MM-dd')
+  async syncFourHourly() {
+    const dateExpiresIn = { days: 6 }
+    const dateTo = DateTime.utc()
+      .minus({ days: 1 }) /* -1 day because it's data synced by daily syncer */
 
-    await this.syncStats(dateFrom, dateExpiresIn, '1d')
+    const dateFrom = dateTo
+      .minus({ hours: 4 })
+
+    await this.syncStats(
+      dateFrom.toFormat('yyyy-MM-dd HH:00:00'),
+      dateTo.toFormat('yyyy-MM-dd HH:00:00'),
+      dateExpiresIn, '4h'
+    )
+  }
+
+  async syncDaily() {
+    const dateExpiresIn = { days: 30 }
+    const dateTo = DateTime.utc()
+      .minus({ days: 7 }) /* -7 day because it's data synced by weekly syncer */
+
+    const dateFrom = dateTo
+      .minus({ days: 1 })
+
+    await this.syncStats(
+      dateFrom.toFormat('yyyy-MM-dd'),
+      dateTo.toFormat('yyyy-MM-dd'),
+      dateExpiresIn,
+      '1d'
+    )
   }
 
   async clearExpired() {
     await Transaction.deleteExpired()
   }
 
-  async syncStats(dateFrom, dateExpiresIn, dateWindow) {
+  async syncStats(dateFrom, dateTo, dateExpiresIn, dateWindow) {
     const platforms = await this.getPlatforms()
-    const tokenTransfers = await bigquery.getTokenTransfers(dateFrom, platforms.tokens, dateWindow)
-    const etherTransactions = await bigquery.getEtherTransactions(dateFrom, dateWindow)
+    const transactions = await bigquery.getTransactionsStats(dateFrom, dateTo, platforms.tokens, dateWindow)
 
-    tokenTransfers.forEach(transfer => {
+    transactions.forEach(transfer => {
       return this.upsertTransaction(
         transfer.count,
         transfer.volume,
@@ -87,14 +102,6 @@ class TransactionSyncer {
         dateExpiresIn
       )
     })
-
-    etherTransactions.forEach(transaction => this.upsertTransaction(
-      transaction.count,
-      transaction.volume,
-      transaction.date.value,
-      platforms.tokensMap.ethereum,
-      dateExpiresIn
-    ))
   }
 
   upsertTransaction(count, volume, date, platformId, expireDuration) {
