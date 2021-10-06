@@ -16,13 +16,9 @@ exports.serializeMarkets = coins => {
 
     return ({
       uid: coin.uid,
-      name: coin.name,
-      code: coin.code,
-      coingecko_id: coin.coingecko_id,
       price: coin.price,
       price_change_24h: nullOrString(priceChange['24h']),
       market_cap: nullOrString(market.market_cap),
-      market_cap_rank: market.market_cap_rank,
       total_volume: nullOrString(market.total_volume),
     })
   })
