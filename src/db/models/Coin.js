@@ -136,6 +136,54 @@ class Coin extends SequelizeModel {
     `)
   }
 
+  static async getAddresses(uid, window = '1h') {
+    const platform = await Platform.findByCoinUID(uid)
+    if (!platform) {
+      return []
+    }
+
+    return Coin.query(`
+      SELECT 
+        ${Coin.truncateDateWindow('date', window)} as date,
+        SUM(count) AS count,
+        SUM(volume) AS volume
+      FROM addresses
+      WHERE platform_id = ${platform.id}
+      GROUP by 1
+      ORDER BY date ASC
+    `)
+  }
+
+  static async getCoinHolders(uid, limit = 10) {
+    const platform = await Platform.findByCoinUID(uid)
+    if (!platform) {
+      return []
+    }
+
+    return Coin.query(`
+      SELECT address, balance
+      FROM coin_holders
+      WHERE platform_id = ${platform.id}
+      ORDER BY balance DESC
+      LIMIT ${limit > 20 ? 20 : limit}
+    `)
+  }
+
+  static async getAddressRanks(uid, limit = 10) {
+    const platform = await Platform.findByCoinUID(uid)
+    if (!platform) {
+      return []
+    }
+
+    return Coin.query(`
+      SELECT address, volume
+      FROM address_ranks
+      WHERE platform_id = ${platform.id}
+      ORDER BY volume DESC
+      LIMIT ${limit > 20 ? 20 : limit}
+    `)
+  }
+
   static async getCoinInfo(uid) {
     const coin = await Coin.findOne({
       include: [Platform, Category],

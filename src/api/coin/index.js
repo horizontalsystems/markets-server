@@ -10,5 +10,8 @@ router.get('/markets_prices', validator.validateMarketsPrices, coins.marketsPric
 router.get('/top_markets', validator.validateTopMarkets, coins.topMarkets)
 router.get('/:id', coins.show)
 router.get('/:id/transactions', coins.transactions)
+router.get('/:id/addresses', coins.addresses)
+router.get('/:id/addresses_holders', coins.addressHolders)
+router.get('/:id/addresses_ranks', coins.addressRanks)
 
 module.exports = router

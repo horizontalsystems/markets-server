@@ -89,3 +89,41 @@ exports.transactions = async (req, res) => {
 
   res.send(transactions)
 }
+
+exports.addresses = async (req, res) => {
+  const { id } = req.params
+  const { interval } = req.query
+
+  let window
+  switch (interval) {
+    case '1d':
+      window = '1h'
+      break
+    case '7d':
+      window = '4h'
+      break
+    default:
+      window = '1d'
+      break
+  }
+
+  const addresses = await Coin.getAddresses(id, window)
+
+  res.send(addresses)
+}
+
+exports.addressHolders = async (req, res) => {
+  const { id } = req.params
+  const { limit } = req.query
+  const coinHolders = await Coin.getCoinHolders(id, limit)
+
+  res.send(coinHolders)
+}
+
+exports.addressRanks = async (req, res) => {
+  const { id } = req.params
+  const { limit } = req.query
+  const addressRanks = await Coin.getAddressRanks(id, limit)
+
+  res.send(addressRanks)
+}
