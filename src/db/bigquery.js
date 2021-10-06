@@ -6,10 +6,11 @@ const transactionStatsSQL = requireFile('db/sql/transaction_stats.sql')
 const addressRankSQL = requireFile('db/sql/address_rank.sql')
 const addressStatsSQL = requireFile('db/sql/address_stats.sql')
 const coinHoldersSQL = requireFile('db/sql/coin_holders.sql')
-
+const uniswapV2VolumeSql = requireFile('db/sql/uniswap_v2_volumes.sql')
+const uniswapV3VolumeSql = requireFile('db/sql/uniswap_v3_volumes.sql')
 const bigquery = new BigQuery()
 
-async function getTransactionsStats(dateFrom, dateTo, tokens, period) {
+exports.getTransactionsStats = async (dateFrom, dateTo, tokens, period) => {
   const [job] = await bigquery.createQueryJob({
     query: transactionStatsSQL,
     location: 'US',
@@ -27,8 +28,33 @@ async function getTransactionsStats(dateFrom, dateTo, tokens, period) {
   return rows
 }
 
+exports.getDexVolumes = async (dateFrom, dateTo, tokens, period, exchange) => {
+  let query
+  if (exchange === 'uniswap_v2') {
+    query = uniswapV2VolumeSql
+  } else {
+    query = uniswapV3VolumeSql
+  }
+
+  const [job] = await bigquery.createQueryJob({
+    query,
+    location: 'US',
+    params: {
+      dateFrom,
+      dateTo,
+      period,
+      supported_tokens: tokens
+    }
+  })
+
+  logger.info(`Job ${job.id} started.`)
+
+  const [rows] = await job.getQueryResults()
+  return rows
+}
+
 // 2.7 GB query
-async function getTopCoinHolders(tokens, dateFrom, addressesPerCoin) {
+exports.getTopCoinHolders = async (tokens, dateFrom, addressesPerCoin) => {
   const [job] = await bigquery.createQueryJob({
     query: coinHoldersSQL,
     location: 'US',
@@ -46,7 +72,7 @@ async function getTopCoinHolders(tokens, dateFrom, addressesPerCoin) {
 }
 
 // 2.7 GB query , for 3 month
-async function getTopAddresses(tokens, dateFrom, addressesPerCoin) {
+exports.getTopAddresses = async (tokens, dateFrom, addressesPerCoin) => {
   const [job] = await bigquery.createQueryJob({
     query: addressRankSQL,
     location: 'US',
@@ -64,7 +90,7 @@ async function getTopAddresses(tokens, dateFrom, addressesPerCoin) {
 }
 
 // 2 GB query for 3 month
-async function getAddressStats(tokens, dateFrom, dateTo, timePeriod) {
+exports.getAddressStats = async (tokens, dateFrom, dateTo, timePeriod) => {
   const [job] = await bigquery.createQueryJob({
     query: addressStatsSQL,
     location: 'US',
@@ -80,11 +106,4 @@ async function getAddressStats(tokens, dateFrom, dateTo, timePeriod) {
 
   const [rows] = await job.getQueryResults()
   return rows
-}
-
-module.exports = {
-  getTransactionsStats,
-  getTopCoinHolders,
-  getTopAddresses,
-  getAddressStats
 }

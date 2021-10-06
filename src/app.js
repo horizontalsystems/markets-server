@@ -6,10 +6,12 @@ const app = require('./config/express')
 
 const CurrencyPriceSyncer = require('./services/CurrencyPriceSyncer')
 const TransactionSyncer = require('./services/TransactionSyncer')
+const DexVolumeSyncer = require('./services/DexVolumeSyncer')
 const AddressSyncer = require('./services/AddressSyncer')
 
 async function start() {
   const transactionSyncer = new TransactionSyncer()
+  const dexVolumeSyncer = new DexVolumeSyncer()
   const addressSyncer = new AddressSyncer()
   const currencyPriceSyncer = new CurrencyPriceSyncer()
 
@@ -19,6 +21,7 @@ async function start() {
   // Run services & syncers
   await currencyPriceSyncer.start()
   await transactionSyncer.start()
+  await dexVolumeSyncer.start()
   await addressSyncer.start()
 
   // Listen to requests

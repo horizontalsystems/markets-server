@@ -1,48 +1,45 @@
 const SequelizeModel = require('./SequelizeModel')
 
-class Transaction extends SequelizeModel {
+class DexVolume extends SequelizeModel {
 
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        count: {
-          type: DataTypes.INTEGER,
+        date: {
+          type: DataTypes.DATE,
           allowNull: false
         },
         volume: {
           type: DataTypes.DECIMAL,
           allowNull: false
         },
-        date: {
-          type: DataTypes.DATE,
+        exchange: {
+          type: DataTypes.STRING,
           allowNull: false
         },
-        expires_at: {
-          type: DataTypes.DATE,
-          allowNull: false
-        }
+        expires_at: DataTypes.DATE
       },
       {
         sequelize,
-        tableName: 'transactions',
+        tableName: 'dex_volumes',
         indexes: [{
           unique: true,
-          fields: ['date', 'platform_id']
+          fields: ['date', 'platform_id', 'exchange']
         }]
       }
     )
   }
 
   static associate(models) {
-    Transaction.belongsTo(models.Platform, {
+    DexVolume.belongsTo(models.Platform, {
       foreignKey: 'platform_id'
     })
   }
 
   static deleteExpired() {
-    return Transaction.query('DELETE FROM transactions where expires_at <= NOW()')
+    return DexVolume.query('DELETE FROM dex_volumes where expires_at <= NOW()')
   }
 
 }
 
-module.exports = Transaction
+module.exports = DexVolume

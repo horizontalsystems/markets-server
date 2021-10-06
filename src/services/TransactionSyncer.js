@@ -1,91 +1,48 @@
-const { Op } = require('sequelize')
 const { DateTime } = require('luxon')
-const { CronJob } = require('cron')
 const Transaction = require('../db/models/Transaction')
-const bigquery = require('../db/bigquery')
 const Platform = require('../db/models/Platform')
+const SyncScheduler = require('./SyncScheduler')
+const bigquery = require('../db/bigquery')
 
-class TransactionSyncer {
+class TransactionSyncer extends SyncScheduler {
 
   constructor() {
-    this.hourlyCronJob = new CronJob({
-      cronTime: '0 * * * *', // every hour
-      onTick: this.onTickHour.bind(this),
-      start: false
-    })
+    super()
 
-    this.fourHourlyCronJob = new CronJob({
-      cronTime: '0 */4 * * *', // every 4 hours
-      onTick: this.syncFourHourly.bind(this),
-      start: false
-    })
-
-    this.dailyCronJob = new CronJob({
-      cronTime: '0 0 * * *', // every day
-      onTick: this.syncDaily.bind(this),
-      start: false
-    })
+    this.on('on-tick-1hour', params => this.sync1HourlyStats(params))
+    this.on('on-tick-4hour', params => this.sync4HourlyStats(params))
+    this.on('on-tick-1day', params => this.syncDailyStats(params))
   }
 
-  async onTickHour() {
-    try {
-      await this.syncHourly()
-      await this.clearExpired()
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  async start() {
-    this.hourlyCronJob.start()
-    this.fourHourlyCronJob.start()
-    this.dailyCronJob.start()
-  }
-
-  async syncHourly() {
-    const dateExpiresIn = { hours: 23 }
-    const dateFrom = DateTime.utc()
-      .minus({ hours: 1 })
-      .toFormat('yyyy-MM-dd HH:00:00')
-
-    const dateTo = DateTime.utc()
-      .toFormat('yyyy-MM-dd HH:00:00')
-
-    await this.syncStats(dateFrom, dateTo, dateExpiresIn, '1h')
-  }
-
-  async syncFourHourly() {
-    const dateExpiresIn = { days: 6 }
-    const dateTo = DateTime.utc()
-      .minus({ days: 1 }) /* -1 day because it's data synced by daily syncer */
-
-    const dateFrom = dateTo
-      .minus({ hours: 4 })
-
+  async sync1HourlyStats(params) {
     await this.syncStats(
-      dateFrom.toFormat('yyyy-MM-dd HH:00:00'),
-      dateTo.toFormat('yyyy-MM-dd HH:00:00'),
-      dateExpiresIn, '4h'
+      params.dateFrom,
+      params.dateTo,
+      params.dateExpiresIn,
+      '1h'
+    )
+    await this.deleteExpired()
+  }
+
+  async sync4HourlyStats(params) {
+    await this.syncStats(
+      params.dateFrom,
+      params.dateTo,
+      params.dateExpiresIn,
+      '1h'
     )
   }
 
-  async syncDaily() {
-    const dateExpiresIn = { days: 30 }
-    const dateTo = DateTime.utc()
-      .minus({ days: 7 }) /* -7 day because it's data synced by weekly syncer */
-
-    const dateFrom = dateTo
-      .minus({ days: 1 })
-
+  async syncDailyStats(params) {
     await this.syncStats(
-      dateFrom.toFormat('yyyy-MM-dd'),
-      dateTo.toFormat('yyyy-MM-dd'),
-      dateExpiresIn,
-      '1d'
+      params.dateFrom,
+      params.dateTo,
+      params.dateExpiresIn,
+      '1h'
     )
   }
 
-  async clearExpired() {
+  async deleteExpired() {
     await Transaction.deleteExpired()
   }
 
@@ -127,12 +84,7 @@ class TransactionSyncer {
     const tokens = []
     const tokensMap = {}
 
-    const platforms = await Platform.findAll({
-      where: {
-        type: ['ethereum', 'erc20'],
-        decimals: { [Op.not]: null }
-      }
-    })
+    const platforms = await Platform.findEthErc20()
 
     platforms.forEach(({ type, address, decimals, id }) => {
       if (type === 'ethereum') {

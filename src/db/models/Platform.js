@@ -40,6 +40,25 @@ class Platform extends SequelizeModel {
 
     return platform
   }
+
+  static findEthErc20() {
+    return Platform.query(`
+      SELECT * 
+      FROM platforms 
+      WHERE type IN ('ethereum', 'erc20')
+        AND decimals IS NOT NULL
+    `)
+  }
+
+  static findErc20() {
+    return Platform.query(`
+      SELECT * 
+      FROM platforms 
+      WHERE type = 'erc20'
+        AND decimals IS NOT NULL
+        AND address IS NOT NULL
+    `)
+  }
 }
 
 module.exports = Platform
