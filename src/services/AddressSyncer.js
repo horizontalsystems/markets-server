@@ -14,37 +14,33 @@ class AddressSyncer {
     this.ADDRESS_RANK_PERIOD = 3
 
     this.hourlyCronJob = new CronJob({
-      // cronTime: '0 * * * *', // every hour
-      cronTime: '0 */1 * * * *',
+      cronTime: '0 * * * *', // every hour
       onTick: this.syncHourly.bind(this),
       start: false
     })
-    //
-    // this.fourHourCronJob = new CronJob({
-    //   cronTime: '0 */4 * * *', // every 4 hours
-    //   onTick: this.syncFourHour().bind(this),
-    //   start: false
-    // })
-    //
-    // this.dailyCronJob = new CronJob({
-    //   cronTime: '0 0 * * *', // every day
-    //   onTick: this.syncDaily().bind(this),
-    //   start: false
-    // })
+
+    this.fourHourCronJob = new CronJob({
+      cronTime: '0 */4 * * *', // every 4 hours
+      onTick: this.syncFourHour.bind(this),
+      start: false
+    })
+
+    this.dailyCronJob = new CronJob({
+      cronTime: '0 0 * * *', // every day
+      onTick: this.syncDaily.bind(this),
+      start: false
+    })
   }
 
   async start() {
     this.hourlyCronJob.start()
-    // this.fourHourCronJob.start()
-    // this.dailyCronJob.start()
+    this.fourHourCronJob.start()
+    this.dailyCronJob.start()
   }
 
   async syncHourly() {
     try {
-      // await this.syncHourlyStats()
-      await this.syncCoinHolders()
-      await this.syncAddressRanks()
-
+      await this.syncHourlyStats()
     } catch (e) {
       console.error(e)
     }
