@@ -41,6 +41,7 @@ class AddressSyncer {
   async syncHourly() {
     try {
       await this.syncHourlyStats()
+      await this.syncAddressRanks()
     } catch (e) {
       console.error(e)
     }
@@ -49,8 +50,6 @@ class AddressSyncer {
   async syncFourHour() {
     try {
       await this.syncWeeklyStats()
-      await this.syncCoinHolders()
-      await this.syncAddressRanks()
     } catch (e) {
       console.error(e)
     }
@@ -59,6 +58,7 @@ class AddressSyncer {
   async syncDaily() {
     try {
       await this.syncMonthlyStats()
+      await this.syncCoinHolders()
     } catch (e) {
       console.error(e)
     }
@@ -139,8 +139,8 @@ class AddressSyncer {
 
   async syncAddressRanks() {
     const dateFrom = DateTime.utc()
-      .minus({ month: this.ADDRESS_RANK_PERIOD })
-      .toFormat('yyyy-MM-dd')
+      .minus({ days: 1 })
+      .toFormat('yyyy-MM-dd HH:00:00')
     const platforms = await this.getPlatforms()
     const addressRanks = await bigquery.getTopAddresses(platforms.tokens, dateFrom, this.ADDRESSES_PER_COIN)
 
