@@ -28,13 +28,13 @@ async function getTransactionsStats(dateFrom, dateTo, tokens, period) {
 }
 
 // 2.7 GB query
-async function getTopCoinHolders(tokens, fromDate, addressesPerCoin) {
+async function getTopCoinHolders(tokens, dateFrom, addressesPerCoin) {
   const [job] = await bigquery.createQueryJob({
     query: coinHoldersSQL,
     location: 'US',
     params: {
       supported_tokens: tokens,
-      from_date: fromDate,
+      date_from: dateFrom,
       addresses_per_coin: addressesPerCoin
     }
   })
@@ -46,13 +46,13 @@ async function getTopCoinHolders(tokens, fromDate, addressesPerCoin) {
 }
 
 // 2.7 GB query , for 3 month
-async function getTopAddresses(tokens, fromDate, addressesPerCoin) {
+async function getTopAddresses(tokens, dateFrom, addressesPerCoin) {
   const [job] = await bigquery.createQueryJob({
     query: addressRankSQL,
     location: 'US',
     params: {
       supported_tokens: tokens,
-      from_date: fromDate,
+      date_from: dateFrom,
       addresses_per_coin: addressesPerCoin
     }
   })
@@ -71,8 +71,8 @@ async function getAddressStats(tokens, dateFrom, dateTo, timePeriod) {
     params: {
       supported_tokens: tokens,
       period: timePeriod,
-      from_date: dateFrom,
-      to_date: dateTo,
+      date_from: dateFrom,
+      date_to: dateTo,
     }
   })
 

@@ -76,7 +76,7 @@ stats_entry AS (
   SELECT
       coin_address, address, sum(value) AS balance,
   FROM balance_entry
-  WHERE block_timestamp >= @from_date
+  WHERE block_timestamp >= @date_from
   GROUP BY coin_address, address
 ),
 rank_entry AS (
