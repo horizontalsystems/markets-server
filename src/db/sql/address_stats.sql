@@ -58,8 +58,8 @@ SELECT
   SUM(ABS(value))/2 AS volume
 FROM volume_entry
 WHERE
-  block_timestamp >= @from_date AND
-  block_timestamp < @to_date
+  block_timestamp >= @date_from AND
+  block_timestamp < @date_to
 GROUP BY
   coin_address,
   block_date

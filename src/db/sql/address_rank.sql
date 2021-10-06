@@ -54,7 +54,7 @@ stats_entry AS (
   SELECT
     coin_address, address, SUM(ABS(value))/2 AS volume
   FROM volume_entry
-  WHERE block_timestamp >= @from_date
+  WHERE block_timestamp >= @date_from
   GROUP BY coin_address, address
 ),
 rank_entry AS (
