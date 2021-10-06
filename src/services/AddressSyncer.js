@@ -118,15 +118,15 @@ class AddressSyncer {
   }
 
   async syncCoinHolders() {
-
-    // ----------Remove all ----------
-    await CoinHolder.deleteAll()
-    // -------------------------------
     const dateFrom = DateTime.utc()
       .minus({ month: this.ADDRESS_RANK_PERIOD })
       .toFormat('yyyy-MM-dd')
     const platforms = await this.getPlatforms()
     const coinHolders = await bigquery.getTopCoinHolders(platforms.tokens, dateFrom, this.ADDRESSES_PER_COIN)
+
+    // ----------Remove previous records ----------
+    await CoinHolder.deleteAll()
+    // --------------------------------------------
 
     coinHolders.forEach(data => {
       return this.upsertCoinHolders(
@@ -138,16 +138,15 @@ class AddressSyncer {
   }
 
   async syncAddressRanks() {
-
-    // ----------Remove all ----------
-    await AddressRank.deleteAll()
-    // -------------------------------
-
     const dateFrom = DateTime.utc()
       .minus({ month: this.ADDRESS_RANK_PERIOD })
       .toFormat('yyyy-MM-dd')
     const platforms = await this.getPlatforms()
     const addressRanks = await bigquery.getTopAddresses(platforms.tokens, dateFrom, this.ADDRESSES_PER_COIN)
+
+    // ----------Remove previous records ----------
+    await AddressRank.deleteAll()
+    // --------------------------------------------
 
     addressRanks.forEach(data => {
       return this.upsertAddressRanks(
