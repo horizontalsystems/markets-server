@@ -9,6 +9,8 @@ const FundsInvested = require('./models/FundsInvested')
 const Treasury = require('./models/Trasures')
 const Transaction = require('./models/Transaction')
 const Address = require('./models/Address')
+const CoinHolder = require('./models/CoinHolder')
+const AddressRank = require('./models/AddressRank')
 
 const config = configJson[process.env.NODE_ENV || 'development']
 const sequelize = new Sequelize(
@@ -28,7 +30,9 @@ const db = {
   FundsInvested: FundsInvested.init(sequelize, Sequelize),
   Treasury: Treasury.init(sequelize, Sequelize),
   Transaction: Transaction.init(sequelize, Sequelize),
-  Address: Address.init(sequelize, Sequelize)
+  Address: Address.init(sequelize, Sequelize),
+  AddressRank: AddressRank.init(sequelize, Sequelize),
+  CoinHolder: CoinHolder.init(sequelize, Sequelize)
 }
 
 // This creates relationships in the ORM
