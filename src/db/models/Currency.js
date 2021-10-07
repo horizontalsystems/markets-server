@@ -22,11 +22,6 @@ class Currency extends SequelizeModel {
       }
     )
   }
-
-  static getCurrencyCodes() {
-    return Currency.query(`SELECT code FROM currencies where code<>\\'${this.baseCurrency}'`)
-  }
-
 }
 
 module.exports = Currency

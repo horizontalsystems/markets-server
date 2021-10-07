@@ -89,7 +89,7 @@ class CurrencyPriceSyncer {
 
     currencies.forEach(({ id, code }) => {
       idsMap[code] = id
-      if (code !== 'usd') {
+      if (code !== Currency.baseCurrency) {
         codes.push(code)
       }
     })
