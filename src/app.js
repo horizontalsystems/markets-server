@@ -4,17 +4,20 @@ const logger = require('./config/logger')
 const sequelize = require('./db/sequelize')
 const app = require('./config/express')
 
+const CurrencyPriceSyncer = require('./services/CurrencyPriceSyncer')
 const TransactionSyncer = require('./services/TransactionSyncer')
 const AddressSyncer = require('./services/AddressSyncer')
 
 async function start() {
   const transactionSyncer = new TransactionSyncer()
   const addressSyncer = new AddressSyncer()
+  const currencyPriceSyncer = new CurrencyPriceSyncer()
 
   // Sync all defined models to the DB
   await sequelize.sync()
 
   // Run services & syncers
+  await currencyPriceSyncer.start()
   await transactionSyncer.start()
   await addressSyncer.start()
 

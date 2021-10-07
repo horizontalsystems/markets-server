@@ -5,6 +5,17 @@ const axios = require('axios')
     timeout: 180000
   })
 
+exports.getCoinPrice = function getCoinPrice(coinIds, currencies) {
+  const query = querystring.stringify({
+    ids: coinIds.join(','),
+    vs_currencies: currencies.join(','),
+  })
+
+  return axios
+    .get(`/simple/price?${query}`)
+    .then(resp => resp.data) // eslint-disable-line
+}
+
 exports.getMarkets = function getMarkets(coinIds, page, perPage) {
   const params = {
     vs_currency: 'usd',
