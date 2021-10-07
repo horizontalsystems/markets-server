@@ -70,7 +70,7 @@ class CurrencyPriceSyncer {
     const pricesResponse = await coingecko.getCoinPrice([sourceCoin], currencies.codes)
     const expiresAt = DateTime.utc()
       .plus(dateExpiresIn)
-      .toFormat('yyyy-MM-dd HH:00:00')
+      .toFormat('yyyy-MM-dd HH:mm:00')
 
     const prices = currencies.codes.map(code => ({
       date,
