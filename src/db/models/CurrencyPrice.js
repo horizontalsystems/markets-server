@@ -23,7 +23,7 @@ class CurrencyPrice extends SequelizeModel {
         tableName: 'currency_prices',
         indexes: [{
           unique: true,
-          fields: ['date', 'target_currency_id']
+          fields: ['date', 'currency_id']
         }]
       }
     )
@@ -32,8 +32,8 @@ class CurrencyPrice extends SequelizeModel {
   static associate(models) {
     CurrencyPrice.belongsTo(models.Currency, {
       foreignKey: {
-        name: 'targetCurrencyId',
-        field: 'target_currency_id'
+        name: 'currencyId',
+        field: 'currency_id'
       }
     })
   }
