@@ -50,6 +50,7 @@ class DexVolumeSyncer extends SyncScheduler {
     const platforms = await this.getPlatforms()
     const volumesV2 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.tokens, datePeriod, 'uniswap_v2')
     const volumesV3 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.tokens, datePeriod, 'uniswap_v3')
+    const volumesSushi = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.tokens, datePeriod, 'sushi')
 
     volumesV2.forEach(transfer => {
       return this.upsertDexVolume(
@@ -68,6 +69,16 @@ class DexVolumeSyncer extends SyncScheduler {
         platforms.tokensMap[transfer.address],
         dateExpiresIn,
         'uniswap_v3'
+      )
+    })
+
+    volumesSushi.forEach(transfer => {
+      return this.upsertDexVolume(
+        transfer.date.value,
+        transfer.volume,
+        platforms.tokensMap[transfer.address],
+        dateExpiresIn,
+        'sushi'
       )
     })
   }

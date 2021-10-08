@@ -49,6 +49,7 @@ class DexLiquiditySyncer extends SyncScheduler {
     const platforms = await this.getPlatforms(dateFrom, 'uniswap_v2')
     const liquidityV2 = await bigquery.getDexLiquidity(dateFrom, dateTo, platforms.tokens, datePeriod, 'uniswap_v2_bydate')
     const liquidityV3 = await bigquery.getDexLiquidity(dateFrom, dateTo, platforms.tokens, datePeriod, 'uniswap_v3_bydate')
+    const liquiditySushi = await bigquery.getDexLiquidity(dateFrom, dateTo, platforms.tokens, datePeriod, 'sushi_bydate')
 
     liquidityV2.forEach(liquidity => this.upsertDexLiquidity(
       liquidity.date.value,
@@ -64,6 +65,14 @@ class DexLiquiditySyncer extends SyncScheduler {
       platforms.tokensMap[liquidity.address],
       dateExpiresIn,
       'uniswap_v3'
+    ))
+
+    liquiditySushi.forEach(liquidity => this.upsertDexLiquidity(
+      liquidity.date.value,
+      liquidity.volume,
+      platforms.tokensMap[liquidity.address],
+      dateExpiresIn,
+      'sushi'
     ))
   }
 

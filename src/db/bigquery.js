@@ -6,9 +6,14 @@ const transactionStatsSQL = requireFile('db/sql/transaction_stats.sql')
 const addressRankSQL = requireFile('db/sql/address_rank.sql')
 const addressStatsSQL = requireFile('db/sql/address_stats.sql')
 const coinHoldersSQL = requireFile('db/sql/coin_holders.sql')
-const uniswapV2VolumeSql = requireFile('db/sql/uniswap_v2_volumes.sql')
-const uniswapV3VolumeSql = requireFile('db/sql/uniswap_v3_volumes.sql')
+const dexVolume = {
+  sushi: requireFile('db/sql/sushi_volumes.sql'),
+  uniswap_v2: requireFile('db/sql/uniswap_v2_volumes.sql'),
+  uniswap_v3: requireFile('db/sql/uniswap_v3_volumes.sql'),
+}
 const dexLiquidity = {
+  sushi: requireFile('db/sql/sushi_liquidity.sql'),
+  sushi_bydate: requireFile('db/sql/sushi_liquidity_bydate.sql'),
   uniswap_v2: requireFile('db/sql/uniswap_v2_liquidity.sql'),
   uniswap_v3: requireFile('db/sql/uniswap_v3_liquidity.sql'),
   uniswap_v2_bydate: requireFile('db/sql/uniswap_v2_liquidity_bydate.sql'),
@@ -54,14 +59,8 @@ exports.getDexLiquidity = async (dateFrom, dateTo, tokens, period, queryType) =>
   return rows
 }
 
-exports.getDexVolumes = async (dateFrom, dateTo, tokens, period, exchange) => {
-  let query
-  if (exchange === 'uniswap_v2') {
-    query = uniswapV2VolumeSql
-  } else {
-    query = uniswapV3VolumeSql
-  }
-
+exports.getDexVolumes = async (dateFrom, dateTo, tokens, period, queryType) => {
+  const query = dexVolume[queryType]
   const [job] = await bigquery.createQueryJob({
     query,
     location: 'US',
