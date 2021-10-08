@@ -74,7 +74,7 @@ class CurrencyPriceSyncer {
 
     const prices = currencies.codes.map(code => ({
       date,
-      targetCurrencyId: currencies.idsMap[code],
+      currencyId: currencies.idsMap[code],
       price: pricesResponse[sourceCoin][code],
       expires_at: expiresAt
     }))
@@ -102,7 +102,7 @@ class CurrencyPriceSyncer {
 
   upsertCurrencyPrices(prices) {
     CurrencyPrice.bulkCreate(prices, {
-      updateOnDuplicate: ['price', 'targetCurrencyId']
+      updateOnDuplicate: ['price', 'currencyId']
     }).then(([result]) => {
       console.log(JSON.stringify(result.dataValues))
     }).catch(err => {
