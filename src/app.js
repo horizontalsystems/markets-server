@@ -8,11 +8,13 @@ const CurrencyPriceSyncer = require('./services/CurrencyPriceSyncer')
 const TransactionSyncer = require('./services/TransactionSyncer')
 const DexVolumeSyncer = require('./services/DexVolumeSyncer')
 const AddressSyncer = require('./services/AddressSyncer')
+const DexLiquiditySyncer = require('./services/DexLiquiditySyncer')
 
 async function start() {
   const transactionSyncer = new TransactionSyncer()
   const dexVolumeSyncer = new DexVolumeSyncer()
   const addressSyncer = new AddressSyncer()
+  const dexLiquiditySyncer = new DexLiquiditySyncer()
   const currencyPriceSyncer = new CurrencyPriceSyncer()
 
   // Sync all defined models to the DB
@@ -23,6 +25,7 @@ async function start() {
   await transactionSyncer.start()
   await dexVolumeSyncer.start()
   await addressSyncer.start()
+  await dexLiquiditySyncer.start()
 
   // Listen to requests
   app.listen(process.env.PORT, () => {

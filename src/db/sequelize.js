@@ -9,6 +9,7 @@ const FundsInvested = require('./models/FundsInvested')
 const Treasury = require('./models/Trasures')
 const Transaction = require('./models/Transaction')
 const DexVolume = require('./models/DexVolume')
+const DexLiquidity = require('./models/DexLiquidity')
 const Address = require('./models/Address')
 const CoinHolder = require('./models/CoinHolder')
 const AddressRank = require('./models/AddressRank')
@@ -34,6 +35,7 @@ const db = {
   Treasury: Treasury.init(sequelize, Sequelize),
   Transaction: Transaction.init(sequelize, Sequelize),
   DexVolume: DexVolume.init(sequelize, Sequelize),
+  DexLiquidity: DexLiquidity.init(sequelize, Sequelize),
   Address: Address.init(sequelize, Sequelize),
   AddressRank: AddressRank.init(sequelize, Sequelize),
   CoinHolder: CoinHolder.init(sequelize, Sequelize),

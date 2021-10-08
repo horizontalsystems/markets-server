@@ -8,6 +8,13 @@ const addressStatsSQL = requireFile('db/sql/address_stats.sql')
 const coinHoldersSQL = requireFile('db/sql/coin_holders.sql')
 const uniswapV2VolumeSql = requireFile('db/sql/uniswap_v2_volumes.sql')
 const uniswapV3VolumeSql = requireFile('db/sql/uniswap_v3_volumes.sql')
+const dexLiquidity = {
+  uniswap_v2: requireFile('db/sql/uniswap_v2_liquidity.sql'),
+  uniswap_v3: requireFile('db/sql/uniswap_v3_liquidity.sql'),
+  uniswap_v2_bydate: requireFile('db/sql/uniswap_v2_liquidity_bydate.sql'),
+  uniswap_v3_bydate: requireFile('db/sql/uniswap_v3_liquidity_bydate.sql')
+}
+
 const bigquery = new BigQuery()
 
 exports.getTransactionsStats = async (dateFrom, dateTo, tokens, period) => {
@@ -18,6 +25,25 @@ exports.getTransactionsStats = async (dateFrom, dateTo, tokens, period) => {
       dateFrom,
       dateTo,
       period,
+      supported_tokens: tokens
+    }
+  })
+
+  logger.info(`Job ${job.id} started.`)
+
+  const [rows] = await job.getQueryResults()
+  return rows
+}
+
+exports.getDexLiquidity = async (dateFrom, dateTo, tokens, period, queryType) => {
+  const query = dexLiquidity[queryType]
+  const [job] = await bigquery.createQueryJob({
+    query,
+    location: 'US',
+    params: {
+      period,
+      date_from: dateFrom,
+      date_to: dateTo,
       supported_tokens: tokens
     }
   })
