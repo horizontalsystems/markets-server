@@ -10,6 +10,8 @@ burning AS (
     blockchain-etl.ethereum_uniswap.UniswapV3Pool_event_Burn B,
     blockchain-etl.ethereum_uniswap.UniswapV3Factory_event_PoolCreated P
   WHERE B.contract_address = P.pool
+    AND B.block_timestamp >= @date_from
+    AND B.block_timestamp < @date_to
   GROUP BY token0, token1, pool
 ),
 minting AS (
@@ -21,6 +23,8 @@ minting AS (
     blockchain-etl.ethereum_uniswap.UniswapV3Pool_event_Mint M,
     blockchain-etl.ethereum_uniswap.UniswapV3Factory_event_PoolCreated P
   WHERE M.contract_address = P.pool
+    AND M.block_timestamp >= @date_from
+    AND M.block_timestamp < @date_to
   GROUP BY token0, token1, pool
 ),
 swapping AS (
@@ -32,6 +36,8 @@ swapping AS (
     blockchain-etl.ethereum_uniswap.UniswapV3Pool_event_Swap S,
     blockchain-etl.ethereum_uniswap.UniswapV3Factory_event_PoolCreated P
   WHERE S.contract_address = P.pool
+    AND S.block_timestamp >= @date_from
+    AND S.block_timestamp < @date_to
   GROUP BY token0, token1, pool
 ),
 amounts AS (
@@ -53,8 +59,9 @@ v3 AS (
 SELECT
   token as address,
   SUM (amount)/pow(10, T.decimals) AS volume,
+  TIMESTAMP_SUB(timestamp(@date_to), INTERVAL 1 DAY) as date
 FROM
   v3,
   supported_tokens T
 WHERE v3.token = T.address
-GROUP BY token, T.decimals
+GROUP BY token, date, T.decimals

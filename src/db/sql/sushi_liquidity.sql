@@ -87,7 +87,8 @@ sushi AS (
 )
 SELECT
   token as address,
-  SUM (sum0)/pow(10, T.decimals) AS volume
+  SUM (sum0)/pow(10, T.decimals) AS volume,
+  TIMESTAMP_SUB(timestamp(@date_to), INTERVAL 1 DAY) as date
  FROM sushi, supported_tokens T
 WHERE sushi.token = T.address
-GROUP BY token, T.decimals
+GROUP BY token, date, T.decimals
