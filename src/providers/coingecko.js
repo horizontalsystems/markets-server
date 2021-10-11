@@ -1,3 +1,4 @@
+const { DateTime } = require('luxon')
 const querystring = require('querystring')
 const axios = require('axios')
   .create({
@@ -52,6 +53,7 @@ exports.getCoinInfo = function getMarketInfo(id) {
 }
 
 function normalizeMarkets(markets) {
+  const updatedDate = DateTime.now().toISO()
   return markets.map(coin => ({
     uid: coin.id,
     name: coin.name,
@@ -86,7 +88,7 @@ function normalizeMarkets(markets) {
       // total_value_locked: coin.total_value_locked
     },
 
-    last_updated: coin.last_updated
+    last_updated: updatedDate
   }))
 }
 
