@@ -1,17 +1,25 @@
+const sinon = require('sinon')
 const request = require('supertest')
-const httpStatus = require('http-status')
-const { expect } = require('chai')
-const app = require('../../app')
+
+const Coin = require('../../db/models/Coin')
+const app = require('../../config/express')
 
 describe('Coins API', async () => {
-  describe('GET /v1/coin', () => {
-    it('gets "OK" message', () => {
-      return request(app)
-        .get('/coin')
-        .expect(httpStatus.OK)
-        .then(async res => {
-          expect(res.body).to.eql({})
-        })
+
+  afterEach(() => {
+    sinon.restore()
+  })
+
+  describe('GET /v1/coins', () => {
+    beforeEach(() => {
+      sinon.stub(Coin, 'findAll').returns([])
+    })
+
+    it('responds with json', done => {
+      request(app)
+        .get('/v1/coins')
+        .expect('Content-Type', /json/)
+        .expect(200, done)
     })
   })
 })

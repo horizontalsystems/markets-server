@@ -15,8 +15,8 @@
     "lint": "eslint ./src/ --ignore-path .gitignore --ignore-pattern internals/scripts",
     "lint:fix": "yarn lint --fix",
     "lint:watch": "yarn lint --watch",
-    "test": "cross-env PORT=9001 mocha --timeout 20000 --exit --recursive src/api/**/*.spec.js",
-    "test:watch": "cross-env PORT=9001 mocha --watch src/api/**/*.spec.js",
+    "test": "mocha './src/**/*.spec.js'",
+    "test:watch": "nodemon --watch ./src --exec \"mocha 'src/**/*.spec.js'\"",
     "coverage": "nyc --reporter=html --reporter=text npm run test",
     "docs": "apidoc -i src/api -o docs",
     "erd": "node ./src/db/erd-diagram.js"
@@ -68,6 +68,6 @@
     "opn-cli": "^5.0.0",
     "sinon": "^11.1.2",
     "sinon-chai": "^3.0.0",
-    "supertest": "^6.1.3"
+    "supertest": "^6.1.6"
   }
 }
