@@ -2,15 +2,18 @@ const { BigQuery } = require('@google-cloud/bigquery')
 const { requireFile } = require('../utils')
 const logger = require('../config/logger')
 
+const bigquery = new BigQuery()
 const transactionStatsSQL = requireFile('db/sql/transaction_stats.sql')
 const addressRankSQL = requireFile('db/sql/address_rank.sql')
 const addressStatsSQL = requireFile('db/sql/address_stats.sql')
 const coinHoldersSQL = requireFile('db/sql/coin_holders.sql')
+
 const dexVolume = {
   sushi: requireFile('db/sql/sushi_volumes.sql'),
   uniswap_v2: requireFile('db/sql/uniswap_v2_volumes.sql'),
   uniswap_v3: requireFile('db/sql/uniswap_v3_volumes.sql'),
 }
+
 const dexLiquidity = {
   sushi: requireFile('db/sql/sushi_liquidity.sql'),
   sushi_bydate: requireFile('db/sql/sushi_liquidity_bydate.sql'),
@@ -19,8 +22,6 @@ const dexLiquidity = {
   uniswap_v2_bydate: requireFile('db/sql/uniswap_v2_liquidity_bydate.sql'),
   uniswap_v3_bydate: requireFile('db/sql/uniswap_v3_liquidity_bydate.sql')
 }
-
-const bigquery = new BigQuery()
 
 exports.getTransactionsStats = async (dateFrom, dateTo, tokens, period) => {
   const [job] = await bigquery.createQueryJob({
@@ -40,7 +41,7 @@ exports.getTransactionsStats = async (dateFrom, dateTo, tokens, period) => {
   return rows
 }
 
-exports.getDexLiquidity = async (dateFrom, dateTo, tokens, period, queryType) => {
+exports.getDexLiquidity = async (dateFrom, dateTo, period, tokens, queryType) => {
   const query = dexLiquidity[queryType]
   const [job] = await bigquery.createQueryJob({
     query,

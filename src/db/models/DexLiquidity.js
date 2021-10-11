@@ -36,6 +36,10 @@ class DexLiquidity extends SequelizeModel {
     })
   }
 
+  static async exists() {
+    return !!await DexLiquidity.findOne()
+  }
+
   static getWithPlatforms(date, exchange) {
     return DexLiquidity.query(`
       SELECT

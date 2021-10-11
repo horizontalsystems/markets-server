@@ -1,75 +1,70 @@
 const { DateTime } = require('luxon')
 const Transaction = require('../db/models/Transaction')
 const Platform = require('../db/models/Platform')
-const SyncScheduler = require('./SyncScheduler')
 const bigquery = require('../db/bigquery')
+const Syncer = require('./Syncer')
 
-class TransactionSyncer extends SyncScheduler {
+class TransactionSyncer extends Syncer {
 
-  constructor() {
-    super()
-
-    this.on('on-tick-1hour', params => this.sync1HourlyStats(params))
-    this.on('on-tick-4hour', params => this.sync4HourlyStats(params))
-    this.on('on-tick-1day', params => this.syncDailyStats(params))
+  async start() {
+    await this.syncHistorical()
+    await this.syncLatest()
   }
 
-  async sync1HourlyStats(params) {
-    await this.syncStats(
-      params.dateFrom,
-      params.dateTo,
-      params.dateExpiresIn,
-      '1h'
-    )
-    await this.deleteExpired()
+  async syncHistorical() {
+    if (await Transaction.exists()) {
+      return
+    }
+
+    await this.syncMonthlyStats(this.syncParamsHistorical('1d'))
+    await this.syncWeeklyStats(this.syncParamsHistorical('4h'))
+    await this.syncDailyStats(this.syncParamsHistorical('1h'))
   }
 
-  async sync4HourlyStats(params) {
-    await this.syncStats(
-      params.dateFrom,
-      params.dateTo,
-      params.dateExpiresIn,
-      '1h'
-    )
+  async syncLatest() {
+    this.cron('1h', this.syncDailyStats)
+    this.cron('4h', this.syncWeeklyStats)
+    this.cron('1d', this.syncMonthlyStats)
   }
 
-  async syncDailyStats(params) {
-    await this.syncStats(
-      params.dateFrom,
-      params.dateTo,
-      params.dateExpiresIn,
-      '1h'
-    )
-  }
-
-  async deleteExpired() {
+  async syncDailyStats(dateParams) {
+    await this.syncStats(dateParams, '1h')
     await Transaction.deleteExpired()
   }
 
-  async syncStats(dateFrom, dateTo, dateExpiresIn, dateWindow) {
-    const platforms = await this.getPlatforms()
-    const transactions = await bigquery.getTransactionsStats(dateFrom, dateTo, platforms.tokens, dateWindow)
+  async syncWeeklyStats(dateParams) {
+    await this.syncStats(dateParams, '4h')
+  }
 
-    transactions.forEach(transfer => {
-      return this.upsertTransaction(
-        transfer.count,
-        transfer.volume,
-        transfer.date.value,
-        platforms.tokensMap[transfer.address],
-        dateExpiresIn
-      )
-    })
+  async syncMonthlyStats(dateParams) {
+    await this.syncStats(dateParams, '1d')
+  }
+
+  async syncStats({ dateFrom, dateTo, dateExpiresIn }, datePeriod) {
+    const platforms = await this.getPlatforms()
+    const transactions = await bigquery.getTransactionsStats(dateFrom, dateTo, platforms.tokens, datePeriod)
+
+    transactions.forEach(transaction => this.upsertTransaction(
+      transaction.count,
+      transaction.volume,
+      transaction.date.value,
+      platforms.tokensMap[transaction.address],
+      dateExpiresIn
+    ))
   }
 
   upsertTransaction(count, volume, date, platformId, expireDuration) {
-    const dateExpire = DateTime.fromISO(date)
-      .plus(expireDuration)
+    let expiresAt = null
+    if (expireDuration) {
+      expiresAt = DateTime.fromISO(date)
+        .plus(expireDuration)
+    }
 
     Transaction.upsert({
       count,
       volume,
       date,
-      expires_at: dateExpire,
+      expires_at: expiresAt,
       platform_id: platformId
     })
       .then(([transaction]) => {

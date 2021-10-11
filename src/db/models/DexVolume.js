@@ -36,6 +36,10 @@ class DexVolume extends SequelizeModel {
     })
   }
 
+  static async exists() {
+    return !!await DexVolume.findOne()
+  }
+
   static deleteExpired() {
     return DexVolume.query('DELETE FROM dex_volumes where expires_at <= NOW()')
   }

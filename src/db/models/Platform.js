@@ -31,12 +31,19 @@ class Platform extends SequelizeModel {
     })
   }
 
-  static async findByCoinUID(uid) {
-    const [platform] = await Platform.query(`
+  static async findByCoinUID(uid, type = 'erc20') {
+    const query = `
       SELECT platforms.* FROM platforms
       INNER JOIN coins
-      ON coins.id = platforms.coin_id AND coins.uid = '${uid}'
-    `)
+         ON coins.id = platforms.coin_id
+        AND coins.uid = :uid
+      WHERE platforms.type = :type
+    `
+
+    const [platform] = await Platform.query(query, {
+      uid,
+      type
+    })
 
     return platform
   }
@@ -56,7 +63,7 @@ class Platform extends SequelizeModel {
       FROM platforms 
       WHERE type = 'erc20'
         AND decimals IS NOT NULL
-        AND address IS NOT NULL
+        AND address = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
     `)
   }
 }

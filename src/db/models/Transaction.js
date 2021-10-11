@@ -17,10 +17,7 @@ class Transaction extends SequelizeModel {
           type: DataTypes.DATE,
           allowNull: false
         },
-        expires_at: {
-          type: DataTypes.DATE,
-          allowNull: false
-        }
+        expires_at: DataTypes.DATE
       },
       {
         sequelize,
@@ -37,6 +34,10 @@ class Transaction extends SequelizeModel {
     Transaction.belongsTo(models.Platform, {
       foreignKey: 'platform_id'
     })
+  }
+
+  static async exists() {
+    return !!await Transaction.findOne()
   }
 
   static deleteExpired() {

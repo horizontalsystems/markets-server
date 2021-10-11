@@ -125,7 +125,7 @@ class Coin extends SequelizeModel {
       return []
     }
 
-    const query = (`
+    const query = `
       SELECT 
         ${Coin.truncateDateWindow('date', window)} as date,
         SUM(count) AS count,
@@ -135,7 +135,7 @@ class Coin extends SequelizeModel {
         AND date >= :date_from
       GROUP by 1
       ORDER by date
-    `)
+    `
 
     return Coin.query(query, {
       platform_id: platform.id,

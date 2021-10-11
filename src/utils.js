@@ -1,3 +1,4 @@
+const { DateTime } = require('luxon')
 const fs = require('fs')
 const path = require('path')
 
@@ -5,13 +6,10 @@ exports.sleep = async (timeout = 1000) => {
   await new Promise(resolve => setTimeout(resolve, timeout))
 }
 
-exports.isSameDay = date => {
-  const today = new Date()
-  return (
-    today.getFullYear() === date.getFullYear()
-    && today.getDate() === date.getDate()
-    && today.getMonth() === date.getMonth()
-  )
+exports.utcDate = (format, duration = {}) => {
+  return DateTime.utc()
+    .plus(duration)
+    .toFormat(format)
 }
 
 exports.requireFile = file => {

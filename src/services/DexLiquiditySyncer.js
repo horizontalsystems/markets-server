@@ -1,79 +1,104 @@
 const { DateTime } = require('luxon')
+const { utcDate } = require('../utils')
 const DexLiquidity = require('../db/models/DexLiquidity')
-const SyncScheduler = require('./SyncScheduler')
 const bigquery = require('../db/bigquery')
+const Platform = require('../db/models/Platform')
+const Syncer = require('./Syncer')
 
-class DexLiquiditySyncer extends SyncScheduler {
+class DexLiquiditySyncer extends Syncer {
 
-  constructor() {
-    super()
-
-    this.on('on-tick-1hour', params => this.sync1HourlyStats(params))
-    this.on('on-tick-4hour', params => this.sync4HourlyStats(params))
-    this.on('on-tick-1day', params => this.syncDailyStats(params))
+  async start() {
+    await this.syncHistorical()
+    await this.syncLatest()
   }
 
-  async sync1HourlyStats(params) {
-    await this.syncVolumes(
-      params.dateFrom,
-      params.dateTo,
-      params.dateExpiresIn,
-      '1h'
-    )
-    await this.deleteExpired()
+  async syncHistorical() {
+    if (await DexLiquidity.exists()) {
+      return
+    }
+
+    await this.syncStatsHistorical({
+      dateFrom: '2020-01-01',
+      dateTo: utcDate('yyyy-MM-dd', { days: -30 })
+    })
+
+    await this.syncMonthlyStats(this.syncParamsHistorical('1d'))
+    await this.syncWeeklyStats(this.syncParamsHistorical('4h'))
+    await this.syncDailyStats(this.syncParamsHistorical('1h'))
   }
 
-  async sync4HourlyStats(params) {
-    await this.syncVolumes(
-      params.dateFrom,
-      params.dateTo,
-      params.dateExpiresIn,
-      '1h'
-    )
+  async syncLatest() {
+    this.cron('1h', this.syncDailyStats)
+    this.cron('4h', this.syncWeeklyStats)
+    this.cron('1d', this.syncMonthlyStats)
   }
 
-  async syncDailyStats(params) {
-    await this.syncVolumes(
-      params.dateFrom,
-      params.dateTo,
-      params.dateExpiresIn,
-      '1h'
-    )
-  }
-
-  async deleteExpired() {
+  async syncDailyStats(dateParams) {
+    await this.syncStats(dateParams, '1h')
     await DexLiquidity.deleteExpired()
   }
 
-  async syncVolumes(dateFrom, dateTo, dateExpiresIn, datePeriod) {
-    const platforms = await this.getPlatforms(dateFrom, 'uniswap_v2')
-    const liquidityV2 = await bigquery.getDexLiquidity(dateFrom, dateTo, platforms.tokens, datePeriod, 'uniswap_v2_bydate')
-    const liquidityV3 = await bigquery.getDexLiquidity(dateFrom, dateTo, platforms.tokens, datePeriod, 'uniswap_v3_bydate')
-    const liquiditySushi = await bigquery.getDexLiquidity(dateFrom, dateTo, platforms.tokens, datePeriod, 'sushi_bydate')
+  async syncWeeklyStats(dateParams) {
+    await this.syncStats(dateParams, '4h')
+  }
 
-    liquidityV2.forEach(liquidity => this.upsertDexLiquidity(
-      liquidity.date.value,
-      liquidity.volume,
-      platforms.tokensMap[liquidity.address],
-      dateExpiresIn,
-      'uniswap_v2'
-    ))
+  async syncMonthlyStats(dateParams) {
+    await this.syncStats(dateParams, '1d')
+  }
 
-    liquidityV3.forEach(liquidity => this.upsertDexLiquidity(
-      liquidity.date.value,
-      liquidity.volume,
-      platforms.tokensMap[liquidity.address],
-      dateExpiresIn,
-      'uniswap_v3'
-    ))
+  async syncStats(dateParams, datePeriod) {
+    const uniV2Platforms = await DexLiquidity.getWithPlatforms(dateParams.dateFrom, 'uniswap_v2')
+    const uniV3platforms = await DexLiquidity.getWithPlatforms(dateParams.dateFrom, 'uniswap_v3')
+    const sushiPlatforms = await DexLiquidity.getWithPlatforms(dateParams.dateFrom, 'sushi')
 
-    liquiditySushi.forEach(liquidity => this.upsertDexLiquidity(
-      liquidity.date.value,
-      liquidity.volume,
-      platforms.tokensMap[liquidity.address],
+    await this.fetchStats(dateParams, datePeriod, 'uniswap_v2', 'uniswap_v2_bydate', this.mapPlatforms(uniV2Platforms))
+    await this.fetchStats(dateParams, datePeriod, 'uniswap_v3', 'uniswap_v3_bydate', this.mapPlatforms(uniV3platforms))
+    await this.fetchStats(dateParams, datePeriod, 'sushi', 'sushi_bydate', this.mapPlatforms(sushiPlatforms))
+  }
+
+  async syncStatsHistorical(dateParams) {
+    const platforms = this.mapPlatforms(await Platform.findErc20())
+
+    await this.fetchStats(dateParams, '1d', 'uniswap_v2', 'uniswap_v2', platforms)
+    await this.fetchStats(dateParams, '1d', 'uniswap_v3', 'uniswap_v3', platforms)
+    await this.fetchStats(dateParams, '1d', 'sushi', 'sushi', platforms)
+  }
+
+  async fetchStats({ dateFrom, dateTo, dateExpiresIn }, datePeriod, exchange, queryType, platforms) {
+    const records = await bigquery.getDexLiquidity(
+      dateFrom,
+      dateTo,
+      datePeriod,
+      platforms.tokens,
+      queryType
+    )
+
+    records.forEach(record => this.upsertDexLiquidity(
+      record.date.value,
+      record.volume,
+      platforms.tokensMap[record.address],
       dateExpiresIn,
-      'sushi'
+      exchange
     ))
+  }
+
+  mapPlatforms(platforms) {
+    const tokens = []
+    const tokensMap = {}
+
+    platforms.forEach(({ id, address, decimals, volume }) => {
+      tokensMap[address] = id
+      tokens.push({
+        address,
+        decimals,
+        volume
+      })
+    })
+
+    return {
+      tokens,
+      tokensMap
+    }
   }
 
   upsertDexLiquidity(date, volume, platformId, expireDuration, exchange) {
@@ -94,28 +119,8 @@ class DexLiquiditySyncer extends SyncScheduler {
         console.log(JSON.stringify(dexVolume.dataValues))
       })
       .catch(err => {
-        console.error('Error inserting dex volume', err.message)
+        console.error('Error inserting dex liquidity', err.message)
       })
-  }
-
-  async getPlatforms(date, exchange) {
-    const tokens = []
-    const tokensMap = {}
-    const platforms = await DexLiquidity.getWithPlatforms(date, exchange)
-
-    platforms.forEach(({ id, address, decimals, volume }) => {
-      tokensMap[address] = id
-      tokens.push({
-        address,
-        decimals,
-        volume
-      })
-    })
-
-    return {
-      tokens,
-      tokensMap
-    }
   }
 
 }

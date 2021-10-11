@@ -1,52 +1,46 @@
 const { DateTime } = require('luxon')
 const DexVolume = require('../db/models/DexVolume')
 const Platform = require('../db/models/Platform')
-const SyncScheduler = require('./SyncScheduler')
 const bigquery = require('../db/bigquery')
+const Syncer = require('./Syncer')
 
-class DexVolumeSyncer extends SyncScheduler {
+class DexVolumeSyncer extends Syncer {
 
-  constructor() {
-    super()
-
-    this.on('on-tick-1hour', params => this.sync1HourlyStats(params))
-    this.on('on-tick-4hour', params => this.sync4HourlyStats(params))
-    this.on('on-tick-1day', params => this.syncDailyStats(params))
+  async start() {
+    await this.syncHistorical()
+    await this.syncLatest()
   }
 
-  async sync1HourlyStats(params) {
-    await this.syncVolumes(
-      params.dateFrom,
-      params.dateTo,
-      params.dateExpiresIn,
-      '1h'
-    )
-    await this.deleteExpired()
+  async syncHistorical() {
+    if (await DexVolume.exists()) {
+      return
+    }
+
+    await this.syncMonthlyStats(this.syncParamsHistorical('1d'))
+    await this.syncWeeklyStats(this.syncParamsHistorical('4h'))
+    await this.syncDailyStats(this.syncParamsHistorical('1h'))
   }
 
-  async sync4HourlyStats(params) {
-    await this.syncVolumes(
-      params.dateFrom,
-      params.dateTo,
-      params.dateExpiresIn,
-      '1h'
-    )
+  async syncLatest() {
+    this.cron('1h', this.syncDailyStats)
+    this.cron('4h', this.syncWeeklyStats)
+    this.cron('1d', this.syncMonthlyStats)
   }
 
-  async syncDailyStats(params) {
-    await this.syncVolumes(
-      params.dateFrom,
-      params.dateTo,
-      params.dateExpiresIn,
-      '1h'
-    )
-  }
-
-  async deleteExpired() {
+  async syncDailyStats(dateParams) {
+    await this.syncStats(dateParams, '1h')
     await DexVolume.deleteExpired()
   }
 
-  async syncVolumes(dateFrom, dateTo, dateExpiresIn, datePeriod) {
+  async syncWeeklyStats(dateParams) {
+    await this.syncStats(dateParams, '4h')
+  }
+
+  async syncMonthlyStats(dateParams) {
+    await this.syncStats(dateParams, '1d')
+  }
+
+  async syncStats({ dateFrom, dateTo, dateExpiresIn }, datePeriod) {
     const platforms = await this.getPlatforms()
     const volumesV2 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.tokens, datePeriod, 'uniswap_v2')
     const volumesV3 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.tokens, datePeriod, 'uniswap_v3')
@@ -62,25 +56,21 @@ class DexVolumeSyncer extends SyncScheduler {
       )
     })
 
-    volumesV3.forEach(transfer => {
-      return this.upsertDexVolume(
-        transfer.date.value,
-        transfer.volume,
-        platforms.tokensMap[transfer.address],
-        dateExpiresIn,
-        'uniswap_v3'
-      )
-    })
+    volumesV3.forEach(transfer => this.upsertDexVolume(
+      transfer.date.value,
+      transfer.volume,
+      platforms.tokensMap[transfer.address],
+      dateExpiresIn,
+      'uniswap_v3'
+    ))
 
-    volumesSushi.forEach(transfer => {
-      return this.upsertDexVolume(
-        transfer.date.value,
-        transfer.volume,
-        platforms.tokensMap[transfer.address],
-        dateExpiresIn,
-        'sushi'
-      )
-    })
+    volumesSushi.forEach(transfer => this.upsertDexVolume(
+      transfer.date.value,
+      transfer.volume,
+      platforms.tokensMap[transfer.address],
+      dateExpiresIn,
+      'sushi'
+    ))
   }
 
   upsertDexVolume(date, volume, platformId, expireDuration, exchange) {
