@@ -119,21 +119,28 @@ class Coin extends SequelizeModel {
     `)
   }
 
-  static async getTransactions(uid, window = '1h') {
+  static async getTransactions(uid, window = '1h', dateFrom) {
     const platform = await Platform.findByCoinUID(uid)
     if (!platform) {
       return []
     }
 
-    return Coin.query(`
+    const query = (`
       SELECT 
         ${Coin.truncateDateWindow('date', window)} as date,
         SUM(count) AS count,
         SUM(volume) AS volume
       FROM transactions
-      WHERE platform_id = ${platform.id}
+      WHERE platform_id = :platform_id
+        AND date >= :date_from
       GROUP by 1
+      ORDER by date
     `)
+
+    return Coin.query(query, {
+      platform_id: platform.id,
+      date_from: dateFrom
+    })
   }
 
   static async getAddresses(uid, window = '1h') {
