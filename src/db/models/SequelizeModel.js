@@ -1,8 +1,11 @@
 const Sequelize = require('sequelize')
 
 class SequelizeModel extends Sequelize.Model {
-  static query(sql, type = Sequelize.QueryTypes.SELECT) {
-    return this.sequelize.query(sql, { type })
+  static query(sql, replacements = {}, type = Sequelize.QueryTypes.SELECT) {
+    return this.sequelize.query(sql, {
+      replacements,
+      type
+    })
   }
 
   static truncateDateWindow(field, window = '1h') {
