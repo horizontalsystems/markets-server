@@ -82,6 +82,7 @@ exports.serializeInfo = (coin, language) => {
       max_supply: nullOrString(market.max_supply),
       total_supply: nullOrString(market.total_supply),
       total_volume: nullOrString(market.total_volume),
+      market_cap: nullOrString(market.market_cap),
       market_cap_rank: market.market_cap_rank,
       circulating_supply: nullOrString(market.circulating_supply),
       fully_diluted_valuation: nullOrString(market.fully_diluted_valuation)
