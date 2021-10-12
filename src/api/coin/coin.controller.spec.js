@@ -47,7 +47,7 @@ describe('Coins API', async () => {
         .expect('Content-Type', /json/)
         .expect(200, {
           bitcoin: {
-            price: 57000 * usdToEurPrice,
+            price: String(57000 * usdToEurPrice),
             price_change_24h: '1',
             last_updated: 1634029699
           }
