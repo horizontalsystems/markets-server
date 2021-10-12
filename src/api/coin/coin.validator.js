@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
 const validator = require('validator')
+const Currency = require('../../db/models/Currency')
+const CurrencyPrice = require('../../db/models/CurrencyPrice')
 
 const invalidRequest = (res, message) => {
   res
@@ -26,6 +28,22 @@ exports.validateMarkets = ({ query }, res, next) => {
 
   if (!validator.isIn(orderField, ['price_change', 'market_cap', 'total_volume'])) {
     return invalidRequest(res, `'${orderField}' is not a valid value for 'orderField'`)
+  }
+
+  next()
+}
+
+exports.validateCurrency = async ({ query }, res, next) => {
+  const { currency } = query
+
+  if (currency && currency !== Currency.baseCurrency) {
+    const currencyPrice = await CurrencyPrice.getLatestCurrencyPrice(currency)
+    if (!currencyPrice) {
+      return invalidRequest(res, `Invalid currency :${currency}`)
+    }
+    res.locals.currencyPrice = currencyPrice
+  } else {
+    res.locals.currencyPrice = 1
   }
 
   next()

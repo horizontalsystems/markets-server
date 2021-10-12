@@ -19,3 +19,11 @@ exports.requireFile = file => {
 exports.nullOrString = value => {
   return value ? value.toString() : null
 }
+
+exports.valueInCurrency = (value, currency) => {
+  if (!value) {
+    return null
+  }
+
+  return String(value * currency)
+}
