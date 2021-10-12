@@ -43,7 +43,7 @@ exports.validateTopMarkets = ({ query }, res, next) => {
   const {
     top = 250,
     orderDirection = 'desc',
-    orderField = 'price_change',
+    orderField = 'market_cap',
     limit = top
   } = query
 

@@ -43,7 +43,7 @@ exports.topMarkets = async ({ query }, res) => {
   const {
     top = 250,
     orderDirection = 'desc',
-    orderField = 'price_change',
+    orderField = 'market_cap',
     limit = top
   } = query
 
