@@ -16,7 +16,7 @@ exports.serializeMarkets = (coins, currencyPrice) => {
 
     return ({
       uid: coin.uid,
-      price: coin.price * currencyPrice,
+      price: valueInCurrency(coin.price, currencyPrice),
       price_change_24h: nullOrString(priceChange['24h']),
       market_cap: valueInCurrency(market.market_cap, currencyPrice),
       total_volume: valueInCurrency(market.total_volume, currencyPrice),
@@ -42,7 +42,7 @@ exports.serializeAll = coins => {
 exports.serializePrices = (coins, currencyPrice) => {
   return coins.reduce((memo, coin) => {
     memo[coin.uid] = {
-      price: coin.price * currencyPrice,
+      price: valueInCurrency(coin.price, currencyPrice),
       price_change_24h: nullOrString(coin.price_change_24h),
       last_updated: coin.last_updated,
     }
@@ -63,7 +63,7 @@ exports.serializeInfo = (coin, language, currencyPrice) => {
     genesis_date: coin.genesis_date,
     description: descriptions[language],
     links: coin.links,
-    price: coin.price * currencyPrice,
+    price: valueInCurrency(coin.price, currencyPrice),
     price_change: {
       '1y': nullOrString(priceChange['1y']),
       '7d': nullOrString(priceChange['7d']),
