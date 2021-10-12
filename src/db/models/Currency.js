@@ -22,6 +22,19 @@ class Currency extends SequelizeModel {
       }
     )
   }
+
+  static async findByCurrencyCode(code) {
+    const [currency] = await Currency.query(`
+      SELECT  *
+      FROM currencies
+      WHERE code ILIKE :code
+      `,
+    {
+      code
+    })
+
+    return currency
+  }
 }
 
 module.exports = Currency

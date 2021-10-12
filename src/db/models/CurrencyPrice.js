@@ -1,4 +1,5 @@
 const SequelizeModel = require('./SequelizeModel')
+const Currency = require('./Currency')
 
 class CurrencyPrice extends SequelizeModel {
 
@@ -42,6 +43,29 @@ class CurrencyPrice extends SequelizeModel {
     return CurrencyPrice.query('DELETE FROM currency_prices where expires_at <= NOW()')
   }
 
+  static async getLatestCurrencyPrice(currencyCode) {
+    const currency = await Currency.findByCurrencyCode(currencyCode)
+    if (!currency) {
+      return null
+    }
+
+    const [result] = await CurrencyPrice.query(`
+      SELECT
+        price
+      FROM currency_prices
+      WHERE currency_id = :currencyId
+      ORDER BY date DESC
+      LIMIT 1`,
+    {
+      currencyId: currency.id
+    })
+
+    if (result) {
+      return parseFloat(result.price)
+    }
+
+    return null
+  }
 }
 
 module.exports = CurrencyPrice
