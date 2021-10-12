@@ -37,7 +37,7 @@ describe('Coins API', async () => {
       sinon.stub(CurrencyPrice, 'getLatestCurrencyPrice').returns(usdToEurPrice)
     })
 
-    it('Test Currency converter', done => {
+    it('tests currency converter', done => {
       request(app)
         .get('/v1/coins/markets_prices')
         .query({
@@ -55,7 +55,7 @@ describe('Coins API', async () => {
     })
   })
 
-  it('Test On Invalid Currency', done => {
+  it('validates currency code parameter ', done => {
     request(app)
       .get('/v1/coins/markets_prices')
       .query({
