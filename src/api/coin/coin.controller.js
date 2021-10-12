@@ -8,7 +8,7 @@ exports.index = async (req, res) => {
     include: Platform
   })
 
-  res.send(serializer.serializeAll(coins))
+  res.send(serializer.serializeAll(coins, res.locals.currencyPrice))
 }
 
 exports.markets = async ({ query }, res) => {
@@ -28,7 +28,7 @@ exports.markets = async ({ query }, res) => {
   }
 
   const coins = await Coin.getMarkets(uids, orderBy, orderDirection)
-  res.send(serializer.serializeMarkets(coins))
+  res.send(serializer.serializeMarkets(coins, res.locals.currencyPrice))
 }
 
 exports.marketsPrices = async ({ query }, res) => {
@@ -36,7 +36,7 @@ exports.marketsPrices = async ({ query }, res) => {
     .map(uid => `'${uid}'`)
 
   const coins = await Coin.getMarketsPrices(uids)
-  res.send(serializer.serializePrices(coins))
+  res.send(serializer.serializePrices(coins, res.locals.currencyPrice))
 }
 
 exports.topMarkets = async ({ query }, res) => {
@@ -55,7 +55,7 @@ exports.topMarkets = async ({ query }, res) => {
   }
 
   const coins = await Coin.getTopMarkets(top, orderBy, orderDirection, limit)
-  res.send(serializer.serializeMarkets(coins))
+  res.send(serializer.serializeMarkets(coins, res.locals.currencyPrice))
 }
 
 exports.show = async (req, res, next) => {
@@ -63,7 +63,7 @@ exports.show = async (req, res, next) => {
   const coin = await Coin.getCoinInfo(req.params.id)
 
   if (coin) {
-    res.send(serializer.serializeInfo(coin, language))
+    res.send(serializer.serializeInfo(coin, language, res.locals.currencyPrice))
   } else {
     next()
   }

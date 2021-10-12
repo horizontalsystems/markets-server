@@ -1,4 +1,4 @@
-const { nullOrString } = require('../../utils')
+const { nullOrString, valueInCurrency } = require('../../utils')
 
 function mapPlatforms(platforms) {
   return platforms.map(platform => ({
@@ -9,17 +9,17 @@ function mapPlatforms(platforms) {
   }))
 }
 
-exports.serializeMarkets = coins => {
+exports.serializeMarkets = (coins, currencyPrice) => {
   return coins.map(coin => {
     const market = coin.market_data || {}
     const priceChange = coin.price_change || {}
 
     return ({
       uid: coin.uid,
-      price: coin.price,
+      price: coin.price * currencyPrice,
       price_change_24h: nullOrString(priceChange['24h']),
-      market_cap: nullOrString(market.market_cap),
-      total_volume: nullOrString(market.total_volume),
+      market_cap: valueInCurrency(market.market_cap, currencyPrice),
+      total_volume: valueInCurrency(market.total_volume, currencyPrice),
     })
   })
 }
@@ -39,10 +39,10 @@ exports.serializeAll = coins => {
   })
 }
 
-exports.serializePrices = coins => {
+exports.serializePrices = (coins, currencyPrice) => {
   return coins.reduce((memo, coin) => {
     memo[coin.uid] = {
-      price: coin.price,
+      price: coin.price * currencyPrice,
       price_change_24h: nullOrString(coin.price_change_24h),
       last_updated: coin.last_updated,
     }
@@ -50,7 +50,7 @@ exports.serializePrices = coins => {
   }, {})
 }
 
-exports.serializeInfo = (coin, language) => {
+exports.serializeInfo = (coin, language, currencyPrice) => {
   const market = coin.market_data || {}
   const priceChange = coin.price_change || {}
   const descriptions = coin.description || {}
@@ -63,7 +63,7 @@ exports.serializeInfo = (coin, language) => {
     genesis_date: coin.genesis_date,
     description: descriptions[language],
     links: coin.links,
-    price: coin.price,
+    price: coin.price * currencyPrice,
     price_change: {
       '1y': nullOrString(priceChange['1y']),
       '7d': nullOrString(priceChange['7d']),
@@ -81,8 +81,8 @@ exports.serializeInfo = (coin, language) => {
     market_data: {
       max_supply: nullOrString(market.max_supply),
       total_supply: nullOrString(market.total_supply),
-      total_volume: nullOrString(market.total_volume),
-      market_cap: nullOrString(market.market_cap),
+      total_volume: valueInCurrency(market.total_volume, currencyPrice),
+      market_cap: valueInCurrency(market.market_cap, currencyPrice),
       market_cap_rank: market.market_cap_rank,
       circulating_supply: nullOrString(market.circulating_supply),
       fully_diluted_valuation: nullOrString(market.fully_diluted_valuation)
