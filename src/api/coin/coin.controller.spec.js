@@ -1,8 +1,8 @@
 const sinon = require('sinon')
 const request = require('supertest')
-
 const Coin = require('../../db/models/Coin')
 const app = require('../../config/express')
+const CurrencyPrice = require('../../db/models/CurrencyPrice')
 
 describe('Coins API', async () => {
 
@@ -21,5 +21,47 @@ describe('Coins API', async () => {
         .expect('Content-Type', /json/)
         .expect(200, done)
     })
+  })
+
+  describe('GET /v1/coins/markets_prices', () => {
+    const usdToEurPrice = 0.86
+    const marketPrice = {
+      uid: 'bitcoin',
+      price: 57000, // eur = 49020
+      price_change_24h: 1,
+      last_updated: 1634029699
+    }
+
+    beforeEach(() => {
+      sinon.stub(Coin, 'getMarketsPrices').returns([marketPrice])
+      sinon.stub(CurrencyPrice, 'getLatestCurrencyPrice').returns(usdToEurPrice)
+    })
+
+    it('Test Currency converter', done => {
+      request(app)
+        .get('/v1/coins/markets_prices')
+        .query({
+          uids: 'bitcoin',
+          currency: 'eur'
+        })
+        .expect('Content-Type', /json/)
+        .expect(200, {
+          bitcoin: {
+            price: 57000 * usdToEurPrice,
+            price_change_24h: '1',
+            last_updated: 1634029699
+          }
+        }, done);
+    })
+  })
+
+  it('Test On Invalid Currency', done => {
+    request(app)
+      .get('/v1/coins/markets_prices')
+      .query({
+        uids: 'bitcoin',
+        currency: 'seur'
+      })
+      .expect(422, done);
   })
 })
