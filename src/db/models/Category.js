@@ -1,6 +1,6 @@
-const { Model } = require('sequelize');
+const SequelizeModel = require('./SequelizeModel')
 
-class Category extends Model {
+class Category extends SequelizeModel {
 
   static init(sequelize, DataTypes) {
     return super.init(
@@ -30,6 +30,18 @@ class Category extends Model {
 
   static associate(models) {
     Category.belongsToMany(models.Coin, { through: 'coin_categories' })
+  }
+
+  static async getTopMarkets(uid) {
+    const query = (`
+      SELECT C.* 
+      FROM categories cat, coin_categories M, coins C
+      WHERE cat.uid = :uid
+        AND M.category_id = cat.id
+        AND M.coin_id = C.id
+    `)
+
+    return Category.query(query, { uid })
   }
 
 }
