@@ -12,14 +12,12 @@
   },
   "scripts": {
     "start": "nodemon ./src/app.js",
-    "lint": "eslint ./src/ --ignore-path .gitignore --ignore-pattern internals/scripts",
+    "lint": "eslint ./src/ --ignore-path .gitignore",
     "lint:fix": "yarn lint --fix",
-    "lint:watch": "yarn lint --watch",
     "test": "mocha './src/**/*.spec.js'",
     "test:watch": "nodemon --watch ./src --exec 'mocha src/**/*.spec.js'",
     "coverage": "nyc --reporter=html --reporter=text npm run test",
-    "docs": "apidoc -i src/api -o docs",
-    "erd": "node ./src/db/erd-diagram.js"
+    "docs": "apidoc -i src/api -o docs"
   },
   "keywords": [
     "express",
