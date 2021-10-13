@@ -1,14 +1,14 @@
 const { utcDate } = require('../../utils')
 const Coin = require('../../db/models/Coin')
 const Platform = require('../../db/models/Platform')
-const serializer = require('./coin.serializer')
+const serializer = require('./coins.serializer')
 
 exports.index = async (req, res) => {
   const coins = await Coin.findAll({
     include: Platform
   })
 
-  res.send(serializer.serializeAll(coins, res.locals.currencyPrice))
+  res.send(serializer.serializeAll(coins))
 }
 
 exports.markets = async ({ query }, res) => {

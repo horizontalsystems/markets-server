@@ -1,8 +1,8 @@
 const express = require('express')
-const controller = require('./language.controller')
+const controller = require('./token_info.controller')
 
 const router = express.Router()
 
-router.get('/', controller.index)
+router.get('/:type', controller.info)
 
 module.exports = router

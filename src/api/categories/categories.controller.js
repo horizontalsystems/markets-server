@@ -1,6 +1,6 @@
 const Category = require('../../db/models/Category')
 const serializer = require('./categories.serializer')
-const marketsSerializer = require('../coin/coin.serializer')
+const marketsSerializer = require('../coins/coins.serializer')
 
 exports.index = async (req, res) => {
   const categories = await Category.findAll()

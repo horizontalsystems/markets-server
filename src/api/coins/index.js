@@ -1,6 +1,6 @@
 const express = require('express')
-const coins = require('./coin.controller')
-const validator = require('./coin.validator')
+const coins = require('./coins.controller')
+const validator = require('./coins.validator')
 const currencyValidator = require('../currencies/currencies.validator')
 
 const router = express.Router()
