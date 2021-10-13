@@ -1,5 +1,6 @@
 const { CronJob } = require('cron')
 const { sleep } = require('../utils')
+const logger = require('../config/logger')
 const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
 
@@ -9,7 +10,7 @@ class AddressSyncer {
     this.cronJob = new CronJob({
       cronTime: '*/1 * * * * *', // every second
       onTick: this.syncSchedule.bind(this),
-      start: true
+      start: false
     })
   }
 
@@ -41,11 +42,11 @@ class AddressSyncer {
     const perPage = 500
     const coinIdsChunk = coinIds.splice(0, perPage)
 
-    console.log(`Syncing coins: ${coinIdsChunk.length} from ${coinIds.length}`)
+    logger.info(`Syncing coins: ${coinIdsChunk.length} from ${coinIds.length}`)
 
     const data = await this.fetchCoins(coinIdsChunk)
 
-    console.log(`Synced coins: ${data.length}`)
+    console.info(`Synced coins: ${data.length}`)
 
     this.upsertCoins(data, map)
 
@@ -65,11 +66,11 @@ class AddressSyncer {
     try {
       return await coingecko.getMarkets(coinIds)
     } catch (err) {
-      console.error(err)
+      logger.error(err)
 
       if (err.response && err.response.status === 429) {
         await sleep(30000)
-        console.log('Retrying')
+        logger.info('Retrying')
         return this.fetchCoins(coinIds, retry + 1)
       }
 
@@ -93,15 +94,13 @@ class AddressSyncer {
       const coin = map[item.coingecko_id]
 
       if (coin) {
-        coin.update(item, updateFields)
-          .catch(err => {
-            console.error(err)
-          })
+        coin.update(item, updateFields).catch(err => {
+          logger.error(err)
+        })
       } else {
-        Coin.create(data)
-          .catch(err => {
-            console.error(err)
-          })
+        Coin.create(data).catch(err => {
+          console.error(err)
+        })
       }
     }
   }
