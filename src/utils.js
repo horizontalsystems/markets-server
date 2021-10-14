@@ -20,10 +20,10 @@ exports.nullOrString = value => {
   return value ? value.toString() : null
 }
 
-exports.valueInCurrency = (value, currency) => {
+exports.valueInCurrency = (value, currencyRate) => {
   if (!value) {
     return null
   }
 
-  return String(value * currency)
+  return String(value * currencyRate)
 }

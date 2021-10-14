@@ -9,48 +9,49 @@ function mapPlatforms(platforms) {
   }))
 }
 
-exports.serializeMarkets = (coins, currencyPrice) => {
-  return coins.map(coin => {
-    const market = coin.market_data || {}
-    const priceChange = coin.price_change || {}
+function mapCoinAttribute(coin, field, currencyRate) {
+  switch (field) {
+    case 'price':
+      return valueInCurrency(coin.price, currencyRate)
+    case 'price_change_24h':
+      return nullOrString(coin.price_change['24h'])
+    case 'price_change_7d':
+      return nullOrString(coin.price_change['7d'])
+    case 'price_change_30d':
+      return nullOrString(coin.price_change['30d'])
+    case 'ath':
+      return nullOrString(coin.price_change.ath)
+    case 'atl':
+      return nullOrString(coin.price_change.atl)
+    case 'market_cap':
+      return valueInCurrency(coin.market_data.market_cap, currencyRate)
+    case 'market_cap_rank':
+      return coin.market_data.market_cap_rank
+    case 'total_volume':
+      return valueInCurrency(coin.market_data.total_volume, currencyRate)
+    case 'platforms':
+      return mapPlatforms(coin.Platforms)
 
-    return ({
-      uid: coin.uid,
-      price: valueInCurrency(coin.price, currencyPrice),
-      price_change_24h: nullOrString(priceChange['24h']),
-      market_cap: valueInCurrency(market.market_cap, currencyPrice),
-      total_volume: valueInCurrency(market.total_volume, currencyPrice),
-    })
-  })
+    default:
+      return coin[field]
+  }
 }
 
-exports.serializeAll = coins => {
-  return coins.map(coin => {
-    const market = coin.market_data || {}
-
-    return ({
-      uid: coin.uid,
-      name: coin.name,
-      code: coin.code,
-      coingecko_id: coin.coingecko_id,
-      market_cap_rank: market.market_cap_rank,
-      platforms: mapPlatforms(coin.Platforms),
-    })
-  })
-}
-
-exports.serializePrices = (coins, currencyPrice) => {
-  return coins.reduce((memo, coin) => {
-    memo[coin.uid] = {
-      price: valueInCurrency(coin.price, currencyPrice),
-      price_change_24h: nullOrString(coin.price_change_24h),
-      last_updated: coin.last_updated,
+exports.serializeList = (coins, fields, currencyRate) => {
+  return coins.map(item => {
+    const coin = {
+      uid: item.uid
     }
-    return memo
-  }, {})
+
+    fields.forEach(attribute => {
+      coin[attribute] = mapCoinAttribute(item, attribute, currencyRate)
+    })
+
+    return coin
+  })
 }
 
-exports.serializeInfo = (coin, language, currencyPrice) => {
+exports.serializeShow = (coin, language, currencyPrice) => {
   const market = coin.market_data || {}
   const priceChange = coin.price_change || {}
   const descriptions = coin.description || {}

@@ -23,7 +23,7 @@ describe('Coins API', async () => {
     })
   })
 
-  describe('GET /v1/coins/markets_prices', () => {
+  describe('GET /v1/coins/prices', () => {
     const usdToEurPrice = 0.86
     const marketPrice = {
       uid: 'bitcoin',
@@ -33,13 +33,13 @@ describe('Coins API', async () => {
     }
 
     beforeEach(() => {
-      sinon.stub(Coin, 'getMarketsPrices').returns([marketPrice])
+      sinon.stub(Coin, 'getPrices').returns([marketPrice])
       sinon.stub(CurrencyPrice, 'getLatestCurrencyPrice').returns(usdToEurPrice)
     })
 
     it('tests currency converter', done => {
       request(app)
-        .get('/v1/coins/markets_prices')
+        .get('/v1/coins/prices')
         .query({
           uids: 'bitcoin',
           currency: 'eur'
@@ -53,15 +53,16 @@ describe('Coins API', async () => {
           }
         }, done);
     })
+
+    it('validates currency code parameter ', done => {
+      request(app)
+        .get('/v1/coins/prices')
+        .query({
+          uids: 'bitcoin',
+          currency: 'seur'
+        })
+        .expect(422, done);
+    })
   })
 
-  it('validates currency code parameter ', done => {
-    request(app)
-      .get('/v1/coins/markets_prices')
-      .query({
-        uids: 'bitcoin',
-        currency: 'seur'
-      })
-      .expect(422, done);
-  })
 })

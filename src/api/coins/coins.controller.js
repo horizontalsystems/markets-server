@@ -3,59 +3,29 @@ const Coin = require('../../db/models/Coin')
 const Platform = require('../../db/models/Platform')
 const serializer = require('./coins.serializer')
 
-exports.index = async (req, res) => {
-  const coins = await Coin.findAll({
-    include: Platform
-  })
-
-  res.send(serializer.serializeAll(coins))
-}
-
-exports.markets = async ({ query }, res) => {
-  const {
-    orderDirection = 'desc',
-    orderField = 'price_change'
-  } = query
-
-  const uids = query.uids.split(',')
-    .map(uid => `'${uid}'`)
-
-  let orderBy
-  if (orderField === 'price_change') {
-    orderBy = 'price_change->\'24h\''
-  } else {
-    orderBy = `market_data->'${orderField}'`
+exports.index = async ({ query, currencyRate }, res) => {
+  const options = {
+    where: {},
+    order: [Coin.literal('market_data->\'market_cap\' DESC')]
   }
 
-  const coins = await Coin.getMarkets(uids, orderBy, orderDirection)
-  res.send(serializer.serializeMarkets(coins, res.locals.currencyPrice))
-}
-
-exports.marketsPrices = async ({ query }, res) => {
-  const uids = query.uids.split(',')
-    .map(uid => `'${uid}'`)
-
-  const coins = await Coin.getMarketsPrices(uids)
-  res.send(serializer.serializePrices(coins, res.locals.currencyPrice))
-}
-
-exports.topMarkets = async ({ query }, res) => {
-  const {
-    top = 250,
-    orderDirection = 'desc',
-    orderField = 'market_cap',
-    limit = top
-  } = query
-
-  let orderBy
-  if (orderField === 'price_change') {
-    orderBy = 'price_change->\'24h\''
-  } else {
-    orderBy = `market_data->'${orderField}'`
+  let fields = []
+  if (query.fields) {
+    fields = query.fields.split(',')
+  }
+  if (fields.includes('platforms')) {
+    options.include = Platform
+  }
+  if (query.limit) {
+    options.limit = query.limit
+  }
+  if (query.uids) {
+    options.where.uid = query.uids.split(',')
   }
 
-  const coins = await Coin.getTopMarkets(top, orderBy, orderDirection, limit)
-  res.send(serializer.serializeMarkets(coins, res.locals.currencyPrice))
+  const coins = await Coin.findAll(options)
+
+  res.send(serializer.serializeList(coins, fields, currencyRate))
 }
 
 exports.show = async (req, res, next) => {
@@ -63,7 +33,7 @@ exports.show = async (req, res, next) => {
   const coin = await Coin.getCoinInfo(req.params.id)
 
   if (coin) {
-    res.send(serializer.serializeInfo(coin, language, res.locals.currencyPrice))
+    res.send(serializer.serializeShow(coin, language, req.currencyRate))
   } else {
     next()
   }

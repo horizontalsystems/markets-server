@@ -43,28 +43,27 @@ class CurrencyPrice extends SequelizeModel {
     return CurrencyPrice.query('DELETE FROM currency_prices where expires_at <= NOW()')
   }
 
-  static async getLatestCurrencyPrice(currencyCode) {
-    const currency = await Currency.findByCurrencyCode(currencyCode)
+  static async getCurrencyRate(currencyCode = Currency.baseCurrency) {
+    const code = currencyCode.toLowerCase()
+    if (code === Currency.baseCurrency) {
+      return 1
+    }
+
+    const currency = await Currency.findByCode(code)
     if (!currency) {
       return null
     }
 
-    const [result] = await CurrencyPrice.query(`
-      SELECT
-        price
-      FROM currency_prices
-      WHERE currency_id = :currencyId
-      ORDER BY date DESC
-      LIMIT 1`,
-    {
-      currencyId: currency.id
+    const currencyPrice = await CurrencyPrice.findOne({
+      where: {
+        currency_id: currency.id
+      },
+      order: [
+        ['date', 'desc']
+      ]
     })
 
-    if (result) {
-      return parseFloat(result.price)
-    }
-
-    return null
+    return currencyPrice ? parseFloat(currencyPrice.price) : null
   }
 }
 

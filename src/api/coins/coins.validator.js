@@ -1,66 +1,19 @@
-const validator = require('validator')
+const { validate, Joi } = require('express-validation')
 
-const invalidRequest = (res, message) => {
-  res
-    .status(422)
-    .send({
-      error: message
+const options = {
+  keyByField: true
+}
+
+module.exports = {
+  // GET /v1/coins
+  validateCoins: validate({
+    query: Joi.object({
+      uids: Joi.string(),
+      fields: Joi.string(),
+      limit: Joi.number()
+        .min(1)
+        .max(4000),
+      currency: Joi.string()
     })
-}
-
-exports.validateMarkets = ({ query }, res, next) => {
-  const {
-    uids,
-    orderDirection = 'desc',
-    orderField = 'price_change'
-  } = query
-
-  if (!uids || !uids.length) {
-    return invalidRequest(res, '\'uids\' cannot be blank')
-  }
-
-  if (!validator.isIn(orderDirection, ['desc', 'asc'])) {
-    return invalidRequest(res, `'${orderDirection}' is not a valid value for 'orderDirection'`)
-  }
-
-  if (!validator.isIn(orderField, ['price_change', 'market_cap', 'total_volume'])) {
-    return invalidRequest(res, `'${orderField}' is not a valid value for 'orderField'`)
-  }
-
-  next()
-}
-
-exports.validateMarketsPrices = ({ query }, res, next) => {
-  if (!query.uids || !query.uids.length) {
-    return invalidRequest(res, '\'uids\' cannot be blank')
-  }
-
-  next()
-}
-
-exports.validateTopMarkets = ({ query }, res, next) => {
-  const {
-    top = 250,
-    orderDirection = 'desc',
-    orderField = 'market_cap',
-    limit = top
-  } = query
-
-  if (top < 1 || top > 1000) {
-    return invalidRequest(res, 'Invalid `top` value')
-  }
-
-  if (limit < 1 || limit > 1000) {
-    return invalidRequest(res, 'Invalid `limit` value')
-  }
-
-  if (!validator.isIn(orderDirection, ['desc', 'asc'])) {
-    return invalidRequest(res, `'${orderDirection}' is not a valid value for 'orderDirection'`)
-  }
-
-  if (!validator.isIn(orderField, ['price_change', 'market_cap', 'total_volume'])) {
-    return invalidRequest(res, `'${orderField}' is not a valid value for 'orderField'`)
-  }
-
-  next()
+  }, options),
 }

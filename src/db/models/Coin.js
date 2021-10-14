@@ -86,37 +86,18 @@ class Coin extends SequelizeModel {
     Coin.hasMany(models.FundsInvested)
   }
 
-  static getTopMarkets(count, orderBy, orderDirection, limit) {
-    return Coin.query(`
-      with top_coins as (
-        SELECT * FROM coins
-        ORDER BY market_data->'market_cap' DESC NULLS LAST
-        LIMIT ${count}
-      )
-      SELECT * FROM top_coins
-      ORDER BY ${orderBy} ${orderDirection} NULLS LAST
-      LIMIT ${limit}
-    `)
-  }
-
-  static getMarkets(uids, orderBy, orderDirection) {
-    return Coin.query(`
-      SELECT * FROM coins
-      WHERE uid IN (${uids})
-      ORDER BY ${orderBy} ${orderDirection} NULLS LAST
-    `)
-  }
-
-  static getMarketsPrices(uids) {
-    return Coin.query(`
+  static getPrices(uids) {
+    const query = `
       SELECT
         uid,
         price,
         price_change->'24h' as price_change_24h,
         EXTRACT(epoch FROM last_updated)::int AS last_updated
       FROM coins
-      WHERE uid in (${uids})
-    `)
+      WHERE uid IN (:uids)
+    `
+
+    return Coin.query(query, { uids })
   }
 
   static async getTransactions(uid, window = '1h', dateFrom) {

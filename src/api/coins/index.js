@@ -1,18 +1,15 @@
 const express = require('express')
-const coins = require('./coins.controller')
-const validator = require('./coins.validator')
-const currencyValidator = require('../currencies/currencies.validator')
+const controller = require('./coins.controller')
+const { validateCoins } = require('./coins.validator')
+const { setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
 
-router.get('/', coins.index)
-router.get('/markets', validator.validateMarkets, currencyValidator.validate, coins.markets)
-router.get('/markets_prices', validator.validateMarketsPrices, currencyValidator.validate, coins.marketsPrices)
-router.get('/top_markets', validator.validateTopMarkets, currencyValidator.validate, coins.topMarkets)
-router.get('/:id', currencyValidator.validate, coins.show)
-router.get('/:id/transactions', coins.transactions)
-router.get('/:id/addresses', coins.addresses)
-router.get('/:id/addresses_holders', coins.addressHolders)
-router.get('/:id/addresses_ranks', coins.addressRanks)
+router.get('/', validateCoins, setCurrencyRate, controller.index)
+router.get('/:id', setCurrencyRate, controller.show)
+router.get('/:id/transactions', controller.transactions)
+router.get('/:id/addresses', controller.addresses)
+router.get('/:id/addresses_holders', controller.addressHolders)
+router.get('/:id/addresses_ranks', controller.addressRanks)
 
 module.exports = router

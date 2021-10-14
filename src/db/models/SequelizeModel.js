@@ -8,6 +8,10 @@ class SequelizeModel extends Sequelize.Model {
     })
   }
 
+  static literal(value) {
+    return Sequelize.literal(value)
+  }
+
   static truncateDateWindow(field, window = '1h') {
     switch (window) {
       case '1h':

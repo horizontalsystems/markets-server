@@ -17,7 +17,7 @@
     "test": "mocha './src/**/*.spec.js'",
     "test:watch": "nodemon --watch ./src --exec 'mocha src/**/*.spec.js'",
     "coverage": "nyc --reporter=html --reporter=text npm run test",
-    "docs": "apidoc -i src/api -o docs"
+    "docs": "apidoc -i src -o docs"
   },
   "keywords": [
     "express",
@@ -38,6 +38,7 @@
     "express": "^4.17.1",
     "express-formidable": "^1.2.0",
     "express-session": "^1.17.2",
+    "express-validation": "^3.0.8",
     "helmet": "^4.6.0",
     "http-status": "^1.5.0",
     "lodash": "^4.17.21",
@@ -47,7 +48,6 @@
     "pg": "^8.7.1",
     "pm2": "^5.1.2",
     "sequelize": "^6.7.0",
-    "validator": "^13.6.0",
     "web3": "^1.6.0",
     "winston": "^3.3.3"
   },

@@ -4,7 +4,7 @@ const compress = require('compression')
 const methodOverride = require('method-override')
 const cors = require('cors')
 const helmet = require('helmet')
-const errors = require('./middlewares/error')
+const { ValidationError } = require('express-validation')
 const routes = require('./routes')
 const admin = require('./admin')
 
@@ -37,13 +37,17 @@ app.use(cors())
 // mount API v1 routes
 app.use('/v1', routes)
 
-// if error is not an instanceOf APIError, convert it.
-app.use(errors.converter)
+const errorHandler = (err, req, res, next) => {
+  if (err instanceof ValidationError) {
+    res.status(err.statusCode)
+  } else {
+    res.status(500)
+  }
 
-// catch 404 and forward to error handler
-app.use(errors.notFound)
+  res.json(err)
+}
 
-// error handler, send stacktrace only during development
-app.use(errors.handler)
+// error handler
+app.use(errorHandler)
 
 module.exports = app
