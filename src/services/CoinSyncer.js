@@ -4,7 +4,7 @@ const logger = require('../config/logger')
 const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
 
-class AddressSyncer {
+class CoinSyncer {
 
   constructor() {
     this.cronJob = new CronJob({
@@ -107,4 +107,4 @@ class AddressSyncer {
 
 }
 
-module.exports = AddressSyncer
+module.exports = CoinSyncer
