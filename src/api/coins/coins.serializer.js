@@ -30,10 +30,10 @@ function mapCoinAttribute(coin, field, currencyRate) {
       return nullOrString(coin.price_change['200d'])
     case 'price_change_1y':
       return nullOrString(coin.price_change['1y'])
-    case 'ath':
-      return nullOrString(coin.price_change.ath)
-    case 'atl':
-      return nullOrString(coin.price_change.atl)
+    case 'ath_percentage':
+      return nullOrString(coin.price_change.ath_change_percentage)
+    case 'atl_percentage':
+      return nullOrString(coin.price_change.atl_change_percentage)
     case 'market_cap':
       return valueInCurrency(coin.market_data.market_cap, currencyRate)
     case 'market_cap_rank':
@@ -86,5 +86,19 @@ exports.serializeShow = (coin, language, currencyPrice) => {
     },
     performance: coin.performance,
     categories: coin.Categories.map(category => category.uid)
+  }
+}
+
+exports.serializeDetails = (coin, currencyPrice) => {
+  console.log(coin)
+
+  return {
+    uid: coin.uid,
+    name: coin.name,
+    code: coin.code,
+    links: coin.links,
+    price: valueInCurrency(coin.price, currencyPrice),
+    security: coin.security,
+    funds_invested: coin.FundsInvesteds
   }
 }

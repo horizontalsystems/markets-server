@@ -12,7 +12,7 @@ const router = express.Router()
  * @apiGroup Coin
  *
  * @apiParam  {String=bitcoin,ethereum,...}   [uids]        Coin uids separated by comma
- * @apiParam  {String=name,code,price,price_change_[24h/7d/14d/200d/1y],ath,atl,market_cap,market_cap_rank,total_volume,platforms,coingecko_id
+ * @apiParam  {String=name,code,price,price_change_[24h/7d/14d,30d/200d/1y],ath_percentage,atl_percentage,market_cap,market_cap_rank,total_volume,platforms,coingecko_id
  *                                        }   [fields]      Coin's fields separated by comma
  * @apiParam  {Number{1-4000}}                [limit]       Coins per page
  * @apiUse    Currencies

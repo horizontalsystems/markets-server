@@ -22,7 +22,7 @@ exports.getMarkets = function getMarkets(coinIds, page, perPage) {
     vs_currency: 'usd',
     sparkline: false,
     order: 'market_cap_rank_desc',
-    price_change_percentage: '24h,7d,30d,1y'
+    price_change_percentage: '24h,7d,14d,30d,200d,1y'
   }
 
   if (page && perPage) {
@@ -63,8 +63,10 @@ function normalizeMarkets(markets) {
     price: coin.current_price,
     price_change: {
       '24h': coin.price_change_percentage_24h,
+      '14d': coin.price_change_percentage_14d_in_currency,
       '7d': coin.price_change_percentage_7d_in_currency,
       '30d': coin.price_change_percentage_30d_in_currency,
+      '200d': coin.price_change_percentage_200d_in_currency,
       '1y': coin.price_change_percentage_1y_in_currency,
       high_24h: coin.high_24h,
       low_24h: coin.low_24h,
