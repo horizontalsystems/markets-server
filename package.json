@@ -11,7 +11,7 @@
     "yarn": "*"
   },
   "scripts": {
-    "start": "nodemon ./src/app.js",
+    "start": "nodemon ./src/app.js --watch ./src",
     "lint": "eslint ./src/ --ignore-path .gitignore",
     "lint:fix": "yarn lint --fix",
     "test": "mocha './src/**/*.spec.js'",
@@ -63,7 +63,6 @@
     "mocha": "^9.0.3",
     "nodemon": "^2.0.1",
     "nyc": "^15.1.0",
-    "opn-cli": "^5.0.0",
     "sinon": "^11.1.2",
     "sinon-chai": "^3.0.0",
     "supertest": "^6.1.6"

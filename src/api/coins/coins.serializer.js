@@ -11,14 +11,24 @@ function mapPlatforms(platforms) {
 
 function mapCoinAttribute(coin, field, currencyRate) {
   switch (field) {
+    case 'name':
+    case 'code':
+      return coin[field]
+
     case 'price':
       return valueInCurrency(coin.price, currencyRate)
     case 'price_change_24h':
       return nullOrString(coin.price_change['24h'])
     case 'price_change_7d':
       return nullOrString(coin.price_change['7d'])
+    case 'price_change_14d':
+      return nullOrString(coin.price_change['14d'])
     case 'price_change_30d':
       return nullOrString(coin.price_change['30d'])
+    case 'price_change_200d':
+      return nullOrString(coin.price_change['200d'])
+    case 'price_change_1y':
+      return nullOrString(coin.price_change['1y'])
     case 'ath':
       return nullOrString(coin.price_change.ath)
     case 'atl':
@@ -29,11 +39,13 @@ function mapCoinAttribute(coin, field, currencyRate) {
       return coin.market_data.market_cap_rank
     case 'total_volume':
       return valueInCurrency(coin.market_data.total_volume, currencyRate)
+    case 'last_updated':
+      return new Date(coin.last_updated).getTime()
     case 'platforms':
       return mapPlatforms(coin.Platforms)
 
     default:
-      return coin[field]
+      return null
   }
 }
 
