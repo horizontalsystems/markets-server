@@ -85,7 +85,7 @@ function normalizeMarkets(markets) {
       max_supply: coin.max_supply,
       circulating_supply: coin.circulating_supply,
       fully_diluted_valuation: coin.fully_diluted_valuation,
-      // total_value_locked: coin.total_value_locked
+      total_value_locked: (coin.total_value_locked || {}).usd
     },
 
     last_updated: updatedDate

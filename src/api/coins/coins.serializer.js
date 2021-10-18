@@ -66,44 +66,25 @@ exports.serializeList = (coins, fields, currencyRate) => {
 
 exports.serializeShow = (coin, language, currencyPrice) => {
   const market = coin.market_data || {}
-  const priceChange = coin.price_change || {}
-  const descriptions = coin.description || {}
 
   return {
     uid: coin.uid,
     name: coin.name,
     code: coin.code,
-    coingecko_id: coin.coingecko_id,
     genesis_date: coin.genesis_date,
-    description: descriptions[language],
+    description: coin.description[language],
     links: coin.links,
     price: valueInCurrency(coin.price, currencyPrice),
-    price_change: {
-      '1y': nullOrString(priceChange['1y']),
-      '7d': nullOrString(priceChange['7d']),
-      '24h': nullOrString(priceChange['24h']),
-      '30d': nullOrString(priceChange['30d']),
-      ath: valueInCurrency(priceChange.ath, currencyPrice),
-      atl: valueInCurrency(priceChange.atl, currencyPrice),
-      low_24h: valueInCurrency(priceChange.low_24h, currencyPrice),
-      ath_date: nullOrString(priceChange.ath_date),
-      atl_date: nullOrString(priceChange.atl_date),
-      high_24h: valueInCurrency(priceChange.high_24h, currencyPrice),
-      ath_change_percentage: nullOrString(priceChange.ath_change_percentage),
-      atl_change_percentage: nullOrString(priceChange.atl_change_percentage),
-    },
     market_data: {
-      max_supply: nullOrString(market.max_supply),
       total_supply: nullOrString(market.total_supply),
       total_volume: valueInCurrency(market.total_volume, currencyPrice),
       market_cap: valueInCurrency(market.market_cap, currencyPrice),
       market_cap_rank: market.market_cap_rank,
       circulating_supply: nullOrString(market.circulating_supply),
-      fully_diluted_valuation: valueInCurrency(market.fully_diluted_valuation, currencyPrice)
+      fully_diluted_valuation: valueInCurrency(market.fully_diluted_valuation, currencyPrice),
+      total_value_locked: valueInCurrency(market.total_value_locked, currencyPrice)
     },
-    security: coin.security,
     performance: coin.performance,
-    platforms: mapPlatforms(coin.Platforms),
-    category_ids: coin.Categories.map(category => category.uid)
+    categories: coin.Categories.map(category => category.uid)
   }
 }
