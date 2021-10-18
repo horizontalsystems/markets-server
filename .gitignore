@@ -4,6 +4,9 @@
 # Environment variables
 .env*
 
+# Docs
+docs
+
 # Logs
 logs
 *.log
@@ -20,6 +23,3 @@ coverage
 
 # adminjs components
 .adminjs
-
-# entity–relationship diagram
-erd-diagram.svg
