@@ -13,6 +13,7 @@ function mapCoinAttribute(coin, field, currencyRate) {
   switch (field) {
     case 'name':
     case 'code':
+    case 'coingecko_id':
       return coin[field]
 
     case 'price':
