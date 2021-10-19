@@ -1,11 +1,11 @@
 const { DateTime } = require('luxon')
 const coingecko = require('../providers/coingecko')
-const CurrencyPrice = require('../db/models/CurrencyPrice')
+const CurrencyRate = require('../db/models/CurrencyRate')
 const Currency = require('../db/models/Currency')
 const Syncer = require('./Syncer')
 const { sleep } = require('../utils')
 
-class CurrencyPriceSyncer extends Syncer {
+class CurrencyRateSyncer extends Syncer {
 
   async start() {
     await this.syncHistorical()
@@ -13,65 +13,65 @@ class CurrencyPriceSyncer extends Syncer {
   }
 
   async syncHistorical() {
-    if (await CurrencyPrice.exists()) {
+    if (await CurrencyRate.exists()) {
       return
     }
 
-    await this.syncHistoricalPrices('10m')
-    await this.syncHistoricalPrices('90d')
+    await this.syncHistoricalRates('10m')
+    await this.syncHistoricalRates('90d')
   }
 
   async syncLatest() {
-    this.cron('10m', this.syncDailyPrices)
-    this.cron('1h', this.syncNinetyDaysPrices)
-    this.cron('1d', this.syncQuarterPrices)
+    this.cron('10m', this.syncDailyRates)
+    this.cron('1h', this.syncNinetyDaysRates)
+    this.cron('1d', this.syncQuarterRates)
   }
 
   async clearExpired() {
-    await CurrencyPrice.deleteExpired()
+    await CurrencyRate.deleteExpired()
   }
 
-  async syncDailyPrices() {
+  async syncDailyRates() {
     const dateExpiresIn = { hours: 24 }
     const date = DateTime.utc()
 
-    await this.syncPrices(date, dateExpiresIn)
+    await this.syncRates(date, dateExpiresIn)
     await this.clearExpired()
   }
 
-  async syncNinetyDaysPrices() {
+  async syncNinetyDaysRates() {
     const dateExpiresIn = { days: 90 }
     const date = DateTime.utc()
 
-    await this.syncPrices(date, dateExpiresIn)
+    await this.syncRates(date, dateExpiresIn)
   }
 
-  async syncQuarterPrices() {
+  async syncQuarterRates() {
     const date = DateTime.utc()
 
-    await this.syncPrices(date)
+    await this.syncRates(date)
   }
 
-  async syncPrices(date, dateExpiresIn) {
+  async syncRates(date, dateExpiresIn) {
     const sourceCoin = 'tether'
     const currencies = await this.getCurrencies()
     const pricesResponse = await coingecko.getLatestCoinPrice([sourceCoin], currencies.codes)
     const expiresAt = dateExpiresIn ? date.plus(dateExpiresIn) : null
 
-    const prices = currencies.codes.map(code => ({
+    const rates = currencies.codes.map(code => ({
       date,
       currencyId: currencies.idsMap[code],
-      price: pricesResponse[sourceCoin][code],
+      rate: pricesResponse[sourceCoin][code],
       expires_at: expiresAt
     }))
 
-    this.upsertCurrencyPrices(prices)
+    this.upsertCurrencyRates(rates)
   }
 
-  async syncHistoricalPrices(period) {
+  async syncHistoricalRates(period) {
     const sourceCoin = 'tether'
     const currencies = await this.getCurrencies()
-    const prices = []
+    const rates = []
 
     const dateParams = period === '10m' ? {
       dateFrom: DateTime.utc().plus({ hours: -24 }),
@@ -95,10 +95,10 @@ class CurrencyPriceSyncer extends Syncer {
 
         const date = DateTime.fromMillis(timestamp)
 
-        prices.push({
+        rates.push({
           date,
           currencyId: currencies.idsMap[currencies.codes[index]],
-          price: value,
+          rate: value,
           expires_at: date.plus(dateParams.dateExpiresIn)
         })
       })
@@ -106,7 +106,7 @@ class CurrencyPriceSyncer extends Syncer {
       await sleep(1000) // Wait to bypass CoinGecko limitations
     }
 
-    this.upsertCurrencyPrices(prices)
+    this.upsertCurrencyRates(rates)
   }
 
   async getCurrencies() {
@@ -127,15 +127,15 @@ class CurrencyPriceSyncer extends Syncer {
     }
   }
 
-  upsertCurrencyPrices(prices) {
-    CurrencyPrice.bulkCreate(prices, {
-      updateOnDuplicate: ['price', 'currencyId']
+  upsertCurrencyRates(rates) {
+    CurrencyRate.bulkCreate(rates, {
+      updateOnDuplicate: ['rate', 'currencyId']
     }).then(([result]) => {
       console.log(JSON.stringify(result.dataValues))
     }).catch(err => {
-      console.error('Error inserting currency prices', err.message)
+      console.error('Error inserting currency rates', err.message)
     })
   }
 }
 
-module.exports = CurrencyPriceSyncer
+module.exports = CurrencyRateSyncer
