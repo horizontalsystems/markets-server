@@ -56,7 +56,7 @@ router.get('/', validateCoins, setCurrencyRate, controller.index)
  *    "market_data: {},
  *    "performance: {},
  *    "platforms: {},
- *    "category_ids: []
+ *    "category_uids: []
  *  }
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
