@@ -8,7 +8,7 @@ exports.index = async (req, res) => {
 }
 
 exports.coins = async ({ params, currencyRate }, res) => {
-  const coins = await Category.getTopMarkets(params.uid)
+  const coins = await Category.getCoins(params.uid)
   const coinFields = [
     'price',
     'change_24h',
