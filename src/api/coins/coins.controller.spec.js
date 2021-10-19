@@ -2,7 +2,7 @@ const sinon = require('sinon')
 const request = require('supertest')
 const Coin = require('../../db/models/Coin')
 const app = require('../../config/express')
-const CurrencyPrice = require('../../db/models/CurrencyPrice')
+const CurrencyRate = require('../../db/models/CurrencyRate')
 
 describe('Coins API', async () => {
 
@@ -23,46 +23,31 @@ describe('Coins API', async () => {
     })
   })
 
-  describe('GET /v1/coins/prices', () => {
-    const usdToEurPrice = 0.86
-    const marketPrice = {
-      uid: 'bitcoin',
-      price: 57000, // eur = 49020
-      price_change_24h: 1,
-      last_updated: 1634029699
+  describe('GET /v1/coins?uids=bitcoin', () => {
+    const usdToEurRate = 0.86
+    const coinId = 'bitcoin'
+    const coin = {
+      uid: coinId,
+      price: 57000 // eur = 49020
     }
 
     beforeEach(() => {
-      sinon.stub(Coin, 'getPrices').returns([marketPrice])
-      sinon.stub(CurrencyPrice, 'getLatestCurrencyPrice').returns(usdToEurPrice)
+      sinon.stub(Coin, 'getCoinInfo').returns(coin)
+      sinon.stub(CurrencyRate, 'getCurrencyRate').returns(usdToEurRate)
     })
 
     it('tests currency converter', done => {
       request(app)
-        .get('/v1/coins/prices')
+        .get('/v1/coins')
         .query({
-          uids: 'bitcoin',
+          uids: coinId,
+          fields: 'price',
           currency: 'eur'
         })
         .expect('Content-Type', /json/)
-        .expect(200, {
-          bitcoin: {
-            price: String(57000 * usdToEurPrice),
-            price_change_24h: '1',
-            last_updated: 1634029699
-          }
-        }, done);
-    })
-
-    it('validates currency code parameter ', done => {
-      request(app)
-        .get('/v1/coins/prices')
-        .query({
-          uids: 'bitcoin',
-          currency: 'seur'
-        })
-        .expect(422, done);
+        .expect(200, [{
+          uid: 'bitcoin', price: '42900.24'
+        }], done)
     })
   })
-
 })
