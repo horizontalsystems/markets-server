@@ -93,16 +93,14 @@ exports.serializeShow = (coin, language, currencyPrice) => {
   }
 }
 
-exports.serializeDetails = (coin, currencyPrice) => {
-  console.log(coin)
-
+exports.serializeDetails = (coin, currencyRate) => {
   return {
     uid: coin.uid,
-    name: coin.name,
-    code: coin.code,
     links: coin.links,
-    price: valueInCurrency(coin.price, currencyPrice),
     security: coin.security,
-    funds_invested: coin.FundsInvesteds
+    investor_data: {
+      funds_invested: valueInCurrency(coin.funds_invested, currencyRate),
+      treasuries: valueInCurrency(coin.treasuries, currencyRate)
+    }
   }
 }

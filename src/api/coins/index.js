@@ -60,9 +60,35 @@ router.get('/', validateCoins, setCurrencyRate, controller.index)
  *  }
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
- * @apiError (Not Found 404)  NotFound  Coin does not exist
+ * @apiError (Not Found 404)    NotFound  Coin does not exist
  */
 router.get('/:id', setCurrencyRate, controller.show)
+
+/**
+ * @api {get} /v1/coins/:uid/details Get coin details
+ * @apiDescription Get coin's detailed information
+ * @apiVersion 1.0.0
+ * @apiGroup Coin
+ *
+ * @apiParam    {String}        uid   Coin's uid
+ * @apiUse      Currencies
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "uid": "supercoin",
+ *    "links": {},
+ *    "security": {},
+ *    "investor_data": {
+ *      "funds_invested": "640000000",
+ *      "treasuries": "720000000"
+ *    }
+ *  }
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ * @apiError (Not Found 404)  NotFound  Coin does not exist
+ */
+router.get('/:id/details', setCurrencyRate, controller.details)
 router.get('/:id/transactions', controller.transactions)
 router.get('/:id/addresses', controller.addresses)
 router.get('/:id/addresses_holders', controller.addressHolders)

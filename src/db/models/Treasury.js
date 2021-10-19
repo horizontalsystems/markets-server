@@ -6,8 +6,8 @@ class Treasury extends Sequelize.Model {
     return super.init(
       {
         type: DataTypes.ENUM('public', 'private', 'etf'),
-        volume: DataTypes.DECIMAL,
-        country: DataTypes.STRING,
+        amount: DataTypes.DECIMAL,
+        country: DataTypes.STRING
       },
       {
         timestamps: false,
