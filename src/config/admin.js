@@ -24,6 +24,14 @@ const adminJs = new AdminJS({
     sequelize.Language,
     sequelize.Platform,
     {
+      resource: sequelize.CoinCategories,
+      options: {
+        filterProperties: ['category_id', 'coin_id'],
+        editProperties: ['category_id', 'coin_id'],
+        listProperties: ['category_id', 'coin_id']
+      }
+    },
+    {
       resource: sequelize.Category,
       options: {
         properties: {
@@ -77,6 +85,9 @@ const router = AdminJSExpress.buildAuthenticatedRouter(adminJs, {
   },
   cookieName: 'key-cookie-name',
   cookiePassword: 'key-cookie-password'
+}, null, {
+  resave: false,
+  saveUninitialized: true
 })
 
 module.exports = router

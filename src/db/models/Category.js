@@ -29,7 +29,7 @@ class Category extends SequelizeModel {
   }
 
   static associate(models) {
-    Category.belongsToMany(models.Coin, { through: 'coin_categories' })
+    Category.belongsToMany(models.Coin, { through: models.CoinCategories })
   }
 
   static async getTopMarkets(uid) {
