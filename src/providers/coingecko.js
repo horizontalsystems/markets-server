@@ -6,7 +6,19 @@ const axios = require('axios')
     timeout: 180000
   })
 
-exports.getCoinPrice = function getCoinPrice(coinIds, currencies) {
+exports.getMarketsChart = function getMarketsChart(coinId, currency, timestampFrom, timestampTo) {
+  const query = querystring.stringify({
+    vs_currency: currency,
+    from: timestampFrom,
+    to: timestampTo
+  })
+
+  return axios
+    .get(`/coins/${coinId}/market_chart/range?${query}`)
+    .then(resp => resp.data) // eslint-disable-line
+}
+
+exports.getLatestCoinPrice = function getLatestCoinPrice(coinIds, currencies) {
   const query = querystring.stringify({
     ids: coinIds.join(','),
     vs_currencies: currencies.join(','),

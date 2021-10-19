@@ -1,35 +1,29 @@
-const { CronJob } = require('cron')
 const { DateTime } = require('luxon')
 const coingecko = require('../providers/coingecko')
 const CurrencyPrice = require('../db/models/CurrencyPrice')
 const Currency = require('../db/models/Currency')
+const Syncer = require('./Syncer')
 
-class CurrencyPriceSyncer {
-
-  constructor() {
-    this.tenMinuteCronJob = new CronJob({
-      cronTime: '0 */10 * * * *', // every 10 minutes
-      onTick: this.syncDailyPrices.bind(this),
-      start: false
-    })
-
-    this.hourlyCronJob = new CronJob({
-      cronTime: '0 * * * *', // every hour
-      onTick: this.syncWeeklyPrices.bind(this),
-      start: false
-    })
-
-    this.dailyCronJob = new CronJob({
-      cronTime: '0 0 * * *', // every day
-      onTick: this.syncMonthlyPrices.bind(this),
-      start: false
-    })
-  }
+class CurrencyPriceSyncer extends Syncer {
 
   async start() {
-    this.tenMinuteCronJob.start()
-    this.hourlyCronJob.start()
-    this.dailyCronJob.start()
+    await this.syncHistorical()
+    await this.syncLatest()
+  }
+
+  async syncHistorical() {
+    if (await CurrencyPrice.exists()) {
+      return
+    }
+
+    await this.syncHistoricalPrices('10m')
+    await this.syncHistoricalPrices('90d')
+  }
+
+  async syncLatest() {
+    this.cron('10m', this.syncDailyPrices)
+    this.cron('1h', this.syncNinetyDaysPrices)
+    this.cron('1d', this.syncQuarterPrices)
   }
 
   async clearExpired() {
@@ -39,38 +33,29 @@ class CurrencyPriceSyncer {
   async syncDailyPrices() {
     const dateExpiresIn = { hours: 24 }
     const date = DateTime.utc()
-      .minus({ hours: 1 })
-      .toFormat('yyyy-MM-dd HH:mm:00')
 
     await this.syncPrices(date, dateExpiresIn)
     await this.clearExpired()
   }
 
-  async syncWeeklyPrices() {
-    const dateExpiresIn = { days: 7 }
-    const dateFrom = DateTime.utc()
-      .minus({ days: 1 }) /* -1 day because it's data synced by daily syncer */
-      .toFormat('yyyy-MM-dd HH:00:00')
+  async syncNinetyDaysPrices() {
+    const dateExpiresIn = { days: 90 }
+    const date = DateTime.utc()
 
-    await this.syncPrices(dateFrom, dateExpiresIn)
+    await this.syncPrices(date, dateExpiresIn)
   }
 
-  async syncMonthlyPrices() {
-    const dateExpiresIn = { days: 30 }
-    const dateFrom = DateTime.utc()
-      .minus({ days: 7 }) /* -7 day because it's data synced by weekly syncer */
-      .toFormat('yyyy-MM-dd')
+  async syncQuarterPrices() {
+    const date = DateTime.utc()
 
-    await this.syncPrices(dateFrom, dateExpiresIn)
+    await this.syncPrices(date)
   }
 
   async syncPrices(date, dateExpiresIn) {
     const sourceCoin = 'tether'
     const currencies = await this.getCurrencies()
-    const pricesResponse = await coingecko.getCoinPrice([sourceCoin], currencies.codes)
-    const expiresAt = DateTime.utc()
-      .plus(dateExpiresIn)
-      .toFormat('yyyy-MM-dd HH:mm:00')
+    const pricesResponse = await coingecko.getLatestCoinPrice([sourceCoin], currencies.codes)
+    const expiresAt = dateExpiresIn ? date.plus(dateExpiresIn) : null
 
     const prices = currencies.codes.map(code => ({
       date,
@@ -78,6 +63,48 @@ class CurrencyPriceSyncer {
       price: pricesResponse[sourceCoin][code],
       expires_at: expiresAt
     }))
+
+    this.upsertCurrencyPrices(prices)
+  }
+
+  async syncHistoricalPrices(period) {
+    const sourceCoin = 'tether'
+    const currencies = await this.getCurrencies()
+    const prices = []
+
+    const dateParams = period === '10m' ? {
+      dateFrom: DateTime.utc().plus({ hours: -24 }),
+      dateTo: DateTime.utc(),
+      dateExpiresIn: { hours: 24 }
+    } : {
+      dateFrom: DateTime.utc().plus({ days: -90 }),
+      dateTo: DateTime.utc().plus({ days: -1 }),
+      dateExpiresIn: { days: 90 }
+    }
+
+    // eslint-disable-next-line guard-for-in,no-restricted-syntax
+    for (const code of currencies.codes) {
+      const marketsChart = await coingecko.getMarketsChart(
+        sourceCoin,
+        code,
+        dateParams.dateFrom.toMillis() / 1000,
+        dateParams.dateTo.toMillis() / 1000
+      )
+
+      marketsChart.prices.forEach(priceData => {
+
+        const date = DateTime.fromMillis(priceData[0])
+
+        prices.push({
+          date,
+          currencyId: currencies.idsMap[code],
+          price: priceData[1],
+          expires_at: date.plus(dateParams.dateExpiresIn)
+        })
+      })
+
+      await new Promise(r => setTimeout(r, 1000));
+    }
 
     this.upsertCurrencyPrices(prices)
   }
