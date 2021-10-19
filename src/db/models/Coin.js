@@ -191,6 +191,20 @@ class Coin extends SequelizeModel {
     }
   }
 
+  static async getCoinDetails(uid) {
+    const query = (`
+      SELECT C.uid, C.links, C.security, sum(F.amount) as funds_invested, sum(T.amount) as treasuries
+      FROM coins C
+      LEFT JOIN funds_invested F ON F.coin_id = C.id
+      LEFT JOIN treasuries T ON T.coin_id = C.id
+      WHERE uid = :uid
+      GROUP BY C.id
+    `)
+
+    const [coin] = await Coin.query(query, { uid })
+    return coin
+  }
+
   static async getPerformance(price7d, price30d) {
     const [bitcoin, ethereum] = await Coin.query(`
       SELECT price_change

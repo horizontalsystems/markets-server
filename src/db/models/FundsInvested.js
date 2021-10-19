@@ -22,7 +22,7 @@ class FundsInvested extends Sequelize.Model {
           'Corporate Round',
         ]),
         amount: DataTypes.DECIMAL,
-        date: DataTypes.DATE
+        date: DataTypes.DATEONLY
       },
       {
         timestamps: false,
