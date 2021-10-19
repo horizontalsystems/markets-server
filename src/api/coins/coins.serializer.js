@@ -44,7 +44,7 @@ function mapCoinAttribute(coin, field, currencyRate) {
     case 'total_volume':
       return valueInCurrency(marketData.total_volume, currencyRate)
     case 'last_updated':
-      return new Date(coin.last_updated).getTime()
+      return Math.round(new Date(coin.last_updated).getTime() / 1000)
     case 'platforms':
       return mapPlatforms(coin.Platforms)
 
@@ -89,7 +89,7 @@ exports.serializeShow = (coin, language, currencyPrice) => {
       total_value_locked: valueInCurrency(market.total_value_locked, currencyPrice)
     },
     performance: coin.performance,
-    categories: coin.Categories.map(category => category.uid)
+    categories_uids: coin.Categories.map(category => category.uid)
   }
 }
 
