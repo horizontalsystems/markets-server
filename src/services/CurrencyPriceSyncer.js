@@ -3,6 +3,7 @@ const coingecko = require('../providers/coingecko')
 const CurrencyPrice = require('../db/models/CurrencyPrice')
 const Currency = require('../db/models/Currency')
 const Syncer = require('./Syncer')
+const { sleep } = require('../utils')
 
 class CurrencyPriceSyncer extends Syncer {
 
@@ -82,28 +83,27 @@ class CurrencyPriceSyncer extends Syncer {
       dateExpiresIn: { days: 90 }
     }
 
-    // eslint-disable-next-line guard-for-in,no-restricted-syntax
-    for (const code of currencies.codes) {
+    for (let index = 0; index < currencies.codes.length; index += 1) {
       const marketsChart = await coingecko.getMarketsChart(
         sourceCoin,
-        code,
+        currencies.codes[index],
         dateParams.dateFrom.toMillis() / 1000,
         dateParams.dateTo.toMillis() / 1000
       )
 
-      marketsChart.prices.forEach(priceData => {
+      marketsChart.prices.forEach(([timestamp, value]) => {
 
-        const date = DateTime.fromMillis(priceData[0])
+        const date = DateTime.fromMillis(timestamp)
 
         prices.push({
           date,
-          currencyId: currencies.idsMap[code],
-          price: priceData[1],
+          currencyId: currencies.idsMap[currencies.codes[index]],
+          price: value,
           expires_at: date.plus(dateParams.dateExpiresIn)
         })
       })
 
-      await new Promise(r => setTimeout(r, 1000));
+      await sleep(1000) // Wait to bypass CoinGecko limitations
     }
 
     this.upsertCurrencyPrices(prices)
