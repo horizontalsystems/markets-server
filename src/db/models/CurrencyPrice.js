@@ -15,8 +15,7 @@ class CurrencyPrice extends SequelizeModel {
           allowNull: false
         },
         expires_at: {
-          type: DataTypes.DATE,
-          allowNull: false
+          type: DataTypes.DATE
         }
       },
       {
@@ -64,6 +63,10 @@ class CurrencyPrice extends SequelizeModel {
     })
 
     return currencyPrice ? parseFloat(currencyPrice.price) : null
+  }
+
+  static async exists() {
+    return !!await CurrencyPrice.findOne()
   }
 }
 
