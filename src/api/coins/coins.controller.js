@@ -35,7 +35,10 @@ exports.show = async (req, res, next) => {
   if (coin) {
     res.send(serializer.serializeShow(coin, language, req.currencyRate))
   } else {
-    next()
+    res.status(404)
+    res.send({
+      error: 'Coin not found'
+    })
   }
 }
 

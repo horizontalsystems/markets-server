@@ -49,6 +49,6 @@ router.get('/', controller.index)
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)    NotFound          Category does not exist
  */
-router.get('/:uid/coins', setCurrencyRate, controller.index)
+router.get('/:uid/coins', setCurrencyRate, controller.coins)
 
 module.exports = router

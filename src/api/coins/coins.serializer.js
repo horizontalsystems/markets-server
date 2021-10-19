@@ -10,6 +10,9 @@ function mapPlatforms(platforms) {
 }
 
 function mapCoinAttribute(coin, field, currencyRate) {
+  const priceChange = coin.price_change || {}
+  const marketData = coin.market_data || {}
+
   switch (field) {
     case 'name':
     case 'code':
@@ -19,27 +22,27 @@ function mapCoinAttribute(coin, field, currencyRate) {
     case 'price':
       return valueInCurrency(coin.price, currencyRate)
     case 'price_change_24h':
-      return nullOrString(coin.price_change['24h'])
+      return nullOrString(priceChange['24h'])
     case 'price_change_7d':
-      return nullOrString(coin.price_change['7d'])
+      return nullOrString(priceChange['7d'])
     case 'price_change_14d':
-      return nullOrString(coin.price_change['14d'])
+      return nullOrString(priceChange['14d'])
     case 'price_change_30d':
-      return nullOrString(coin.price_change['30d'])
+      return nullOrString(priceChange['30d'])
     case 'price_change_200d':
-      return nullOrString(coin.price_change['200d'])
+      return nullOrString(priceChange['200d'])
     case 'price_change_1y':
-      return nullOrString(coin.price_change['1y'])
+      return nullOrString(priceChange['1y'])
     case 'ath_percentage':
-      return nullOrString(coin.price_change.ath_change_percentage)
+      return nullOrString(priceChange.ath_change_percentage)
     case 'atl_percentage':
-      return nullOrString(coin.price_change.atl_change_percentage)
+      return nullOrString(priceChange.atl_change_percentage)
     case 'market_cap':
-      return valueInCurrency(coin.market_data.market_cap, currencyRate)
+      return valueInCurrency(marketData.market_cap, currencyRate)
     case 'market_cap_rank':
-      return coin.market_data.market_cap_rank
+      return marketData.market_cap_rank
     case 'total_volume':
-      return valueInCurrency(coin.market_data.total_volume, currencyRate)
+      return valueInCurrency(marketData.total_volume, currencyRate)
     case 'last_updated':
       return new Date(coin.last_updated).getTime()
     case 'platforms':
@@ -66,13 +69,14 @@ exports.serializeList = (coins, fields, currencyRate) => {
 
 exports.serializeShow = (coin, language, currencyPrice) => {
   const market = coin.market_data || {}
+  const description = coin.description || {}
 
   return {
     uid: coin.uid,
     name: coin.name,
     code: coin.code,
     genesis_date: coin.genesis_date,
-    description: coin.description[language],
+    description: description[language],
     links: coin.links,
     price: valueInCurrency(coin.price, currencyPrice),
     market_data: {

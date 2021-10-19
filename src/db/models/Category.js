@@ -32,7 +32,7 @@ class Category extends SequelizeModel {
     Category.belongsToMany(models.Coin, { through: models.CoinCategories })
   }
 
-  static async getTopMarkets(uid) {
+  static async getCoins(uid) {
     const query = (`
       SELECT C.* 
       FROM categories cat, coin_categories M, coins C

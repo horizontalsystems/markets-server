@@ -184,9 +184,10 @@ class Coin extends SequelizeModel {
       return null
     }
 
+    const priceChange = coin.price_change || {}
     return {
       ...coin.dataValues,
-      performance: await Coin.getPerformance(coin.price_change['7d'], coin.price_change['30d'])
+      performance: await Coin.getPerformance(priceChange['7d'], priceChange['30d'])
     }
   }
 
