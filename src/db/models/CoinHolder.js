@@ -27,6 +27,10 @@ class CoinHolder extends SequelizeModel {
     })
   }
 
+  static async exists() {
+    return !!await CoinHolder.findOne()
+  }
+
   static deleteAll() {
     return CoinHolder.query('DELETE FROM coin_holders')
   }

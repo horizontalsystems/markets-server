@@ -1,108 +1,66 @@
 const { Op } = require('sequelize')
-const { CronJob } = require('cron')
 const { DateTime } = require('luxon')
 const bigquery = require('../db/bigquery')
 const Platform = require('../db/models/Platform')
 const Address = require('../db/models/Address')
 const CoinHolder = require('../db/models/CoinHolder')
 const AddressRank = require('../db/models/AddressRank')
+const Syncer = require('./Syncer')
 
-class AddressSyncer {
-
+class AddressSyncer extends Syncer {
   constructor() {
+    super()
+    this.ADDRESS_DATA_FETCH_PERIOD = { month: 3 }
     this.ADDRESSES_PER_COIN = 20
-    this.ADDRESS_RANK_PERIOD = 3
-
-    this.hourlyCronJob = new CronJob({
-      cronTime: '0 * * * *', // every hour
-      onTick: this.syncHourly.bind(this),
-      start: false
-    })
-
-    this.fourHourCronJob = new CronJob({
-      cronTime: '0 */4 * * *', // every 4 hours
-      onTick: this.syncFourHour.bind(this),
-      start: false
-    })
-
-    this.dailyCronJob = new CronJob({
-      cronTime: '0 0 * * *', // every day
-      onTick: this.syncDaily.bind(this),
-      start: false
-    })
   }
 
   async start() {
-    this.hourlyCronJob.start()
-    this.fourHourCronJob.start()
-    this.dailyCronJob.start()
+    // await this.syncHistorical()
+    await this.syncLatest()
   }
 
-  async syncHourly() {
-    try {
-      await this.syncHourlyStats()
+  async syncHistorical() {
+    if (!await Address.exists()) {
+      await this.syncMonthlyStats(this.syncParamsHistorical('1d'))
+      await this.syncWeeklyStats(this.syncParamsHistorical('4h'))
+      await this.syncDailyStats(this.syncParamsHistorical('1h'))
+    }
+
+    if (!await AddressRank.exists()) {
       await this.syncAddressRanks()
-    } catch (e) {
-      console.error(e)
     }
-  }
 
-  async syncFourHour() {
-    try {
-      await this.syncWeeklyStats()
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  async syncDaily() {
-    try {
-      await this.syncMonthlyStats()
+    if (!await CoinHolder.exists()) {
       await this.syncCoinHolders()
-    } catch (e) {
-      console.error(e)
     }
+  }
+
+  async syncLatest() {
+    this.cron('1h', this.syncDailyStats)
+    this.cron('4h', this.syncWeeklyStats)
+    this.cron('1d', this.syncMonthlyStats)
+    this.cron('10d', this.syncCoinHolders)
+  }
+
+  async syncDailyStats(dateParams) {
+    await this.syncStats(dateParams, '1h')
+    await this.syncAddressRanks()
+    await this.clearExpired()
+  }
+
+  async syncWeeklyStats(dateParams) {
+    await this.syncStats(dateParams, '4h')
+  }
+
+  async syncMonthlyStats(dateParams) {
+    await this.syncStats(dateParams, '1d')
   }
 
   async clearExpired() {
     await Address.deleteExpired()
   }
 
-  async syncHourlyStats() {
-    const dateExpiresIn = { hours: 24 }
-    const dateFrom = DateTime.utc()
-      .minus({ hours: 1 })
-      .toFormat('yyyy-MM-dd HH:00:00')
-    const dateTo = DateTime.utc()
-      .toFormat('yyyy-MM-dd HH:00:00')
-
-    await this.syncStats(dateFrom, dateTo, dateExpiresIn, '1h')
-    await this.clearExpired()
-  }
-
-  async syncWeeklyStats() {
-    const dateExpiresIn = { days: 7 }
-    const dateFrom = DateTime.utc()
-      .minus({ days: 1 }) /* -1 day because it's data synced by daily syncer */
-      .toFormat('yyyy-MM-dd HH:00:00')
-    const dateTo = DateTime.utc()
-      .toFormat('yyyy-MM-dd HH:00:00')
-
-    await this.syncStats(dateFrom, dateTo, dateExpiresIn, '4h')
-  }
-
-  async syncMonthlyStats() {
-    const dateExpiresIn = { days: 30 }
-    const dateFrom = DateTime.utc()
-      .minus({ days: 7 }) /* -7 day because it's data synced by weekly syncer */
-      .toFormat('yyyy-MM-dd')
-    const dateTo = DateTime.utc()
-      .toFormat('yyyy-MM-dd HH:00:00')
-
-    await this.syncStats(dateFrom, dateTo, dateExpiresIn, '1d')
-  }
-
-  async syncStats(dateFrom, dateTo, dateExpiresIn, timePeriod) {
+  async syncStats({ dateFrom, dateTo, dateExpiresIn }, timePeriod) {
     const platforms = await this.getPlatforms()
     const addressStats = await bigquery.getAddressStats(platforms.tokens, dateFrom, dateTo, timePeriod)
 
@@ -119,7 +77,7 @@ class AddressSyncer {
 
   async syncCoinHolders() {
     const dateFrom = DateTime.utc()
-      .minus({ month: this.ADDRESS_RANK_PERIOD })
+      .minus(this.ADDRESS_DATA_FETCH_PERIOD)
       .toFormat('yyyy-MM-dd')
     const platforms = await this.getPlatforms()
     const coinHolders = await bigquery.getTopCoinHolders(platforms.tokens, dateFrom, this.ADDRESSES_PER_COIN)
@@ -187,8 +145,7 @@ class AddressSyncer {
   }
 
   upsertAddressStats(count, volume, date, platformId, expireDuration) {
-    const dateExpire = DateTime.fromISO(date)
-      .plus(expireDuration)
+    const dateExpire = expireDuration ? DateTime.fromISO(date).plus(expireDuration) : null
 
     Address.upsert({
       count,

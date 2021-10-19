@@ -18,8 +18,7 @@ class Address extends SequelizeModel {
           allowNull: false
         },
         expires_at: {
-          type: DataTypes.DATE,
-          allowNull: false
+          type: DataTypes.DATE
         }
       },
       {
@@ -45,6 +44,10 @@ class Address extends SequelizeModel {
         ['date', 'DESC']
       ]
     })
+  }
+
+  static async exists() {
+    return !!await Address.findOne()
   }
 
   static deleteExpired() {
