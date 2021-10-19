@@ -1,11 +1,11 @@
 const sinon = require('sinon')
-const CurrencyPriceSyncer = require('./CurrencyPriceSyncer')
+const CurrencyRateSyncer = require('./CurrencyRateSyncer')
 
-describe('CurrencyPriceSyncer', async () => {
+describe('CurrencyRateSyncer', async () => {
   let syncer
 
   beforeEach(() => {
-    syncer = new CurrencyPriceSyncer()
+    syncer = new CurrencyRateSyncer()
   })
 
   afterEach(() => {

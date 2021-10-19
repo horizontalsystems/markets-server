@@ -1,10 +1,10 @@
 const { ValidationError } = require('express-validation')
-const CurrencyPrice = require('../db/models/CurrencyPrice')
+const CurrencyRate = require('../db/models/CurrencyRate')
 
 exports.setCurrencyRate = async (req, res, next) => {
 
   // eslint-disable-next-line no-param-reassign
-  req.currencyRate = await CurrencyPrice.getCurrencyRate(req.query.currency)
+  req.currencyRate = await CurrencyRate.getCurrencyRate(req.query.currency)
 
   if (!req.currencyRate) {
     const errors = [{

@@ -15,7 +15,7 @@ const Address = require('./models/Address')
 const CoinHolder = require('./models/CoinHolder')
 const AddressRank = require('./models/AddressRank')
 const Currency = require('./models/Currency')
-const CurrencyPrice = require('./models/CurrencyPrice')
+const CurrencyRate = require('./models/CurrencyRate')
 
 const config = configJson[process.env.NODE_ENV || 'development']
 const sequelize = new Sequelize(
@@ -42,7 +42,7 @@ const db = {
   AddressRank: AddressRank.init(sequelize, Sequelize),
   CoinHolder: CoinHolder.init(sequelize, Sequelize),
   Currency: Currency.init(sequelize, Sequelize),
-  CurrencyPrice: CurrencyPrice.init(sequelize, Sequelize)
+  CurrencyRate: CurrencyRate.init(sequelize, Sequelize)
 }
 
 // This creates relationships in the ORM

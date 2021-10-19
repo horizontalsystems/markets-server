@@ -67,7 +67,7 @@ exports.serializeList = (coins, fields, currencyRate) => {
   })
 }
 
-exports.serializeShow = (coin, language, currencyPrice) => {
+exports.serializeShow = (coin, language, currencyRate) => {
   const market = coin.market_data || {}
   const description = coin.description || {}
 
@@ -78,15 +78,15 @@ exports.serializeShow = (coin, language, currencyPrice) => {
     genesis_date: coin.genesis_date,
     description: description[language],
     links: coin.links,
-    price: valueInCurrency(coin.price, currencyPrice),
+    price: valueInCurrency(coin.price, currencyRate),
     market_data: {
       total_supply: nullOrString(market.total_supply),
-      total_volume: valueInCurrency(market.total_volume, currencyPrice),
-      market_cap: valueInCurrency(market.market_cap, currencyPrice),
+      total_volume: valueInCurrency(market.total_volume, currencyRate),
+      market_cap: valueInCurrency(market.market_cap, currencyRate),
       market_cap_rank: market.market_cap_rank,
       circulating_supply: nullOrString(market.circulating_supply),
-      fully_diluted_valuation: valueInCurrency(market.fully_diluted_valuation, currencyPrice),
-      total_value_locked: valueInCurrency(market.total_value_locked, currencyPrice)
+      fully_diluted_valuation: valueInCurrency(market.fully_diluted_valuation, currencyRate),
+      total_value_locked: valueInCurrency(market.total_value_locked, currencyRate)
     },
     performance: coin.performance,
     category_uids: coin.Categories.map(category => category.uid)

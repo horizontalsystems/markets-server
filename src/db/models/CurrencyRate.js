@@ -1,12 +1,12 @@
 const SequelizeModel = require('./SequelizeModel')
 const Currency = require('./Currency')
 
-class CurrencyPrice extends SequelizeModel {
+class CurrencyRate extends SequelizeModel {
 
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        price: {
+        rate: {
           type: DataTypes.DECIMAL,
           allowNull: false
         },
@@ -20,7 +20,7 @@ class CurrencyPrice extends SequelizeModel {
       },
       {
         sequelize,
-        tableName: 'currency_prices',
+        tableName: 'currency_rates',
         indexes: [{
           unique: true,
           fields: ['date', 'currency_id']
@@ -30,7 +30,7 @@ class CurrencyPrice extends SequelizeModel {
   }
 
   static associate(models) {
-    CurrencyPrice.belongsTo(models.Currency, {
+    CurrencyRate.belongsTo(models.Currency, {
       foreignKey: {
         name: 'currencyId',
         field: 'currency_id'
@@ -39,7 +39,7 @@ class CurrencyPrice extends SequelizeModel {
   }
 
   static deleteExpired() {
-    return CurrencyPrice.query('DELETE FROM currency_prices where expires_at <= NOW()')
+    return CurrencyRate.query('DELETE FROM currency_prices where expires_at <= NOW()')
   }
 
   static async getCurrencyRate(currencyCode = Currency.baseCurrency) {
@@ -53,7 +53,7 @@ class CurrencyPrice extends SequelizeModel {
       return null
     }
 
-    const currencyPrice = await CurrencyPrice.findOne({
+    const currencyRate = await CurrencyRate.findOne({
       where: {
         currency_id: currency.id
       },
@@ -62,12 +62,12 @@ class CurrencyPrice extends SequelizeModel {
       ]
     })
 
-    return currencyPrice ? parseFloat(currencyPrice.price) : null
+    return currencyRate ? parseFloat(currencyRate.rate) : null
   }
 
   static async exists() {
-    return !!await CurrencyPrice.findOne()
+    return !!await CurrencyRate.findOne()
   }
 }
 
-module.exports = CurrencyPrice
+module.exports = CurrencyRate
