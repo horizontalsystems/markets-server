@@ -27,6 +27,10 @@ class AddressRank extends SequelizeModel {
     })
   }
 
+  static async exists() {
+    return !!await AddressRank.findOne()
+  }
+
   static deleteAll() {
     return AddressRank.query('DELETE FROM address_ranks')
   }
