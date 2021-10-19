@@ -15,7 +15,7 @@ class AddressSyncer extends Syncer {
   }
 
   async start() {
-    // await this.syncHistorical()
+    await this.syncHistorical()
     await this.syncLatest()
   }
 
