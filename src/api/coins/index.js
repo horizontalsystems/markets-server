@@ -62,7 +62,7 @@ router.get('/', validateCoins, setCurrencyRate, controller.index)
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)    NotFound  Coin does not exist
  */
-router.get('/:id', setCurrencyRate, controller.show)
+router.get('/:uid', setCurrencyRate, controller.show)
 
 /**
  * @api {get} /v1/coins/:uid/details Get coin details
@@ -88,7 +88,7 @@ router.get('/:id', setCurrencyRate, controller.show)
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)  NotFound  Coin does not exist
  */
-router.get('/:id/details', setCurrencyRate, controller.details)
+router.get('/:uid/details', setCurrencyRate, controller.details)
 
 /**
  * @api {get} /v1/coins/:uid/treasuries List treasuries
@@ -111,10 +111,10 @@ router.get('/:id/details', setCurrencyRate, controller.details)
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)    NotFound  Coin does not exist
  */
-router.get('/:id/treasuries', validateTreasuries, setCurrencyRate, controller.treasuries)
-router.get('/:id/transactions', controller.transactions)
-router.get('/:id/addresses', controller.addresses)
-router.get('/:id/addresses_holders', controller.addressHolders)
-router.get('/:id/addresses_ranks', controller.addressRanks)
+router.get('/:uid/treasuries', validateTreasuries, setCurrencyRate, controller.treasuries)
+router.get('/:uid/transactions', controller.transactions)
+router.get('/:uid/addresses', controller.addresses)
+router.get('/:uid/addresses_holders', controller.addressHolders)
+router.get('/:uid/addresses_ranks', controller.addressRanks)
 
 module.exports = router

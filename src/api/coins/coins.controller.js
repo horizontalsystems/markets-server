@@ -31,7 +31,7 @@ exports.index = async ({ query, currencyRate }, res) => {
 
 exports.show = async (req, res) => {
   const { language = 'en' } = req.query
-  const coin = await Coin.getCoinInfo(req.params.id)
+  const coin = await Coin.getCoinInfo(req.params.uid)
 
   if (coin) {
     res.send(serializer.serializeShow(coin, language, req.currencyRate))
@@ -43,7 +43,7 @@ exports.show = async (req, res) => {
 }
 
 exports.details = async (req, res) => {
-  const coin = await Coin.getCoinDetails(req.params.id)
+  const coin = await Coin.getCoinDetails(req.params.uid)
 
   if (coin) {
     res.send(serializer.serializeDetails(coin, req.currencyRate))
@@ -55,12 +55,12 @@ exports.details = async (req, res) => {
 }
 
 exports.treasuries = async ({ params, currencyRate }, res) => {
-  const treasuries = await Treasury.getByCoin(params.id)
+  const treasuries = await Treasury.getByCoin(params.uid)
   res.send(serializer.serializeTreasuries(treasuries, currencyRate))
 }
 
 exports.transactions = async (req, res) => {
-  const { id } = req.params
+  const { uid } = req.params
   const { interval } = req.query
 
   let window
@@ -81,17 +81,14 @@ exports.transactions = async (req, res) => {
       break
   }
 
-  const transactions = await Coin.getTransactions(id, window, dateFrom)
+  const transactions = await Coin.getTransactions(uid, window, dateFrom)
 
   res.send(transactions)
 }
 
-exports.addresses = async (req, res) => {
-  const { id } = req.params
-  const { interval } = req.query
-
+exports.addresses = async ({ params, query }, res) => {
   let window
-  switch (interval) {
+  switch (query.interval) {
     case '1d':
       window = '1h'
       break
@@ -103,23 +100,19 @@ exports.addresses = async (req, res) => {
       break
   }
 
-  const addresses = await Coin.getAddresses(id, window)
+  const addresses = await Coin.getAddresses(params.uid, window)
 
   res.send(addresses)
 }
 
-exports.addressHolders = async (req, res) => {
-  const { id } = req.params
-  const { limit } = req.query
-  const coinHolders = await Coin.getCoinHolders(id, limit)
+exports.addressHolders = async ({ params, query }, res) => {
+  const coinHolders = await Coin.getCoinHolders(params.uid, query.limit)
 
   res.send(coinHolders)
 }
 
-exports.addressRanks = async (req, res) => {
-  const { id } = req.params
-  const { limit } = req.query
-  const addressRanks = await Coin.getAddressRanks(id, limit)
+exports.addressRanks = async ({ params, query }, res) => {
+  const addressRanks = await Coin.getAddressRanks(params.uid, query.limit)
 
   res.send(addressRanks)
 }
