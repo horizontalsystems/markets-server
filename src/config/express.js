@@ -37,17 +37,21 @@ app.use(cors())
 // mount API v1 routes
 app.use('/v1', routes)
 
-const errorHandler = (err, req, res, next) => {
+// catch 404 and forward to error handler
+app.use((req, res) => {
+  return res.status(404).send({
+    error: 'Not found'
+  })
+})
+
+// error handler
+app.use((err, req, res, next) => {
   if (err instanceof ValidationError) {
     res.status(err.statusCode)
   } else {
     res.status(500)
   }
-
   res.json(err)
-}
-
-// error handler
-app.use(errorHandler)
+})
 
 module.exports = app
