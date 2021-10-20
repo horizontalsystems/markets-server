@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./coins.controller')
-const { validateCoins } = require('./coins.validator')
+const { validateCoins, validateTreasuries } = require('./coins.validator')
 const { setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
@@ -89,6 +89,29 @@ router.get('/:id', setCurrencyRate, controller.show)
  * @apiError (Not Found 404)  NotFound  Coin does not exist
  */
 router.get('/:id/details', setCurrencyRate, controller.details)
+
+/**
+ * @api {get} /v1/coins/:uid/treasuries List treasuries
+ * @apiDescription Get coin's treasuries
+ * @apiVersion 1.0.0
+ * @apiGroup Coin
+ *
+ * @apiParam    {String}        uid   Coin's uid
+ * @apiUse      Currencies
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [{
+ *    "type": "public",
+ *    "amount": "200000",
+ *    "amountInCurrency": "200000000",
+ *    "country": "AI"
+ *  }]
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ * @apiError (Not Found 404)    NotFound  Coin does not exist
+ */
+router.get('/:id/treasuries', validateTreasuries, setCurrencyRate, controller.treasuries)
 router.get('/:id/transactions', controller.transactions)
 router.get('/:id/addresses', controller.addresses)
 router.get('/:id/addresses_holders', controller.addressHolders)

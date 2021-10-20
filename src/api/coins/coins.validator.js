@@ -16,4 +16,11 @@ module.exports = {
       currency: Joi.string()
     })
   }, options),
+
+  // GET /v1/coins/:uid/treasuries
+  validateTreasuries: validate({
+    query: Joi.object({
+      currency: Joi.string()
+    })
+  }, options),
 }
