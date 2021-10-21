@@ -2,6 +2,7 @@ const { utcDate } = require('../../utils')
 const Coin = require('../../db/models/Coin')
 const Platform = require('../../db/models/Platform')
 const Treasury = require('../../db/models/Treasury')
+const FundsInvested = require('../../db/models/FundsInvested')
 const serializer = require('./coins.serializer')
 
 exports.index = async ({ query, currencyRate }, res) => {
@@ -57,6 +58,11 @@ exports.details = async (req, res) => {
 exports.treasuries = async ({ params, currencyRate }, res) => {
   const treasuries = await Treasury.getByCoin(params.uid)
   res.send(serializer.serializeTreasuries(treasuries, currencyRate))
+}
+
+exports.fundsInvested = async ({ params, currencyRate }, res) => {
+  const fundsInvested = await FundsInvested.getByCoin(params.uid)
+  res.send(serializer.serializeFundsInvested(fundsInvested, currencyRate))
 }
 
 exports.transactions = async (req, res) => {

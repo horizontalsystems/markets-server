@@ -1,28 +1,41 @@
-const Sequelize = require('sequelize')
+const SequelizeModel = require('./SequelizeModel')
 
-class FundsInvested extends Sequelize.Model {
+class FundsInvested extends SequelizeModel {
 
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        round: DataTypes.ENUM([
-          'Secondary Market',
-          'Initial Coin Offering',
-          'Venture Round',
-          'Series A',
-          'Seed Round',
-          'Angel Round',
-          'Series C',
-          'Pre-Seed Round',
-          'Funding Round',
-          'Series B',
-          'Series D',
-          'Series E',
-          'Private Equity Round',
-          'Corporate Round',
-        ]),
-        amount: DataTypes.DECIMAL,
-        date: DataTypes.DATEONLY
+        round: {
+          type: DataTypes.ENUM([
+            'Secondary Market',
+            'Initial Coin Offering',
+            'Venture Round',
+            'Series A',
+            'Seed Round',
+            'Angel Round',
+            'Series C',
+            'Pre-Seed Round',
+            'Funding Round',
+            'Series B',
+            'Series D',
+            'Series E',
+            'Private Equity Round',
+            'Corporate Round',
+          ]),
+          allowNull: false
+        },
+        amount: {
+          type: DataTypes.DECIMAL,
+          allowNull: false
+        },
+        date: {
+          type: DataTypes.DATEONLY,
+          allowNull: false
+        },
+        funds: {
+          type: DataTypes.JSONB,
+          allowNull: false
+        }
       },
       {
         timestamps: false,
@@ -34,7 +47,28 @@ class FundsInvested extends Sequelize.Model {
 
   static associate(models) {
     FundsInvested.belongsTo(models.Coin)
-    FundsInvested.belongsTo(models.Fund)
+  }
+
+  static async getByCoin(uid) {
+    const query = `
+      SELECT
+        I.date,
+        I.round,
+        I.amount,
+        JSON_AGG(JSON_BUILD_OBJECT(
+          'name', F.name,
+          'website', F.website,
+          'is_lead', e.jsn->'is_lead'
+        )) as funds
+      FROM funds_invested I, coins C
+      JOIN LATERAL jsonb_array_elements(I.funds) as e(jsn) ON TRUE
+      LEFT JOIN funds F on F.id = (e.jsn->>'id')::int
+      WHERE C.id = I.coin_id 
+        AND C.uid = 'bitcoin'
+      GROUP BY I.id
+    `
+
+    return FundsInvested.query(query, { uid })
   }
 
 }

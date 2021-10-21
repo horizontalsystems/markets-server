@@ -23,4 +23,11 @@ module.exports = {
       currency: Joi.string()
     })
   }, options),
+
+  // GET /v1/coins/:uid/funds_invested
+  validateFundsInvested: validate({
+    query: Joi.object({
+      currency: Joi.string()
+    })
+  }, options),
 }

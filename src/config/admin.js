@@ -56,7 +56,16 @@ const adminJs = new AdminJS({
       }
     },
     sequelize.Fund,
-    sequelize.FundsInvested
+    {
+      resource: sequelize.FundsInvested,
+      options: {
+        properties: {
+          funds: { type: 'mixed', isArray: true },
+          'funds.id': { reference: 'funds', isRequired: true },
+          'funds.is_lead': { type: 'boolean' }
+        }
+      }
+    }
   ],
   dashboard: {},
   rootPath: '/admin',

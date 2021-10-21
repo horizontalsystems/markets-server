@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./coins.controller')
-const { validateCoins, validateTreasuries } = require('./coins.validator')
+const { validateCoins, validateTreasuries, validateFundsInvested } = require('./coins.validator')
 const { setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
@@ -60,7 +60,7 @@ router.get('/', validateCoins, setCurrencyRate, controller.index)
  *  }
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
- * @apiError (Not Found 404)    NotFound  Coin does not exist
+ * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
 router.get('/:uid', setCurrencyRate, controller.show)
 
@@ -86,7 +86,7 @@ router.get('/:uid', setCurrencyRate, controller.show)
  *  }
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
- * @apiError (Not Found 404)  NotFound  Coin does not exist
+ * @apiError (Not Found 404)  NotFound            Coin does not exist
  */
 router.get('/:uid/details', setCurrencyRate, controller.details)
 
@@ -109,9 +109,36 @@ router.get('/:uid/details', setCurrencyRate, controller.details)
  *  }]
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
- * @apiError (Not Found 404)    NotFound  Coin does not exist
+ * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
 router.get('/:uid/treasuries', validateTreasuries, setCurrencyRate, controller.treasuries)
+
+/**
+ * @api {get} /v1/coins/:uid/funds_invested List Funds Invested
+ * @apiDescription Get coin's Funds Invested
+ * @apiVersion 1.0.0
+ * @apiGroup Coin
+ *
+ * @apiParam    {String}        uid   Coin's uid
+ * @apiUse      Currencies
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [{
+ *    "date": "2021-10-02",
+ *    "round": "Venture Round",
+ *    "amount": "20003003",
+ *    "funds": [{
+ *       "name": "ABC fund",
+ *       "website": "https://domain.com/abc",
+ *       "is_lead": true
+ *     }]
+ *  }]
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ * @apiError (Not Found 404)    NotFound          Coin does not exist
+ */
+router.get('/:uid/funds_invested', validateFundsInvested, setCurrencyRate, controller.fundsInvested)
 router.get('/:uid/transactions', controller.transactions)
 router.get('/:uid/addresses', controller.addresses)
 router.get('/:uid/addresses_holders', controller.addressHolders)

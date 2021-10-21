@@ -5,8 +5,12 @@ class Fund extends Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        name: DataTypes.STRING,
-        description: DataTypes.TEXT
+        name: {
+          type: DataTypes.STRING,
+          allowNull: false
+        },
+        description: DataTypes.TEXT,
+        website: DataTypes.TEXT
       },
       {
         timestamps: false,
@@ -16,8 +20,7 @@ class Fund extends Model {
     )
   }
 
-  static associate(models) {
-    Fund.hasMany(models.FundsInvested)
+  static associate() {
   }
 
 }
