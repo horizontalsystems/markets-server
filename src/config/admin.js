@@ -14,7 +14,19 @@ const adminJs = new AdminJS({
         editProperties: ['name', 'code', 'coingecko_id', 'security', 'genesis_date'],
         properties: {
           security: { type: 'mixed' },
-          'security.privacy': { type: 'string' },
+          'security.privacy': {
+            type: 'string',
+            availableValues: [{
+              label: 'low',
+              value: 'low'
+            }, {
+              label: 'medium',
+              value: 'medium'
+            }, {
+              label: 'high',
+              value: 'high'
+            }]
+          },
           'security.decentralized': { type: 'boolean' },
           'security.confiscation_resistance': { type: 'boolean' },
           'security.censorship_resistance': { type: 'boolean' },
@@ -85,7 +97,6 @@ const tmpAdmin = {
 
 const router = AdminJSExpress.buildAuthenticatedRouter(adminJs, {
   authenticate: async (email, password) => {
-    console.log(password)
     if (tmpAdmin.password === password && tmpAdmin.email === email) {
       return tmpAdmin
     }
