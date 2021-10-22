@@ -38,8 +38,11 @@ class CurrencyRate extends SequelizeModel {
     })
   }
 
-  static deleteExpired() {
-    return CurrencyRate.query('DELETE FROM currency_prices where expires_at <= NOW()')
+  static deleteExpired(dateFrom, dateTo) {
+    return CurrencyRate.query('DELETE FROM currency_rates WHERE date > :dateFrom AND date < :dateTo', {
+      dateFrom,
+      dateTo
+    })
   }
 
   static async getCurrencyRate(currencyCode = Currency.baseCurrency) {

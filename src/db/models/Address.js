@@ -57,7 +57,7 @@ class Address extends SequelizeModel {
           count = total.count
       FROM (SELECT 
             SUM(volume) as volume,  SUM(count) as count
-            FROM public.addresses
+            FROM addresses
             WHERE date > :dateFrom AND date <= :dateTo
            ) AS total
       WHERE date = :dateTo`, {

@@ -40,8 +40,27 @@ class Transaction extends SequelizeModel {
     return !!await Transaction.findOne()
   }
 
-  static deleteExpired() {
-    return Transaction.query('DELETE FROM transactions where expires_at <= NOW()')
+  static updatePoints(dateFrom, dateTo) {
+    return Transaction.query(`
+      UPDATE transactions
+      SET volume = total.volume,
+          count = total.count
+      FROM (SELECT 
+            SUM(volume) as volume,  SUM(count) as count
+            FROM transactions
+            WHERE date > :dateFrom AND date <= :dateTo
+           ) AS total
+      WHERE date = :dateTo`, {
+      dateFrom,
+      dateTo
+    })
+  }
+
+  static deleteExpired(dateFrom, dateTo) {
+    return Transaction.query('DELETE FROM transactions WHERE date > :dateFrom AND date < :dateTo', {
+      dateFrom,
+      dateTo
+    })
   }
 
 }

@@ -3,7 +3,7 @@ const coingecko = require('../providers/coingecko')
 const CurrencyRate = require('../db/models/CurrencyRate')
 const Currency = require('../db/models/Currency')
 const Syncer = require('./Syncer')
-const { sleep } = require('../utils')
+const { sleep, utcDate } = require('../utils')
 
 class CurrencyRateSyncer extends Syncer {
 
@@ -27,29 +27,29 @@ class CurrencyRateSyncer extends Syncer {
     this.cron('1d', this.syncQuarterRates)
   }
 
-  async clearExpired() {
-    await CurrencyRate.deleteExpired()
-  }
-
   async syncDailyRates() {
     const dateExpiresIn = { hours: 24 }
     const date = DateTime.utc()
 
     await this.syncRates(date, dateExpiresIn)
-    await this.clearExpired()
   }
 
   async syncNinetyDaysRates() {
-    const dateExpiresIn = { days: 90 }
-    const date = DateTime.utc()
+    const dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -1, hours: -1 })
+    const dateTo = utcDate('yyyy-MM-dd HH:00:00', { days: -1 })
 
-    await this.syncRates(date, dateExpiresIn)
+    this.adjustPoints(dateFrom, dateTo)
   }
 
   async syncQuarterRates() {
-    const date = DateTime.utc()
+    const dateFrom = utcDate('yyyy-MM-dd', { days: -91 })
+    const dateTo = utcDate('yyyy-MM-dd', { days: -90 })
 
-    await this.syncRates(date)
+    this.adjustPoints(dateFrom, dateTo)
+  }
+
+  async adjustPoints(dateFrom, dateTo) {
+    await CurrencyRate.deleteExpired(dateFrom, dateTo)
   }
 
   async syncRates(date, dateExpiresIn) {
