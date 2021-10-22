@@ -1,3 +1,4 @@
+const TurndownService = require('turndown')
 const { sleep } = require('../src/utils')
 const coingecko = require('../src/providers/coingecko')
 const sequelize = require('../src/db/sequelize')
@@ -6,6 +7,8 @@ const Platform = require('../src/db/models/Platform')
 const Language = require('../src/db/models/Language')
 const binanceDex = require('../src/providers/binance-dex')
 const web3Provider = require('../src/providers/web3')
+
+const turndownService = new TurndownService()
 
 async function fetchCoins(page = 1, limit = 4000) {
   const coinsPerPage = 250
@@ -94,7 +97,10 @@ async function syncPlatform(coin, platforms, bep2tokens) {
 
 function descriptionsMap(descriptions, languages) {
   return languages.reduce((memo, lang) => {
-    memo[lang.code] = descriptions[lang.code]
+    const description = descriptions[lang.code]
+    if (description) {
+      memo[lang.code] = turndownService.turndown(description)
+    }
     return memo
   }, {})
 }
@@ -109,7 +115,7 @@ async function syncCoinInfo(id, languages, bep2tokens) {
     const [coin] = await Coin.upsert(data)
     await syncPlatform(coin, data.platforms, bep2tokens)
   } catch ({ message, response }) {
-    console.log(message)
+    console.error(message)
     if (response && response.status === 429) {
       await sleep(30000)
       await syncCoinInfo(id, languages, bep2tokens)
@@ -123,7 +129,7 @@ async function start() {
   const languages = await Language.findAll()
   const bep2tokens = await binanceDex.getBep2Tokens()
   const coins = await fetchCoins()
-  console.log('Fetched new coins')
+  console.log(`Fetched new coins ${coins.length}`)
 
   for (let i = 0; i < coins.length; i += 1) {
     try {
@@ -131,7 +137,7 @@ async function start() {
       await syncCoinInfo(coin.coingecko_id, languages, bep2tokens)
       await sleep(1100)
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
   }
 }

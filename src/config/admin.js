@@ -6,6 +6,17 @@ const sequelize = require('../db/sequelize')
 
 AdminJS.registerAdapter(AdminJSSequelize)
 
+const multilingual = (field) => {
+  const languages = ['en', 'de', 'ru', 'es', 'fa', 'fr', 'ko', 'tr', 'zh']
+  // Use custom component for dynamic values
+  return languages.reduce((memo, value) => {
+    memo[`${field}.${value}`] = {
+      type: 'textarea'
+    }
+    return memo
+  }, {})
+}
+
 const adminJs = new AdminJS({
   resources: [
     {
@@ -31,6 +42,8 @@ const adminJs = new AdminJS({
           'security.decentralized': { type: 'boolean' },
           'security.confiscation_resistance': { type: 'boolean' },
           'security.censorship_resistance': { type: 'boolean' },
+          description: { type: 'mixed', },
+          ...multilingual('description')
         }
       }
     },
@@ -49,8 +62,7 @@ const adminJs = new AdminJS({
       options: {
         properties: {
           description: { type: 'mixed' },
-          'description.en': { type: 'textarea' },
-          'description.ru': { type: 'textarea' },
+          ...multilingual('description'),
         }
       }
     },
@@ -88,6 +100,7 @@ const adminJs = new AdminJS({
   },
   branding: {
     companyName: 'Coins admin',
+    softwareBrothers: false
   },
 })
 
