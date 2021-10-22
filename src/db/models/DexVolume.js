@@ -40,10 +40,12 @@ class DexVolume extends SequelizeModel {
     return !!await DexVolume.findOne()
   }
 
-  static deleteExpired() {
-    return DexVolume.query('DELETE FROM dex_volumes where expires_at <= NOW()')
+  static deleteExpired(dateFrom, dateTo) {
+    return DexVolume.query('DELETE FROM dex_volumes WHERE date > :dateFrom AND date < :dateTo', {
+      dateFrom,
+      dateTo
+    })
   }
-
 }
 
 module.exports = DexVolume

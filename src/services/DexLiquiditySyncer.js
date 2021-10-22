@@ -22,9 +22,9 @@ class DexLiquiditySyncer extends Syncer {
       dateTo: utcDate('yyyy-MM-dd', { days: -30 })
     })
 
-    await this.syncMonthlyStats(this.syncParamsHistorical('1d'))
-    await this.syncWeeklyStats(this.syncParamsHistorical('4h'))
-    await this.syncDailyStats(this.syncParamsHistorical('1h'))
+    await this.syncMonthlyStats(this.syncParamsHistorical('1d'), '1d')
+    await this.syncWeeklyStats(this.syncParamsHistorical('4h'), '4h')
+    await this.syncDailyStats(this.syncParamsHistorical('1h'), '1h')
   }
 
   async syncLatest() {
@@ -35,15 +35,18 @@ class DexLiquiditySyncer extends Syncer {
 
   async syncDailyStats(dateParams) {
     await this.syncStats(dateParams, '1h')
-    await DexLiquidity.deleteExpired()
   }
 
   async syncWeeklyStats(dateParams) {
-    await this.syncStats(dateParams, '4h')
+    await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
   }
 
   async syncMonthlyStats(dateParams) {
-    await this.syncStats(dateParams, '1d')
+    await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
+  }
+
+  async adjustPoints(dateFrom, dateTo) {
+    await DexLiquidity.deleteExpired(dateFrom, dateTo)
   }
 
   async syncStats(dateParams, datePeriod) {

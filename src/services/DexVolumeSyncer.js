@@ -16,9 +16,9 @@ class DexVolumeSyncer extends Syncer {
       return
     }
 
-    await this.syncMonthlyStats(this.syncParamsHistorical('1d'))
-    await this.syncWeeklyStats(this.syncParamsHistorical('4h'))
-    await this.syncDailyStats(this.syncParamsHistorical('1h'))
+    await this.syncMonthlyStats(this.syncParamsHistorical('1d'), '1d')
+    await this.syncWeeklyStats(this.syncParamsHistorical('4h'), '4h')
+    await this.syncDailyStats(this.syncParamsHistorical('1h'), '1h')
   }
 
   async syncLatest() {
@@ -29,15 +29,18 @@ class DexVolumeSyncer extends Syncer {
 
   async syncDailyStats(dateParams) {
     await this.syncStats(dateParams, '1h')
-    await DexVolume.deleteExpired()
   }
 
   async syncWeeklyStats(dateParams) {
-    await this.syncStats(dateParams, '4h')
+    this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
   }
 
   async syncMonthlyStats(dateParams) {
-    await this.syncStats(dateParams, '1d')
+    this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
+  }
+
+  async adjustPoints(dateFrom, dateTo) {
+    await DexVolume.deleteExpired(dateFrom, dateTo)
   }
 
   async syncStats({ dateFrom, dateTo, dateExpiresIn }, datePeriod) {

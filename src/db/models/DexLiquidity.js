@@ -59,10 +59,12 @@ class DexLiquidity extends SequelizeModel {
     `)
   }
 
-  static deleteExpired() {
-    return DexLiquidity.query('DELETE FROM dex_volumes where expires_at <= NOW()')
+  static deleteExpired(dateFrom, dateTo) {
+    return DexLiquidity.query('DELETE FROM dex_liquidities WHERE date > :dateFrom AND date < :dateTo', {
+      dateFrom,
+      dateTo
+    })
   }
-
 }
 
 module.exports = DexLiquidity
