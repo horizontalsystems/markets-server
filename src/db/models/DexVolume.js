@@ -40,21 +40,6 @@ class DexVolume extends SequelizeModel {
     return !!await DexVolume.findOne()
   }
 
-  static updatePoints(dateFrom, dateTo) {
-    return DexVolume.query(`
-      UPDATE dex_volumes
-      SET volume = total.volume
-      FROM (SELECT 
-            SUM(volume) as volume
-            FROM dex_volumes
-            WHERE date > :dateFrom AND date <= :dateTo
-           ) AS total
-      WHERE date = :dateTo`, {
-      dateFrom,
-      dateTo
-    })
-  }
-
   static deleteExpired(dateFrom, dateTo) {
     return DexVolume.query('DELETE FROM dex_volumes WHERE date > :dateFrom AND date < :dateTo', {
       dateFrom,

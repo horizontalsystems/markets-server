@@ -40,7 +40,6 @@ class DexVolumeSyncer extends Syncer {
   }
 
   async adjustPoints(dateFrom, dateTo) {
-    await DexVolume.updatePoints(dateFrom, dateTo)
     await DexVolume.deleteExpired(dateFrom, dateTo)
   }
 
