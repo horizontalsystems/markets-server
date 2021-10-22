@@ -54,24 +54,19 @@ class CoinSyncer {
       return
     }
 
-    await sleep(1000)
+    await sleep(1100)
     await this.syncCoins(coinIds, map)
   }
 
-  async fetchCoins(coinIds, retry = 0) {
-    if (retry >= 3) {
-      return []
-    }
-
+  async fetchCoins(coinIds) {
     try {
       return await coingecko.getMarkets(coinIds)
     } catch (err) {
       logger.error(err)
 
       if (err.response && err.response.status === 429) {
+        logger.info('sleeping 30s')
         await sleep(30000)
-        logger.info('Retrying')
-        return this.fetchCoins(coinIds, retry + 1)
       }
 
       return []
