@@ -50,8 +50,27 @@ class Address extends SequelizeModel {
     return !!await Address.findOne()
   }
 
-  static deleteExpired() {
-    return Address.query('DELETE FROM addresses where expires_at <= NOW()')
+  static updatePoints(dateFrom, dateTo) {
+    return Address.query(`
+      UPDATE addresses
+      SET volume = total.volume,
+          count = total.count
+      FROM (SELECT 
+            SUM(volume) as volume,  SUM(count) as count
+            FROM public.addresses
+            WHERE date > :dateFrom AND date <= :dateTo
+           ) AS total
+      WHERE date = :dateTo`, {
+      dateFrom,
+      dateTo
+    })
+  }
+
+  static deleteExpired(dateFrom, dateTo) {
+    return Address.query('DELETE FROM addresses WHERE date > :dateFrom AND date < :dateTo', {
+      dateFrom,
+      dateTo
+    })
   }
 
 }
