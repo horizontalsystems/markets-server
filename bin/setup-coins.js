@@ -84,6 +84,7 @@ async function syncPlatform(coin, platforms, bep2tokens) {
       }
 
       default:
+        address = platforms[platform]
         break
     }
 
