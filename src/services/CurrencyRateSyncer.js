@@ -38,14 +38,14 @@ class CurrencyRateSyncer extends Syncer {
     const dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -1, hours: -1 })
     const dateTo = utcDate('yyyy-MM-dd HH:00:00', { days: -1 })
 
-    this.adjustPoints(dateFrom, dateTo)
+    await this.adjustPoints(dateFrom, dateTo)
   }
 
   async syncQuarterRates() {
     const dateFrom = utcDate('yyyy-MM-dd', { days: -91 })
     const dateTo = utcDate('yyyy-MM-dd', { days: -90 })
 
-    this.adjustPoints(dateFrom, dateTo)
+    await this.adjustPoints(dateFrom, dateTo)
   }
 
   async adjustPoints(dateFrom, dateTo) {

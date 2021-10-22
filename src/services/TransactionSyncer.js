@@ -32,11 +32,11 @@ class TransactionSyncer extends Syncer {
   }
 
   async syncWeeklyStats(dateParams) {
-    this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
+    await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
   }
 
   async syncMonthlyStats(dateParams) {
-    this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
+    await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
   }
 
   async adjustPoints(dateFrom, dateTo) {
