@@ -46,7 +46,7 @@ async function createPlatform(coin, platforms, bep2tokens) {
       return upsert('ethereum', 18)
     case 'binancecoin':
       await upsert('binance-smart-chain', 18)
-      await upsert('bep2', 18)
+      await upsert('bep2', 18, null, 'bnb')
       return
     default:
       break
@@ -78,10 +78,10 @@ async function createPlatform(coin, platforms, bep2tokens) {
 
       case 'binancecoin': {
         type = 'bep2'
-        symbol = platforms[platform]
         const token = bep2tokens[coin.code.toUpperCase()]
         if (token) {
           decimals = token.contract_decimals
+          symbol = token.symbol
         }
         break
       }
