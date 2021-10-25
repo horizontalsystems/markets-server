@@ -25,28 +25,28 @@ async function fetchCoins(page = 1, limit = 4000) {
   )
 }
 
-async function createPlatform(coinId, type, decimals, address, symbol) {
-  const record = {
-    type,
-    symbol,
-    address,
-    decimals,
-    coin_id: coinId
+async function createPlatform(coin, platforms, bep2tokens) {
+  const upsert = async (type, decimals, address, symbol) => {
+    try {
+      const [record] = await Platform.upsert({ type, symbol, address, decimals, coin_id: coin.id })
+      console.log(JSON.stringify(record))
+    } catch (err) {
+      console.log(err)
+    }
   }
 
-  try {
-    console.log(JSON.stringify(record))
-    await Platform.upsert(record)
-  } catch (err) {
-    console.log(err)
-  }
-}
-
-async function syncPlatform(coin, platforms, bep2tokens) {
   switch (coin.uid) {
     case 'bitcoin':
+    case 'bitcoin-cash':
+    case 'litecoin':
+    case 'dash':
+    case 'zcash':
+      return upsert(coin.uid, 8)
     case 'ethereum':
+      return upsert('ethereum', 18)
     case 'binancecoin':
+      await upsert('binance-smart-chain', 18)
+      await upsert('bep2', 18)
       return
     default:
       break
@@ -91,7 +91,7 @@ async function syncPlatform(coin, platforms, bep2tokens) {
         break
     }
 
-    await createPlatform(coin.id, type, decimals, address, symbol)
+    await upsert(type, decimals, address, symbol)
   }
 }
 
@@ -105,20 +105,19 @@ function descriptionsMap(descriptions, languages) {
   }, {})
 }
 
-async function syncCoinInfo(id, languages, bep2tokens) {
-  console.log('fetching info for', id)
-
+async function creatCoin(id, languages, bep2tokens) {
   try {
+    console.log('fetching info for', id)
     const data = await coingecko.getCoinInfo(id)
     data.description = descriptionsMap(data.description, languages)
 
     const [coin] = await Coin.upsert(data)
-    await syncPlatform(coin, data.platforms, bep2tokens)
+    await createPlatform(coin, data.platforms, bep2tokens)
   } catch ({ message, response }) {
     console.error(message)
     if (response && response.status === 429) {
-      await sleep(30000)
-      await syncCoinInfo(id, languages, bep2tokens)
+      await sleep(60 * 1000)
+      await creatCoin(id, languages, bep2tokens)
     }
   }
 }
@@ -134,7 +133,7 @@ async function start() {
   for (let i = 0; i < coins.length; i += 1) {
     try {
       const coin = coins[i]
-      await syncCoinInfo(coin.coingecko_id, languages, bep2tokens)
+      await creatCoin(coin.coingecko_id, languages, bep2tokens)
       await sleep(1100)
     } catch (e) {
       console.error(e)
