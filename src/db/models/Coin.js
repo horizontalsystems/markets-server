@@ -17,6 +17,7 @@ class Coin extends SequelizeModel {
         name: DataTypes.STRING,
         code: DataTypes.STRING,
         coingecko_id: DataTypes.STRING,
+        defillama_id: DataTypes.STRING,
         genesis_date: DataTypes.DATEONLY,
         description: DataTypes.JSONB,
         //  {
@@ -50,6 +51,17 @@ class Coin extends SequelizeModel {
         //    atl_date:                     2021-00-01T00:00:00.000Z,
         //  }
 
+        defi_data: DataTypes.JSONB,
+        //  {
+        //    tvl:            19198417852.24,
+        //    tvl_rank:       1,
+        //    tvl_change_1h:  0.076,
+        //    tvl_change_1d:  0.734,
+        //    tvl_change_7d:  13.61,
+        //    staking:        1444036569.167,
+        //    chains:         ["Ethereum", "Fantom", "Avalanche"]
+        //  }
+
         market_data: DataTypes.JSONB,
         //  {
         //    market_cap: 1000000,
@@ -58,8 +70,7 @@ class Coin extends SequelizeModel {
         //    total_supply: 80000,
         //    max_supply: 80000,
         //    circulating_supply: 78000,
-        //    fully_diluted_valuation: 1000000,
-        //    total_value_locked: 1000000
+        //    fully_diluted_valuation: 1000000
         //  }
 
         security: DataTypes.JSONB,
