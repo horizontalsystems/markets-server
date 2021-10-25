@@ -79,6 +79,9 @@ router.get('/:uid', setCurrencyRate, controller.show)
  *    "uid": "supercoin",
  *    "links": {},
  *    "security": {},
+ *    "tvl": 5139343551.541889,
+ *    "tvl_rank": 1,
+ *    "tvl_ratio": 2.6662951088157687,
  *    "investor_data": {
  *      "funds_invested": "640000000",
  *      "treasuries": "720000000"

@@ -98,6 +98,9 @@ exports.serializeDetails = (coin, currencyRate) => {
     uid: coin.uid,
     links: coin.links,
     security: coin.security,
+    tvl: coin.tvl,
+    tvl_rank: coin.tvl_rank,
+    tvl_ratio: coin.market_cap / coin.tvl,
     investor_data: {
       funds_invested: valueInCurrency(coin.funds_invested, currencyRate),
       treasuries: valueInCurrency(coin.treasuries, currencyRate)

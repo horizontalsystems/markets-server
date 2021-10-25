@@ -204,7 +204,15 @@ class Coin extends SequelizeModel {
 
   static async getCoinDetails(uid) {
     const query = (`
-      SELECT C.uid, C.links, C.security, sum(F.amount) as funds_invested, sum(T.amount) as treasuries
+      SELECT 
+        C.uid,
+        C.links,
+        C.security,
+        C.defi_data->'tvl' as tvl,
+        C.defi_data->'tvl_rank' as tvl_rank,
+        C.market_data->'market_cap' as market_cap,
+        sum(F.amount) as funds_invested,
+        sum(T.amount) as treasuries
       FROM coins C
       LEFT JOIN funds_invested F ON F.coin_id = C.id
       LEFT JOIN treasuries T ON T.coin_id = C.id
