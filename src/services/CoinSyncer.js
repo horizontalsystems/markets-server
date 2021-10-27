@@ -1,5 +1,5 @@
 const { CronJob } = require('cron')
-const { sleep } = require('../utils')
+const utils = require('../utils')
 const logger = require('../config/logger')
 const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
@@ -7,7 +7,7 @@ const Coin = require('../db/models/Coin')
 class CoinSyncer {
 
   constructor() {
-    this.cronJob = new CronJob({
+    this.cron = new CronJob({
       cronTime: '*/1 * * * * *', // every second
       onTick: this.syncSchedule.bind(this),
       start: false
@@ -15,89 +15,67 @@ class CoinSyncer {
   }
 
   start() {
-    this.cronJob.start()
+    this.cron.start()
+  }
+
+  pause() {
+    this.cron.stop()
   }
 
   async syncSchedule() {
-    this.cronJob.stop()
+    this.pause()
 
-    const coins = await Coin.findAll({
-      attributes: ['id', 'coingecko_id']
-    })
+    const coins = await Coin.findAll({ attributes: ['uid'] })
+    await this.syncCoins(coins.map(item => item.uid))
 
-    const ids = []
-    const map = {}
-    coins.forEach(coin => {
-      ids.push(coin.coingecko_id)
-      map[coin.coingecko_id] = coin
-    })
-
-    await this.syncCoins(ids, map)
-
-    // Schedule cron task
-    this.cronJob.start()
+    this.start()
   }
 
-  async syncCoins(coinIds, map) {
-    const perPage = 500
-    const coinIdsChunk = coinIds.splice(0, perPage)
+  async syncCoins(coinIds) {
+    logger.info(`Syncing coins ${coinIds.length}`)
+    const coinIdsPerPage = coinIds.splice(0, 500)
 
-    logger.info(`Syncing coins: ${coinIdsChunk.length} from ${coinIds.length}`)
+    const coins = await this.fetchCoins(coinIdsPerPage)
+    await this.updateCoins(coins)
 
-    const data = await this.fetchCoins(coinIdsChunk)
-
-    console.info(`Synced coins: ${data.length}`)
-
-    this.upsertCoins(data, map)
-
-    if (data.length >= (coinIdsChunk.length + coinIds.length) || coinIds.length < 1) {
+    if (coins.length >= (coinIdsPerPage.length + coinIds.length) || coinIds.length < 1) {
       return
     }
 
-    await sleep(1100)
-    await this.syncCoins(coinIds, map)
+    await utils.sleep(1100)
+    await this.syncCoins(coinIds)
   }
 
   async fetchCoins(coinIds) {
     try {
+      logger.info(`Fetching coins ${coinIds.length}`)
       return await coingecko.getMarkets(coinIds)
-    } catch (err) {
-      logger.error(err)
+    } catch ({ message, response }) {
+      if (message) {
+        console.error(message)
+      }
 
-      if (err.response && err.response.status === 429) {
-        logger.info('sleeping 30s')
-        await sleep(30000)
+      if (response && response.status === 429) {
+        logger.info('Sleeping 30s')
+        await utils.sleep(30000)
       }
 
       return []
     }
   }
 
-  upsertCoins(data, map) {
-    const updateFields = {
-      fields: [
-        'price',
-        'price_change',
-        'market_data',
-        'security',
-        'last_updated'
-      ]
-    }
+  async updateCoins(coins) {
+    logger.info(`Synced coins: ${coins.length}`)
 
-    for (let key = 0; key < data.length; key += 1) {
-      const item = data[key];
-      const coin = map[item.coingecko_id]
+    const values = coins.map(item => [
+      item.uid,
+      item.price,
+      JSON.stringify(item.price_change),
+      JSON.stringify(item.market_data),
+      item.last_updated
+    ])
 
-      if (coin) {
-        coin.update(item, updateFields).catch(err => {
-          logger.error(err)
-        })
-      } else {
-        Coin.create(data).catch(err => {
-          console.error(err)
-        })
-      }
-    }
+    await Coin.updateCoins(values)
   }
 
 }

@@ -255,6 +255,19 @@ class Coin extends SequelizeModel {
     }
   }
 
+  static updateCoins(values) {
+    const query = `
+      UPDATE coins AS c set
+        price = v.price,
+        price_change = v.price_change::json,
+        market_data = v.market_data::json,
+        last_updated = v.last_updated::timestamptz
+      FROM (values :values ) as v(uid, price, price_change, market_data, last_updated)
+      WHERE c.uid = v.uid
+    `
+
+    return Coin.queryUpdate(query, { values })
+  }
 }
 
 module.exports = Coin

@@ -8,6 +8,10 @@ class SequelizeModel extends Sequelize.Model {
     })
   }
 
+  static queryUpdate(sql, replacements = {}) {
+    return this.query(sql, replacements, Sequelize.QueryTypes.UPDATE)
+  }
+
   static literal(value) {
     return Sequelize.literal(value)
   }

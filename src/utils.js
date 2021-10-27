@@ -2,8 +2,8 @@ const { DateTime } = require('luxon')
 const fs = require('fs')
 const path = require('path')
 
-exports.sleep = async (timeout = 1000) => {
-  await new Promise(resolve => setTimeout(resolve, timeout))
+exports.sleep = (timeout = 1000) => {
+  return new Promise(resolve => setTimeout(resolve, timeout))
 }
 
 exports.utcDate = (format, duration = {}) => {
