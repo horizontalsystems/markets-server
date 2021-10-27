@@ -206,7 +206,6 @@ class Coin extends SequelizeModel {
     const query = (`
       SELECT 
         C.uid,
-        C.links,
         C.security,
         C.defi_data->'tvl' as tvl,
         C.defi_data->'tvl_rank' as tvl_rank,

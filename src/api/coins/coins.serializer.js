@@ -96,11 +96,10 @@ exports.serializeShow = (coin, language, currencyRate) => {
 exports.serializeDetails = (coin, currencyRate) => {
   return {
     uid: coin.uid,
-    links: coin.links,
     security: coin.security,
-    tvl: coin.tvl,
-    tvl_rank: coin.tvl_rank,
-    tvl_ratio: coin.market_cap / coin.tvl,
+    tvl: nullOrString(coin.tvl),
+    tvl_rank: parseInt(coin.tvl_rank, 10),
+    tvl_ratio: nullOrString(parseFloat(coin.market_cap) / parseFloat(coin.tvl)),
     investor_data: {
       funds_invested: valueInCurrency(coin.funds_invested, currencyRate),
       treasuries: valueInCurrency(coin.treasuries, currencyRate)
