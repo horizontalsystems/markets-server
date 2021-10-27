@@ -32,7 +32,7 @@ describe('Coins API', async () => {
     }
 
     beforeEach(() => {
-      sinon.stub(Coin, 'getCoinInfo').returns(coin)
+      sinon.stub(Coin, 'findAll').returns([coin])
       sinon.stub(CurrencyRate, 'getCurrencyRate').returns(usdToEurRate)
     })
 
@@ -46,7 +46,8 @@ describe('Coins API', async () => {
         })
         .expect('Content-Type', /json/)
         .expect(200, [{
-          uid: 'bitcoin', price: '42900.24'
+          uid: 'bitcoin',
+          price: '49020'
         }], done)
     })
   })
