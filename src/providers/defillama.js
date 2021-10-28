@@ -9,3 +9,9 @@ exports.getProtocols = () => {
     .get('/protocols')
     .then(resp => resp.data) // eslint-disable-line
 }
+
+exports.getProtocol = id => {
+  return axios
+    .get(`/protocol/${id}`)
+    .then(resp => resp.data) // eslint-disable-line
+}

@@ -254,6 +254,10 @@ class Coin extends SequelizeModel {
     }
   }
 
+  static getDefiCoins() {
+    return Coin.query('SELECT id, uid, defillama_id FROM coins WHERE defillama_id IS NOT NULL')
+  }
+
   static updateCoins(values) {
     const query = `
       UPDATE coins AS c set

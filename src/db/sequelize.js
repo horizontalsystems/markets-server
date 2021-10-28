@@ -2,6 +2,7 @@ const Sequelize = require('sequelize')
 const configJson = require('./config.json')
 const Coin = require('./models/Coin')
 const CoinCategories = require('./models/CoinCategories')
+const CoinTvl = require('./models/CoinTvl')
 const Language = require('./models/Language')
 const Category = require('./models/Category')
 const Platform = require('./models/Platform')
@@ -30,6 +31,7 @@ const db = {
   Coin: Coin.init(sequelize, Sequelize),
   Category: Category.init(sequelize, Sequelize),
   CoinCategories: CoinCategories.init(sequelize, Sequelize),
+  CoinTvl: CoinTvl.init(sequelize, Sequelize),
   Language: Language.init(sequelize, Sequelize),
   Platform: Platform.init(sequelize, Sequelize),
   Fund: Fund.init(sequelize, Sequelize),
