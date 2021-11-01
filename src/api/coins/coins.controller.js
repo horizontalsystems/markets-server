@@ -113,8 +113,7 @@ exports.addresses = async ({ params, query }, res) => {
 
 exports.addressHolders = async ({ params, query }, res) => {
   const coinHolders = await Coin.getCoinHolders(params.uid, query.limit)
-
-  res.send(coinHolders)
+  res.send(serializer.serializeCoinHolders(coinHolders))
 }
 
 exports.addressRanks = async ({ params, query }, res) => {

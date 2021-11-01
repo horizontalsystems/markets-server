@@ -118,7 +118,7 @@ class Coin extends SequelizeModel {
     }
 
     const query = `
-      SELECT 
+      SELECT
         ${Coin.truncateDateWindow('date', window)} as date,
         SUM(count) AS count,
         SUM(volume) AS volume
@@ -142,7 +142,7 @@ class Coin extends SequelizeModel {
     }
 
     return Coin.query(`
-      SELECT 
+      SELECT
         ${Coin.truncateDateWindow('date', window)} as date,
         SUM(count) AS count,
         SUM(volume) AS volume
@@ -154,18 +154,26 @@ class Coin extends SequelizeModel {
   }
 
   static async getCoinHolders(uid, limit = 10) {
-    const platform = await Platform.findByCoinUID(uid)
-    if (!platform) {
+    const response = await Coin.getCoinMarkets(uid)
+    if (!response) {
       return []
     }
 
-    return Coin.query(`
+    const supply = response.market_data.total_supply
+      ? response.market_data.total_supply : response.market_data.circulating_supply
+
+    const addresses = await Coin.query(`
       SELECT address, balance
       FROM coin_holders
-      WHERE platform_id = ${platform.id}
+      WHERE platform_id = ${response.platform_id}
       ORDER BY balance DESC
       LIMIT ${limit > 20 ? 20 : limit}
     `)
+
+    return addresses.map(item => ({
+      address: item.address,
+      share: (item.balance * 100) / parseFloat(supply)
+    }))
   }
 
   static async getAddressRanks(uid, limit = 10) {
@@ -181,6 +189,20 @@ class Coin extends SequelizeModel {
       ORDER BY volume DESC
       LIMIT ${limit > 20 ? 20 : limit}
     `)
+  }
+
+  static async getCoinMarkets(uid) {
+    const query = (`
+      SELECT
+        market_data,
+        P.id AS platform_id
+      FROM coins C
+      LEFT JOIN platforms P ON C.id = P.coin_id
+      WHERE C.uid = :uid
+      `)
+
+    const [marketData] = await Coin.query(query, { uid })
+    return marketData
   }
 
   static async getCoinInfo(uid) {
@@ -204,7 +226,7 @@ class Coin extends SequelizeModel {
 
   static async getCoinDetails(uid) {
     const query = (`
-      SELECT 
+      SELECT
         C.uid,
         C.security,
         C.defi_data->'tvl' as tvl,
