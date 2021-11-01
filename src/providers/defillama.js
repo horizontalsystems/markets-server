@@ -4,6 +4,12 @@ const axios = require('axios')
     timeout: 180000
   })
 
+exports.getCharts = () => {
+  return axios
+    .get('/charts')
+    .then((resp) => resp.data) // eslint-disable-line
+}
+
 exports.getProtocols = () => {
   return axios
     .get('/protocols')

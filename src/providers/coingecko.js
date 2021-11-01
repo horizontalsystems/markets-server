@@ -6,6 +6,18 @@ const axios = require('axios')
     timeout: 180000
   })
 
+exports.getGlobalMarkets = function getGlobalMarkets() {
+  return axios
+    .get('/global')
+    .then(resp => resp.data) // eslint-disable-line
+}
+
+exports.getGlobalDefiMarkets = function getGlobalDefiMarkets() {
+  return axios
+    .get('/global/decentralized_finance_defi')
+    .then(resp => resp.data) // eslint-disable-line
+}
+
 exports.getMarketsChart = function getMarketsChart(coinId, currency, timestampFrom, timestampTo) {
   const query = querystring.stringify({
     vs_currency: currency,
