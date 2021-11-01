@@ -1,4 +1,4 @@
-const { nullOrString, valueInCurrency } = require('../../utils')
+const { nullOrString, valueInCurrency, floatToString } = require('../../utils')
 
 function mapPlatforms(platforms) {
   return platforms.map(platform => ({
@@ -128,6 +128,6 @@ exports.serializeFundsInvested = (treasuries, currencyRate) => {
 exports.serializeCoinHolders = (coinHolders) => {
   return coinHolders.map((item) => ({
     address: item.address,
-    share: nullOrString(item.share)
+    share: floatToString(item.share)
   }))
 }

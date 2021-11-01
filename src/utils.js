@@ -20,6 +20,10 @@ exports.nullOrString = value => {
   return value ? value.toString() : null
 }
 
+exports.floatToString = (value, precision = 2) => {
+  return value ? value.toPrecision(precision) : null
+}
+
 exports.valueInCurrency = (value, currencyRate) => {
   if (!value) {
     return null
