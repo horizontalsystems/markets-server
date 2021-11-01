@@ -162,6 +162,10 @@ class Coin extends SequelizeModel {
     const supply = response.market_data.total_supply
       ? response.market_data.total_supply : response.market_data.circulating_supply
 
+    if (!supply || parseFloat(supply) === 0) {
+      return []
+    }
+
     const addresses = await Coin.query(`
       SELECT address, balance
       FROM coin_holders
