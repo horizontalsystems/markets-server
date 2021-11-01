@@ -4,6 +4,7 @@ const defillama = require('../providers/defillama')
 const GlobalMarket = require('../db/models/GlobalMarket')
 const Syncer = require('./Syncer')
 const { sleep } = require('../utils')
+const logger = require('../config/logger')
 
 class GlobalMarketsSyncer extends Syncer {
 
@@ -34,22 +35,29 @@ class GlobalMarketsSyncer extends Syncer {
   }
 
   async syncMarkets(date) {
-    const globalMarkets = await coingecko.getGlobalMarkets()
-    await sleep(1000) // Wait to bypass CoinGecko limitations
+    try {
 
-    const defiGlobalMarkets = await coingecko.getGlobalDefiMarkets()
+      logger.info('Fetching global markets data ...')
 
-    const tvlResponse = await defillama.getCharts()
-    const tvl = tvlResponse ? tvlResponse.pop().totalLiquidityUSD : 0
+      const globalMarkets = await coingecko.getGlobalMarkets()
+      await sleep(1000) // Wait to bypass CoinGecko limitations
 
-    this.upsertMarkets({
-      date,
-      marketCap: globalMarkets.data.total_market_cap.usd,
-      volume: globalMarkets.data.total_volume.usd,
-      btcDominance: globalMarkets.data.market_cap_percentage.btc,
-      tvl,
-      defiMarketCap: defiGlobalMarkets.data.defi_market_cap
-    })
+      const defiGlobalMarkets = await coingecko.getGlobalDefiMarkets()
+
+      const tvlResponse = await defillama.getCharts()
+      const tvl = tvlResponse ? tvlResponse.pop().totalLiquidityUSD : 0
+
+      this.upsertMarkets({
+        date,
+        marketCap: globalMarkets.data.total_market_cap.usd,
+        volume: globalMarkets.data.total_volume.usd,
+        btcDominance: globalMarkets.data.market_cap_percentage.btc,
+        tvl,
+        defiMarketCap: defiGlobalMarkets.data.defi_market_cap
+      })
+    } catch (e) {
+      console.error(`Error fetching global markets: ${e}`)
+    }
   }
 
   upsertMarkets(marketsData) {
