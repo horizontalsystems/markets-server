@@ -124,3 +124,10 @@ exports.serializeFundsInvested = (treasuries, currencyRate) => {
     funds: item.funds
   }))
 }
+
+exports.serializeCoinHolders = (coinHolders) => {
+  return coinHolders.map((item) => ({
+    address: item.address,
+    share: nullOrString(item.share)
+  }))
+}
