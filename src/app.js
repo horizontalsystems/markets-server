@@ -9,8 +9,10 @@ const TransactionSyncer = require('./services/TransactionSyncer')
 const DexVolumeSyncer = require('./services/DexVolumeSyncer')
 const AddressSyncer = require('./services/AddressSyncer')
 const DexLiquiditySyncer = require('./services/DexLiquiditySyncer')
+const GlobalMarketsSyncer = require('./services/GlobalMarketsSyncer')
 
 async function start() {
+  const globalMarketsSyncer = new GlobalMarketsSyncer()
   const transactionSyncer = new TransactionSyncer()
   const dexVolumeSyncer = new DexVolumeSyncer()
   const addressSyncer = new AddressSyncer()
@@ -21,6 +23,7 @@ async function start() {
   await sequelize.sync()
 
   // Run services & syncers
+  await globalMarketsSyncer.start()
   await currencyRateSyncer.start()
   await transactionSyncer.start()
   await dexVolumeSyncer.start()
