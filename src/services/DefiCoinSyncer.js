@@ -16,7 +16,7 @@ class DefiCoinSyncer extends Syncer {
       return
     }
 
-    const coins = await Coin.getDefiCoins()
+    const coins = await Coin.getDefiCoinsIds()
 
     if (!coins.length) {
       return this.syncProtocols(await this.fetchProtocols())
@@ -81,7 +81,7 @@ class DefiCoinSyncer extends Syncer {
   async syncTvls(protocols, dateTo) {
     const ids = {}
     const tvls = []
-    const coins = await Coin.getDefiCoins()
+    const coins = await Coin.getDefiCoinsIds()
 
     for (let i = 0; i < coins.length; i += 1) {
       const coin = coins[i]
