@@ -6,6 +6,7 @@ const Address = require('../db/models/Address')
 const CoinHolder = require('../db/models/CoinHolder')
 const AddressRank = require('../db/models/AddressRank')
 const Syncer = require('./Syncer')
+const logger = require('../config/logger')
 
 class AddressSyncer extends Syncer {
   constructor() {
@@ -20,17 +21,17 @@ class AddressSyncer extends Syncer {
   }
 
   async syncHistorical() {
-    if (!await Address.exists()) {
+    if (!(await Address.exists())) {
       await this.syncStats(this.syncParamsHistorical('1d'), '1d')
       await this.syncStats(this.syncParamsHistorical('4h'), '4h')
       await this.syncStats(this.syncParamsHistorical('1h'), '1h')
     }
 
-    if (!await AddressRank.exists()) {
+    if (!(await AddressRank.exists())) {
       await this.syncAddressRanks()
     }
 
-    if (!await CoinHolder.exists()) {
+    if (!(await CoinHolder.exists())) {
       await this.syncCoinHolders()
     }
   }
@@ -60,59 +61,66 @@ class AddressSyncer extends Syncer {
     await Address.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncStats({ dateFrom, dateTo, dateExpiresIn }, timePeriod) {
-    const platforms = await this.getPlatforms()
-    const addressStats = await bigquery.getAddressStats(platforms.tokens, dateFrom, dateTo, timePeriod)
+  async syncStats({ dateFrom, dateTo }, timePeriod) {
+    try {
+      const platforms = await this.getPlatforms()
+      const addressStats = await bigquery.getAddressStats(platforms.tokens, dateFrom, dateTo, timePeriod)
 
-    addressStats.forEach(data => {
-      return this.upsertAddressStats(
-        data.address_count,
-        data.volume,
-        data.block_date.value,
-        platforms.tokensMap[data.coin_address],
-        dateExpiresIn
-      )
-    })
+      const result = addressStats.map(data => ({
+        count: data.address_count,
+        volume: data.volume,
+        date: data.block_date.value,
+        platform_id: platforms.tokensMap[data.coin_address]
+      }))
+
+      this.upsertAddressStats(result)
+    } catch (e) {
+      logger.error(`Error syncing address stats: ${e}`)
+    }
   }
 
   async syncCoinHolders() {
-    const dateFrom = DateTime.utc()
-      .minus(this.ADDRESS_DATA_FETCH_PERIOD)
-      .toFormat('yyyy-MM-dd')
-    const platforms = await this.getPlatforms()
-    const coinHolders = await bigquery.getTopCoinHolders(platforms.tokens, dateFrom, this.ADDRESSES_PER_COIN)
+    try {
+      const dateFrom = DateTime.utc().minus(this.ADDRESS_DATA_FETCH_PERIOD).toFormat('yyyy-MM-dd')
+      const platforms = await this.getPlatforms()
+      const coinHolders = await bigquery.getTopCoinHolders(platforms.tokens, dateFrom, this.ADDRESSES_PER_COIN)
 
-    // ----------Remove previous records ----------
-    await CoinHolder.deleteAll()
-    // --------------------------------------------
+      // ----------Remove previous records ----------
+      await CoinHolder.deleteAll()
+      // --------------------------------------------
 
-    coinHolders.forEach(data => {
-      return this.upsertCoinHolders(
-        data.address,
-        data.balance,
-        platforms.tokensMap[data.coin_address]
-      )
-    })
+      const holders = coinHolders.map((data) => ({
+        address: data.address,
+        balance: data.balance,
+        platform_id: platforms.tokensMap[data.coin_address]
+      }))
+
+      this.upsertCoinHolders(holders)
+    } catch (e) {
+      logger.error(`Error syncing coin holders: ${e}`)
+    }
   }
 
   async syncAddressRanks() {
-    const dateFrom = DateTime.utc()
-      .minus({ days: 1 })
-      .toFormat('yyyy-MM-dd HH:00:00')
-    const platforms = await this.getPlatforms()
-    const addressRanks = await bigquery.getTopAddresses(platforms.tokens, dateFrom, this.ADDRESSES_PER_COIN)
+    try {
+      const dateFrom = DateTime.utc().minus({ days: 1 }).toFormat('yyyy-MM-dd HH:00:00')
+      const platforms = await this.getPlatforms()
+      const addressRanks = await bigquery.getTopAddresses(platforms.tokens, dateFrom, this.ADDRESSES_PER_COIN)
 
-    // ----------Remove previous records ----------
-    await AddressRank.deleteAll()
-    // --------------------------------------------
+      // ----------Remove previous records ----------
+      await AddressRank.deleteAll()
+      // --------------------------------------------
 
-    addressRanks.forEach(data => {
-      return this.upsertAddressRanks(
-        data.address,
-        data.volume,
-        platforms.tokensMap[data.coin_address]
-      )
-    })
+      const ranks = addressRanks.map((data) => ({
+        address: data.address,
+        volume: data.volume,
+        platform_id: platforms.tokensMap[data.coin_address]
+      }))
+
+      this.upsertAddressRanks(ranks)
+    } catch (e) {
+      logger.error(`Error syncing address ranks: ${e}`)
+    }
   }
 
   async getPlatforms() {
@@ -144,52 +152,41 @@ class AddressSyncer extends Syncer {
     }
   }
 
-  upsertAddressStats(count, volume, date, platformId, expireDuration) {
-    const dateExpire = expireDuration ? DateTime.fromISO(date).plus(expireDuration) : null
-
-    Address.upsert({
-      count,
-      volume,
-      date,
-      expires_at: dateExpire,
-      platform_id: platformId
+  upsertAddressStats(stats) {
+    Address.bulkCreate(stats, {
+      updateOnDuplicate: ['count', 'volume', 'date', 'platform_id']
     })
       .then(([address]) => {
         console.log(JSON.stringify(address.dataValues))
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Error inserting address stats', err.message)
       })
   }
 
-  upsertCoinHolders(address, balance, platformId) {
-    CoinHolder.upsert({
-      address,
-      balance,
-      platform_id: platformId
+  upsertCoinHolders(holders) {
+    CoinHolder.bulkCreate(holders, {
+      updateOnDuplicate: ['address', 'balance', 'platform_id']
     })
-      .then(([holders]) => {
-        console.log(JSON.stringify(holders.dataValues))
+      .then(([response]) => {
+        console.log(JSON.stringify(response.dataValues))
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Error inserting coin holders', err.message)
       })
   }
 
-  upsertAddressRanks(address, volume, platformId) {
-    AddressRank.upsert({
-      address,
-      volume,
-      platform_id: platformId
+  upsertAddressRanks(ranks) {
+    AddressRank.bulkCreate(ranks, {
+      updateOnDuplicate: ['address', 'volume', 'platform_id']
     })
-      .then(([ranks]) => {
-        console.log(JSON.stringify(ranks.dataValues))
+      .then(([response]) => {
+        console.log(JSON.stringify(response.dataValues))
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Error inserting address ranks', err.message)
       })
   }
-
 }
 
 module.exports = AddressSyncer
