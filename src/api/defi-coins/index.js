@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./defi-coins.controller')
-const { validateCoins } = require('./defi-coins.validator')
+const { validateCoins, validateTvls } = require('./defi-coins.validator')
 const { setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
@@ -31,5 +31,27 @@ const router = express.Router()
  *  }]
  */
 router.get('/', validateCoins, setCurrencyRate, controller.index)
+
+/**
+ * @api {get} /v1/defi-coins/:uid/tvls Get coin tvls
+ * @apiDescription Get coin's tvl chart
+ * @apiVersion 1.0.0
+ * @apiGroup DefiCoins
+ *
+ * @apiParam    {String}            uid         Coin's uid
+ * @apiParam    {String=1d,7d,30d}  interval    Date interval
+ * @apiUse      Currencies
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [{
+ *    "date": "2021-10-07T00:00:00.000Z",
+ *    "tvl": "15697082453.267897"
+ *  }]
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ * @apiError (Not Found 404)    NotFound          Coin does not exist
+ */
+router.get('/:uid/tvls', validateTvls, setCurrencyRate, controller.tvls)
 
 module.exports = router

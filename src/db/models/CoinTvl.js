@@ -1,4 +1,5 @@
 const SequelizeModel = require('./SequelizeModel')
+const Coin = require('./Coin')
 
 class CoinTvl extends SequelizeModel {
 
@@ -30,6 +31,33 @@ class CoinTvl extends SequelizeModel {
     CoinTvl.belongsTo(models.Coin, {
       foreignKey: 'coin_id'
     })
+  }
+
+  static async getListByCoinUid(uid, dateFrom, window) {
+    const [coin] = await Coin.query('select id from coins where uid = :uid', { uid })
+
+    if (!coin) {
+      return null
+    }
+
+    const query = `
+      SELECT
+        t2.time as date,
+        t1.tvl
+      FROM coin_tvl t1
+      JOIN (
+        SELECT
+          ${this.truncateDateWindow('date', window)} as time,
+          max(id) as max_id,
+          max(date) as max_date
+         FROM coin_tvl
+        WHERE coin_id = :coin_id
+          AND date >= :dateFrom
+        GROUP by time
+      ) t2 ON (t1.id = t2.max_id AND t1.date = t2.max_date)
+    `
+
+    return CoinTvl.query(query, { coin_id: coin.id, dateFrom })
   }
 
   static async exists() {

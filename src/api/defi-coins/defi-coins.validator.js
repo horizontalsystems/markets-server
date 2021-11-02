@@ -10,5 +10,13 @@ module.exports = {
     query: Joi.object({
       currency: Joi.string()
     })
-  }, options)
+  }, options),
+
+  // GET /v1/defi-coins/:uid/tvls
+  validateTvls: validate({
+    query: Joi.object({
+      interval: Joi.string().valid('1d', '7d', '30d'),
+      currency: Joi.string()
+    })
+  }, options),
 }
