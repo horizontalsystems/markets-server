@@ -159,7 +159,7 @@ class AddressSyncer extends Syncer {
       .then(([address]) => {
         console.log(JSON.stringify(address.dataValues))
       })
-      .catch((err) => {
+      .catch(err => {
         console.error('Error inserting address stats', err.message)
       })
   }
@@ -171,7 +171,7 @@ class AddressSyncer extends Syncer {
       .then(([response]) => {
         console.log(JSON.stringify(response.dataValues))
       })
-      .catch((err) => {
+      .catch(err => {
         console.error('Error inserting coin holders', err.message)
       })
   }
@@ -183,7 +183,7 @@ class AddressSyncer extends Syncer {
       .then(([response]) => {
         console.log(JSON.stringify(response.dataValues))
       })
-      .catch((err) => {
+      .catch(err => {
         console.error('Error inserting address ranks', err.message)
       })
   }
