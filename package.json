@@ -17,7 +17,7 @@
     "test": "mocha './src/**/*.spec.js'",
     "test:watch": "nodemon --watch ./src --exec 'mocha src/**/*.spec.js'",
     "coverage": "nyc --reporter=html --reporter=text npm run test",
-    "docs": "apidoc -i src -o docs"
+    "docs": "apidoc -i src -o docs --single"
   },
   "keywords": [
     "express",
