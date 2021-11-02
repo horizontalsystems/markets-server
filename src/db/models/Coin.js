@@ -135,67 +135,7 @@ class Coin extends SequelizeModel {
     })
   }
 
-  static async getAddresses(uid, window = '1h') {
-    const platform = await Platform.findByCoinUID(uid)
-    if (!platform) {
-      return []
-    }
-
-    return Coin.query(`
-      SELECT
-        ${Coin.truncateDateWindow('date', window)} as date,
-        SUM(count) AS count,
-        SUM(volume) AS volume
-      FROM addresses
-      WHERE platform_id = ${platform.id}
-      GROUP by 1
-      ORDER BY date ASC
-    `)
-  }
-
-  static async getCoinHolders(uid, limit = 10) {
-    const response = await Coin.getCoinMarkets(uid)
-    if (!response) {
-      return []
-    }
-
-    const supply = response.market_data.total_supply
-      ? response.market_data.total_supply : response.market_data.circulating_supply
-
-    if (!supply || parseFloat(supply) === 0) {
-      return []
-    }
-
-    const addresses = await Coin.query(`
-      SELECT address, balance
-      FROM coin_holders
-      WHERE platform_id = ${response.platform_id}
-      ORDER BY balance DESC
-      LIMIT ${limit > 20 ? 20 : limit}
-    `)
-
-    return addresses.map(item => ({
-      address: item.address,
-      share: (item.balance * 100) / parseFloat(supply)
-    }))
-  }
-
-  static async getAddressRanks(uid, limit = 10) {
-    const platform = await Platform.findByCoinUID(uid)
-    if (!platform) {
-      return []
-    }
-
-    return Coin.query(`
-      SELECT address, volume
-      FROM address_ranks
-      WHERE platform_id = ${platform.id}
-      ORDER BY volume DESC
-      LIMIT ${limit > 20 ? 20 : limit}
-    `)
-  }
-
-  static async getCoinMarkets(uid) {
+  static async getMarketData(uid) {
     const query = (`
       SELECT
         market_data,
@@ -203,7 +143,7 @@ class Coin extends SequelizeModel {
       FROM coins C
       LEFT JOIN platforms P ON C.id = P.coin_id
       WHERE C.uid = :uid
-      `)
+    `)
 
     const [marketData] = await Coin.query(query, { uid })
     return marketData

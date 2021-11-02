@@ -1,4 +1,6 @@
 const SequelizeModel = require('./SequelizeModel')
+const Platform = require('./Platform')
+const Coin = require('./Coin')
 
 class Address extends SequelizeModel {
 
@@ -38,32 +40,89 @@ class Address extends SequelizeModel {
     })
   }
 
-  static getLast() {
-    return Address.findOne({
-      order: [
-        ['date', 'DESC']
-      ]
-    })
-  }
-
   static async exists() {
     return !!await Address.findOne()
   }
 
+  static async getByCoinUid(uid, window, dateFrom) {
+    const platform = await Platform.findByCoinUID(uid)
+    if (!platform) {
+      return []
+    }
+
+    const query = `
+      SELECT
+        ${this.truncateDateWindow('date', window)} as date,
+        SUM(count) AS count,
+        SUM(volume) AS volume
+      FROM addresses
+      WHERE platform_id = :platform_id
+        and date >= :dateFrom
+      GROUP by 1
+      ORDER BY date ASC
+    `
+
+    return Address.query(query, { dateFrom, platform_id: platform.id })
+  }
+
+  static async getCoinHolders(uid) {
+    const coin = await Coin.getMarketData(uid)
+    if (!coin || !coin.market_data) {
+      return null
+    }
+
+    const supply = coin.market_data.total_supply || coin.market_data.circulating_supply
+
+    if (!supply) {
+      return []
+    }
+
+    const query = `
+      SELECT
+        address,
+        balance
+      FROM coin_holders
+      WHERE platform_id = :platform_id
+      ORDER BY balance DESC
+    `
+
+    const holders = await Address.query(query, { platform_id: coin.platform_id })
+    return holders.map(item => ({
+      address: item.address,
+      share: (item.balance * 100) / parseFloat(supply)
+    }))
+  }
+
+  static async getRanks(uid) {
+    const platform = await Platform.findByCoinUID(uid)
+    if (!platform) {
+      return null
+    }
+
+    const query = `
+      SELECT address, volume
+      FROM address_ranks
+      WHERE platform_id = :platform_id
+      ORDER BY volume DESC
+    `
+
+    return Address.query(query, { platform_id: platform.id })
+  }
+
   static updatePoints(dateFrom, dateTo) {
-    return Address.query(`
+    const query = `
       UPDATE addresses
-      SET volume = total.volume,
-          count = total.count
-      FROM (SELECT 
-            SUM(volume) as volume,  SUM(count) as count
-            FROM addresses
-            WHERE date > :dateFrom AND date <= :dateTo
-           ) AS total
-      WHERE date = :dateTo`, {
-      dateFrom,
-      dateTo
-    })
+      SET volume = total.volume, count = total.count
+      FROM (
+        SELECT 
+          SUM(volume) as volume,  SUM(count) as count
+          FROM addresses
+          WHERE date > :dateFrom AND date <= :dateTo
+        ) AS total
+      WHERE date = :dateTo
+    `
+
+    return Address.query(query, { dateFrom, dateTo })
   }
 
   static deleteExpired(dateFrom, dateTo) {

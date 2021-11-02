@@ -91,33 +91,3 @@ exports.transactions = async (req, res) => {
 
   res.send(transactions)
 }
-
-exports.addresses = async ({ params, query }, res) => {
-  let window
-  switch (query.interval) {
-    case '1d':
-      window = '1h'
-      break
-    case '7d':
-      window = '4h'
-      break
-    default:
-      window = '1d'
-      break
-  }
-
-  const addresses = await Coin.getAddresses(params.uid, window)
-
-  res.send(addresses)
-}
-
-exports.addressHolders = async ({ params, query }, res) => {
-  const coinHolders = await Coin.getCoinHolders(params.uid, query.limit)
-  res.send(serializer.serializeCoinHolders(coinHolders))
-}
-
-exports.addressRanks = async ({ params, query }, res) => {
-  const addressRanks = await Coin.getAddressRanks(params.uid, query.limit)
-
-  res.send(addressRanks)
-}

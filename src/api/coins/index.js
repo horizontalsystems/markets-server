@@ -143,8 +143,5 @@ router.get('/:uid/treasuries', validateTreasuries, setCurrencyRate, controller.t
  */
 router.get('/:uid/funds_invested', validateFundsInvested, setCurrencyRate, controller.fundsInvested)
 router.get('/:uid/transactions', controller.transactions)
-router.get('/:uid/addresses', controller.addresses)
-router.get('/:uid/addresses_holders', controller.addressHolders)
-router.get('/:uid/addresses_ranks', controller.addressRanks)
 
 module.exports = router
