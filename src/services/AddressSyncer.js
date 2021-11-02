@@ -21,17 +21,17 @@ class AddressSyncer extends Syncer {
   }
 
   async syncHistorical() {
-    if (!(await Address.exists())) {
+    if (!await Address.exists()) {
       await this.syncStats(this.syncParamsHistorical('1d'), '1d')
       await this.syncStats(this.syncParamsHistorical('4h'), '4h')
       await this.syncStats(this.syncParamsHistorical('1h'), '1h')
     }
 
-    if (!(await AddressRank.exists())) {
+    if (!await AddressRank.exists()) {
       await this.syncAddressRanks()
     }
 
-    if (!(await CoinHolder.exists())) {
+    if (!await CoinHolder.exists()) {
       await this.syncCoinHolders()
     }
   }
