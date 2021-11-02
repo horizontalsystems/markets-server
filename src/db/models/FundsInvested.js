@@ -64,7 +64,7 @@ class FundsInvested extends SequelizeModel {
       JOIN LATERAL jsonb_array_elements(I.funds) as e(jsn) ON TRUE
       LEFT JOIN funds F on F.id = (e.jsn->>'id')::int
       WHERE C.id = I.coin_id 
-        AND C.uid = 'bitcoin'
+        AND C.uid = :uid
       GROUP BY I.id
     `
 

@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./coins.controller')
-const { validateCoins, validateTreasuries, validateFundsInvested } = require('./coins.validator')
+const { validateCoins } = require('./coins.validator')
 const { setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
@@ -93,55 +93,6 @@ router.get('/:uid', setCurrencyRate, controller.show)
  */
 router.get('/:uid/details', setCurrencyRate, controller.details)
 
-/**
- * @api {get} /v1/coins/:uid/treasuries List treasuries
- * @apiDescription Get coin's treasuries
- * @apiVersion 1.0.0
- * @apiGroup Coin
- *
- * @apiParam    {String}        uid   Coin's uid
- * @apiUse      Currencies
- *
- * @apiSuccessExample {json} Success-Response:
- *  HTTP/1.1 200 OK
- *  [{
- *    "type": "public",
- *    "amount": "200000",
- *    "amountInCurrency": "200000000",
- *    "country": "AI"
- *  }]
- *
- * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
- * @apiError (Not Found 404)    NotFound          Coin does not exist
- */
-router.get('/:uid/treasuries', validateTreasuries, setCurrencyRate, controller.treasuries)
-
-/**
- * @api {get} /v1/coins/:uid/funds_invested List Funds Invested
- * @apiDescription Get coin's Funds Invested
- * @apiVersion 1.0.0
- * @apiGroup Coin
- *
- * @apiParam    {String}        uid   Coin's uid
- * @apiUse      Currencies
- *
- * @apiSuccessExample {json} Success-Response:
- *  HTTP/1.1 200 OK
- *  [{
- *    "date": "2021-10-02",
- *    "round": "Venture Round",
- *    "amount": "20003003",
- *    "funds": [{
- *       "name": "ABC fund",
- *       "website": "https://domain.com/abc",
- *       "is_lead": true
- *     }]
- *  }]
- *
- * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
- * @apiError (Not Found 404)    NotFound          Coin does not exist
- */
-router.get('/:uid/funds_invested', validateFundsInvested, setCurrencyRate, controller.fundsInvested)
 router.get('/:uid/transactions', controller.transactions)
 
 module.exports = router

@@ -21,14 +21,19 @@ class Treasury extends SequelizeModel {
     Treasury.belongsTo(models.Coin, {
       foreignKey: 'coin_id'
     })
+    Treasury.belongsTo(models.Fund, {
+      foreignKey: 'fund_id'
+    })
   }
 
   static getByCoin(uid) {
     const query = `
       SELECT
         T.*, 
-        T.amount * C.price as amount_usd
+        T.amount * C.price as amount_usd,
+        F.name as fund
       FROM treasuries T 
+      JOIN funds F ON F.id = T.fund_id 
       JOIN coins C ON C.id = T.coin_id AND C.uid = :uid
     `
     return Treasury.query(query, { uid })
