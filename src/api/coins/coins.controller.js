@@ -51,3 +51,17 @@ exports.details = async (req, res) => {
     })
   }
 }
+
+exports.twitter = async ({ params }, res) => {
+  const [coin] = await Coin.query('SELECT links->\'twitter\' as twitter FROM coins WHERE uid = :uid', {
+    uid: params.uid
+  })
+
+  if (coin) {
+    res.send(coin)
+  } else {
+    res.status(404).send({
+      error: 'Coin not found'
+    })
+  }
+}

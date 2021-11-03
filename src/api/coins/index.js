@@ -93,4 +93,23 @@ router.get('/:uid', setCurrencyRate, controller.show)
  */
 router.get('/:uid/details', setCurrencyRate, controller.details)
 
+/**
+ * @api {get} /v1/coins/:uid/twitter Get coin's twitter
+ * @apiDescription Get coin's twitter account
+ * @apiVersion 1.0.0
+ * @apiGroup Coin
+ *
+ * @apiParam    {String}        uid   Coin's uid
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "twitter": "supercoin"
+ *  }
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ * @apiError (Not Found 404)    NotFound          Coin does not exist
+ */
+router.get('/:uid/twitter', controller.twitter)
+
 module.exports = router
