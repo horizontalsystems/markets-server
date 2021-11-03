@@ -152,8 +152,8 @@ class Coin extends SequelizeModel {
         C.defi_data->'tvl' as tvl,
         C.defi_data->'tvl_rank' as tvl_rank,
         C.market_data->'market_cap' as market_cap,
-        sum(F.amount) as funds_invested,
-        sum(T.amount) as treasuries
+        sum(F.amount) * C.price as funds_invested,
+        sum(T.amount) * C.price as treasuries
       FROM coins C
       LEFT JOIN funds_invested F ON F.coin_id = C.id
       LEFT JOIN treasuries T ON T.coin_id = C.id

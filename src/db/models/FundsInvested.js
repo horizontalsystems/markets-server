@@ -55,6 +55,7 @@ class FundsInvested extends SequelizeModel {
         I.date,
         I.round,
         I.amount,
+        I.amount * C.price as amount_usd,
         JSON_AGG(JSON_BUILD_OBJECT(
           'name', F.name,
           'website', F.website,
@@ -65,7 +66,7 @@ class FundsInvested extends SequelizeModel {
       LEFT JOIN funds F on F.id = (e.jsn->>'id')::int
       WHERE C.id = I.coin_id 
         AND C.uid = :uid
-      GROUP BY I.id
+      GROUP BY I.id, C.price
     `
 
     return FundsInvested.query(query, { uid })

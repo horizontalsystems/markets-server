@@ -44,6 +44,7 @@ router.get('/treasuries', validateTreasuries, setCurrencyRate, controller.treasu
  *    "date": "2021-10-02",
  *    "round": "Venture Round",
  *    "amount": "20003003",
+ *    "amountInCurrency": "200000000",
  *    "funds": [{
  *       "name": "ABC fund",
  *       "website": "https://domain.com/abc",

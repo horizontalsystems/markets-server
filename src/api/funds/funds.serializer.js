@@ -14,7 +14,8 @@ exports.serializeFundsInvested = (treasuries, currencyRate) => {
   return treasuries.map(item => ({
     date: item.date,
     round: item.round,
-    amount: valueInCurrency(item.amount, currencyRate),
+    amount: item.amount,
+    amountInCurrency: valueInCurrency(item.amount_usd, currencyRate),
     funds: item.funds
   }))
 }
