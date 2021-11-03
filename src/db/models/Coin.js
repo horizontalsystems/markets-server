@@ -111,30 +111,6 @@ class Coin extends SequelizeModel {
     return Coin.query(query, { uids })
   }
 
-  static async getTransactions(uid, window = '1h', dateFrom) {
-    const platform = await Platform.findByCoinUID(uid)
-    if (!platform) {
-      return []
-    }
-
-    const query = `
-      SELECT
-        ${Coin.truncateDateWindow('date', window)} as date,
-        SUM(count) AS count,
-        SUM(volume) AS volume
-      FROM transactions
-      WHERE platform_id = :platform_id
-        AND date >= :date_from
-      GROUP by 1
-      ORDER by date
-    `
-
-    return Coin.query(query, {
-      platform_id: platform.id,
-      date_from: dateFrom
-    })
-  }
-
   static async getMarketData(uid) {
     const query = (`
       SELECT

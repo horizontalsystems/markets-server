@@ -1,4 +1,3 @@
-const { utcDate } = require('../../utils')
 const Coin = require('../../db/models/Coin')
 const Platform = require('../../db/models/Platform')
 const serializer = require('./coins.serializer')
@@ -51,31 +50,4 @@ exports.details = async (req, res) => {
       error: 'Coin not found'
     })
   }
-}
-
-exports.transactions = async (req, res) => {
-  const { uid } = req.params
-  const { interval } = req.query
-
-  let window
-  let dateFrom
-
-  switch (interval) {
-    case '1d':
-      window = '1h'
-      dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -1 })
-      break
-    case '7d':
-      window = '4h'
-      dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -7 })
-      break
-    default:
-      window = '1d'
-      dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -30 })
-      break
-  }
-
-  const transactions = await Coin.getTransactions(uid, window, dateFrom)
-
-  res.send(transactions)
 }

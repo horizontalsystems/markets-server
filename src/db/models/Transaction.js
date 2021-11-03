@@ -1,4 +1,5 @@
 const SequelizeModel = require('./SequelizeModel')
+const Platform = require('./Platform')
 
 class Transaction extends SequelizeModel {
 
@@ -38,6 +39,30 @@ class Transaction extends SequelizeModel {
 
   static async exists() {
     return !!await Transaction.findOne()
+  }
+
+  static async getByCoin(uid, window, dateFrom) {
+    const platform = await Platform.findByCoinUID(uid)
+    if (!platform) {
+      return []
+    }
+
+    const query = `
+      SELECT
+        ${this.truncateDateWindow('date', window)} as date,
+        SUM(count) AS count,
+        SUM(volume) AS volume
+      FROM transactions
+      WHERE platform_id = :platform_id
+        AND date >= :dateFrom
+      GROUP by 1
+      ORDER by date
+    `
+
+    return Transaction.query(query, {
+      platform_id: platform.id,
+      dateFrom
+    })
   }
 
   static updatePoints(dateFrom, dateTo) {

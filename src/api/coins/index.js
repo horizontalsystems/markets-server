@@ -93,6 +93,4 @@ router.get('/:uid', setCurrencyRate, controller.show)
  */
 router.get('/:uid/details', setCurrencyRate, controller.details)
 
-router.get('/:uid/transactions', controller.transactions)
-
 module.exports = router
