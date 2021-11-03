@@ -30,7 +30,7 @@ const router = express.Router()
 router.get('/', validateAddresses, controller.index)
 
 /**
- * @api {get} /v1/holders List coin holders
+ * @api {get} /v1/addresses/holders List coin holders
  * @apiDescription Get a list of coin holders
  * @apiVersion 1.0.0
  * @apiGroup Address
@@ -42,7 +42,7 @@ router.get('/', validateAddresses, controller.index)
 router.get('/holders', validateHolders, controller.holders)
 
 /**
- * @api {get} /v1/ranks List address ranks
+ * @api {get} /v1/addresses/ranks List address ranks
  * @apiDescription Get a list of address ranks
  * @apiVersion 1.0.0
  * @apiGroup Address
