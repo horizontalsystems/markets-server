@@ -51,17 +51,6 @@ class Coin extends SequelizeModel {
         //    atl_date:                     2021-00-01T00:00:00.000Z,
         //  }
 
-        defi_data: DataTypes.JSONB,
-        //  {
-        //    tvl:            19198417852.24,
-        //    tvl_rank:       1,
-        //    tvl_change_1h:  0.076,
-        //    tvl_change_1d:  0.734,
-        //    tvl_change_7d:  13.61,
-        //    staking:        1444036569.167,
-        //    chains:         ["Ethereum", "Fantom", "Avalanche"]
-        //  }
-
         market_data: DataTypes.JSONB,
         //  {
         //    market_cap: 1000000,
@@ -149,16 +138,17 @@ class Coin extends SequelizeModel {
       SELECT
         C.uid,
         C.security,
-        C.defi_data->'tvl' as tvl,
-        C.defi_data->'tvl_rank' as tvl_rank,
+        D.tvl,
+        D.tvl_rank,
         C.market_data->'market_cap' as market_cap,
         sum(F.amount) * C.price as funds_invested,
         sum(T.amount) * C.price as treasuries
       FROM coins C
+      LEFT JOIN defi_coins D ON D.uid = :uid
       LEFT JOIN funds_invested F ON F.coin_id = C.id
       LEFT JOIN treasuries T ON T.coin_id = C.id
-      WHERE uid = :uid
-      GROUP BY C.id
+      WHERE C.uid = :uid
+      GROUP BY C.id, D.tvl, D.tvl_rank
     `)
 
     const [coin] = await Coin.query(query, { uid })
