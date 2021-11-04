@@ -9,6 +9,7 @@ class Fund extends Model {
           type: DataTypes.STRING,
           allowNull: false
         },
+        logo: DataTypes.STRING,
         description: DataTypes.TEXT,
         website: DataTypes.TEXT
       },
