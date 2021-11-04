@@ -5,7 +5,7 @@ exports.serializeTreasuries = (treasuries, currencyRate) => {
     type: item.type,
     fund: item.fund,
     amount: item.amount,
-    amountInCurrency: valueInCurrency(item.amount_usd, currencyRate),
+    amount_in_currency: valueInCurrency(item.amount_usd, currencyRate),
     country: item.country
   }))
 }
@@ -15,7 +15,7 @@ exports.serializeFundsInvested = (treasuries, currencyRate) => {
     date: item.date,
     round: item.round,
     amount: item.amount,
-    amountInCurrency: valueInCurrency(item.amount_usd, currencyRate),
+    amount_in_currency: valueInCurrency(item.amount_usd, currencyRate),
     funds: item.funds
   }))
 }
