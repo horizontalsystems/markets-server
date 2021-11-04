@@ -17,4 +17,12 @@ module.exports = {
     })
   }, options),
 
+  // GET /v1/coins/:uid
+  validateShow: validate({
+    query: Joi.object({
+      language: Joi.string().valid('en', 'de', 'es', 'fa', 'fr', 'ko', 'ru', 'tr', 'zh'),
+      currency: Joi.string()
+    })
+  }, options),
+
 }

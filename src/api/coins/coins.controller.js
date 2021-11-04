@@ -27,12 +27,11 @@ exports.index = async ({ query, currencyRate }, res) => {
   res.send(serializer.serializeList(coins, fields, currencyRate))
 }
 
-exports.show = async (req, res) => {
-  const { language = 'en' } = req.query
-  const coin = await Coin.getCoinInfo(req.params.uid)
+exports.show = async ({ params, query, currencyRate }, res) => {
+  const coin = await Coin.getCoinInfo(params.uid)
 
   if (coin) {
-    res.send(serializer.serializeShow(coin, language, req.currencyRate))
+    res.send(serializer.serializeShow(coin, query.language, currencyRate))
   } else {
     res.status(404).send({
       error: 'Coin not found'

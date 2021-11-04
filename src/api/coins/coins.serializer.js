@@ -67,7 +67,7 @@ exports.serializeList = (coins, fields, currencyRate) => {
   })
 }
 
-exports.serializeShow = (coin, language, currencyRate) => {
+exports.serializeShow = (coin, language = 'en', currencyRate) => {
   const market = coin.market_data || {}
   const description = coin.description || {}
 
