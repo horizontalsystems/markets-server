@@ -1,10 +1,10 @@
-const Coin = require('../../db/models/Coin')
-const CoinTvl = require('../../db/models/CoinTvl')
+const CoinTvl = require('../../db/models/DefiCoinTvl')
+const DefiCoin = require('../../db/models/DefiCoin')
 const serializer = require('./defi-coins.serializer')
 const { utcDate } = require('../../utils')
 
 exports.index = async (req, res) => {
-  const coins = await Coin.getDefiCoins()
+  const coins = await DefiCoin.getList()
   res.send(serializer.serializeList(coins, req.currencyRate))
 }
 

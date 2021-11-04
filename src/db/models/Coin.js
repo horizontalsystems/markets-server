@@ -196,14 +196,6 @@ class Coin extends SequelizeModel {
     }
   }
 
-  static getDefiCoins() {
-    return Coin.query('SELECT uid, defi_data FROM coins WHERE defillama_id IS NOT NULL ORDER BY defi_data->\'tvl_rank\' ASC NULLS LAST')
-  }
-
-  static getDefiCoinsIds() {
-    return Coin.query('SELECT id, uid, defillama_id FROM coins WHERE defillama_id IS NOT NULL')
-  }
-
   static updateCoins(values) {
     const query = `
       UPDATE coins AS c set

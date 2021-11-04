@@ -1,8 +1,8 @@
 const defillama = require('../providers/defillama')
 const logger = require('../config/logger')
 const Syncer = require('./Syncer')
-const Coin = require('../db/models/Coin')
-const CoinTvl = require('../db/models/CoinTvl')
+const DefiCoin = require('../db/models/DefiCoin')
+const DefiCoinTvl = require('../db/models/DefiCoinTvl')
 
 class DefiCoinSyncer extends Syncer {
 
@@ -12,46 +12,52 @@ class DefiCoinSyncer extends Syncer {
   }
 
   async syncHistorical() {
-    if (await CoinTvl.exists()) {
+    if (await DefiCoinTvl.exists()) {
       return
     }
 
-    const coins = await Coin.getDefiCoinsIds()
-
-    if (!coins.length) {
-      return this.syncProtocols(await this.fetchProtocols())
+    if (!await DefiCoin.exists()) {
+      try {
+        await this.syncProtocols(await this.fetchProtocols())
+      } catch (e) {
+        console.error(e)
+      }
     }
 
+    const coins = await DefiCoin.getIds()
+
     for (let i = 0; i < coins.length; i += 1) {
-      await this.syncProtocol(coins[i])
+      try {
+        await this.syncProtocol(coins[i])
+      } catch (e) {
+        console.error(e)
+      }
     }
   }
 
   async syncProtocol(coin) {
-    try {
-      logger.info(`Syncing ${coin.defillama_id}`)
+    logger.info(`Syncing ${coin.uid}`)
 
-      const data = await defillama.getProtocol(coin.defillama_id)
-      const tvls = []
+    const data = await defillama.getProtocol(coin.defillama_id)
+    const tvls = []
 
-      for (let i = 0; i < data.tvl.length; i += 1) {
-        const tvl = data.tvl[i]
-        const date = new Date(tvl.date * 1000)
-        date.setMinutes(0, 0, 0)
+    for (let i = 0; i < data.tvl.length; i += 1) {
+      const tvl = data.tvl[i]
+      const date = new Date(tvl.date * 1000)
+      date.setMinutes(0, 0, 0)
 
-        tvls.push({
-          coin_id: coin.id,
-          date: date.getTime(),
-          tvl: tvl.totalLiquidityUSD
-        })
-      }
-
-      await CoinTvl.bulkCreate(tvls, {
-        updateOnDuplicate: ['date', 'coin_id']
+      tvls.push({
+        defi_coin_id: coin.id,
+        date: date.getTime(),
+        tvl: tvl.totalLiquidityUSD
       })
-    } catch (e) {
-      console.error(e)
     }
+
+    DefiCoinTvl.bulkCreate(tvls, {
+      ignoreDuplicates: true
+    }).catch(e => {
+      console.error(e)
+    })
   }
 
   async syncLatest() {
@@ -71,17 +77,17 @@ class DefiCoinSyncer extends Syncer {
   }
 
   async syncWeeklyStats({ dateFrom, dateTo }) {
-    await CoinTvl.deleteExpired(dateFrom, dateTo)
+    await DefiCoinTvl.deleteExpired(dateFrom, dateTo)
   }
 
   async syncMonthlyStats({ dateFrom, dateTo }) {
-    await CoinTvl.deleteExpired(dateFrom, dateTo)
+    await DefiCoinTvl.deleteExpired(dateFrom, dateTo)
   }
 
   async syncTvls(protocols, dateTo) {
     const ids = {}
     const tvls = []
-    const coins = await Coin.getDefiCoinsIds()
+    const coins = await DefiCoin.getIds()
 
     for (let i = 0; i < coins.length; i += 1) {
       const coin = coins[i]
@@ -90,50 +96,46 @@ class DefiCoinSyncer extends Syncer {
 
     for (let i = 0; i < protocols.length; i += 1) {
       const protocol = protocols[i]
-      const coinId = ids[protocol.gecko_id]
+      const coinId = ids[protocol.gecko_id || protocol.slug]
 
-      if (!protocol || !protocol.gecko_id || !coinId) {
+      if (!coinId) {
         continue
       }
 
       logger.info(`Syncing tvl for ${protocol.gecko_id}`)
 
       tvls.push({
-        coin_id: coinId,
+        defi_coin_id: coinId,
         date: dateTo,
         tvl: protocol.tvl
       })
     }
 
-    await CoinTvl.bulkCreate(tvls, {
-      // updateOnDuplicate: ['date', 'coin_id'],
-      ignoreDuplicates: true
-    })
+    await DefiCoinTvl.bulkCreate(tvls, { ignoreDuplicates: true })
   }
 
   async syncProtocols(protocols) {
     for (let i = 0; i < protocols.length; i += 1) {
       const protocol = protocols[i]
-      if (!protocol || !protocol.gecko_id) {
-        continue
-      }
+      const uid = protocol.gecko_id || protocol.slug
 
-      await Coin.update({
+      await DefiCoin.upsert({
+        uid,
         defillama_id: protocol.slug,
-        defi_data: {
-          tvl: protocol.tvl,
-          tvl_rank: i + 1,
-          tvl_change_1h: protocol.change_1h,
-          tvl_change_1d: protocol.change_1d,
-          tvl_change_7d: protocol.change_7d,
-          staking: protocol.staking,
-          chains: protocol.chains
-        }
-      }, {
-        where: { uid: protocol.gecko_id }
+        coingecko_id: protocol.gecko_id,
+        tvl: protocol.tvl,
+        tvl_rank: i + 1,
+        tvl_change: {
+          change_1h: protocol.change_1h,
+          change_1d: protocol.change_1d,
+          change_7d: protocol.change_7d,
+          change_30d: null,
+        },
+        chain_tvls: protocols.chainTvls,
+        chains: protocol.chains
       })
 
-      logger.info(`Updated protocol ${protocol.gecko_id} = ${protocol.slug}`)
+      logger.info(`Upsert ${uid}; defillama: ${protocol.gecko_id} coingecko: ${protocol.slug}`)
     }
   }
 
