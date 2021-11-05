@@ -13,6 +13,7 @@ module.exports = {
       limit: Joi.number()
         .min(1)
         .max(4000),
+      defi: Joi.boolean(),
       currency: Joi.string()
     })
   }, options),

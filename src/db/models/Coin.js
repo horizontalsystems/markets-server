@@ -70,6 +70,7 @@ class Coin extends SequelizeModel {
         //    censorship_resistance: false,
         //  }
 
+        is_defi: DataTypes.BOOLEAN,
         last_updated: DataTypes.DATE,
       },
       {
@@ -193,7 +194,7 @@ class Coin extends SequelizeModel {
         price_change = v.price_change::json,
         market_data = v.market_data::json,
         last_updated = v.last_updated::timestamptz
-      FROM (values :values ) as v(uid, price, price_change, market_data, last_updated)
+      FROM (values :values) as v(uid, price, price_change, market_data, last_updated)
       WHERE c.uid = v.uid
     `
 

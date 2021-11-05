@@ -22,7 +22,7 @@ const adminJs = new AdminJS({
     {
       resource: sequelize.Coin,
       options: {
-        editProperties: ['uid', 'name', 'code', 'coingecko_id', 'description', 'security', 'genesis_date'],
+        editProperties: ['uid', 'name', 'code', 'coingecko_id', 'is_defi', 'description', 'security', 'genesis_date'],
         properties: {
           id: { isId: true },
           security: { type: 'mixed' },
