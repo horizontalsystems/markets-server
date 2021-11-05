@@ -21,7 +21,7 @@ exports.index = async ({ query, currencyRate }, res) => {
   if (query.uids) {
     options.where.uid = query.uids.split(',')
   }
-  if (query.defi) {
+  if (query.defi === 'true') {
     options.where.is_defi = true
   }
 
