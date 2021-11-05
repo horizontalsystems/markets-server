@@ -8,7 +8,7 @@ class CoinSyncer {
 
   constructor() {
     this.cron = new CronJob({
-      cronTime: '*/1 * * * * *', // every second
+      cronTime: '* * * * * *', // every second
       onTick: this.syncSchedule.bind(this),
       start: false
     })
@@ -42,7 +42,7 @@ class CoinSyncer {
       return
     }
 
-    await utils.sleep(1100)
+    await utils.sleep(1200)
     await this.syncCoins(coinIds)
   }
 
@@ -75,7 +75,11 @@ class CoinSyncer {
       item.last_updated
     ])
 
-    await Coin.updateCoins(values)
+    try {
+      await Coin.updateCoins(values)
+    } catch (e) {
+      console.log(e)
+    }
   }
 
 }

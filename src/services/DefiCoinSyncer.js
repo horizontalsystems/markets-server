@@ -102,7 +102,7 @@ class DefiCoinSyncer extends Syncer {
         continue
       }
 
-      logger.info(`Syncing tvl for ${protocol.gecko_id}`)
+      logger.info(`Syncing tvl for slug: ${protocol.slug}; gecko_id: ${protocol.gecko_id}`)
 
       tvls.push({
         defi_coin_id: coinId,
