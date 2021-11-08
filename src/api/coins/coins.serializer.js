@@ -100,6 +100,7 @@ exports.serializeDetails = (coin, currencyRate) => {
     tvl: nullOrString(coin.tvl),
     tvl_rank: parseInt(coin.tvl_rank, 10),
     tvl_ratio: nullOrString(parseFloat(coin.market_cap) / parseFloat(coin.tvl)),
+    reports_count: parseInt(coin.reports, 10),
     investor_data: {
       funds_invested: valueInCurrency(coin.funds_invested, currencyRate),
       treasuries: valueInCurrency(coin.treasuries, currencyRate)
