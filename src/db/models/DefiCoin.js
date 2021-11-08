@@ -5,14 +5,11 @@ class DefiCoin extends SequelizeModel {
   static init(sequelize, DataTypes) {
     return super.init(
       {
+        name: DataTypes.STRING,
+        logo: DataTypes.STRING,
+
         coingecko_id: DataTypes.STRING,
         defillama_id: DataTypes.STRING,
-
-        uid: {
-          type: DataTypes.STRING(100),
-          allowNull: false,
-          unique: true
-        },
 
         tvl: {
           type: DataTypes.DECIMAL,
@@ -47,12 +44,19 @@ class DefiCoin extends SequelizeModel {
       {
         timestamps: false,
         tableName: 'defi_coins',
-        sequelize
+        sequelize,
+        indexes: [{
+          unique: true,
+          fields: ['coingecko_id', 'defillama_id']
+        }]
       }
     )
   }
 
-  static associate() {
+  static associate(models) {
+    DefiCoin.belongsTo(models.Coin, {
+      foreignKey: 'coin_id'
+    })
   }
 
   static async exists() {
@@ -60,11 +64,19 @@ class DefiCoin extends SequelizeModel {
   }
 
   static getList() {
-    return DefiCoin.query('SELECT * FROM defi_coins ORDER BY tvl_rank ASC NULLS LAST')
+    return DefiCoin.query(`
+      SELECT
+        C.uid,
+        C.name as coin_name,
+        D.*
+      FROM defi_coins D
+      LEFT JOIN coins C on C.id = D.coin_id
+      ORDER BY D.tvl_rank
+    `)
   }
 
   static getIds() {
-    return DefiCoin.query('SELECT id, uid, defillama_id FROM defi_coins WHERE defillama_id IS NOT NULL')
+    return DefiCoin.query('SELECT id, coingecko_id, defillama_id FROM defi_coins WHERE defillama_id IS NOT NULL')
   }
 }
 

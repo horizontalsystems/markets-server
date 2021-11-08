@@ -3,6 +3,7 @@ const logger = require('../config/logger')
 const Syncer = require('./Syncer')
 const DefiCoin = require('../db/models/DefiCoin')
 const DefiCoinTvl = require('../db/models/DefiCoinTvl')
+const Coin = require('../db/models/Coin')
 
 class DefiCoinSyncer extends Syncer {
 
@@ -18,7 +19,7 @@ class DefiCoinSyncer extends Syncer {
 
     if (!await DefiCoin.exists()) {
       try {
-        await this.syncProtocols(await this.fetchProtocols())
+        await this.syncProtocols(await this.fetchProtocols(), true)
       } catch (e) {
         console.error(e)
       }
@@ -35,10 +36,10 @@ class DefiCoinSyncer extends Syncer {
     }
   }
 
-  async syncProtocol(coin) {
-    logger.info(`Syncing ${coin.uid}`)
+  async syncProtocol(defiCoin) {
+    logger.info(`Syncing ${defiCoin.defillama_id}; coingecko: ${defiCoin.coingecko_id}`)
 
-    const data = await defillama.getProtocol(coin.defillama_id)
+    const data = await defillama.getProtocol(defiCoin.defillama_id)
     const tvls = []
 
     for (let i = 0; i < data.tvl.length; i += 1) {
@@ -47,7 +48,7 @@ class DefiCoinSyncer extends Syncer {
       date.setMinutes(0, 0, 0)
 
       tvls.push({
-        defi_coin_id: coin.id,
+        defi_coin_id: defiCoin.id,
         date: date.getTime(),
         tvl: tvl.totalLiquidityUSD
       })
@@ -87,25 +88,25 @@ class DefiCoinSyncer extends Syncer {
   async syncTvls(protocols, dateTo) {
     const ids = {}
     const tvls = []
-    const coins = await DefiCoin.getIds()
+    const defiCoins = await DefiCoin.getIds()
 
-    for (let i = 0; i < coins.length; i += 1) {
-      const coin = coins[i]
-      ids[coin.uid] = coin.id
+    for (let i = 0; i < defiCoins.length; i += 1) {
+      const coin = defiCoins[i]
+      ids[coin.defillama_id] = coin.id
     }
 
     for (let i = 0; i < protocols.length; i += 1) {
       const protocol = protocols[i]
-      const coinId = ids[protocol.gecko_id || protocol.slug]
+      const defiCoinId = ids[protocol.slug]
 
-      if (!coinId) {
+      if (!defiCoinId) {
         continue
       }
 
       logger.info(`Syncing tvl for slug: ${protocol.slug}; gecko_id: ${protocol.gecko_id}`)
 
       tvls.push({
-        defi_coin_id: coinId,
+        defi_coin_id: defiCoinId,
         date: dateTo,
         tvl: protocol.tvl
       })
@@ -114,13 +115,24 @@ class DefiCoinSyncer extends Syncer {
     await DefiCoinTvl.bulkCreate(tvls, { ignoreDuplicates: true })
   }
 
-  async syncProtocols(protocols) {
+  async syncProtocols(protocols, isInitial) {
+    const coins = await Coin.findAll({
+      attributes: ['id', 'coingecko_id'],
+      where: {
+        uid: protocols.map(item => item.gecko_id).filter(id => id)
+      }
+    })
+
+    const ids = coins.reduce((memo, coin) => ({ ...memo, [coin.coingecko_id]: coin.id }), {})
+
     for (let i = 0; i < protocols.length; i += 1) {
       const protocol = protocols[i]
-      const uid = protocol.gecko_id || protocol.slug
+      const coinId = ids[protocol.gecko_id]
 
-      await DefiCoin.upsert({
-        uid,
+      const values = {
+        name: protocol.name,
+        logo: protocol.logo,
+        coin_id: coinId,
         defillama_id: protocol.slug,
         coingecko_id: protocol.gecko_id,
         tvl: protocol.tvl,
@@ -131,11 +143,12 @@ class DefiCoinSyncer extends Syncer {
           change_7d: protocol.change_7d,
           change_30d: null,
         },
-        chain_tvls: protocols.chainTvls,
+        chain_tvls: protocol.chainTvls,
         chains: protocol.chains
-      })
+      }
 
-      logger.info(`Upsert ${uid}; defillama: ${protocol.gecko_id} coingecko: ${protocol.slug}`)
+      logger.info(`Upserting DefiCoin; Defillama: ${protocol.slug}; Coingecko: ${protocol.gecko_id}`)
+      await (isInitial ? DefiCoin.create(values) : DefiCoin.upsert(values))
     }
   }
 

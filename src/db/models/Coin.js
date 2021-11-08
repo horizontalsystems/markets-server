@@ -145,7 +145,7 @@ class Coin extends SequelizeModel {
         sum(F.amount) * C.price as funds_invested,
         sum(T.amount) * C.price as treasuries
       FROM coins C
-      LEFT JOIN defi_coins D ON D.uid = :uid
+      LEFT JOIN defi_coins D ON D.coin_id = C.id
       LEFT JOIN funds_invested F ON F.coin_id = C.id
       LEFT JOIN treasuries T ON T.coin_id = C.id
       WHERE C.uid = :uid

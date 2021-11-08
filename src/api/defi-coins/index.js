@@ -11,7 +11,11 @@ const router = express.Router()
  * @apiVersion 1.0.0
  * @apiGroup DefiCoins
  *
- * @apiSuccess  {String}    coin.uid                Coin's uid
+ * @apiUse    Currencies
+ *
+ * @apiSuccess  {String}    coin.name               Coin's name
+ * @apiSuccess  {String}    coin.logo               Coin's logo
+ * @apiSuccess  {String}    [coin.uid]              Coin's uid
  * @apiSuccess  {String}    [coin.tvl]              Coin's tvl
  * @apiSuccess  {Number}    [coin.tvl_rank]         Coin's tvl rank
  * @apiSuccess  {String}    [coin.tvl_change_1d]    Coin's daily tvl change percentage
@@ -22,6 +26,8 @@ const router = express.Router()
  *  HTTP/1.1 200 OK
  *  [{
  *    "uid": "aave",
+ *    "name": "aave",
+ *    "logo": "https://domain.com/aave.png",
  *    "chains": ["Ethereum", "Polygon"],
  *    "tvl": "16721109202.863",
  *    "tvl_rank": 1,

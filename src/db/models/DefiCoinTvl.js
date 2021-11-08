@@ -34,12 +34,12 @@ class DefiCoinTvl extends SequelizeModel {
   }
 
   static async getListByCoinUid(uid, dateFrom, window) {
-    const [coin] = await DefiCoin.query('select id from defi_coins where uid = :uid', {
+    const [defiCoin] = await DefiCoin.query('SELECT D.id FROM coins C LEFT JOIN defi_coins D on D.coin_id = C.id WHERE uid = :uid LIMIT 1', {
       uid
     })
 
-    if (!coin) {
-      return null
+    if (!defiCoin) {
+      return []
     }
 
     const query = (`
@@ -57,9 +57,10 @@ class DefiCoinTvl extends SequelizeModel {
           AND date >= :dateFrom
         GROUP by time
       ) t2 ON (t1.id = t2.max_id AND t1.date = t2.max_date)
+      ORDER BY date
     `)
 
-    return DefiCoinTvl.query(query, { defi_coin_id: coin.id, dateFrom })
+    return DefiCoinTvl.query(query, { defi_coin_id: defiCoin.id, dateFrom })
   }
 
   static async exists() {

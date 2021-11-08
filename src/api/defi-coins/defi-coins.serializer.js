@@ -5,7 +5,8 @@ exports.serializeList = (coins, currencyRate) => {
     const change = item.tvl_change || {}
     return {
       uid: item.uid,
-      coingecko_id: item.coingecko_id,
+      name: item.coin_name || item.name,
+      logo: item.logo,
       tvl: valueInCurrency(item.tvl, currencyRate),
       tvl_rank: parseInt(item.tvl_rank, 10),
       tvl_change_1d: nullOrString(change.change_1d),
