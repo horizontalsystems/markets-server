@@ -10,6 +10,7 @@ const Platform = require('./models/Platform')
 const Fund = require('./models/Fund')
 const FundsInvested = require('./models/FundsInvested')
 const Treasury = require('./models/Treasury')
+const Report = require('./models/Report')
 const Transaction = require('./models/Transaction')
 const DexVolume = require('./models/DexVolume')
 const DexLiquidity = require('./models/DexLiquidity')
@@ -40,6 +41,7 @@ const db = {
   Fund: Fund.init(sequelize, Sequelize),
   FundsInvested: FundsInvested.init(sequelize, Sequelize),
   Treasury: Treasury.init(sequelize, Sequelize),
+  Report: Report.init(sequelize, Sequelize),
   Transaction: Transaction.init(sequelize, Sequelize),
   DexVolume: DexVolume.init(sequelize, Sequelize),
   DexLiquidity: DexLiquidity.init(sequelize, Sequelize),

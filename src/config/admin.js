@@ -90,6 +90,14 @@ const adminJs = new AdminJS({
           'funds.is_lead': { type: 'boolean' }
         }
       }
+    },
+    {
+      resource: sequelize.Report,
+      options: {
+        properties: {
+          body: { type: 'textarea' }
+        }
+      }
     }
   ],
   dashboard: {},

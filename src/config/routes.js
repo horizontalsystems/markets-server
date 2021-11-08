@@ -13,5 +13,6 @@ router.use('/categories', require('../api/categories'))
 router.use('/currencies', require('../api/currencies'))
 router.use('/languages', require('../api/languages'))
 router.use('/token_info', require('../api/token_info'))
+router.use('/reports', require('../api/reports'))
 
 module.exports = router
