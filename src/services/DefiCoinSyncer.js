@@ -29,33 +29,46 @@ class DefiCoinSyncer extends Syncer {
 
     for (let i = 0; i < coins.length; i += 1) {
       try {
-        await this.syncProtocol(coins[i])
+        await this.syncProtocolTvls(coins[i])
       } catch (e) {
         console.error(e)
       }
     }
   }
 
-  async syncProtocol(defiCoin) {
+  async syncProtocolTvls(defiCoin) {
     logger.info(`Syncing ${defiCoin.defillama_id}; coingecko: ${defiCoin.coingecko_id}`)
 
-    const data = await defillama.getProtocol(defiCoin.defillama_id)
-    const tvls = []
+    const protocol = await defillama.getProtocol(defiCoin.defillama_id)
+    const tvls = {}
 
-    for (let i = 0; i < data.tvl.length; i += 1) {
-      const tvl = data.tvl[i]
-      const date = new Date(tvl.date * 1000)
-      date.setMinutes(0, 0, 0)
+    for (let i = 0; i < protocol.tvl.length; i += 1) {
+      const item = protocol.tvl[i]
+      const date = new Date(item.date * 1000).setMinutes(0, 0, 0)
 
-      tvls.push({
+      tvls[date] = {
+        date,
         defi_coin_id: defiCoin.id,
-        date: date.getTime(),
-        tvl: tvl.totalLiquidityUSD
-      })
+        tvl: item.totalLiquidityUSD,
+        chain_tvls: {}
+      }
     }
 
-    DefiCoinTvl.bulkCreate(tvls, {
+    Object.entries(protocol.chainTvls).forEach(([chain, data]) => {
+      for (let i = 0; i < data.tvl.length; i += 1) {
+        const item = data.tvl[i]
+        const date = new Date(item.date * 1000).setMinutes(0, 0, 0)
+        const tvl = tvls[date]
+        if (tvl) {
+          tvl.chain_tvls[chain] = item.totalLiquidityUSD
+        }
+      }
+    })
+
+    DefiCoinTvl.bulkCreate(Object.entries(tvls).map(([, data]) => data), {
       ignoreDuplicates: true
+    }).then(items => {
+      console.log(`Inserted ${items.length} tvl record for ${defiCoin.defillama_id}`)
     }).catch(e => {
       console.error(e)
     })
@@ -71,7 +84,7 @@ class DefiCoinSyncer extends Syncer {
     try {
       const protocols = await this.fetchProtocols()
       await this.syncProtocols(protocols)
-      await this.syncTvls(protocols, dateTo)
+      await this.syncLatestTvls(protocols, dateTo)
     } catch (e) {
       console.error(e)
     }
@@ -85,7 +98,7 @@ class DefiCoinSyncer extends Syncer {
     await DefiCoinTvl.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncTvls(protocols, dateTo) {
+  async syncLatestTvls(protocols, dateTo) {
     const ids = {}
     const tvls = []
     const defiCoins = await DefiCoin.getIds()
@@ -108,14 +121,15 @@ class DefiCoinSyncer extends Syncer {
       tvls.push({
         defi_coin_id: defiCoinId,
         date: dateTo,
-        tvl: protocol.tvl
+        tvl: protocol.tvl,
+        chain_tvls: protocol.chainTvls
       })
     }
 
     await DefiCoinTvl.bulkCreate(tvls, { ignoreDuplicates: true })
   }
 
-  async syncProtocols(protocols, isInitial) {
+  async syncProtocols(protocols, createRecords) {
     const coins = await Coin.findAll({
       attributes: ['id', 'coingecko_id'],
       where: {
@@ -148,7 +162,7 @@ class DefiCoinSyncer extends Syncer {
       }
 
       logger.info(`Upserting DefiCoin; Defillama: ${protocol.slug}; Coingecko: ${protocol.gecko_id}`)
-      await (isInitial ? DefiCoin.create(values) : DefiCoin.upsert(values))
+      await (createRecords ? DefiCoin.create(values) : DefiCoin.upsert(values))
     }
   }
 
