@@ -10,6 +10,12 @@ exports.getCharts = () => {
     .then((resp) => resp.data) // eslint-disable-line
 }
 
+exports.getChart = id => {
+  return axios
+    .get(`/charts/${id}`)
+    .then(resp => resp.data)
+}
+
 exports.getProtocols = () => {
   return axios
     .get('/protocols')

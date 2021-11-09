@@ -6,6 +6,45 @@ const axios = require('axios')
     timeout: 180000
   })
 
+// -------------- NON API REQUESTS -------------------
+const axiosNonAPI = require('axios')
+  .create({
+    baseURL: 'https://www.coingecko.com',
+    timeout: 180000
+  })
+
+exports.getMarketDominance = function getMarketDominance(duration = 60) {
+  const query = querystring.stringify({
+    duration
+  })
+
+  return axiosNonAPI
+    .get(`/global_charts/market_dominance_data?${query}`)
+    .then(resp => resp.data) // eslint-disable-line
+}
+
+exports.getTotalChartsData = function getTotalChartsData(currency = 'usd') {
+  const query = querystring.stringify({
+    vs_currency: currency
+  })
+
+  return axiosNonAPI
+    .get(`/market_cap/total_charts_data?${query}`)
+    .then(resp => resp.data) // eslint-disable-line
+}
+
+exports.getDefiMarketCapData = function getDefiMarketCapData(duration = 60, currency = 'usd') {
+  const query = querystring.stringify({
+    duration,
+    vs_currency: currency
+  })
+
+  return axiosNonAPI
+    .get(`/en/defi_market_cap_data?${query}`)
+    .then(resp => resp.data) // eslint-disable-line
+}
+// ---------------------------------------------------
+
 exports.getGlobalMarkets = function getGlobalMarkets() {
   return axios
     .get('/global')

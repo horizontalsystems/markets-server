@@ -33,6 +33,10 @@ class GlobalMarket extends SequelizeModel {
           defaultValue: 0,
           allowNull: false
         },
+        chainTvl: {
+          type: DataTypes.JSONB,
+          field: 'chain_tvl'
+        },
         date: {
           type: DataTypes.DATE,
           allowNull: false,
