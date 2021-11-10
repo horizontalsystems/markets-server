@@ -5,42 +5,38 @@ class GlobalMarket extends SequelizeModel {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        marketCap: {
-          type: DataTypes.DECIMAL,
-          defaultValue: 0,
+        date: {
+          type: DataTypes.DATE,
           allowNull: false,
-          field: 'market_cap'
+          unique: true
         },
-        defiMarketCap: {
+        market_cap: {
           type: DataTypes.DECIMAL,
           defaultValue: 0,
-          allowNull: false,
-          field: 'defi_market_cap'
+          allowNull: false
+        },
+        defi_market_cap: {
+          type: DataTypes.DECIMAL,
+          defaultValue: 0,
+          allowNull: false
         },
         volume: {
           type: DataTypes.DECIMAL,
           defaultValue: 0,
           allowNull: false
         },
-        btcDominance: {
+        btc_dominance: {
           type: DataTypes.DECIMAL,
           defaultValue: 0,
-          allowNull: false,
-          field: 'btc_dominance'
+          allowNull: false
         },
         tvl: {
           type: DataTypes.DECIMAL,
           defaultValue: 0,
           allowNull: false
         },
-        chainTvl: {
-          type: DataTypes.JSONB,
-          field: 'chain_tvl'
-        },
-        date: {
-          type: DataTypes.DATE,
-          allowNull: false,
-          unique: true
+        chain_tvls: {
+          type: DataTypes.JSONB
         }
       },
       {

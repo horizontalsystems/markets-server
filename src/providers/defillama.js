@@ -1,29 +1,33 @@
-const axios = require('axios')
-  .create({
-    baseURL: 'https://api.llama.fi',
-    timeout: 180000
-  })
+const axios = require('axios').create({
+  baseURL: 'https://api.llama.fi',
+  timeout: 180000
+})
 
-exports.getCharts = () => {
-  return axios
-    .get('/charts')
-    .then((resp) => resp.data) // eslint-disable-line
-}
+exports.getCharts = (chain) => {
+  const url = chain
+    ? `/charts/${chain}`
+    : '/charts'
 
-exports.getChart = id => {
-  return axios
-    .get(`/charts/${id}`)
+  console.log('Fetching TVL history', chain)
+
+  return axios.get(url)
     .then(resp => resp.data)
+    .catch(e => {
+      console.error(e)
+      return []
+    })
 }
 
 exports.getProtocols = () => {
-  return axios
-    .get('/protocols')
-    .then(resp => resp.data) // eslint-disable-line
+  console.log('Fetching DeFi protocols')
+
+  return axios.get('/protocols')
+    .then(resp => resp.data)
 }
 
 exports.getProtocol = id => {
-  return axios
-    .get(`/protocol/${id}`)
-    .then(resp => resp.data) // eslint-disable-line
+  console.log('Fetching DeFi protocol info')
+
+  return axios.get(`/protocol/${id}`)
+    .then(resp => resp.data)
 }
