@@ -89,7 +89,8 @@ exports.serializeShow = (coin, language = 'en', currencyRate) => {
       total_value_locked: valueInCurrency(market.total_value_locked, currencyRate)
     },
     performance: coin.performance,
-    category_uids: coin.Categories.map(category => category.uid)
+    category_uids: coin.Categories.map(category => category.uid),
+    platforms: mapPlatforms(coin.Platforms)
   }
 }
 
