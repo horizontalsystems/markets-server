@@ -28,11 +28,13 @@ const router = express.Router()
 router.get('/', validateGlobalMarkets, setCurrencyRate, controller.index)
 
 /**
- * @api {get} /v1/global-markets List chain tvls
+ * @api {get} /v1/global-markets/:chain/tvls List chain tvls
  * @apiDescription Get a list of global chain tvls
  * @apiVersion 1.0.0
  * @apiGroup GlobalMarket
  *
+ * @apiParam    {String=Ethereum,Binance,Solana,Avalanche,Terra,Fantom,Arbitrum,Polygon
+ *                                } chain       Chain name
  * @apiParam    {String=1d,7d,30d}  interval    Date interval
  * @apiUse      Currencies
  *
