@@ -13,11 +13,11 @@ exports.serializeList = (coins, currencyRate) => {
   })
 }
 
-exports.serializeTvls = (coins, currencyRate) => {
-  return coins.map(item => {
+exports.serializeTvls = (tvls, currencyRate) => {
+  return tvls.map(item => {
     return {
       date: item.date,
-      tvl: valueInCurrency(item.tvl, currencyRate),
+      tvl: valueInCurrency(item.tvl || '0', currencyRate),
     }
   })
 }
