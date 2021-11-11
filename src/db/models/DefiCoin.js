@@ -9,7 +9,11 @@ class DefiCoin extends SequelizeModel {
         logo: DataTypes.STRING,
 
         coingecko_id: DataTypes.STRING,
-        defillama_id: DataTypes.STRING,
+        defillama_id: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          unique: true
+        },
 
         tvl: {
           type: DataTypes.DECIMAL,
@@ -76,7 +80,7 @@ class DefiCoin extends SequelizeModel {
   }
 
   static getIds() {
-    return DefiCoin.query('SELECT id, coingecko_id, defillama_id FROM defi_coins WHERE defillama_id IS NOT NULL')
+    return DefiCoin.query('SELECT id, coingecko_id, defillama_id FROM defi_coins')
   }
 }
 

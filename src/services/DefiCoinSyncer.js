@@ -20,7 +20,7 @@ class DefiCoinSyncer extends Syncer {
 
     if (!await DefiCoin.exists()) {
       try {
-        await this.syncProtocols(await this.fetchProtocols(), true)
+        await this.syncProtocols(await this.fetchProtocols())
       } catch (e) {
         console.error(e)
       }
@@ -144,7 +144,7 @@ class DefiCoinSyncer extends Syncer {
     await DefiCoinTvl.bulkCreate(tvls, { ignoreDuplicates: true })
   }
 
-  async syncProtocols(protocols, createRecords) {
+  async syncProtocols(protocols) {
     const coins = await Coin.findAll({
       attributes: ['id', 'coingecko_id'],
       where: {
@@ -177,7 +177,7 @@ class DefiCoinSyncer extends Syncer {
       }
 
       logger.info(`Upserting DefiCoin; Defillama: ${protocol.slug}; Coingecko: ${protocol.gecko_id}`)
-      await (createRecords ? DefiCoin.create(values) : DefiCoin.upsert(values))
+      await DefiCoin.upsert(values)
     }
   }
 
