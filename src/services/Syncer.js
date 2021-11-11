@@ -15,15 +15,15 @@ class Syncer {
   cronTime(time) {
     switch (time) {
       case '10m':
-        return '0 */10 * * * *' // every 10 minutes
+        return '0 */10 * * * *'
       case '1h':
-        return '0 * * * *' // every hour
+        return '0 * * * *'
       case '4h':
-        return '0 */4 * * *' // every 4 hours
+        return '0 */4 * * *'
       case '1d':
-        return '0 0 * * *' // every day
+        return '0 0 * * *'
       case '10d':
-        return '0 0 */10 * *' // every 10 days
+        return '0 0 */10 * *'
       default:
         return time
     }
@@ -31,18 +31,16 @@ class Syncer {
 
   syncParams(period) {
     switch (period) {
-      case '10m':
-        return {}
       case '1h':
         return {
-          dateFrom: utcDate('yyyy-MM-dd HH:00:00', { hours: -1 }),
-          dateTo: utcDate('yyyy-MM-dd HH:00:00'),
+          dateFrom: utcDate('yyyy-MM-dd HH:00:00Z', { hours: -1 }),
+          dateTo: utcDate('yyyy-MM-dd HH:00:00Z'),
           dateExpiresIn: { hours: 24 }
         }
       case '4h':
         return {
-          dateFrom: utcDate('yyyy-MM-dd HH:00:00', { days: -1, hours: -4 }),
-          dateTo: utcDate('yyyy-MM-dd HH:00:00', { days: -1 }),
+          dateFrom: utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -4 }),
+          dateTo: utcDate('yyyy-MM-dd HH:00:00Z', { days: -1 }),
           dateExpiresIn: { days: 7 }
         }
       case '1d':
@@ -50,10 +48,8 @@ class Syncer {
           dateFrom: utcDate('yyyy-MM-dd', { days: -8 }),
           dateTo: utcDate('yyyy-MM-dd', { days: -7 })
         }
-      case '10d':
-        return {}
       default:
-        throw Error('Invalid sync period')
+        return {}
     }
   }
 
@@ -61,14 +57,14 @@ class Syncer {
     switch (period) {
       case '1h':
         return {
-          dateFrom: utcDate('yyyy-MM-dd HH:00:00', { hours: -24 }),
-          dateTo: utcDate('yyyy-MM-dd HH:00:00'),
+          dateFrom: utcDate('yyyy-MM-dd HH:00:00Z', { hours: -24 }),
+          dateTo: utcDate('yyyy-MM-dd HH:00:00Z'),
           dateExpiresIn: { hours: 24 }
         }
       case '4h':
         return {
-          dateFrom: utcDate('yyyy-MM-dd 00:00:00', { days: -7 }),
-          dateTo: utcDate('yyyy-MM-dd HH:00:00', { days: -1 }),
+          dateFrom: utcDate('yyyy-MM-dd 00:00:00Z', { days: -7 }),
+          dateTo: utcDate('yyyy-MM-dd HH:00:00Z', { days: -1 }),
           dateExpiresIn: { days: 7 }
         }
       case '1d':
@@ -77,7 +73,7 @@ class Syncer {
           dateTo: utcDate('yyyy-MM-dd', { days: -7 })
         }
       default:
-        throw Error('Invalid sync period')
+        return {}
     }
   }
 }

@@ -8,7 +8,7 @@ const Syncer = require('./Syncer')
 
 describe('Syncer', async () => {
   const date = DateTime.fromSQL('2021-01-01 00:10:00Z')
-  const dateFormat = 'yyyy-MM-dd HH:mm:00'
+  const dateFormat = 'yyyy-MM-dd HH:mm:00Z'
 
   let syncer
   let clock
@@ -34,13 +34,13 @@ describe('Syncer', async () => {
       syncer.cron('1h', onTick)
 
       sinon.assert.notCalled(onTick)
-      expect(utcDate(dateFormat)).to.equal('2021-01-01 00:10:00')
+      expect(utcDate(dateFormat)).to.equal('2021-01-01 00:10:00+0')
       clock.tick(60 * 60 * 1000)
-      expect(utcDate(dateFormat)).to.equal('2021-01-01 01:10:00')
+      expect(utcDate(dateFormat)).to.equal('2021-01-01 01:10:00+0')
 
       sinon.assert.calledWith(onTick, {
-        dateFrom: '2021-01-01 00:00:00',
-        dateTo: '2021-01-01 01:00:00',
+        dateFrom: '2021-01-01 00:00:00+0',
+        dateTo: '2021-01-01 01:00:00+0',
         dateExpiresIn: { hours: 24 }
       })
     })
@@ -61,16 +61,16 @@ describe('Syncer', async () => {
   describe('#syncParams', () => {
     it('returns date params for the `1h` period', () => {
       expect(syncer.syncParams('1h')).deep.equal({
-        dateFrom: '2020-12-31 23:00:00',
-        dateTo: '2021-01-01 00:00:00',
+        dateFrom: '2020-12-31 23:00:00+0',
+        dateTo: '2021-01-01 00:00:00+0',
         dateExpiresIn: { hours: 24 }
       })
     })
 
     it('returns date params for the `4h` period', () => {
       expect(syncer.syncParams('4h')).deep.equal({
-        dateFrom: '2020-12-30 20:00:00',
-        dateTo: '2020-12-31 00:00:00',
+        dateFrom: '2020-12-30 20:00:00+0',
+        dateTo: '2020-12-31 00:00:00+0',
         dateExpiresIn: { days: 7 }
       })
     })
@@ -87,16 +87,16 @@ describe('Syncer', async () => {
 
     it('returns date params for the `1h` period', () => {
       expect(syncer.syncParamsHistorical('1h')).deep.equal({
-        dateFrom: '2020-12-31 00:00:00',
-        dateTo: '2021-01-01 00:00:00',
+        dateFrom: '2020-12-31 00:00:00+0',
+        dateTo: '2021-01-01 00:00:00+0',
         dateExpiresIn: { hours: 24 }
       })
     })
 
     it('returns date params for the `4h` period', () => {
       expect(syncer.syncParamsHistorical('4h')).deep.equal({
-        dateFrom: '2020-12-25 00:00:00',
-        dateTo: '2020-12-31 00:00:00',
+        dateFrom: '2020-12-25 00:00:00+0',
+        dateTo: '2020-12-31 00:00:00+0',
         dateExpiresIn: { days: 7 }
       })
     })

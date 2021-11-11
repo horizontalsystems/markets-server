@@ -35,8 +35,8 @@ class CurrencyRateSyncer extends Syncer {
   }
 
   async syncNinetyDaysRates() {
-    const dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -1, hours: -1 })
-    const dateTo = utcDate('yyyy-MM-dd HH:00:00', { days: -1 })
+    const dateFrom = utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -1 })
+    const dateTo = utcDate('yyyy-MM-dd HH:00:00Z', { days: -1 })
 
     await this.adjustPoints(dateFrom, dateTo)
   }

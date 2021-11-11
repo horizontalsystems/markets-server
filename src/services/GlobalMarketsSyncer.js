@@ -40,7 +40,7 @@ class GlobalMarketsSyncer extends Syncer {
   }
 
   async syncDailyMarkets() {
-    await this.syncLatestMarkets(utcDate('yyyy-MM-dd HH:00:00', { hours: -24 }))
+    await this.syncLatestMarkets(utcDate('yyyy-MM-dd HH:00:00Z', { hours: -24 }))
   }
 
   async syncWeeklyStats({ dateFrom, dateTo }) {

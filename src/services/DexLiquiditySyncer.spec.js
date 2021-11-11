@@ -79,8 +79,8 @@ describe('DexLiquiditySyncer', async () => {
         await syncer.syncHistorical()
 
         sinon.assert.calledWith(this.syncWeeklyStats, {
-          dateFrom: '2020-12-25 00:00:00',
-          dateTo: '2020-12-31 08:00:00',
+          dateFrom: '2020-12-25 00:00:00+0',
+          dateTo: '2020-12-31 08:00:00+0',
           dateExpiresIn: { days: 7 }
         })
       })
@@ -89,8 +89,8 @@ describe('DexLiquiditySyncer', async () => {
         await syncer.syncHistorical()
 
         sinon.assert.calledWith(this.syncDailyStats, {
-          dateFrom: '2020-12-31 08:00:00',
-          dateTo: '2021-01-01 08:00:00',
+          dateFrom: '2020-12-31 08:00:00+0',
+          dateTo: '2021-01-01 08:00:00+0',
           dateExpiresIn: { hours: 24 }
         })
       })

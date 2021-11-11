@@ -8,7 +8,7 @@ const TransactionSyncer = require('./TransactionSyncer')
 
 describe('TransactionSyncer', async () => {
   const date = DateTime.fromISO('2021-01-01T08:10:00Z')
-  const dateFormat = 'yyyy-MM-dd HH:mm:00'
+  const dateFormat = 'yyyy-MM-dd HH:mm:00Z'
 
   let syncer
   let clock
@@ -72,8 +72,8 @@ describe('TransactionSyncer', async () => {
         await syncer.syncHistorical()
 
         sinon.assert.calledWith(this.syncWeeklyStats, {
-          dateFrom: '2020-12-25 00:00:00',
-          dateTo: '2020-12-31 08:00:00',
+          dateFrom: '2020-12-25 00:00:00+0',
+          dateTo: '2020-12-31 08:00:00+0',
           dateExpiresIn: { days: 7 }
         })
       })
@@ -82,8 +82,8 @@ describe('TransactionSyncer', async () => {
         await syncer.syncHistorical()
 
         sinon.assert.calledWith(this.syncDailyStats, {
-          dateFrom: '2020-12-31 08:00:00',
-          dateTo: '2021-01-01 08:00:00',
+          dateFrom: '2020-12-31 08:00:00+0',
+          dateTo: '2021-01-01 08:00:00+0',
           dateExpiresIn: { hours: 24 }
         })
       })
@@ -99,11 +99,11 @@ describe('TransactionSyncer', async () => {
 
       clock.tick(60 * 60 * 1000)
 
-      expect(utcDate(dateFormat)).to.equal('2021-01-01 09:10:00')
+      expect(utcDate(dateFormat)).to.equal('2021-01-01 09:10:00+0')
 
       sinon.assert.calledWith(syncDailyStats, {
-        dateFrom: '2021-01-01 08:00:00',
-        dateTo: '2021-01-01 09:00:00',
+        dateFrom: '2021-01-01 08:00:00+0',
+        dateTo: '2021-01-01 09:00:00+0',
         dateExpiresIn: { hours: 24 }
       })
     })
@@ -113,15 +113,15 @@ describe('TransactionSyncer', async () => {
       syncer.syncLatest()
 
       sinon.assert.notCalled(syncWeeklyStats)
-      expect(utcDate(dateFormat)).to.equal('2021-01-01 08:10:00')
+      expect(utcDate(dateFormat)).to.equal('2021-01-01 08:10:00+0')
 
       clock.tick(4 * 60 * 60 * 1000)
 
-      expect(utcDate(dateFormat)).to.equal('2021-01-01 12:10:00')
+      expect(utcDate(dateFormat)).to.equal('2021-01-01 12:10:00+0')
 
       sinon.assert.calledWith(syncWeeklyStats, {
-        dateFrom: '2020-12-31 08:00:00',
-        dateTo: '2020-12-31 12:00:00',
+        dateFrom: '2020-12-31 08:00:00+0',
+        dateTo: '2020-12-31 12:00:00+0',
         dateExpiresIn: { days: 7 }
       })
     })
@@ -131,13 +131,13 @@ describe('TransactionSyncer', async () => {
       syncer.syncLatest()
 
       sinon.assert.notCalled(syncMonthlyStats)
-      expect(utcDate(dateFormat)).to.equal('2021-01-01 08:10:00')
+      expect(utcDate(dateFormat)).to.equal('2021-01-01 08:10:00+0')
 
       //          15 hours       50 minutes
       clock.tick((15 * 60 * 60 + 50 * 60) * 1000)
       sinon.assert.called(syncMonthlyStats)
 
-      expect(utcDate(dateFormat)).to.equal('2021-01-02 00:00:00')
+      expect(utcDate(dateFormat)).to.equal('2021-01-02 00:00:00+0')
 
       sinon.assert.calledWith(syncMonthlyStats, {
         dateFrom: '2020-12-25',
