@@ -59,6 +59,7 @@ class FundsInvested extends SequelizeModel {
         JSON_AGG(JSON_BUILD_OBJECT(
           'name', F.name,
           'website', F.website,
+          'uid', F.uid,
           'is_lead', e.jsn->'is_lead'
         )) as funds
       FROM funds_invested I, coins C

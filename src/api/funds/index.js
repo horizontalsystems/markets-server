@@ -18,7 +18,8 @@ const router = express.Router()
  *  HTTP/1.1 200 OK
  *  [{
  *    "type": "public",
- *    "name": "AAA fund",
+ *    "fund": "AAA fund",
+ *    "fund_uid": "aaa-fund",
  *    "amount": "200000",
  *    "amount_in_currency": "200000000",
  *    "country": "AI"
@@ -48,6 +49,7 @@ router.get('/treasuries', validateTreasuries, setCurrencyRate, controller.treasu
  *    "funds": [{
  *       "name": "ABC fund",
  *       "website": "https://domain.com/abc",
+ *       "uid": "abc",
  *       "is_lead": true
  *     }]
  *  }]

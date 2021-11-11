@@ -32,7 +32,7 @@ class Treasury extends SequelizeModel {
         T.*, 
         T.amount * C.price as amount_usd,
         F.name as fund,
-        F.logo as logo
+        F.uid as uid
       FROM treasuries T 
       JOIN funds F ON F.id = T.fund_id 
       JOIN coins C ON C.id = T.coin_id AND C.uid = :uid
