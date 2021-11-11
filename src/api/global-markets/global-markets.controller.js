@@ -27,7 +27,7 @@ exports.index = async ({ query, currencyRate }, res) => {
   res.json(serializeList(markets, currencyRate))
 }
 
-exports.tvls = async ({ params, query, currencyRate }, res) => {
+exports.tvls = async ({ query, currencyRate }, res) => {
   let window
   let dateFrom
 
@@ -46,7 +46,7 @@ exports.tvls = async ({ params, query, currencyRate }, res) => {
       break
   }
 
-  const tvls = await GlobalMarket.getTvls(capitalizeFirstLetter(params.chain), dateFrom, window)
+  const tvls = await GlobalMarket.getTvls(capitalizeFirstLetter(query.chain), dateFrom, window)
 
   res.status(200)
   res.json(serializeTvls(tvls, currencyRate))

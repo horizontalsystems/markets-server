@@ -32,6 +32,6 @@ exports.valueInCurrency = (value, currencyRate) => {
   return String(value * currencyRate)
 }
 
-exports.capitalizeFirstLetter = string => {
+exports.capitalizeFirstLetter = (string = '') => {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
