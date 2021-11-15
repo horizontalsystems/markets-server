@@ -101,17 +101,17 @@ class Coin extends SequelizeModel {
     return Coin.query(query, { uids })
   }
 
-  static async getMarketData(uid) {
+  static async getMarketData(uid, type = 'erc20') {
     const query = (`
       SELECT
         market_data,
         P.id AS platform_id
       FROM coins C
       LEFT JOIN platforms P ON C.id = P.coin_id
-      WHERE C.uid = :uid
+      WHERE C.uid = :uid AND P.type = :type
     `)
 
-    const [marketData] = await Coin.query(query, { uid })
+    const [marketData] = await Coin.query(query, { uid, type })
     return marketData
   }
 
