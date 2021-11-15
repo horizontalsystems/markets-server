@@ -65,8 +65,8 @@ class Address extends SequelizeModel {
     return Address.query(query, { dateFrom, platform_id: platform.id })
   }
 
-  static async getCoinHolders(uid, limit = 10) {
-    const coin = await Coin.getMarketData(uid)
+  static async getCoinHolders(uid, platform = 'erc20', limit = 10) {
+    const coin = await Coin.getMarketData(uid, platform)
     if (!coin || !coin.market_data) {
       return null
     }

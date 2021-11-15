@@ -101,7 +101,7 @@ class Coin extends SequelizeModel {
     return Coin.query(query, { uids })
   }
 
-  static async getMarketData(uid, type = 'erc20') {
+  static async getMarketData(uid, type) {
     const query = (`
       SELECT
         market_data,
