@@ -36,6 +36,7 @@ router.get('/', validateAddresses, controller.index)
  * @apiGroup Address
  *
  * @apiParam  {String=bitcoin,ethereum,...}   coin_uid        Coin's uid
+ * @apiParam  {Number{1-20}}                  [limit=10]         Number of holders
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  */

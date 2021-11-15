@@ -18,7 +18,7 @@ module.exports = {
   validateHolders: validate({
     query: Joi.object({
       coin_uid: Joi.string().required(),
-      limit: Joi.string(),
+      limit: Joi.number().min(1).max(20),
     })
   }, options),
 
