@@ -65,7 +65,7 @@ class Address extends SequelizeModel {
     return Address.query(query, { dateFrom, platform_id: platform.id })
   }
 
-  static async getCoinHolders(uid) {
+  static async getCoinHolders(uid, limit = 10) {
     const coin = await Coin.getMarketData(uid)
     if (!coin || !coin.market_data) {
       return null
@@ -84,9 +84,14 @@ class Address extends SequelizeModel {
       FROM coin_holders
       WHERE platform_id = :platform_id
       ORDER BY balance DESC
+      LIMIT :limit
     `
 
-    const holders = await Address.query(query, { platform_id: coin.platform_id })
+    const holders = await Address.query(query, {
+      platform_id: coin.platform_id,
+      limit
+    })
+
     return holders.map(item => ({
       address: item.address,
       share: (item.balance * 100) / parseFloat(supply)
@@ -114,7 +119,7 @@ class Address extends SequelizeModel {
       UPDATE addresses
       SET volume = total.volume, count = total.count
       FROM (
-        SELECT 
+        SELECT
           SUM(volume) as volume,  SUM(count) as count
           FROM addresses
           WHERE date > :dateFrom AND date <= :dateTo
