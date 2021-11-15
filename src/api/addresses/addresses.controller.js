@@ -27,7 +27,7 @@ exports.index = async ({ query }, res) => {
 }
 
 exports.holders = async ({ query }, res) => {
-  const holders = await Address.getCoinHolders(query.coin_uid, query.limit)
+  const holders = await Address.getCoinHolders(query.coin_uid, query.platform, query.limit)
 
   if (holders) {
     res.send(serializer.serializeCoinHolders(holders))
