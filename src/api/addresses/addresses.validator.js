@@ -13,12 +13,12 @@ module.exports = {
       currency: Joi.string()
     })
   }, options),
+
   // GET /v1/addresses/holders
   validateHolders: validate({
     query: Joi.object({
       coin_uid: Joi.string().required(),
-      interval: Joi.string().valid('1d', '7d', '30d'),
-      currency: Joi.string()
+      limit: Joi.string(),
     })
   }, options),
 
