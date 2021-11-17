@@ -61,6 +61,7 @@ const adminJs = new AdminJS({
       resource: sequelize.Category,
       options: {
         properties: {
+          id: { isId: true },
           description: { type: 'mixed' },
           ...multilingual('description'),
         }
