@@ -8,7 +8,7 @@ let cache = []
 
 function mapBySymbol(data) {
   return data.reduce((memo, item) => {
-    memo[item.original_symbol.toLowerCase()] = item
+    memo[item.original_symbol] = item
     return memo
   }, {})
 }
@@ -24,10 +24,10 @@ function getBep2Tokens() {
 
 exports.getTokenInfo = async symbol => {
   if (!cache.length) {
-    cache = await getBep2Tokens().then(resp => resp.data)
+    cache = await getBep2Tokens().then(resp => mapBySymbol(resp.data))
   }
 
-  return cache.find(item => item.symbol === symbol)
+  return cache[symbol]
 }
 
 exports.getBep2Tokens = async () => {
@@ -35,6 +35,5 @@ exports.getBep2Tokens = async () => {
     return mapBySymbol(cache)
   }
 
-  return getBep2Tokens()
-    .then(resp => mapBySymbol(resp.data))
+  return getBep2Tokens().then(resp => mapBySymbol(resp.data))
 }
