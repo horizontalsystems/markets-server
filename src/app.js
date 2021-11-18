@@ -4,31 +4,8 @@ const logger = require('./config/logger')
 const sequelize = require('./db/sequelize')
 const app = require('./config/express')
 
-const CurrencyRateSyncer = require('./services/CurrencyRateSyncer')
-const TransactionSyncer = require('./services/TransactionSyncer')
-const DexVolumeSyncer = require('./services/DexVolumeSyncer')
-const AddressSyncer = require('./services/AddressSyncer')
-const DexLiquiditySyncer = require('./services/DexLiquiditySyncer')
-const GlobalMarketsSyncer = require('./services/GlobalMarketsSyncer')
-
 async function start() {
-  const globalMarketsSyncer = new GlobalMarketsSyncer()
-  const transactionSyncer = new TransactionSyncer()
-  const dexVolumeSyncer = new DexVolumeSyncer()
-  const addressSyncer = new AddressSyncer()
-  const dexLiquiditySyncer = new DexLiquiditySyncer()
-  const currencyRateSyncer = new CurrencyRateSyncer()
-
-  // Sync all defined models to the DB
   await sequelize.sync()
-
-  // Run services & syncers
-  await globalMarketsSyncer.start()
-  await currencyRateSyncer.start()
-  await transactionSyncer.start()
-  await dexVolumeSyncer.start()
-  await addressSyncer.start()
-  await dexLiquiditySyncer.start()
 
   // Listen to requests
   app.listen(process.env.PORT, () => {
