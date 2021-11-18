@@ -15,6 +15,7 @@
     "lint": "eslint ./src/ --ignore-path .gitignore",
     "lint:fix": "yarn lint --fix",
     "test": "mocha './src/**/*.spec.js'",
+    "integration": "mocha 'src/**/*.integration.js' --file .mocha-integration-setup.js",
     "test:watch": "nodemon --watch ./src --exec 'mocha src/**/*.spec.js'",
     "coverage": "nyc --reporter=html --reporter=text npm run test",
     "docs": "apidoc -i src -o docs --single"
@@ -62,11 +63,11 @@
     "eslint-plugin-import": "^2.2.0",
     "husky": "^7.0.1",
     "mocha": "^9.0.3",
+    "nock": "^13.2.1",
     "nodemon": "^2.0.1",
     "nyc": "^15.1.0",
     "sinon": "^11.1.2",
     "sinon-chai": "^3.0.0",
-    "sqlite3": "^5.0.2",
     "supertest": "^6.1.6"
   },
   "apidoc": {

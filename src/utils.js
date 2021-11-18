@@ -35,3 +35,11 @@ exports.valueInCurrency = (value, currencyRate) => {
 exports.capitalizeFirstLetter = (string = '') => {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
+
+exports.percentageBetweenNumber = (oldNumber, newNumber) => {
+  if (!oldNumber || !newNumber) {
+    return null
+  }
+
+  return (1 - (oldNumber / newNumber)) * 100
+}

@@ -7,6 +7,7 @@
     "no-underscore-dangle": 0,
     "no-unused-vars": ["error", { "argsIgnorePattern": "next" }],
     "no-use-before-define": ["error", { "variables": false }],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/*.spec.js", "**/*.integration.js"] }],
     "no-multi-str": 0,
     "max-len": "off",
     "semi": "off",
@@ -31,5 +32,8 @@
   },
   "parserOptions": {
     "ecmaVersion": 9
+  },
+  "globals": {
+    "factory": true
   }
 }

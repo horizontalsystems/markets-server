@@ -14,7 +14,12 @@ class DefiCoinTvl extends SequelizeModel {
           type: DataTypes.DECIMAL,
           allowNull: false
         },
-        expires_at: DataTypes.DATE
+        chain_tvls: DataTypes.JSONB,
+        //  {
+        //    Ethereum: 8846196.10,
+        //    Polygon:  197489.07
+        //    Staking:  14440365.167
+        //  }
       },
       {
         sequelize,
@@ -61,6 +66,27 @@ class DefiCoinTvl extends SequelizeModel {
     `)
 
     return DefiCoinTvl.query(query, { defi_coin_id: defiCoin.id, dateFrom })
+  }
+
+  static getLastMonthTvls(dateTo) {
+    const query = `
+      SELECT
+        dc.defillama_id,
+        t1.defi_coin_id,
+        t1.tvl
+      FROM defi_coin_tvls t1
+      JOIN defi_coins dc on dc.id = t1.defi_coin_id
+      JOIN (
+        SELECT
+          max(id) as max_id,
+          max(date) as max_date
+         FROM defi_coin_tvls
+        WHERE date <= :dateTo
+        GROUP by defi_coin_id
+      ) t2 ON (t1.id = t2.max_id AND t1.date = t2.max_date)
+    `
+
+    return DefiCoinTvl.query(query, { dateTo })
   }
 
   static async exists() {

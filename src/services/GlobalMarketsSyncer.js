@@ -1,24 +1,9 @@
-const { utcDate } = require('../utils')
 const coingecko = require('../providers/coingecko')
 const defillama = require('../providers/defillama')
 const GlobalMarket = require('../db/models/GlobalMarket')
 const Syncer = require('./Syncer')
 
 class GlobalMarketsSyncer extends Syncer {
-  constructor() {
-    super()
-
-    this.chains = [
-      'Ethereum',
-      'Binance',
-      'Solana',
-      'Avalanche',
-      'Terra',
-      'Fantom',
-      'Arbitrum',
-      'Polygon'
-    ]
-  }
 
   async start() {
     await this.syncHistorical()
@@ -26,7 +11,7 @@ class GlobalMarketsSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('1h', this.syncDailyMarkets)
+    this.cron('1h', this.syncDailyStats)
     this.cron('4h', this.syncWeeklyStats)
     this.cron('1d', this.syncMonthlyStats)
   }
@@ -39,19 +24,15 @@ class GlobalMarketsSyncer extends Syncer {
     await this.syncHistoricalMarkets()
   }
 
-  async syncDailyMarkets() {
-    await this.syncLatestMarkets(utcDate('yyyy-MM-dd HH:00:00Z', { hours: -24 }))
+  async syncDailyStats({ dateTo }) {
+    await this.syncLatestMarkets(dateTo)
   }
 
   async syncWeeklyStats({ dateFrom, dateTo }) {
-    await this.adjustPoints(dateFrom, dateTo)
+    await GlobalMarket.deleteExpired(dateFrom, dateTo)
   }
 
   async syncMonthlyStats({ dateFrom, dateTo }) {
-    await this.adjustPoints(dateFrom, dateTo)
-  }
-
-  async adjustPoints(dateFrom, dateTo) {
     await GlobalMarket.deleteExpired(dateFrom, dateTo)
   }
 
@@ -60,7 +41,7 @@ class GlobalMarketsSyncer extends Syncer {
       const globalMarkets = await coingecko.getGlobalMarkets()
       const defiGlobalMarkets = await coingecko.getGlobalDefiMarkets()
 
-      const records = {
+      const record = {
         date,
         market_cap: globalMarkets.total_market_cap.usd,
         volume: globalMarkets.total_volume.usd,
@@ -68,7 +49,7 @@ class GlobalMarketsSyncer extends Syncer {
         defi_market_cap: defiGlobalMarkets.defi_market_cap
       }
 
-      this.upsertMarkets([records], Object.keys(records))
+      await this.upsertMarkets([record], Object.keys(record))
     } catch (e) {
       console.error(`Error fetching global markets: ${e.message}`)
     }
@@ -79,6 +60,8 @@ class GlobalMarketsSyncer extends Syncer {
       const { marketCaps, totalVolumes } = await coingecko.getTotalChartsData()
       const { data: dominanceData = [] } = await coingecko.getMarketDominance()
       const { data: defiMarketCap = [] } = await coingecko.getDefiMarketCapData()
+
+      const supportedChains = await this.getSupportedChains()
       const totalLiquidity = (await defillama.getCharts()).map(item => [
         item.date * 1000,
         item.totalLiquidityUSD
@@ -91,8 +74,8 @@ class GlobalMarketsSyncer extends Syncer {
       this.mapMarketData(defiMarketCap, dataMap, 'defi_market_cap')
       this.mapMarketData(totalLiquidity, dataMap, 'tvl')
 
-      for (let i = 0; i < this.chains.length; i += 1) {
-        const chain = this.chains[i]
+      for (let i = 0; i < supportedChains.length; i += 1) {
+        const chain = supportedChains[i]
         const chainLiquidity = (await defillama.getCharts(chain)).map(item => [
           item.date * 1000,
           item.totalLiquidityUSD
@@ -101,14 +84,25 @@ class GlobalMarketsSyncer extends Syncer {
         this.mapMarketData(chainLiquidity, dataMap, chain, false, true)
       }
 
-      this.upsertMarkets(Object.entries(dataMap).map(([, data]) => data))
+      await this.upsertMarkets(Object.values(dataMap))
     } catch (e) {
-      console.error(`Error fetching global markets: ${e}`)
+      console.error(e)
     }
   }
 
+  async getSupportedChains() {
+    let protocols = []
+    try {
+      protocols = await defillama.getProtocols()
+    } catch (e) {
+      console.log(e)
+    }
+
+    return [...new Set(protocols.flatMap(item => item.chains))]
+  }
+
   upsertMarkets(markets, updateOnDuplicate) {
-    GlobalMarket.bulkCreate(markets, { updateOnDuplicate })
+    return GlobalMarket.bulkCreate(markets, { updateOnDuplicate })
       .then(records => {
         console.log(`Inserted ${records.length} global markets data`)
       })
@@ -117,7 +111,7 @@ class GlobalMarketsSyncer extends Syncer {
       })
   }
 
-  mapMarketData(items, map, field, isInitial, isTvl) {
+  mapMarketData(items = [], map, field, isInitial, isTvl) {
     for (let i = 0; i < items.length; i += 1) {
       const [date, value] = items[i]
       const item = map[date]

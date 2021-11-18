@@ -5,6 +5,7 @@ const DefiCoin = require('../db/models/DefiCoin')
 const DefiCoinTvl = require('../db/models/DefiCoinTvl')
 const Coin = require('../db/models/Coin')
 const GlobalMarket = require('../db/models/GlobalMarket')
+const { percentageBetweenNumber } = require('../utils')
 
 class DefiCoinSyncer extends Syncer {
 
@@ -84,7 +85,8 @@ class DefiCoinSyncer extends Syncer {
   async syncDailyStats({ dateTo }) {
     try {
       const protocols = await this.fetchProtocols()
-      await this.syncProtocols(protocols)
+      const monthlyTvlMap = await this.getMonthlyTvlMap(dateTo)
+      await this.syncProtocols(protocols, monthlyTvlMap)
       await this.syncLatestTvls(protocols, dateTo)
     } catch (e) {
       console.error(e)
@@ -144,7 +146,7 @@ class DefiCoinSyncer extends Syncer {
     await DefiCoinTvl.bulkCreate(tvls, { ignoreDuplicates: true })
   }
 
-  async syncProtocols(protocols) {
+  async syncProtocols(protocols, monthlyTvlMap = {}) {
     const coins = await Coin.findAll({
       attributes: ['id', 'coingecko_id'],
       where: {
@@ -157,6 +159,7 @@ class DefiCoinSyncer extends Syncer {
     for (let i = 0; i < protocols.length; i += 1) {
       const protocol = protocols[i]
       const coinId = ids[protocol.gecko_id]
+      const monthlyTvl = monthlyTvlMap[protocol.slug]
 
       const values = {
         name: protocol.name,
@@ -170,7 +173,7 @@ class DefiCoinSyncer extends Syncer {
           change_1h: protocol.change_1h,
           change_1d: protocol.change_1d,
           change_7d: protocol.change_7d,
-          change_30d: null,
+          change_30d: percentageBetweenNumber(monthlyTvl, protocol.tvl)
         },
         chain_tvls: protocol.chainTvls,
         chains: protocol.chains
@@ -191,6 +194,15 @@ class DefiCoinSyncer extends Syncer {
     }
 
     return protocols
+  }
+
+  async getMonthlyTvlMap(dateTo) {
+    const tvls = await DefiCoinTvl.getLastMonthTvls(dateTo)
+
+    return tvls.reduce((memo, item) => ({
+      ...memo,
+      [item.defillama_id]: item.tvl
+    }), {})
   }
 }
 
