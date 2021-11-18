@@ -89,7 +89,7 @@ exports.normalizeCoin = coin => {
       total_value_locked: (market.total_value_locked || {}).usd,
     },
 
-    is_defi: coin.categories.contains('Decentralized Finance (DeFi)'),
+    is_defi: coin.categories.includes('Decentralized Finance (DeFi)'),
     last_updated: coin.last_updated
   }
 }
