@@ -5,11 +5,10 @@ const DefiCoinSyncer = require('../src/services/DefiCoinSyncer')
 
 async function start() {
   await sequelize.sync()
-  const defiCoinSyncer = new DefiCoinSyncer()
-
-  await defiCoinSyncer.start()
+  const syncer = new DefiCoinSyncer()
+  await syncer.start()
 }
 
-start().catch(err => {
-  logger.error(err.stack)
+start().catch(e => {
+  logger.error(e)
 })

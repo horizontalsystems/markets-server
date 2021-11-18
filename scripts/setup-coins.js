@@ -142,8 +142,8 @@ async function start() {
 }
 
 start()
-  .catch(err => {
-    console.log(err.stack)
+  .catch(e => {
+    console.log(e)
   })
   .finally(() => {
     process.exit(0)
