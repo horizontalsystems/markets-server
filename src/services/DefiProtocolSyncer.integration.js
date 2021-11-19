@@ -4,31 +4,31 @@ const { DateTime } = require('luxon')
 const { expect } = require('chai')
 
 const { percentageBetweenNumber, utcDate } = require('../utils')
-const DefiCoinSyncer = require('./DefiCoinSyncer')
-const DefiCoinTvl = require('../db/models/DefiCoinTvl')
-const DefiCoin = require('../db/models/DefiCoin')
+const DefiProtocolSyncer = require('./DefiProtocolSyncer')
+const DefiProtocol = require('../db/models/DefiProtocol')
+const DefiProtocolTvl = require('../db/models/DefiProtocolTvl')
 const GlobalMarket = require('../db/models/GlobalMarket')
 
 const defillama = 'https://api.llama.fi'
 
-describe('DefiCoinSyncer', () => {
+describe('DefiProtocolSyncer', () => {
   const now = DateTime.fromSQL('2021-01-01 00:00:00Z')
 
-  /** @type DefiCoinSyncer */
+  /** @type DefiProtocolSyncer */
   let syncer
   let clock
 
   beforeEach(async () => {
     clock = sinon.useFakeTimers(now.ts)
-    syncer = new DefiCoinSyncer()
+    syncer = new DefiProtocolSyncer()
   })
 
   afterEach(async () => {
     sinon.restore()
     clock.restore()
 
-    await DefiCoinTvl.destroy({ truncate: true, cascade: true })
-    await DefiCoin.destroy({ truncate: true, cascade: true })
+    await DefiProtocolTvl.destroy({ truncate: true, cascade: true })
+    await DefiProtocol.destroy({ truncate: true, cascade: true })
   })
 
   describe('#syncHistorical', () => {
@@ -49,18 +49,18 @@ describe('DefiCoinSyncer', () => {
     })
 
     it('syncs protocols & historical TVLs', async () => {
-      expect(await DefiCoin.findAll()).to.have.length(0)
-      expect(await DefiCoinTvl.findAll()).to.have.length(0)
+      expect(await DefiProtocol.findAll()).to.have.length(0)
+      expect(await DefiProtocolTvl.findAll()).to.have.length(0)
 
       await syncer.syncHistorical()
 
-      const defiCoins = await DefiCoin.findAll()
-      const defiCoinTvls = await DefiCoinTvl.findAll({ order: ['defi_coin_id'] })
+      const defiProtocols = await DefiProtocol.findAll()
+      const defiProtocolTvls = await DefiProtocolTvl.findAll({ order: ['defi_protocol_id'] })
 
-      expect(defiCoins).to.have.length(2)
-      expect(defiCoinTvls).to.have.length(10)
+      expect(defiProtocols).to.have.length(2)
+      expect(defiProtocolTvls).to.have.length(10)
 
-      defiCoinTvls.filter(i => i.defi_coin_id === 1)
+      defiProtocolTvls.filter(i => i.defi_protocol_id === 1)
         .forEach(item => {
           const date = item.date.getTime() / 1000
           expect(protocol1Full.tvl).to.deep
@@ -71,7 +71,7 @@ describe('DefiCoinSyncer', () => {
             .include({ date, totalLiquidityUSD: item.chain_tvls.Avalanche })
         })
 
-      defiCoinTvls.filter(i => i.defi_coin_id === 2)
+      defiProtocolTvls.filter(i => i.defi_protocol_id === 2)
         .forEach(item => {
           const date = item.date.getTime() / 1000
           expect(protocol2Full.tvl).to.deep
@@ -100,18 +100,18 @@ describe('DefiCoinSyncer', () => {
     })
 
     it('syncs protocols, TVLs & GlobalMarkets', async () => {
-      expect(await DefiCoin.findAll()).to.have.length(0)
-      expect(await DefiCoinTvl.findAll()).to.have.length(0)
+      expect(await DefiProtocol.findAll()).to.have.length(0)
+      expect(await DefiProtocolTvl.findAll()).to.have.length(0)
       expect(await GlobalMarket.findAll()).to.have.length(0)
 
       await syncer.syncDailyStats(syncer.syncParams('1h'))
 
-      const defiCoins = await DefiCoin.findAll()
+      const defiProtocols = await DefiProtocol.findAll()
       const globalMarkets = await GlobalMarket.findAll()
-      const defiCoinTvls = await DefiCoinTvl.findAll()
+      const defiProtocolTvls = await DefiProtocolTvl.findAll()
 
-      expect(defiCoins).to.have.length(2)
-      expect(defiCoinTvls).to.have.length(2)
+      expect(defiProtocols).to.have.length(2)
+      expect(defiProtocolTvls).to.have.length(2)
 
       expect(globalMarkets).to.have.length(1)
       expect(globalMarkets[0].dataValues).to.deep.include({
@@ -133,32 +133,32 @@ describe('DefiCoinSyncer', () => {
         const date = DateTime.fromFormat(dateParams.dateTo, 'yyyy-MM-dd HH:00:00Z')
           .plus({ days: -30 })
 
-        await DefiCoin.bulkCreate([
+        await DefiProtocol.bulkCreate([
           { ...protocol1List, defillama_id: protocol1List.slug, tvl_rank: 1 },
           { ...protocol2List, defillama_id: protocol2List.slug, tvl_rank: 2 }
         ])
 
-        await DefiCoinTvl.bulkCreate([
-          { date: date.ts / 1000, tvl: 200.99, defi_coin_id: 1 },
-          { date: date.ts / 1000, tvl: 100.99, defi_coin_id: 2 }
+        await DefiProtocolTvl.bulkCreate([
+          { date: date.ts / 1000, tvl: 200.99, defi_protocol_id: 1 },
+          { date: date.ts / 1000, tvl: 100.99, defi_protocol_id: 2 }
         ])
       })
 
       it('syncs protocols & latest TVLs with 30d change', async () => {
-        expect(await DefiCoin.findAll()).to.have.length(2)
-        expect(await DefiCoinTvl.findAll()).to.have.length(2)
+        expect(await DefiProtocol.findAll()).to.have.length(2)
+        expect(await DefiProtocolTvl.findAll()).to.have.length(2)
 
         await syncer.syncDailyStats(syncer.syncParams('1h'))
 
-        const defiCoins = await DefiCoin.findAll()
-        const defiCoinTvls = await DefiCoinTvl.findAll()
+        const defiProtocols = await DefiProtocol.findAll()
+        const defiProtocolTvls = await DefiProtocolTvl.findAll()
 
-        expect(defiCoinTvls).to.have.length(4)
-        expect(defiCoins).to.have.length(2)
+        expect(defiProtocolTvls).to.have.length(4)
+        expect(defiProtocols).to.have.length(2)
 
-        expect(defiCoins[0].tvl_change.change_30d).to
+        expect(defiProtocols[0].tvl_change.change_30d).to
           .equal(percentageBetweenNumber(200.99, protocol1List.tvl))
-        expect(defiCoins[1].tvl_change.change_30d).to
+        expect(defiProtocols[1].tvl_change.change_30d).to
           .equal(percentageBetweenNumber(100.99, protocol2List.tvl))
       })
     })
@@ -181,19 +181,20 @@ describe('DefiCoinSyncer', () => {
 
       for (let i = 0; i < dates.length; i += 1) {
         const date = dates[i]
-        await DefiCoinTvl.create({ date, tvl: 100 })
+        await DefiProtocolTvl.create({ date, tvl: 100 })
       }
     })
 
     it('deletes expired points', async () => {
-      expect(await DefiCoinTvl.findAll()).to.have.length(5)
+      expect(await DefiProtocolTvl.findAll()).to.have.length(5)
+
       await syncer.syncWeeklyStats(syncParams)
 
-      const defiCoinTvls = await DefiCoinTvl.findAll()
+      const defiProtocolTvls = await DefiProtocolTvl.findAll()
 
-      expect(defiCoinTvls).to.have.length(2)
-      expect(defiCoinTvls[0].date).to.deep.equal(new Date(dates[0]))
-      expect(defiCoinTvls[1].date).to.deep.equal(new Date(dates[4]))
+      expect(defiProtocolTvls).to.have.length(2)
+      expect(defiProtocolTvls[0].date).to.deep.equal(new Date(dates[0]))
+      expect(defiProtocolTvls[1].date).to.deep.equal(new Date(dates[4]))
     })
   })
 
@@ -216,18 +217,20 @@ describe('DefiCoinSyncer', () => {
 
       for (let i = 0; i < dates.length; i += 1) {
         const date = dates[i]
-        await DefiCoinTvl.create({ date, tvl: 100 })
+        await DefiProtocolTvl.create({ date, tvl: 100 })
       }
     })
 
     it('deletes expired points', async () => {
-      expect(await DefiCoinTvl.findAll()).to.have.length(7)
+      expect(await DefiProtocolTvl.findAll()).to.have.length(7)
+
       await syncer.syncMonthlyStats(syncParams)
 
-      const defiCoinTvls = await DefiCoinTvl.findAll()
-      expect(defiCoinTvls).to.have.length(2)
-      expect(defiCoinTvls[0].date).to.deep.equal(new Date(dates[0]))
-      expect(defiCoinTvls[1].date).to.deep.equal(new Date(dates[6]))
+      const defiProtocolTvls = await DefiProtocolTvl.findAll()
+
+      expect(defiProtocolTvls).to.have.length(2)
+      expect(defiProtocolTvls[0].date).to.deep.equal(new Date(dates[0]))
+      expect(defiProtocolTvls[1].date).to.deep.equal(new Date(dates[6]))
     })
   })
 })

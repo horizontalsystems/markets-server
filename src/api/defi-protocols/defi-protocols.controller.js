@@ -1,10 +1,10 @@
-const CoinTvl = require('../../db/models/DefiCoinTvl')
-const DefiCoin = require('../../db/models/DefiCoin')
-const serializer = require('./defi-coins.serializer')
+const DefiProtocolTvl = require('../../db/models/DefiProtocolTvl')
+const DefiProtocol = require('../../db/models/DefiProtocol')
+const serializer = require('./defi-protocols.serializer')
 const { utcDate } = require('../../utils')
 
 exports.index = async (req, res) => {
-  const coins = await DefiCoin.getList()
+  const coins = await DefiProtocol.getList()
   res.send(serializer.serializeList(coins, req.currencyRate))
 }
 
@@ -28,7 +28,7 @@ exports.tvls = async ({ params, query, currencyRate }, res) => {
       break
   }
 
-  const tvls = await CoinTvl.getListByCoinUid(params.uid, dateFrom, window)
+  const tvls = await DefiProtocolTvl.getListByCoinUid(params.uid, dateFrom, window)
 
   if (tvls) {
     res.send(serializer.serializeTvls(tvls, currencyRate))

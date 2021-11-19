@@ -1,26 +1,26 @@
 const express = require('express')
-const controller = require('./defi-coins.controller')
-const { validateCoins, validateTvls } = require('./defi-coins.validator')
+const controller = require('./defi-protocols.controller')
+const { validateCoins, validateTvls } = require('./defi-protocols.validator')
 const { setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
 
 /**
- * @api {get} /v1/defi-coins List defi-coins
- * @apiDescription Get a list of defi-coins
+ * @api {get} /v1/defi-protocols List DeFi protocols
+ * @apiDescription Get a list of defi-protocols
  * @apiVersion 1.0.0
- * @apiGroup DefiCoins
+ * @apiGroup DefiProtocols
  *
  * @apiUse    Currencies
  *
- * @apiSuccess  {String}    coin.name               Coin's name
- * @apiSuccess  {String}    coin.logo               Coin's logo
- * @apiSuccess  {String}    [coin.uid]              Coin's uid
- * @apiSuccess  {String}    [coin.tvl]              Coin's tvl
- * @apiSuccess  {Number}    [coin.tvl_rank]         Coin's tvl rank
- * @apiSuccess  {String}    [coin.tvl_change_1d]    Coin's daily tvl change percentage
- * @apiSuccess  {String}    [coin.tvl_change_7d]    Coin's weekly tvl change percentage
- * @apiSuccess  {String}    [coin.tvl_change_30d]   Coin's monthly tvl change percentage
+ * @apiSuccess  {String}    protocol.name               Protocol's name
+ * @apiSuccess  {String}    protocol.logo               Protocol's logo
+ * @apiSuccess  {String}    [protocol.uid]              Protocol's uid
+ * @apiSuccess  {String}    [protocol.tvl]              Protocol's tvl
+ * @apiSuccess  {Number}    [protocol.tvl_rank]         Protocol's tvl rank
+ * @apiSuccess  {String}    [protocol.tvl_change_1d]    Protocol's daily tvl change percentage
+ * @apiSuccess  {String}    [protocol.tvl_change_7d]    Protocol's weekly tvl change percentage
+ * @apiSuccess  {String}    [protocol.tvl_change_30d]   Protocol's monthly tvl change percentage
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -39,10 +39,10 @@ const router = express.Router()
 router.get('/', validateCoins, setCurrencyRate, controller.index)
 
 /**
- * @api {get} /v1/defi-coins/:uid/tvls Get coin tvls
- * @apiDescription Get coin's tvl chart
+ * @api {get} /v1/defi-protocols/:uid/tvls Get coin tvls
+ * @apiDescription Get defi-protocol's tvl chart
  * @apiVersion 1.0.0
- * @apiGroup DefiCoins
+ * @apiGroup DefiProtocols
  *
  * @apiParam    {String}            uid         Coin's uid
  * @apiParam    {String=1d,7d,30d}  interval    Date interval

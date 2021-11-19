@@ -139,19 +139,19 @@ class Coin extends SequelizeModel {
       SELECT
         C.uid,
         C.security,
-        D.tvl,
-        D.tvl_rank,
+        P.tvl,
+        P.tvl_rank,
         C.market_data->'market_cap' as market_cap,
         sum(F.amount) * C.price as funds_invested,
         sum(T.amount) * C.price as treasuries,
         count(DISTINCT R.id) as reports
       FROM coins C
-      LEFT JOIN defi_coins D ON D.coin_id = C.id
+      LEFT JOIN defi_protocols P ON P.coin_id = C.id
       LEFT JOIN funds_invested F ON F.coin_id = C.id
       LEFT JOIN treasuries T ON T.coin_id = C.id
       LEFT JOIN reports R on R.coin_id = C.id
       WHERE C.uid = :uid
-      GROUP BY C.id, D.tvl, D.tvl_rank
+      GROUP BY C.id, P.tvl, P.tvl_rank
     `)
 
     const [coin] = await Coin.query(query, { uid })

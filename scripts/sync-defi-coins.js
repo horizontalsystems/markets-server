@@ -1,7 +1,7 @@
 const sequelize = require('../src/db/sequelize')
 const logger = require('../src/config/logger')
 
-const DefiCoinSyncer = require('../src/services/DefiCoinSyncer')
+const DefiCoinSyncer = require('../src/services/DefiProtocolSyncer')
 
 async function start() {
   await sequelize.sync()

@@ -1,6 +1,6 @@
 const SequelizeModel = require('./SequelizeModel')
 
-class DefiCoin extends SequelizeModel {
+class DefiProtocol extends SequelizeModel {
 
   static init(sequelize, DataTypes) {
     return super.init(
@@ -47,41 +47,37 @@ class DefiCoin extends SequelizeModel {
       },
       {
         timestamps: false,
-        tableName: 'defi_coins',
-        sequelize,
-        indexes: [{
-          unique: true,
-          fields: ['coingecko_id', 'defillama_id']
-        }]
+        tableName: 'defi_protocols',
+        sequelize
       }
     )
   }
 
   static associate(models) {
-    DefiCoin.belongsTo(models.Coin, {
+    DefiProtocol.belongsTo(models.Coin, {
       foreignKey: 'coin_id'
     })
   }
 
   static async exists() {
-    return !!await DefiCoin.findOne()
+    return !!await DefiProtocol.findOne()
   }
 
   static getList() {
-    return DefiCoin.query(`
+    return DefiProtocol.query(`
       SELECT
         C.uid,
         C.name as coin_name,
         D.*
-      FROM defi_coins D
+      FROM defi_protocols D
       LEFT JOIN coins C on C.id = D.coin_id
       ORDER BY D.tvl_rank
     `)
   }
 
   static getIds() {
-    return DefiCoin.query('SELECT id, coingecko_id, defillama_id FROM defi_coins')
+    return DefiProtocol.query('SELECT id, coingecko_id, defillama_id FROM defi_protocols')
   }
 }
 
-module.exports = DefiCoin
+module.exports = DefiProtocol

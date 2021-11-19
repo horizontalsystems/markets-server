@@ -2,8 +2,8 @@ const Sequelize = require('sequelize')
 const configJson = require('./config.json')
 const Coin = require('./models/Coin')
 const CoinCategories = require('./models/CoinCategories')
-const CoinTvl = require('./models/DefiCoinTvl')
-const DefiCoin = require('./models/DefiCoin')
+const CoinTvl = require('./models/DefiProtocolTvl')
+const DefiProtocol = require('./models/DefiProtocol')
 const Language = require('./models/Language')
 const Category = require('./models/Category')
 const Platform = require('./models/Platform')
@@ -32,7 +32,7 @@ const sequelize = new Sequelize(
 // Models
 const db = {
   Coin: Coin.init(sequelize, Sequelize),
-  DefiCoin: DefiCoin.init(sequelize, Sequelize),
+  DefiProtocol: DefiProtocol.init(sequelize, Sequelize),
   Category: Category.init(sequelize, Sequelize),
   CoinCategories: CoinCategories.init(sequelize, Sequelize),
   CoinTvl: CoinTvl.init(sequelize, Sequelize),
@@ -60,6 +60,6 @@ Object.values(db)
 
 // Sequelize
 db.sequelize = sequelize
-db.sync = () => sequelize.sync({ force: false })
+db.sync = (force = false) => sequelize.sync({ force })
 
 module.exports = db

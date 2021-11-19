@@ -1,13 +1,13 @@
 const defillama = require('../providers/defillama')
 const logger = require('../config/logger')
 const Syncer = require('./Syncer')
-const DefiCoin = require('../db/models/DefiCoin')
-const DefiCoinTvl = require('../db/models/DefiCoinTvl')
-const Coin = require('../db/models/Coin')
+const DefiProtocol = require('../db/models/DefiProtocol')
+const DefiProtocolTvl = require('../db/models/DefiProtocolTvl')
 const GlobalMarket = require('../db/models/GlobalMarket')
+const Coin = require('../db/models/Coin')
 const { percentageBetweenNumber } = require('../utils')
 
-class DefiCoinSyncer extends Syncer {
+class DefiProtocolSyncer extends Syncer {
 
   async start() {
     await this.syncHistorical()
@@ -15,11 +15,11 @@ class DefiCoinSyncer extends Syncer {
   }
 
   async syncHistorical() {
-    if (await DefiCoinTvl.exists()) {
+    if (await DefiProtocolTvl.exists()) {
       return
     }
 
-    if (!await DefiCoin.exists()) {
+    if (!await DefiProtocol.exists()) {
       try {
         await this.syncProtocols(await this.fetchProtocols())
       } catch (e) {
@@ -27,21 +27,21 @@ class DefiCoinSyncer extends Syncer {
       }
     }
 
-    const coins = await DefiCoin.getIds()
+    const defiProtocols = await DefiProtocol.getIds()
 
-    for (let i = 0; i < coins.length; i += 1) {
+    for (let i = 0; i < defiProtocols.length; i += 1) {
       try {
-        await this.syncProtocolTvls(coins[i])
+        await this.syncProtocolTvls(defiProtocols[i])
       } catch (e) {
         console.error(e)
       }
     }
   }
 
-  async syncProtocolTvls(defiCoin) {
-    logger.info(`Syncing ${defiCoin.defillama_id}; coingecko: ${defiCoin.coingecko_id}`)
+  async syncProtocolTvls(defiProtocol) {
+    logger.info(`Syncing ${defiProtocol.defillama_id}; coingecko: ${defiProtocol.coingecko_id}`)
 
-    const protocol = await defillama.getProtocol(defiCoin.defillama_id)
+    const protocol = await defillama.getProtocol(defiProtocol.defillama_id)
     const tvls = {}
 
     for (let i = 0; i < protocol.tvl.length; i += 1) {
@@ -50,7 +50,7 @@ class DefiCoinSyncer extends Syncer {
 
       tvls[date] = {
         date,
-        defi_coin_id: defiCoin.id,
+        defi_protocol_id: defiProtocol.id,
         tvl: item.totalLiquidityUSD,
         chain_tvls: {}
       }
@@ -67,10 +67,10 @@ class DefiCoinSyncer extends Syncer {
       }
     })
 
-    DefiCoinTvl.bulkCreate(Object.entries(tvls).map(([, data]) => data), {
+    DefiProtocolTvl.bulkCreate(Object.entries(tvls).map(([, data]) => data), {
       ignoreDuplicates: true
     }).then(items => {
-      console.log(`Inserted ${items.length} tvl record for ${defiCoin.defillama_id}`)
+      console.log(`Inserted ${items.length} tvl record for ${defiProtocol.defillama_id}`)
     }).catch(e => {
       console.error(e)
     })
@@ -94,11 +94,11 @@ class DefiCoinSyncer extends Syncer {
   }
 
   async syncWeeklyStats({ dateFrom, dateTo }) {
-    await DefiCoinTvl.deleteExpired(dateFrom, dateTo)
+    await DefiProtocolTvl.deleteExpired(dateFrom, dateTo)
   }
 
   async syncMonthlyStats({ dateFrom, dateTo }) {
-    await DefiCoinTvl.deleteExpired(dateFrom, dateTo)
+    await DefiProtocolTvl.deleteExpired(dateFrom, dateTo)
   }
 
   async syncLatestTvls(protocols, dateTo) {
@@ -110,10 +110,10 @@ class DefiCoinSyncer extends Syncer {
       chain_tvls: {}
     }
 
-    const defiCoins = await DefiCoin.getIds()
+    const defiProtocols = await DefiProtocol.getIds()
 
-    for (let i = 0; i < defiCoins.length; i += 1) {
-      const coin = defiCoins[i]
+    for (let i = 0; i < defiProtocols.length; i += 1) {
+      const coin = defiProtocols[i]
       ids[coin.defillama_id] = coin.id
     }
 
@@ -135,7 +135,7 @@ class DefiCoinSyncer extends Syncer {
       logger.info(`Syncing tvl for slug: ${protocol.slug}; gecko_id: ${protocol.gecko_id}`)
 
       tvls.push({
-        defi_coin_id: defiCoinId,
+        defi_protocol_id: defiCoinId,
         date: dateTo,
         tvl: protocol.tvl,
         chain_tvls: protocol.chainTvls
@@ -143,7 +143,7 @@ class DefiCoinSyncer extends Syncer {
     }
 
     await GlobalMarket.upsert(global)
-    await DefiCoinTvl.bulkCreate(tvls, { ignoreDuplicates: true })
+    await DefiProtocolTvl.bulkCreate(tvls, { ignoreDuplicates: true })
   }
 
   async syncProtocols(protocols, monthlyTvlMap = {}) {
@@ -179,8 +179,8 @@ class DefiCoinSyncer extends Syncer {
         chains: protocol.chains
       }
 
-      logger.info(`Upserting DefiCoin; Defillama: ${protocol.slug}; Coingecko: ${protocol.gecko_id}`)
-      await DefiCoin.upsert(values)
+      logger.info(`Upserting DefiProtocol; Defillama: ${protocol.slug}; Coingecko: ${protocol.gecko_id}`)
+      await DefiProtocol.upsert(values)
     }
   }
 
@@ -197,7 +197,7 @@ class DefiCoinSyncer extends Syncer {
   }
 
   async getMonthlyTvlMap(dateTo) {
-    const tvls = await DefiCoinTvl.getLastMonthTvls(dateTo)
+    const tvls = await DefiProtocolTvl.getLastMonthTvls(dateTo)
 
     return tvls.reduce((memo, item) => ({
       ...memo,
@@ -206,4 +206,4 @@ class DefiCoinSyncer extends Syncer {
   }
 }
 
-module.exports = DefiCoinSyncer
+module.exports = DefiProtocolSyncer

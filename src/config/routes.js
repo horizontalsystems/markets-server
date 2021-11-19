@@ -5,7 +5,7 @@ const router = express.Router()
 router.use('/docs', express.static('docs'))
 
 router.use('/coins', require('../api/coins'))
-router.use('/defi-coins', require('../api/defi-coins'))
+router.use('/defi-protocols', require('../api/defi-protocols'))
 router.use('/addresses', require('../api/addresses'))
 router.use('/funds', require('../api/funds'))
 router.use('/transactions', require('../api/transactions'))
