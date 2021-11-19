@@ -48,7 +48,7 @@ async function createPlatform(coin, platforms, bep2tokens) {
       return upsert('ethereum', 18)
     case 'binancecoin':
       await upsert('binance-smart-chain', 18)
-      await upsert('bep2', 18, null, 'bnb')
+      await upsert('bep2', 18, null, 'BNB')
       return
     default:
       break
