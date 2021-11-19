@@ -15,8 +15,8 @@ describe('CoinSyncer', () => {
     clock = sinon.useFakeTimers()
     syncer = new Syncer()
 
-    this.cronStartSpy = sinon.spy(syncer.cron, 'start')
-    this.cronStopSpy = sinon.spy(syncer.cron, 'stop')
+    sinon.spy(syncer.cron, 'start')
+    sinon.spy(syncer.cron, 'stop')
   })
 
   afterEach(() => {
@@ -32,17 +32,17 @@ describe('CoinSyncer', () => {
 
   describe('#start', () => {
     it('starts cron job', () => {
-      sinon.assert.notCalled(this.cronStartSpy)
+      sinon.assert.notCalled(syncer.cron.start)
       syncer.start()
-      sinon.assert.calledOnce(this.cronStartSpy)
+      sinon.assert.calledOnce(syncer.cron.start)
     })
   })
 
   describe('#pause', () => {
     it('stops cron job', () => {
-      sinon.assert.notCalled(this.cronStopSpy)
+      sinon.assert.notCalled(syncer.cron.stop)
       syncer.pause()
-      sinon.assert.calledOnce(this.cronStopSpy)
+      sinon.assert.calledOnce(syncer.cron.stop)
     })
   })
 
@@ -54,16 +54,16 @@ describe('CoinSyncer', () => {
 
     it('pauses & starts cron ', async () => {
       const syncCoinsStub = sinon.stub(syncer, 'syncCoins')
-      sinon.assert.notCalled(this.cronStartSpy)
+      sinon.assert.notCalled(syncer.cron.start)
       sinon.assert.notCalled(syncCoinsStub)
-      sinon.assert.notCalled(this.cronStopSpy)
+      sinon.assert.notCalled(syncer.cron.stop)
 
       await syncer.syncSchedule()
 
       sinon.assert.callOrder(
-        this.cronStopSpy,
+        syncer.cron.stop,
         syncCoinsStub,
-        this.cronStartSpy
+        syncer.cron.start
       )
     })
   })

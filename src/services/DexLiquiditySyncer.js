@@ -60,6 +60,7 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncStatsHistorical(dateParams) {
+    console.log('syncStatsHistorical')
     const platforms = this.mapPlatforms(await Platform.findErc20())
 
     await this.fetchStats(dateParams, '1d', 'uniswap_v2', 'uniswap_v2', platforms)

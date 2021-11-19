@@ -7,6 +7,9 @@ const DexVolumeSyncer = require('./DexVolumeSyncer')
 describe('DexVolumeSyncer', async () => {
   const date = DateTime.fromISO('2021-01-01T08:10:00Z')
 
+  /**
+   * @type DexVolumeSyncer
+   */
   let syncer
 
   beforeEach(() => {
