@@ -1,3 +1,5 @@
+require('dotenv/config')
+
 const sequelize = require('../src/db/sequelize')
 const logger = require('../src/config/logger')
 

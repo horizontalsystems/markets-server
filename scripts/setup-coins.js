@@ -1,3 +1,5 @@
+require('dotenv/config')
+
 const TurndownService = require('turndown')
 const { sleep } = require('../src/utils')
 const coingecko = require('../src/providers/coingecko')
