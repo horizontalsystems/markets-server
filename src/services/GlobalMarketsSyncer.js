@@ -49,7 +49,11 @@ class GlobalMarketsSyncer extends Syncer {
         defi_market_cap: defiGlobalMarkets.defi_market_cap
       }
 
-      await this.upsertMarkets([record], Object.keys(record))
+      await GlobalMarket.upsert(record)
+        .then(([data]) => {
+          console.log(JSON.stringify(data.dataValues))
+        })
+        .catch(console.error)
     } catch (e) {
       console.error(`Error fetching global markets: ${e.message}`)
     }
@@ -84,7 +88,11 @@ class GlobalMarketsSyncer extends Syncer {
         this.mapMarketData(chainLiquidity, dataMap, chain, false, true)
       }
 
-      await this.upsertMarkets(Object.values(dataMap))
+      await GlobalMarket.bulkCreate(Object.values(dataMap))
+        .then(records => {
+          console.log(`Inserted ${records.length} global markets data`)
+        })
+        .catch(console.error)
     } catch (e) {
       console.error(e)
     }
@@ -99,16 +107,6 @@ class GlobalMarketsSyncer extends Syncer {
     }
 
     return [...new Set(protocols.flatMap(item => item.chains))]
-  }
-
-  upsertMarkets(markets, updateOnDuplicate) {
-    return GlobalMarket.bulkCreate(markets, { updateOnDuplicate })
-      .then(records => {
-        console.log(`Inserted ${records.length} global markets data`)
-      })
-      .catch(err => {
-        console.error('Error inserting global markets', err.message)
-      })
   }
 
   mapMarketData(items = [], map, field, isInitial, isTvl) {

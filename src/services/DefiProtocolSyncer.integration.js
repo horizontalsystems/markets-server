@@ -1,7 +1,8 @@
 const nock = require('nock')
 const sinon = require('sinon')
-const { DateTime } = require('luxon')
+const { random } = require('lodash')
 const { expect } = require('chai')
+const { DateTime } = require('luxon')
 
 const { percentageBetweenNumber, utcDate } = require('../utils')
 const DefiProtocolSyncer = require('./DefiProtocolSyncer')
@@ -124,6 +125,50 @@ describe('DefiProtocolSyncer', () => {
           Ethereum: protocol1List.chainTvls.Ethereum + protocol2List.chainTvls.Ethereum,
           Avalanche: protocol1List.chainTvls.Avalanche
         }
+      })
+    })
+
+    context('when GlobalMarkets exists for specific date', () => {
+      let syncParams
+
+      const globalMarket = {
+        market_cap: random(100.1, 200.1),
+        defi_market_cap: random(100.1, 200.1),
+        volume: random(100.1, 200.1),
+        btc_dominance: random(100.1, 200.1),
+      }
+
+      beforeEach(async () => {
+        syncParams = syncer.syncParams('1h')
+        await GlobalMarket.create({ ...globalMarket, date: syncParams.dateTo })
+      })
+
+      it('syncs protocols and updates GlobalMarket', async () => {
+        expect(await DefiProtocol.findAll()).to.have.length(0)
+        expect(await DefiProtocolTvl.findAll()).to.have.length(0)
+        expect(await GlobalMarket.findAll()).to.have.length(1)
+
+        await syncer.syncDailyStats(syncParams)
+
+        const defiProtocols = await DefiProtocol.findAll()
+        const globalMarkets = await GlobalMarket.findAll()
+        const defiProtocolTvls = await DefiProtocolTvl.findAll()
+
+        expect(defiProtocols).to.have.length(2)
+        expect(defiProtocolTvls).to.have.length(2)
+
+        expect(globalMarkets).to.have.length(1)
+        expect(globalMarkets[0].dataValues).to.deep.include({
+          market_cap: globalMarket.market_cap.toString(),
+          defi_market_cap: globalMarket.defi_market_cap.toString(),
+          volume: globalMarket.volume.toString(),
+          btc_dominance: globalMarket.btc_dominance.toString(),
+          tvl: String(protocol1List.tvl + protocol2List.tvl),
+          chain_tvls: {
+            Ethereum: protocol1List.chainTvls.Ethereum + protocol2List.chainTvls.Ethereum,
+            Avalanche: protocol1List.chainTvls.Avalanche
+          }
+        })
       })
     })
 
