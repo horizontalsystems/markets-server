@@ -33,9 +33,8 @@ router.get('/', validateGlobalMarkets, setCurrencyRate, controller.index)
  * @apiVersion 1.0.0
  * @apiGroup GlobalMarket
  *
- * @apiParam    {String=Ethereum,Binance,Solana,Avalanche,Terra,Fantom,Arbitrum,Polygon
- *                                } chain       Chain name
- * @apiParam    {String=1d,7d,30d}  interval    Date interval
+ * @apiParam    {String=Ethereum,Binance,Avalanche,...}   chain       Chain name
+ * @apiParam    {String=1d,7d,30d}                        interval    Date interval
  * @apiUse      Currencies
  *
  * @apiSuccessExample {json} Success-Response:

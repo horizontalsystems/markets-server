@@ -16,16 +16,7 @@ module.exports = {
   // GET /v1/global-markets/tvls
   validateGlobalTvls: validate({
     query: Joi.object({
-      chain: Joi.string().valid(
-        'Ethereum',
-        'Binance',
-        'Solana',
-        'Avalanche',
-        'Terra',
-        'Fantom',
-        'Arbitrum',
-        'Polygon'
-      ),
+      chain: Joi.string(),
       interval: Joi.string().valid('1d', '7d', '30d'),
       currency: Joi.string()
     })
