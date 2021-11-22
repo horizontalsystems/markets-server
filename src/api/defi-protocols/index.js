@@ -1,7 +1,7 @@
 const express = require('express')
 const controller = require('./defi-protocols.controller')
 const { validateCoins, validateTvls } = require('./defi-protocols.validator')
-const { setCurrencyRate } = require('../middlewares')
+const { setCurrencyRate, setDateInterval } = require('../middlewares')
 
 const router = express.Router()
 
@@ -58,6 +58,6 @@ router.get('/', validateCoins, setCurrencyRate, controller.index)
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/:uid/tvls', validateTvls, setCurrencyRate, controller.tvls)
+router.get('/:uid/tvls', validateTvls, setCurrencyRate, setDateInterval, controller.tvls)
 
 module.exports = router

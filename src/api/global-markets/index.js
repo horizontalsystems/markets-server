@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./global-markets.controller')
-const { setCurrencyRate } = require('../middlewares')
+const { setCurrencyRate, setDateInterval } = require('../middlewares')
 const { validateGlobalMarkets, validateGlobalTvls } = require('./global-markets.validator')
 
 const router = express.Router()
@@ -25,7 +25,7 @@ const router = express.Router()
  *    "tvl": "272469732222.98926"
  *  }]
  */
-router.get('/', validateGlobalMarkets, setCurrencyRate, controller.index)
+router.get('/', validateGlobalMarkets, setCurrencyRate, setDateInterval, controller.index)
 
 /**
  * @api {get} /v1/global-markets/tvls List chain tvls
@@ -45,6 +45,6 @@ router.get('/', validateGlobalMarkets, setCurrencyRate, controller.index)
  *  }]
  */
 
-router.get('/tvls', validateGlobalTvls, setCurrencyRate, controller.tvls)
+router.get('/tvls', validateGlobalTvls, setCurrencyRate, setDateInterval, controller.tvls)
 
 module.exports = router

@@ -1,6 +1,7 @@
 const express = require('express')
 const controller = require('./transactions.controller')
 const { validateTransactions } = require('./transactions.validator')
+const { setDateInterval } = require('../middlewares')
 
 const router = express.Router()
 
@@ -27,6 +28,6 @@ const router = express.Router()
  *
  */
 
-router.get('/', validateTransactions, controller.index)
+router.get('/', validateTransactions, setDateInterval, controller.index)
 
 module.exports = router
