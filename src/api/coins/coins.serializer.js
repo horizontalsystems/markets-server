@@ -14,6 +14,7 @@ function mapCoinAttribute(coin, field, currencyRate) {
   const marketData = coin.market_data || {}
 
   switch (field) {
+    case 'uid':
     case 'name':
     case 'code':
     case 'coingecko_id':
@@ -49,19 +50,24 @@ function mapCoinAttribute(coin, field, currencyRate) {
       return mapPlatforms(coin.Platforms)
 
     default:
-      return null
+      return undefined
   }
 }
 
 exports.serializeList = (coins, fields, currencyRate) => {
+  if (!fields.length) {
+    return []
+  }
+
   return coins.map(item => {
     const coin = {
       uid: item.uid
     }
 
-    fields.forEach(attribute => {
+    for (let i = 0; i < fields.length; i += 1) {
+      const attribute = fields[i]
       coin[attribute] = mapCoinAttribute(item, attribute, currencyRate)
-    })
+    }
 
     return coin
   })
