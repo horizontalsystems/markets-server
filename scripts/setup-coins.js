@@ -12,19 +12,17 @@ const web3Provider = require('../src/providers/web3')
 
 const turndownService = new TurndownService()
 
-async function fetchCoins(page = 1, limit = 4000) {
+async function fetchCoins(page = 1) {
   const coinsPerPage = 250
   const coins = await coingecko.getMarkets(null, page, coinsPerPage)
 
-  console.log(`Fetched coins ${coins.length}; Page: ${page}; Limit: ${limit}`)
+  console.log(`Fetched coins ${coins.length}; Page ${page}`)
 
-  if (coins.length < coinsPerPage || coins.length >= limit) {
+  if (coins.length < coinsPerPage) {
     return coins
   }
 
-  return coins.concat(
-    await fetchCoins(page + 1, limit - coinsPerPage)
-  )
+  return coins.concat(await fetchCoins(page + 1))
 }
 
 async function createPlatform(coin, platforms, bep2tokens) {
