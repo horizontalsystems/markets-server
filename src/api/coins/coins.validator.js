@@ -12,8 +12,11 @@ module.exports = {
       fields: Joi.string(),
       limit: Joi.number()
         .min(1)
-        .max(4000),
-      defi: Joi.boolean().sensitive(true),
+        .max(1000),
+      page: Joi.number()
+        .min(1),
+      defi: Joi.boolean()
+        .sensitive(true),
       currency: Joi.string()
     })
   }, options),
@@ -25,5 +28,4 @@ module.exports = {
       currency: Joi.string()
     })
   }, options),
-
 }

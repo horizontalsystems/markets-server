@@ -3,6 +3,7 @@ const Platform = require('../../db/models/Platform')
 const serializer = require('./coins.serializer')
 
 exports.index = async ({ query, currencyRate }, res) => {
+  const { limit = 1000, page = 1 } = query
   const options = {
     where: {},
     order: [Coin.literal('market_data->\'market_cap\' DESC')]
@@ -10,13 +11,14 @@ exports.index = async ({ query, currencyRate }, res) => {
 
   let fields = []
   if (query.fields) {
-    fields = query.fields.split(',')
+    fields = query.fields.split(',').slice(0, limit)
   }
   if (fields.includes('platforms')) {
     options.include = Platform
   }
-  if (query.limit) {
-    options.limit = query.limit
+  if (limit) {
+    options.limit = limit
+    options.offset = limit * (page - 1)
   }
   if (query.uids) {
     options.where.uid = query.uids.split(',')
