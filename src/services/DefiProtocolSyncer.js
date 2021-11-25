@@ -3,7 +3,6 @@ const logger = require('../config/logger')
 const Syncer = require('./Syncer')
 const DefiProtocol = require('../db/models/DefiProtocol')
 const DefiProtocolTvl = require('../db/models/DefiProtocolTvl')
-const GlobalMarket = require('../db/models/GlobalMarket')
 const Coin = require('../db/models/Coin')
 const { percentageBetweenNumber } = require('../utils')
 
@@ -104,12 +103,6 @@ class DefiProtocolSyncer extends Syncer {
   async syncLatestTvls(protocols, dateTo) {
     const ids = {}
     const tvls = []
-    const global = {
-      date: dateTo,
-      tvl: 0,
-      chain_tvls: {}
-    }
-
     const defiProtocols = await DefiProtocol.getIds()
 
     for (let i = 0; i < defiProtocols.length; i += 1) {
@@ -120,13 +113,6 @@ class DefiProtocolSyncer extends Syncer {
     for (let i = 0; i < protocols.length; i += 1) {
       const protocol = protocols[i]
       const defiCoinId = ids[protocol.slug]
-
-      global.tvl += protocol.tvl
-      Object.keys(protocol.chainTvls).forEach(chain => {
-        const tvl = protocol.chainTvls[chain]
-        const chainTvl = global.chain_tvls[chain] || 0
-        global.chain_tvls[chain] = chainTvl + tvl
-      })
 
       if (!defiCoinId) {
         continue
@@ -142,7 +128,6 @@ class DefiProtocolSyncer extends Syncer {
       })
     }
 
-    await GlobalMarket.upsert(global)
     await DefiProtocolTvl.bulkCreate(tvls, { ignoreDuplicates: true })
   }
 

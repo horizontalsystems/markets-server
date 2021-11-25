@@ -40,13 +40,26 @@ class GlobalMarketsSyncer extends Syncer {
     try {
       const globalMarkets = await coingecko.getGlobalMarkets()
       const defiGlobalMarkets = await coingecko.getGlobalDefiMarkets()
+      const protocols = await defillama.getProtocols()
 
       const record = {
         date,
+        tvl: 0,
+        chain_tvls: {},
         market_cap: globalMarkets.total_market_cap.usd,
         volume: globalMarkets.total_volume.usd,
         btc_dominance: globalMarkets.market_cap_percentage.btc,
         defi_market_cap: defiGlobalMarkets.defi_market_cap
+      }
+
+      for (let i = 0; i < protocols.length; i += 1) {
+        const protocol = protocols[i]
+        record.tvl += protocol.tvl
+        Object.keys(protocol.chainTvls).forEach(chain => {
+          const tvl = protocol.chainTvls[chain]
+          const chainTvl = record.chain_tvls[chain] || 0
+          record.chain_tvls[chain] = chainTvl + tvl
+        })
       }
 
       await GlobalMarket.upsert(record)

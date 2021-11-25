@@ -83,52 +83,35 @@ describe('GlobalMarketsSyncer', () => {
     const defiMarketData = {
       defi_market_cap: 146296308.5566
     }
+    const protocols = {
+      protocol1: factory.defillamaProtocol('curve', { Ethereum: 70.0, Avalanche: 30.0 }),
+      protocol2: factory.defillamaProtocol('maker', { Ethereum: 70.0 })
+    }
 
     beforeEach(() => {
       syncParams = syncer.syncParams('1h')
 
-      nock(coingeckoAPI).get('/global').reply(200, { data: globalMarketData })
+      nock(coingeckoAPI).get('/global')
+        .reply(200, { data: globalMarketData })
       nock(coingeckoAPI).get('/global/decentralized_finance_defi')
         .reply(200, { data: defiMarketData })
+      nock(defillama).get('/protocols')
+        .reply(200, [protocols.protocol1, protocols.protocol2])
     })
 
     it('syncs latest market data', async () => {
       expect(await GlobalMarket.findAll()).to.have.length(0)
       await syncer.syncDailyStats(syncParams)
-      expect(await GlobalMarket.findAll()).to.have.length(1)
-    })
-
-    describe('when there is a record with the same date', () => {
-      const savedMarketData = {
-        tvl: 1000.1,
-        chain_tvls: {
-          Ethereum: 1000.0
-        }
-      }
-
-      beforeEach(async () => {
-        await GlobalMarket.create({
-          date: syncParams.dateTo,
-          ...savedMarketData
-        })
-      })
-
-      it('updates record', async () => {
-        expect(await GlobalMarket.findAll()).to.have.length(1)
-        await syncer.syncDailyStats(syncParams)
-
-        const globalMarkets = await GlobalMarket.findAll()
-
-        expect(globalMarkets).to.have.length(1)
-        expect(globalMarkets[0].dataValues).to.deep.include({
-          date: new Date(syncParams.dateTo),
-          market_cap: String(globalMarketData.total_market_cap.usd),
-          defi_market_cap: String(defiMarketData.defi_market_cap),
-          volume: String(globalMarketData.total_volume.usd),
-          btc_dominance: String(globalMarketData.market_cap_percentage.btc),
-          tvl: String(savedMarketData.tvl),
-          chain_tvls: savedMarketData.chain_tvls
-        })
+      const globalMarkets = await GlobalMarket.findAll()
+      expect(globalMarkets).to.have.length(1)
+      expect(globalMarkets[0].dataValues).to.deep.include({
+        date: new Date(syncParams.dateTo),
+        market_cap: String(globalMarketData.total_market_cap.usd),
+        defi_market_cap: String(defiMarketData.defi_market_cap),
+        volume: String(globalMarketData.total_volume.usd),
+        btc_dominance: String(globalMarketData.market_cap_percentage.btc),
+        tvl: '170',
+        chain_tvls: { Ethereum: 140, Avalanche: 30 }
       })
     })
   })
