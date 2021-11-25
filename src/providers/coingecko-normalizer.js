@@ -18,7 +18,6 @@ exports.normalizeMarkets = markets => {
       '1y': coin.price_change_percentage_1y_in_currency,
       high_24h: coin.high_24h,
       low_24h: coin.low_24h,
-
       ath: coin.ath,
       ath_change_percentage: coin.ath_change_percentage,
       ath_date: coin.ath_date,
@@ -66,7 +65,9 @@ exports.normalizeCoin = coin => {
     price_change: {
       '24h': market.price_change_percentage_24h,
       '7d': market.price_change_percentage_7d,
+      '14d': market.price_change_percentage_14d,
       '30d': market.price_change_percentage_30d,
+      '200d': market.price_change_percentage_200d,
       '1y': market.price_change_percentage_1y,
       high_24h: market.high_24h.usd,
       low_24h: market.low_24h.usd,

@@ -115,6 +115,12 @@ exports.getMarkets = function getMarkets(coinIds, page, perPage) {
     .then(resp => normalizeMarkets(resp.data))
 }
 
+exports.getCoinList = function getCoinList() {
+  return axios
+    .get('/coins/list')
+    .then(resp => resp.data)
+}
+
 exports.getCoinInfo = function getMarketInfo(id) {
   const query = querystring.stringify({
     tickers: false,

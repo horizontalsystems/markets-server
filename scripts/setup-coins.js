@@ -9,23 +9,27 @@ const Platform = require('../src/db/models/Platform')
 const Language = require('../src/db/models/Language')
 const binanceDex = require('../src/providers/binance-dex')
 const web3Provider = require('../src/providers/web3')
+const coinsJoin = require('../src/db/seeders/coins.json')
 
+const coinsCache = coinsJoin.reduce((result, coin) => ({ ...result, [coin.uid]: coin }), {})
 const turndownService = new TurndownService()
 
-async function fetchCoins(page = 1) {
-  const coinsPerPage = 250
-  const coins = await coingecko.getMarkets(null, page, coinsPerPage)
+async function syncCoins(coinIds) {
+  console.log(`Fetching coins ${coinIds.length}`)
+  const coinIdsPerPage = coinIds.splice(0, 420)
 
-  console.log(`Fetched coins ${coins.length}; Page ${page}`)
+  const coins = await coingecko.getMarkets(coinIdsPerPage)
+  const allRecords = await Coin.bulkCreate(coins, { ignoreDuplicates: true })
+  const newRecords = allRecords.filter(record => record.id)
 
-  if (coins.length < coinsPerPage) {
-    return coins
+  if (coins.length >= (coinIdsPerPage.length + coinIds.length) || coinIds.length < 1) {
+    return newRecords
   }
 
-  return coins.concat(await fetchCoins(page + 1))
+  return newRecords.concat(await syncCoins(coinIds))
 }
 
-async function createPlatform(coin, platforms, bep2tokens) {
+async function syncPlatforms(coin, platforms, bep2tokens) {
   const upsert = async (type, decimals, address, symbol) => {
     try {
       const [record] = await Platform.upsert({ type, symbol, address, decimals, coin_id: coin.id })
@@ -105,19 +109,27 @@ function descriptionsMap(descriptions, languages) {
   }, {})
 }
 
-async function creatCoin(id, languages, bep2tokens) {
+async function syncCoinInfo(coin, languages, bep2tokens) {
   try {
-    console.log('fetching info for', id)
-    const data = await coingecko.getCoinInfo(id)
-    data.description = descriptionsMap(data.description, languages)
+    console.log('Fetching info for', coin.uid)
 
-    const [coin] = await Coin.upsert(data)
-    await createPlatform(coin, data.platforms, bep2tokens)
+    const coinInfo = await coingecko.getCoinInfo(coin.uid)
+    const cached = coinsCache[coin.uid] || {}
+    const values = {
+      links: coinInfo.links,
+      is_defi: coinInfo.is_defi,
+      description: cached.description || descriptionsMap(coinInfo.description, languages),
+      genesis_date: cached.genesis_date || coin.genesis_date,
+      security: cached.security || coin.security
+    }
+
+    await coin.update(values)
+    await syncPlatforms(coin, coinInfo.platforms, bep2tokens)
   } catch ({ message, response }) {
     console.error(message)
     if (response && response.status === 429) {
       await sleep(60 * 1000)
-      await creatCoin(id, languages, bep2tokens)
+      await syncCoinInfo(coin, languages, bep2tokens)
     }
   }
 }
@@ -127,13 +139,14 @@ async function start() {
 
   const languages = await Language.findAll()
   const bep2tokens = await binanceDex.getBep2Tokens()
-  const coins = await fetchCoins()
+  const coinIds = (await coingecko.getCoinList()).map(coin => coin.id)
+  const coins = await syncCoins(coinIds)
+
   console.log(`Fetched new coins ${coins.length}`)
 
   for (let i = 0; i < coins.length; i += 1) {
     try {
-      const coin = coins[i]
-      await creatCoin(coin.coingecko_id, languages, bep2tokens)
+      await syncCoinInfo(coins[i], languages, bep2tokens)
       await sleep(1100)
     } catch (e) {
       console.error(e)
