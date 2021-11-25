@@ -68,7 +68,7 @@ const adminJs = new AdminJS({
       }
     },
     {
-      resource: sequelize.Treasury,
+      resource: sequelize.TreasuryEntity,
       options: {
         properties: {
           country: {
@@ -81,6 +81,7 @@ const adminJs = new AdminJS({
         }
       }
     },
+    sequelize.Treasury,
     sequelize.Fund,
     {
       resource: sequelize.FundsInvested,

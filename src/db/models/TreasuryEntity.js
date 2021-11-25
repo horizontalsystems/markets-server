@@ -1,6 +1,6 @@
-const { Model } = require('sequelize')
+const SequelizeModel = require('./SequelizeModel')
 
-class Fund extends Model {
+class TreasuryEntity extends SequelizeModel {
 
   static init(sequelize, DataTypes) {
     return super.init(
@@ -10,16 +10,13 @@ class Fund extends Model {
           allowNull: false,
           unique: true
         },
-        name: {
-          type: DataTypes.STRING,
-          allowNull: false
-        },
-        is_individual: DataTypes.BOOLEAN,
-        website: DataTypes.TEXT,
+        name: DataTypes.STRING,
+        type: DataTypes.ENUM('public', 'private', 'etf'),
+        country: DataTypes.STRING
       },
       {
         timestamps: false,
-        tableName: 'funds',
+        tableName: 'treasury_entities',
         sequelize
       }
     )
@@ -30,4 +27,4 @@ class Fund extends Model {
 
 }
 
-module.exports = Fund
+module.exports = TreasuryEntity
