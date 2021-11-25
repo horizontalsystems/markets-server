@@ -90,14 +90,14 @@ describe('CoinSyncer', () => {
     it('fetches coins by chunk cyclically', async () => {
       const coinsIds = []
 
-      for (let i = 0; i < 1000; i += 1) {
+      for (let i = 0; i < 800; i += 1) {
         coinsIds.push(`coin-${i}`)
       }
 
       const fetchCoinsStub = sinon.stub(syncer, 'fetchCoins').returns(coins)
 
-      const chunks1 = coinsIds.slice(0, 500)
-      const chunks2 = coinsIds.slice(500, 1000)
+      const chunks1 = coinsIds.slice(0, 400)
+      const chunks2 = coinsIds.slice(400, 800)
 
       await syncer.syncCoins(coinsIds)
 

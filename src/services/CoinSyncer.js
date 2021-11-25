@@ -33,7 +33,7 @@ class CoinSyncer {
 
   async syncCoins(coinIds) {
     logger.info(`Syncing coins ${coinIds.length}`)
-    const coinIdsPerPage = coinIds.splice(0, 500)
+    const coinIdsPerPage = coinIds.splice(0, 400)
 
     const coins = await this.fetchCoins(coinIdsPerPage)
     await this.updateCoins(coins)
