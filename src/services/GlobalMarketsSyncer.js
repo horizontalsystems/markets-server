@@ -67,7 +67,11 @@ class GlobalMarketsSyncer extends Syncer {
         })
       }
 
-      await GlobalMarket.upsert(record).catch(console.error)
+      await GlobalMarket.upsert(record)
+        .then(([data]) => {
+          console.log(JSON.stringify(data))
+        })
+        .catch(console.error)
     } catch (e) {
       if (e.response) {
         console.log(`Retrying due to error ${e.message}; Retry count ${retry + 1}`)
