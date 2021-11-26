@@ -2,6 +2,7 @@ const coingecko = require('../providers/coingecko')
 const defillama = require('../providers/defillama')
 const GlobalMarket = require('../db/models/GlobalMarket')
 const Syncer = require('./Syncer')
+const utils = require('../utils')
 
 class GlobalMarketsSyncer extends Syncer {
 
@@ -36,7 +37,11 @@ class GlobalMarketsSyncer extends Syncer {
     await GlobalMarket.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncLatestMarkets(date) {
+  async syncLatestMarkets(date, retry = 0) {
+    if (retry >= 3) {
+      return
+    }
+
     try {
       const globalMarkets = await coingecko.getGlobalMarkets()
       const defiGlobalMarkets = await coingecko.getGlobalDefiMarkets()
@@ -62,13 +67,15 @@ class GlobalMarketsSyncer extends Syncer {
         })
       }
 
-      await GlobalMarket.upsert(record)
-        .then(([data]) => {
-          console.log(JSON.stringify(data.dataValues))
-        })
-        .catch(console.error)
+      await GlobalMarket.upsert(record).catch(console.error)
     } catch (e) {
-      console.error(`Error fetching global markets: ${e.message}`)
+      if (e.response) {
+        console.log(`Retrying due to error ${e.message}; Retry count ${retry + 1}`)
+        await utils.sleep(1000)
+        await this.syncLatestMarkets(date, retry + 1)
+      } else {
+        console.error(e)
+      }
     }
   }
 

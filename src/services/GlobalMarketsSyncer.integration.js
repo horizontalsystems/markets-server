@@ -6,9 +6,11 @@ const { utcDate } = require('../utils')
 
 const GlobalMarketsSyncer = require('./GlobalMarketsSyncer')
 const GlobalMarket = require('../db/models/GlobalMarket')
+const coingecko = require('../providers/coingecko')
+const utils = require('../utils')
 
-const defillama = 'https://api.llama.fi'
-const coingecko = 'https://www.coingecko.com'
+const defillamaURL = 'https://api.llama.fi'
+const coingeckoURL = 'https://www.coingecko.com'
 const coingeckoAPI = 'https://api.coingecko.com/api/v3'
 
 describe('GlobalMarketsSyncer', () => {
@@ -42,25 +44,25 @@ describe('GlobalMarketsSyncer', () => {
     })
 
     beforeEach(() => {
-      nock(coingecko).get('/market_cap/total_charts_data?vs_currency=usd').reply(200, {
+      nock(coingeckoURL).get('/market_cap/total_charts_data?vs_currency=usd').reply(200, {
         stats: factory.data(5),
         total_volumes: factory.data(5)
       })
-      nock(coingecko).get('/global_charts/market_dominance_data?duration=60').reply(200, {
+      nock(coingeckoURL).get('/global_charts/market_dominance_data?duration=60').reply(200, {
         series_data_array: [{
           name: 'BTC',
           data: factory.data(5)
         }]
       })
-      nock(coingecko).get('/en/defi_market_cap_data?vs_currency=usd&duration=60').reply(200, [{
+      nock(coingeckoURL).get('/en/defi_market_cap_data?vs_currency=usd&duration=60').reply(200, [{
         name: 'DeFi',
         data: factory.data(5)
       }])
 
-      nock(defillama).get('/protocols').reply(200, protocols)
-      nock(defillama).get('/charts').reply(200, factory.data(5, mapper))
-      nock(defillama).get('/charts/Ethereum').reply(200, factory.data(5, mapper))
-      nock(defillama).get('/charts/Avalanche').reply(200, factory.data(5, mapper))
+      nock(defillamaURL).get('/protocols').reply(200, protocols)
+      nock(defillamaURL).get('/charts').reply(200, factory.data(5, mapper))
+      nock(defillamaURL).get('/charts/Ethereum').reply(200, factory.data(5, mapper))
+      nock(defillamaURL).get('/charts/Avalanche').reply(200, factory.data(5, mapper))
     })
 
     it('syncs historical markets data', async () => {
@@ -90,28 +92,94 @@ describe('GlobalMarketsSyncer', () => {
 
     beforeEach(() => {
       syncParams = syncer.syncParams('1h')
-
-      nock(coingeckoAPI).get('/global')
-        .reply(200, { data: globalMarketData })
-      nock(coingeckoAPI).get('/global/decentralized_finance_defi')
-        .reply(200, { data: defiMarketData })
-      nock(defillama).get('/protocols')
-        .reply(200, [protocols.protocol1, protocols.protocol2])
     })
 
-    it('syncs latest market data', async () => {
-      expect(await GlobalMarket.findAll()).to.have.length(0)
-      await syncer.syncDailyStats(syncParams)
-      const globalMarkets = await GlobalMarket.findAll()
-      expect(globalMarkets).to.have.length(1)
-      expect(globalMarkets[0].dataValues).to.deep.include({
-        date: new Date(syncParams.dateTo),
-        market_cap: String(globalMarketData.total_market_cap.usd),
-        defi_market_cap: String(defiMarketData.defi_market_cap),
-        volume: String(globalMarketData.total_volume.usd),
-        btc_dominance: String(globalMarketData.market_cap_percentage.btc),
-        tvl: '170',
-        chain_tvls: { Ethereum: 140, Avalanche: 30 }
+    describe('when fetched market data', () => {
+      beforeEach(() => {
+        nock(coingeckoAPI).get('/global')
+          .reply(200, { data: globalMarketData })
+        nock(coingeckoAPI).get('/global/decentralized_finance_defi')
+          .reply(200, { data: defiMarketData })
+        nock(defillamaURL).get('/protocols')
+          .reply(200, [protocols.protocol1, protocols.protocol2])
+      })
+
+      it('syncs fetched data', async () => {
+        expect(await GlobalMarket.findAll()).to.have.length(0)
+        await syncer.syncDailyStats(syncParams)
+
+        const globalMarkets = await GlobalMarket.findAll()
+        expect(globalMarkets).to.have.length(1)
+        expect(globalMarkets[0].dataValues).to.deep.include({
+          date: new Date(syncParams.dateTo),
+          market_cap: String(globalMarketData.total_market_cap.usd),
+          defi_market_cap: String(defiMarketData.defi_market_cap),
+          volume: String(globalMarketData.total_volume.usd),
+          btc_dominance: String(globalMarketData.market_cap_percentage.btc),
+          tvl: '170',
+          chain_tvls: { Ethereum: 140, Avalanche: 30 }
+        })
+      })
+    })
+
+    describe('when fetched market data in second time', () => {
+      beforeEach(() => {
+        sinon.stub(utils, 'sleep')
+        sinon.spy(coingecko, 'getGlobalMarkets')
+        sinon.spy(coingecko, 'getGlobalDefiMarkets')
+
+        nock(coingeckoAPI).get('/global')
+          .times(1)
+          .reply(504)
+        nock(coingeckoAPI).get('/global')
+          .reply(200, { data: globalMarketData })
+        nock(coingeckoAPI).get('/global/decentralized_finance_defi')
+          .reply(200, { data: defiMarketData })
+        nock(defillamaURL).get('/protocols')
+          .reply(200, [protocols.protocol1, protocols.protocol2])
+      })
+
+      it('syncs fetched data', async () => {
+        expect(await GlobalMarket.findAll()).to.have.length(0)
+        sinon.assert.notCalled(coingecko.getGlobalMarkets)
+
+        await syncer.syncDailyStats(syncParams)
+
+        sinon.assert.calledTwice(coingecko.getGlobalMarkets)
+        const globalMarkets = await GlobalMarket.findAll()
+
+        expect(globalMarkets).to.have.length(1)
+        expect(globalMarkets[0].dataValues).to.deep.include({
+          date: new Date(syncParams.dateTo),
+          market_cap: String(globalMarketData.total_market_cap.usd),
+          defi_market_cap: String(defiMarketData.defi_market_cap),
+          volume: String(globalMarketData.total_volume.usd),
+          btc_dominance: String(globalMarketData.market_cap_percentage.btc),
+          tvl: '170',
+          chain_tvls: { Ethereum: 140, Avalanche: 30 }
+        })
+      })
+    })
+
+    describe('when failed to fetch market data', () => {
+      beforeEach(() => {
+        sinon.stub(utils, 'sleep')
+        sinon.spy(coingecko, 'getGlobalMarkets')
+        sinon.spy(coingecko, 'getGlobalDefiMarkets')
+
+        nock(coingeckoAPI).get('/global')
+          .times(3)
+          .reply(504)
+      })
+
+      it('retries to fetch data 3 times', async () => {
+        expect(await GlobalMarket.findAll()).to.have.length(0)
+        sinon.assert.notCalled(coingecko.getGlobalMarkets)
+
+        await syncer.syncDailyStats(syncParams)
+
+        expect(await GlobalMarket.findAll()).to.have.length(0)
+        sinon.assert.calledThrice(coingecko.getGlobalMarkets)
       })
     })
   })
