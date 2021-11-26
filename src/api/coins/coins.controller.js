@@ -38,9 +38,8 @@ exports.show = async ({ params, query, currencyRate }, res) => {
   if (coin) {
     res.send(serializer.serializeShow(coin, query.language, currencyRate))
   } else {
-    res.status(404).send({
-      error: 'Coin not found'
-    })
+    res.status(404)
+    res.send({ error: 'Coin not found' })
   }
 }
 
@@ -50,9 +49,8 @@ exports.details = async (req, res) => {
   if (coin) {
     res.send(serializer.serializeDetails(coin, req.currencyRate))
   } else {
-    res.status(404).send({
-      error: 'Coin not found'
-    })
+    res.status(404)
+    res.send({ error: 'Coin not found' })
   }
 }
 
@@ -62,10 +60,9 @@ exports.twitter = async ({ params }, res) => {
   })
 
   if (coin) {
-    res.send(coin)
+    res.send(serializer.serializeTwitter(coin))
   } else {
-    res.status(404).send({
-      error: 'Coin not found'
-    })
+    res.status(404)
+    res.send({ error: 'Coin not found' })
   }
 }

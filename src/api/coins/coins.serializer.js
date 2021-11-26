@@ -114,3 +114,7 @@ exports.serializeDetails = (coin, currencyRate) => {
     }
   }
 }
+
+exports.serializeTwitter = coin => ({
+  twitter: nullOrString(coin.twitter)
+})
