@@ -3,7 +3,7 @@ const Platform = require('../../db/models/Platform')
 const serializer = require('./coins.serializer')
 
 exports.index = async ({ query, currencyRate }, res) => {
-  const { limit = 1000, page = 1 } = query
+  const { limit = 1500, page = 1 } = query
   const options = {
     where: {},
     order: [Coin.literal('market_data->\'market_cap\' DESC')]

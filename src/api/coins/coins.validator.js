@@ -12,7 +12,7 @@ module.exports = {
       fields: Joi.string(),
       limit: Joi.number()
         .min(1)
-        .max(1000),
+        .max(1500),
       page: Joi.number()
         .min(1),
       defi: Joi.boolean()
