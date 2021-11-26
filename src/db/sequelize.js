@@ -62,6 +62,6 @@ Object.values(db)
 
 // Sequelize
 db.sequelize = sequelize
-db.sync = (force = false) => sequelize.sync({ force })
+db.sync = () => sequelize.sync()
 
 module.exports = db

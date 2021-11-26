@@ -7,11 +7,11 @@ const _ = require('lodash')
 
 before(async () => {
   await factory.createDB()
-  await db.sync(true)
+  await db.sequelize.sync({ force: true })
 })
 
 afterEach(async () => {
-  await db.sync(true)
+  await db.sequelize.sync({ force: true })
 })
 
 after(async () => {
