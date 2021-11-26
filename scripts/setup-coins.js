@@ -13,6 +13,10 @@ const coinsJoin = require('../src/db/seeders/coins.json')
 
 const coinsCache = coinsJoin.reduce((result, coin) => ({ ...result, [coin.uid]: coin }), {})
 const turndownService = new TurndownService()
+  .addRule('remove_links', {
+    filter: node => node.nodeName === 'A' && node.getAttribute('href'),
+    replacement: content => content
+  })
 
 async function syncCoins(coinIds) {
   console.log(`Fetching coins ${coinIds.length}`)
