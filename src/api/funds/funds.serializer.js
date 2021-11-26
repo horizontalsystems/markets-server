@@ -3,7 +3,7 @@ const { valueInCurrency } = require('../../utils')
 exports.serializeTreasuries = (treasuries, currencyRate) => {
   return treasuries.map(item => ({
     type: item.type,
-    fund: item.fund,
+    fund: item.name,
     fund_uid: item.uid,
     amount: item.amount,
     amount_in_currency: valueInCurrency(item.amount_usd, currencyRate),
