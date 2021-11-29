@@ -18,7 +18,8 @@ const router = express.Router()
  *  HTTP/1.1 200 OK
  *  [{
  *    "uid": "blockchains",
- *    "name": "Blockchains"
+ *    "name": "Blockchains",
+ *    "order": 1,
  *    "description": {
  *      "en": "..."
  *    }
