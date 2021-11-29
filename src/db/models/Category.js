@@ -14,6 +14,10 @@ class Category extends SequelizeModel {
           type: DataTypes.STRING(100),
           allowNull: false
         },
+        order: {
+          type: DataTypes.INTEGER,
+          defaultValue: 0
+        },
         description: DataTypes.JSONB,
         //  {
         //    en: 'Description text',
@@ -34,7 +38,7 @@ class Category extends SequelizeModel {
 
   static async getCoins(uid) {
     const query = (`
-      SELECT C.* 
+      SELECT C.*
       FROM categories cat, coin_categories M, coins C
       WHERE cat.uid = :uid
         AND M.category_id = cat.id
