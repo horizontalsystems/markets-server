@@ -5,7 +5,8 @@ const serializer = require('./coins.serializer')
 exports.index = async ({ query, currencyRate }, res) => {
   const { limit = 1500, page = 1 } = query
   const options = {
-    where: {}
+    where: {},
+    order: ['id']
   }
 
   let fields = []
