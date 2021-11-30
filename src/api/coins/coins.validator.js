@@ -17,6 +17,8 @@ module.exports = {
         .min(1),
       defi: Joi.boolean()
         .sensitive(true),
+      order_by_rank: Joi.boolean()
+        .sensitive(true),
       currency: Joi.string()
     })
   }, options),

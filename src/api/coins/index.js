@@ -11,12 +11,13 @@ const router = express.Router()
  * @apiVersion 1.0.0
  * @apiGroup Coin
  *
- * @apiParam  {String=bitcoin,ethereum,...}   [uids]        Coin uids separated by comma
+ * @apiParam  {String=bitcoin,ethereum,...}   [uids]                  Coin uids separated by comma
  * @apiParam  {String=name,code,price,price_change_[24h/7d/14d,30d/200d/1y],ath_percentage,atl_percentage,market_cap,market_cap_rank,total_volume,platforms,coingecko_id
- *                                        }   [fields]      Coin's fields separated by comma
- * @apiParam  {Number{1-1500}}                [limit=1500]  Coins per page
- * @apiParam  {Number}                        [page=1]      Page number
- * @apiParam  {Boolean}                       [defi=false]  Filter DeFi coins
+ *                                        }   [fields]                Coin's fields separated by comma
+ * @apiParam  {Number{1-1500}}                [limit=1500]            Coins per page
+ * @apiParam  {Number}                        [page=1]                Page number
+ * @apiParam  {Boolean}                       [defi=false]            Filter DeFi coins
+ * @apiParam  {Boolean}                       [order_by_rank=false]   Filter DeFi coins
  * @apiUse    Currencies
  * @apiUse    Languages
  *

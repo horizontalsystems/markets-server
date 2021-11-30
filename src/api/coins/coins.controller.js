@@ -5,8 +5,7 @@ const serializer = require('./coins.serializer')
 exports.index = async ({ query, currencyRate }, res) => {
   const { limit = 1500, page = 1 } = query
   const options = {
-    where: {},
-    order: [Coin.literal('market_data->\'market_cap\' DESC')]
+    where: {}
   }
 
   let fields = []
@@ -25,6 +24,9 @@ exports.index = async ({ query, currencyRate }, res) => {
   }
   if (query.defi === 'true') {
     options.where.is_defi = true
+  }
+  if (query.order_by_rank === 'true') {
+    options.order = [Coin.literal('market_data->\'market_cap\' DESC')]
   }
 
   const coins = await Coin.findAll(options)
