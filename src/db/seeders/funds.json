@@ -1,0 +1,5238 @@
+[
+  {
+    "description": "Supporting teams fueling the decentralization of the web and society",
+    "name": "1confirmation",
+    "website": "www.1confirmation.com",
+    "is_individual": false,
+    "uid": "1confirmation"
+  },
+  {
+    "is_individual": false,
+    "website": "1kx.network",
+    "uid": "1kx",
+    "name": "1kx",
+    "description": "Early-stage token fund"
+  },
+  {
+    "is_individual": false,
+    "description": "Multi-strategy investment firm focusing on both token and equity investments",
+    "uid": "8decimal-capital",
+    "name": "8Decimal Capital",
+    "website": "8dcapital.com"
+  },
+  {
+    "website": "21-capital.com",
+    "uid": "21-capital",
+    "is_individual": false,
+    "name": "21 Capital",
+    "description": "Investment firm dedicated to the active dynamic management of blockchain digital assets"
+  },
+  {
+    "description": "Investment and advisory firm focused on startups developing blockchain technology and digital assets ",
+    "is_individual": false,
+    "uid": "21m-capital",
+    "name": "21M Capital",
+    "website": "21mcapital.com"
+  },
+  {
+    "website": "100and100capital.com",
+    "uid": "100-100-venture-capital",
+    "is_individual": false,
+    "name": "100&100 Venture Capital",
+    "description": "Venture Capital is an investment firm focused exclusively on venture projects about the blockchain tech, cryptocurrency and related assets"
+  },
+  {
+    "name": "256 Capital",
+    "is_individual": false,
+    "uid": "256-capital",
+    "website": "www.256.capital",
+    "description": "Digital Asset Investment Firm with multiple Funds"
+  },
+  {
+    "description": "VC that supports projects with capital, talent & future funding rounds",
+    "name": "A Capital",
+    "is_individual": false,
+    "uid": "a-capital",
+    "website": "acapital.com"
+  },
+  {
+    "description": "Seed-led tech-focused venture capital firm that embraces risk",
+    "website": "accomplice.co",
+    "is_individual": false,
+    "name": "Accomplice",
+    "uid": "accomplice"
+  },
+  {
+    "name": "Alameda Research",
+    "description": "Quantitative trading firm",
+    "uid": "alameda-research",
+    "website": "www.alameda-research.com",
+    "is_individual": false
+  },
+  {
+    "uid": "alphabit-fund",
+    "website": "www.alphabit.fund",
+    "is_individual": false,
+    "description": "Alphabit specializes in investments in blockchain and distributed ledger technology projects.  We offer a wide range of advisory services and act as the Investment Advisor to the Alphabit Fund; one of the world’s first regulated digital asset investment funds",
+    "name": "Alphabit Fund"
+  },
+  {
+    "description": "Venture capital firm in Silicon Valley, California, that backs bold entrepreneurs building the future through technology",
+    "website": "a16z.com",
+    "is_individual": false,
+    "uid": "andreessen-horowitz",
+    "name": "Andreessen Horowitz"
+  },
+  {
+    "name": "Anmi Group",
+    "website": "anmi.group",
+    "is_individual": false,
+    "description": "Venture capital cooperation organization focusing on investing in blockchain technology-related companies",
+    "uid": "anmi-group"
+  },
+  {
+    "uid": "arca",
+    "website": "www.ar.ca",
+    "is_individual": false,
+    "description": "Arca investment management firm specializes in Hedge Funds, blockchain companies, cryptocurrency investments and other digital assets",
+    "name": "Arca"
+  },
+  {
+    "website": "arringtonxrpcapital.com",
+    "is_individual": false,
+    "description": "Digital asset management firm in blockchain-based capital markets",
+    "uid": "arrington-xrp-capital",
+    "name": "Arrington XRP Capital"
+  },
+  {
+    "uid": "ausum-ventures",
+    "description": "Venture fund focused on the intersection of blockchain technology and social impact",
+    "website": "www.ausum.vc",
+    "name": "Ausum Ventures",
+    "is_individual": false
+  },
+  {
+    "description": "Binance Labs invests in technical teams that build and support the decentralized web",
+    "uid": "binance-labs",
+    "name": "Binance Labs",
+    "website": "labs.binance.com",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "website": "blockasset.ventures",
+    "description": "Investing in portfolio of leading digital assets with partners",
+    "name": "BlockAsset Ventures",
+    "uid": "blockasset-ventures"
+  },
+  {
+    "uid": "blockchain-capital",
+    "website": "blockchain.capital",
+    "description": "Venture firm in the blockchain industry with investments in companies and protocols in the sector, across different stages, geographies and asset types",
+    "is_individual": false,
+    "name": "Blockchain Capital"
+  },
+  {
+    "description": "Blockchain Ventures is a venture capital fund and a subsidiary of Blockchain.com",
+    "website": "www.blockchain.com\/de\/ventures",
+    "uid": "blockchain-com-ventures",
+    "name": "Blockchain.com Ventures",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "name": "Blockchange Ventures",
+    "website": "blockchange.vc",
+    "description": "Blockchain venture fund",
+    "uid": "blockchange-ventures"
+  },
+  {
+    "website": "www.blockrocket.io",
+    "description": "Early-stage investor and digital accelerator for blockchain startups in Germany",
+    "uid": "blockrocket",
+    "name": "Blockrocket",
+    "is_individual": false
+  },
+  {
+    "uid": "blocktower-capital",
+    "is_individual": false,
+    "description": "Crypto asset investment firm and portfolio manager",
+    "name": "BlockTower Capital",
+    "website": "www.blocktower.com"
+  },
+  {
+    "description": "Crypto asset investment firm",
+    "uid": "blockvc",
+    "website": "www.blockvc.com",
+    "name": "BlockVC",
+    "is_individual": false
+  },
+  {
+    "name": "Blockwall",
+    "description": "German Blockchain Venture Capital Fund",
+    "uid": "blockwall",
+    "website": "www.blockwall.capital",
+    "is_individual": false
+  },
+  {
+    "website": "blueyard.com",
+    "name": "BlueYard Capital",
+    "description": "BlueYard invests in founders with transforming ideas that decentralize markets, empower users & liberate data",
+    "is_individual": false,
+    "uid": "blueyard-capital"
+  },
+  {
+    "description": "Investment in blockchain protocols, the companies building on them, and the infrastructure that supports them.",
+    "is_individual": false,
+    "uid": "bollinger",
+    "name": "Bollinger",
+    "website": "www.bollinger.xyz"
+  },
+  {
+    "uid": "boost-vc",
+    "is_individual": false,
+    "website": "www.boost.vc",
+    "name": "Boost VC",
+    "description": "Investment of $500k for 15% in 20 companies a year through an Accelerator Program"
+  },
+  {
+    "uid": "borderless-capital",
+    "website": "borderlesscapital.io",
+    "name": "Borderless Capital",
+    "description": "Financial institution that accelerates the Algorand ecosystem",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "name": "BR Capital",
+    "description": "Proprietary multi-strategy algorithmic trading with steady incomes and mostly delta neutral. Venture capital investments in companies",
+    "website": "br.capital",
+    "uid": "br-capital"
+  },
+  {
+    "description": "Venture capital firm focused exclusively on public blockchains. We invest in infrastructure and application companies",
+    "is_individual": false,
+    "name": "Castle Island Ventures",
+    "uid": "castle-island-ventures",
+    "website": "www.castleisland.vc"
+  },
+  {
+    "uid": "cms-holdings",
+    "name": "CMS Holdings",
+    "website": "cmsholdings.io",
+    "description": "Principal investment firm focused on making investments across the cryptoasset ecosystem",
+    "is_individual": false
+  },
+  {
+    "description": "CMT Digital, a division of the CMT Group, is focused on crypto asset trading, blockchain technology investments, and legal\/policy engagement in the crypto asset \/ blockchain technology industry",
+    "uid": "cmt-digital-ventures",
+    "name": "CMT Digital Ventures",
+    "website": "cmt.digital",
+    "is_individual": false
+  },
+  {
+    "name": "Coinbase Ventures",
+    "uid": "coinbase-ventures",
+    "description": "Coinbase Ventures invests in companies building the open financial system. ",
+    "website": "ventures.coinbase.com\/",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "uid": "coincident-capital",
+    "description": "Long and short trading of leading cryptocurrencies",
+    "website": "www.coincidentcapital.com",
+    "name": "Coincident Capital"
+  },
+  {
+    "name": "CoinFund",
+    "description": "Investment in venture and liquid opportunities within the blockchain sector with a focus on digital assets, decentralization technologies, and their key enabling infrastructure",
+    "uid": "coinfund",
+    "is_individual": false,
+    "website": "coinfund.io"
+  },
+  {
+    "description": "Institutional-grade solutions for digital asset investors",
+    "uid": "coinshares",
+    "name": "CoinShares",
+    "is_individual": false,
+    "website": "coinshares.com"
+  },
+  {
+    "uid": "collab-currency",
+    "is_individual": false,
+    "name": "Collab+Currency",
+    "website": "www.collaborativefund.com\/crypto",
+    "description": "Early stage investor in projects building the next generation of financial infrastructure"
+  },
+  {
+    "uid": "collaborative-fund",
+    "name": "Collaborative Fund",
+    "is_individual": false,
+    "website": "www.collaborativefund.com",
+    "description": "Supporting businesses at the intersection of self-interest and broader interest"
+  },
+  {
+    "uid": "consensys-labs",
+    "is_individual": false,
+    "name": "Consensys Labs",
+    "website": "labs.mesh.xyz",
+    "description": "ConsenSys Labs is the venture arm of ConsenSys, supporting entrepreneurs and developers around the world through tools, talent, and capital"
+  },
+  {
+    "description": "Investing in global blockchain technology, early-stage technology startup and providing Quant-Trading service",
+    "uid": "continue-capital",
+    "name": "Continue Capital",
+    "website": "continue.capital\/",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "name": "D1 Ventures",
+    "description": "Investments in Polkadot ecosystem",
+    "uid": "d1-ventures",
+    "website": "d1.ventures"
+  },
+  {
+    "is_individual": false,
+    "website": "www.dh.vc",
+    "uid": "dhvc",
+    "name": "DHVC",
+    "description": "DHVC is a venture capital firm based in Palo Alto, California which invests in Enterprise, Consumer, FinTech, and Healthcare sectors"
+  },
+  {
+    "is_individual": false,
+    "description": "DeFiance Capital is a Decentralized Finance (DeFi) focused cryptoasset fund that combines fundamental research with an activist investment approach",
+    "name": "DeFiance Capital",
+    "website": "www.defiance.capital",
+    "uid": "defiance-capital"
+  },
+  {
+    "description": "Fundamental research & investing",
+    "uid": "delphi-digital",
+    "name": "Delphi Digital",
+    "website": "www.delphidigital.io\/ventures",
+    "is_individual": false
+  },
+  {
+    "name": "Digital Asset Capital Management",
+    "uid": "digital-asset-capital-management",
+    "website": "dacm.io",
+    "is_individual": false,
+    "description": "Specialist manager of digital asset funds offering institutional and family office investors exposure to this rapidly growing asset class"
+  },
+  {
+    "website": "dcg.co",
+    "is_individual": false,
+    "description": "DCG builds and supports bitcoin and blockchain companies",
+    "uid": "digital-currency-group",
+    "name": "Digital Currency Group"
+  },
+  {
+    "uid": "distributed-global",
+    "name": "Distributed Global",
+    "website": "www.distributedglobal.com",
+    "description": "Distributed Global is a venture firm focused on the blockchain ecosystem",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "description": "Crypto Operator Fund",
+    "uid": "divergence-ventures",
+    "name": "Divergence Ventures",
+    "website": "www.div.vc"
+  },
+  {
+    "name": "DragonFly",
+    "website": "www.dcp.capital",
+    "is_individual": false,
+    "uid": "dragonfly",
+    "description": "A cross-border cryptoasset investment firm"
+  },
+  {
+    "description": "Crypto-Native Investment Fund",
+    "name": "DTC Capital",
+    "website": "www.dtc.capital",
+    "is_individual": false,
+    "uid": "dtc-capital"
+  },
+  {
+    "name": "DU Capital",
+    "description": "Singapore-based multi-stage investment firm backing companies and entrepreneurs that venture in innovative technologies such as the distributed ledger technologies",
+    "uid": "du-capital",
+    "website": "www.du.capital",
+    "is_individual": false
+  },
+  {
+    "uid": "eden-block",
+    "description": "Venture house dedicated to enabling a new digital future with blockchain",
+    "name": "Eden Block",
+    "is_individual": false,
+    "website": "www.edenblock.com"
+  },
+  {
+    "description": "Electric Capital is an early stage venture firm focused on cryptocurrencies, blockchain, fintech, and marketplaces. We invest in companies and protocols built on top of Programmable Money",
+    "name": "Electric Capital",
+    "website": "www.electriccapital.com",
+    "is_individual": false,
+    "uid": "electric-capital"
+  },
+  {
+    "name": "Eterna Capital",
+    "website": "www.eternacapital.com",
+    "description": "Blockchain Investment firm",
+    "is_individual": false,
+    "uid": "eterna-capital"
+  },
+  {
+    "website": "www.fabric.vc",
+    "is_individual": false,
+    "name": "Fabric Ventures",
+    "uid": "fabric-ventures",
+    "description": "Venture Capital fund investing in blockchain and decentralised data networks powering Web 3.0"
+  },
+  {
+    "description": "FBG Capital is a digital asset management firm in blockchain-based capital market",
+    "website": "www.fbg.capital",
+    "uid": "fbg-capital",
+    "name": "FBG Capital",
+    "is_individual": false
+  },
+  {
+    "website": "www.fenbushicapital.vc",
+    "description": "First and most active blockchain-focused venture capital firm in Asia",
+    "uid": "fenbushi-capital",
+    "name": "Fenbushi Capital",
+    "is_individual": false
+  },
+  {
+    "website": "fengshui.capital",
+    "is_individual": false,
+    "name": "Fengshui Capital",
+    "uid": "fengshui-capital",
+    "description": "Blockchain investment firm"
+  },
+  {
+    "website": "foundationcapital.com",
+    "is_individual": false,
+    "description": "Venture capital firm in Silicon Valley",
+    "uid": "foundation-capital",
+    "name": "Foundation Capital"
+  },
+  {
+    "name": "Framework Ventures",
+    "website": "framework.ventures",
+    "is_individual": false,
+    "uid": "framework-ventures",
+    "description": "A thesis-driven venture firm that builds alongside our founders"
+  },
+  {
+    "description": "Venture capital firm focused exclusively on blockchain tech, digital infrastructure, and open finance network",
+    "is_individual": false,
+    "uid": "fundamental-labs",
+    "name": "Fundamental Labs",
+    "website": "fundamentallabs.com\/#\/"
+  },
+  {
+    "website": "www.galaxydigital.io",
+    "description": "Galaxy Digital is a diversified financial services and investment management innovator in the digital asset, cryptocurrency, and blockchain technology sector",
+    "uid": "galaxy-digital",
+    "name": "Galaxy Digital",
+    "is_individual": false
+  },
+  {
+    "uid": "genesis-block-ventures",
+    "name": "Genesis Block Ventures",
+    "description": "Cryptocurrency investment management firm investing exclusively in a diversified portfolio of digital assets",
+    "website": "www.genesisblockcapital.com",
+    "is_individual": false
+  },
+  {
+    "uid": "greenfield-one",
+    "is_individual": false,
+    "description": "Long-term bets on early developer teams building towards an open, decentralized and more robust architecture of tomorrow’s web",
+    "name": "Greenfield One",
+    "website": "www.greenfield.one"
+  },
+  {
+    "uid": "gumi-cryptos-capital-gcc",
+    "name": "gumi Cryptos Capital (gCC)",
+    "is_individual": false,
+    "description": "Blockchain\/crypto venture fund launched by gumi Inc., a leading global mobile game publisher and developer",
+    "website": "www.gumi-cryptos.com"
+  },
+  {
+    "website": "www.hashed.com",
+    "name": "Hashed",
+    "uid": "hashed",
+    "description": "Global, early stage venture fund focused on backing founders who are pioneering the future of blockchain and cryptocurrency",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "description": "HashKey Group participates in high potential digital asset investment opportunities for institutional investors and creates and funds our own investment initiatives in the blockchain space",
+    "uid": "hashkey-capital",
+    "website": "www.hashkey.com\/business-lines\/capital",
+    "name": "Hashkey Capital"
+  },
+  {
+    "description": "Huobi Capital is the investment arm of Huobi, focusing exclusively on ventures and projects related to blockchain technology, digital currency, and crypto currency",
+    "website": "www.huobi.com\/capital",
+    "is_individual": false,
+    "name": "Huobi Capital",
+    "uid": "huobi-capital"
+  },
+  {
+    "is_individual": false,
+    "name": "Hypersphere Ventures",
+    "description": "Hypersphere is a venture-technology firm investing in and building technology in the blockchain industry. Hypersphere partners with projects and participates deeply in the communities we invest in",
+    "uid": "hypersphere-ventures",
+    "website": "www.hypersphere.ventures"
+  },
+  {
+    "name": "IDEO Colab Ventures",
+    "description": "Investments in early-stage distributed web startups and co-creation & launch of new products and protocols",
+    "uid": "ideo-colab-ventures",
+    "website": "www.ideocolab.com\/ventures",
+    "is_individual": false
+  },
+  {
+    "name": "INBlockchain",
+    "uid": "inblockchain",
+    "description": "INB is the most influential investment group in the Chinese blockchain space",
+    "is_individual": false,
+    "website": "www.inblockchain.com"
+  },
+  {
+    "website": "infinitecapital.io",
+    "name": "Infinite Capital",
+    "is_individual": false,
+    "uid": "infinite-capital",
+    "description": "Crypto & Defi Investments"
+  },
+  {
+    "description": "A research and community driven venture capital focused on Open Finance, Web 3.0, and cross-chain industry",
+    "website": "iosg.vc\/#\/",
+    "uid": "iosg-ventures",
+    "is_individual": false,
+    "name": "IOSG Ventures"
+  },
+  {
+    "uid": "kenetic",
+    "website": "kenetic.capital",
+    "name": "Kenetic",
+    "description": "Systematic cryptocurrency trading strategies and equity investment in series A\/B blockchain companies",
+    "is_individual": false
+  },
+  {
+    "description": "KR1 (founded 2016 as KRYPTONITE1) is a leading European digital asset investment company supporting early-stage blockchain and DeFi projects.",
+    "uid": "kr1",
+    "name": "KR1",
+    "is_individual": false,
+    "website": "www.kryptonite1.co"
+  },
+  {
+    "uid": "lemniscap",
+    "description": "Investment firm specialized in cryptoassets and blockchain startups",
+    "name": "Lemniscap",
+    "website": "lemniscap.com",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "name": "Libertus Capital",
+    "description": "Investments in companies and protocols that enhance and protect freedom, privacy and trust.",
+    "uid": "libertus-capital",
+    "website": "www.libertuscapital.com"
+  },
+  {
+    "website": "www.longhashventures.com",
+    "description": "Accelerator and investor in early-stage blockchain start-ups",
+    "name": "LongHash Ventures",
+    "uid": "longhash-ventures",
+    "is_individual": false
+  },
+  {
+    "description": "LuneX Ventures invests in Cryptocurrencies and Blockchain companies",
+    "uid": "lunex-ventures",
+    "name": "Lunex Ventures",
+    "is_individual": false,
+    "website": "lunex.vc"
+  },
+  {
+    "is_individual": false,
+    "name": "Lvna Capital",
+    "description": "Digital asset investment manager that focuses on institutional and professional individual investors",
+    "uid": "lvna-capital",
+    "website": "lvnacapital.com"
+  },
+  {
+    "uid": "mechanism-capital",
+    "name": "Mechanism Capital",
+    "is_individual": false,
+    "website": "www.mechanism.capital",
+    "description": "Investment firm that funds, builds ecosystem tools, produces public research, and participates actively in decentralized governance"
+  },
+  {
+    "uid": "metastable-capital",
+    "is_individual": false,
+    "description": "Management of Crypto Asset Hedge Funds",
+    "website": "www.metastablecapital.com",
+    "name": "MetaStable Capital"
+  },
+  {
+    "uid": "morgan-creek-capital",
+    "description": "SEC-registered investment adviser providing investment management services to institutions and wealthy families",
+    "name": "Morgan Creek Capital",
+    "is_individual": false,
+    "website": "www.morgancreekcap.com"
+  },
+  {
+    "name": "Multicoin Capital",
+    "website": "multicoin.capital",
+    "uid": "multicoin-capital",
+    "is_individual": false,
+    "description": "Thesis-driven investment firm that invests in cryptocurrencies, tokens, and blockchain companies"
+  },
+  {
+    "uid": "nascent",
+    "name": "Nascent",
+    "is_individual": false,
+    "description": "Nascent is a multi-strategy investment firm focused that pursues compelling opportunities in crypto, DeFi, and the open economies they enable",
+    "website": "www.nascent.xyz"
+  },
+  {
+    "name": "NGC Ventures",
+    "is_individual": false,
+    "description": "Blockchain investment fund",
+    "uid": "ngc-ventures",
+    "website": "www.ngc.fund"
+  },
+  {
+    "description": "Nima Capital LLC, a single-family office with private and public equity investing platforms",
+    "uid": "nima-capital",
+    "name": "Nima Capital",
+    "is_individual": false,
+    "website": "nimacap.com"
+  },
+  {
+    "name": "Outlier Ventures",
+    "website": "outlierventures.io",
+    "description": "Outlier Ventures is a venture platform that supports the development and growth of emerging technologies",
+    "uid": "outlier-ventures",
+    "is_individual": false
+  },
+  {
+    "uid": "pantera-capital",
+    "is_individual": false,
+    "name": "Pantera Capital",
+    "website": "www.panteracapital.com",
+    "description": "Pantera Capital is an investment firm focused exclusively on ventures, tokens, and projects related to blockchain tech, digital currency, and crypto assets"
+  },
+  {
+    "name": "Paradigm",
+    "is_individual": false,
+    "uid": "paradigm",
+    "description": "Crypto-focused investment firm based in San Francisco investing in crypto assets and businesses from the earliest stages of idea formation through to maturity",
+    "website": "www.paradigm.xyz"
+  },
+  {
+    "uid": "parafi-capital",
+    "description": "ParaFi Capital is an alternative investment firm focused on blockchain and decentralized finance markets",
+    "name": "Parafi Capital",
+    "website": "www.parafi.capital",
+    "is_individual": false
+  },
+  {
+    "website": "www.placeholder.vc",
+    "description": "Placeholder is a venture capital firm that invests in open blockchain networks and related Web3 infrastructure",
+    "uid": "placeholder",
+    "is_individual": false,
+    "name": "Placeholder"
+  },
+  {
+    "name": "Polybius Capital",
+    "uid": "polybius-capital",
+    "description": "Principal investment firm investing and supporting the blockchain ecosystem",
+    "website": "www.polybiuscapital.com",
+    "is_individual": false
+  },
+  {
+    "description": "Leading VC in crypto",
+    "is_individual": false,
+    "name": "Polychain",
+    "website": "polychain.capital",
+    "uid": "polychain"
+  },
+  {
+    "uid": "preangel-fund",
+    "name": "PREangel Fund",
+    "website": "www.preangelfund.cn",
+    "description": "Beijing-based investment fund focused on early-stage internet startups",
+    "is_individual": false
+  },
+  {
+    "website": "qcp.capital",
+    "description": "Asia's (leading) digital economy traders",
+    "uid": "qcp-capital",
+    "name": "QCP Capital",
+    "is_individual": false
+  },
+  {
+    "description": "Blockchain-focused venture capital with focus on disruptive and transformative movements in the blockchain industry and the crypto community",
+    "name": "Queschain Capital",
+    "uid": "queschain-capital",
+    "website": "queschain.com",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "description": "Robot Ventures is a (pre-)seed investor in fintech \/ crypto companies with big ambitions and contrarian worldviews",
+    "website": "robvc.com",
+    "name": "Robot Ventures",
+    "uid": "robot-ventures"
+  },
+  {
+    "name": "Semantic VC",
+    "description": "Investing in new rails for data & the digital economy",
+    "uid": "semantic-vc",
+    "website": "www.semantic.vc",
+    "is_individual": false
+  },
+  {
+    "uid": "signum-capital",
+    "website": "www.signum.capital",
+    "is_individual": false,
+    "name": "Signum Capital",
+    "description": "Singapore-based firm that consults in Blockchain-enabled companies & participates in pre-sale stages of Token Generation Events and Equity investments"
+  },
+  {
+    "website": "www.sinoglobalcapital.com",
+    "is_individual": false,
+    "description": "Investments in decentralized technologies that have a strategic connection to the mainland Chinese market",
+    "name": "Sino Global Capital",
+    "uid": "sino-global-capital"
+  },
+  {
+    "website": "www.slow.co",
+    "description": "VC in tech industry",
+    "uid": "slow-ventures",
+    "is_individual": false,
+    "name": "Slow Ventures"
+  },
+  {
+    "website": "snzholding.com",
+    "is_individual": false,
+    "description": "Empowering blockchain projects through the SNZ hub, a network with global top tier venture capitals, state-of-the art blockchain technologies, and various communities",
+    "name": "SNZ Holding",
+    "uid": "snz-holding"
+  },
+  {
+    "uid": "sora-ventures",
+    "description": "Crypto-backed venture capital firm dedicated to blockchain and digital currency investments",
+    "name": "Sora Ventures",
+    "website": "www.sora.vc",
+    "is_individual": false
+  },
+  {
+    "name": "The Spartan Group",
+    "description": "Digital asset management firm that takes a fundamental approach to identify unique investment opportunities in the emergent crypto asset class",
+    "uid": "the-spartan-group",
+    "website": "www.spartangroup.io",
+    "is_individual": false
+  },
+  {
+    "uid": "standard-crypto-vc",
+    "description": "Crypto-focused VC firm",
+    "name": "Standard Crypto VC",
+    "is_individual": false,
+    "website": "standardcrypto.vc"
+  },
+  {
+    "description": "Tetras Capital is an actively managed crypto hedge fund",
+    "uid": "tetras-capital",
+    "name": "Tetras Capital",
+    "website": "tetras.capital",
+    "is_individual": false
+  },
+  {
+    "website": "www.threearrowscap.com",
+    "name": "Three Arrows Capital",
+    "description": "Crypto Trading & VC",
+    "uid": "three-arrows-capital",
+    "is_individual": false
+  },
+  {
+    "name": "Variant",
+    "uid": "variant",
+    "is_individual": false,
+    "description": "Variant is an early-stage venture firm investing in crypto networks & platforms building The Ownership Economy",
+    "website": "variant.fund"
+  },
+  {
+    "is_individual": false,
+    "name": "Volt Capital",
+    "description": "Crypto Venture Firm",
+    "website": "www.volt.capital",
+    "uid": "volt-capital"
+  },
+  {
+    "website": "web3.capital",
+    "is_individual": false,
+    "name": "Web 3 Capital",
+    "description": "Web3 Capital is a decentralized venture capital fund focusing on investing in Polkadot ecosystem projects",
+    "uid": "web-3-capital"
+  },
+  {
+    "uid": "youbi-capital",
+    "name": "Youbi Capital",
+    "website": "www.youbicapital.com",
+    "is_individual": false,
+    "description": "Blockchain & FinTech PE\/VC Fund"
+  },
+  {
+    "description": "Investments in liquid cryptoassets on the open market and early-stage funding rounds incl. staking & running nodes",
+    "is_individual": false,
+    "uid": "zee-prime-capital",
+    "website": "zeeprime.capital",
+    "name": "Zee Prime Capital"
+  },
+  {
+    "description": "zk Capital provides venture capital services - financing, mentoring, and research collaboration to emerging and start-up companies, namely in the blockchain technology space",
+    "website": "www.zk.capital",
+    "is_individual": false,
+    "name": "zk Capital",
+    "uid": "zk-capital"
+  },
+  {
+    "website": "9yardscapital.com",
+    "description": "9YC is a global investment firm that invests in tech enabled consumer and enterprise fintech and logistics companies at the growth stage",
+    "is_individual": false,
+    "uid": "9yards-capital",
+    "name": "9Yards Capital"
+  },
+  {
+    "name": "Version One Ventures",
+    "is_individual": false,
+    "website": "versionone.vc",
+    "uid": "version-one-ventures",
+    "description": "Version One Ventures backs mission-driven founders at the earliest stages"
+  },
+  {
+    "name": "SV Angel",
+    "description": "SV Angel is an angel firm that helps startups with business development, financing, M&A, and other strategic advice",
+    "website": "www.svangel.com",
+    "is_individual": false,
+    "uid": "sv-angel"
+  },
+  {
+    "is_individual": false,
+    "website": "www.8dcapital.com",
+    "name": "8 Decimal Capital",
+    "uid": "8-decimal-capital",
+    "description": "A multi-strategy investment firm focused on both token and equity investment"
+  },
+  {
+    "description": "Block Ventures is a venture capital firm investing in disruptive blockchain technology companies",
+    "website": "block.ventures",
+    "is_individual": false,
+    "uid": "block-ventures",
+    "name": "Block Ventures"
+  },
+  {
+    "description": "Black Hole Capital makes equity investments in the internet and mobile Internet, hi-tech, healthcare and other sectors",
+    "uid": "black-hole-capital",
+    "name": "Black Hole Capital",
+    "website": "www.blackholecap.com\/",
+    "is_individual": false
+  },
+  {
+    "name": "MKT",
+    "website": "",
+    "description": "MKT invests in easrly-stage blockchain and fin-tech companies",
+    "is_individual": false,
+    "uid": "mkt"
+  },
+  {
+    "description": "Funcity Capital is an asset management company specializing in Internet finance, artificial intelligence, blockchain, and smart travel.",
+    "is_individual": false,
+    "website": "www.funcityholding.com\/",
+    "name": "Funcity Capital",
+    "uid": "funcity-capital"
+  },
+  {
+    "description": "LCI offers exposure to ventures, tokens, and projects related to blockchain tech, digital currency, and crypto assets.",
+    "website": "www.limitlesscryptos.com\/",
+    "name": "Limitless Crypto Investments",
+    "is_individual": false,
+    "uid": "limitless-crypto-investments"
+  },
+  {
+    "uid": "sequoia-capital",
+    "description": "Sequoia Capital is a VC firm that invests in startups in the energy, financial, enterprise, healthcare, internet, and mobile industries.",
+    "website": "www.sequoiacap.com\/",
+    "is_individual": false,
+    "name": "Sequoia Capital"
+  },
+  {
+    "description": "Plutus21 is an investment firm focused on alternative assets such as crypto, venture capital, and real estate.",
+    "uid": "plutus21",
+    "website": "www.plutus21.com\/",
+    "name": "Plutus21",
+    "is_individual": false
+  },
+  {
+    "description": "Vertex Ventures is a global network of operator-investors that manages portfolios.",
+    "uid": "vertex-ventures",
+    "name": "Vertex Ventures",
+    "website": "www.vertexventures.com\/",
+    "is_individual": false
+  },
+  {
+    "website": "www.vertexventures.cn\/",
+    "description": "Vertex Ventures China invests in high-growth internet and technology start-ups across mainland China.",
+    "uid": "vertex-ventures-china",
+    "name": "Vertex Ventures China",
+    "is_individual": false
+  },
+  {
+    "name": "Vertex Ventures Southeast Asia & India",
+    "description": "Vertex Ventures Southeast Asia & India invests in high-growth start-ups in Southeast Asia and India.",
+    "uid": "vertex-ventures-southeast-asia-india",
+    "is_individual": false,
+    "website": "www.vertexventures.com\/southeast-asia-india\/"
+  },
+  {
+    "is_individual": false,
+    "description": "Avant Global is a relationship-driven private investment firm founded in 1999 to manage assets of a single family.",
+    "website": "avantglobal.com\/",
+    "name": "Avant Global",
+    "uid": "avant-global"
+  },
+  {
+    "description": "AB Capital is an international investment firm that has global scale, local expertise and an entrepreneurial approach.",
+    "website": "www.allbluecapital.com\/",
+    "uid": "all-blue-capital",
+    "name": "All Blue Capital",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "description": "Lightspeed Venture Partners is a venture capital firm that engages in consumer, enterprise, technology, and cleantech markets.",
+    "name": "Lightspeed Venture Partners",
+    "website": "lsvp.com\/",
+    "uid": "lightspeed-venture-partners"
+  },
+  {
+    "is_individual": false,
+    "description": "Pathfinder, previously known as FF Angel, is the early stage investment vehicle of venture capital firm Founders Fund.",
+    "website": "",
+    "name": "Pathfinder",
+    "uid": "pathfinder"
+  },
+  {
+    "is_individual": false,
+    "name": "Vast Ventures",
+    "description": "Vast Ventures is a venture capital fund that invests in Seed, Series A and growth stages.",
+    "uid": "vast-ventures",
+    "website": "www.vastvc.com\/"
+  },
+  {
+    "uid": "camp-one-ventures",
+    "description": "Camp One Ventures is a venture capital fund that does investments in early-staged social, mobile, FinTech, and SaaS startups.",
+    "is_individual": false,
+    "name": "Camp One Ventures",
+    "website": "www.camponeventures.com\/"
+  },
+  {
+    "is_individual": false,
+    "uid": "core-innovation-capital",
+    "name": "Core Innovation Capital",
+    "website": "www.corevc.com\/",
+    "description": "Core Innovation Capital is a venture capital firm investing in companies committed to empowering small businesses."
+  },
+  {
+    "uid": "hinge-capital",
+    "website": "hingecapital.com\/",
+    "description": "Hinge Capital is a investment firm.",
+    "name": "Hinge Capital",
+    "is_individual": false
+  },
+  {
+    "description": "IDG Capital is an investment firm that funds early- to growth-stage companies in the technology sector.",
+    "name": "IDG Capital",
+    "uid": "idg-capital",
+    "website": "en.idgcapital.com\/",
+    "is_individual": false
+  },
+  {
+    "uid": "ame-cloud-ventures",
+    "is_individual": false,
+    "description": "AME Cloud Ventures invests in seed to later-stage tech companies that build infrastructure and value chains around data.",
+    "website": "www.amecloudventures.com\/",
+    "name": "AME Cloud Ventures"
+  },
+  {
+    "uid": "cme-ventures",
+    "name": "CME Ventures",
+    "description": "CME Ventures is the strategic investment arm of CME Group focused on managing a portfolio of external minority equity investments",
+    "website": "www.cmegroup.com\/cme-ventures.html",
+    "is_individual": false
+  },
+  {
+    "description": "CRCM Ventures invests in early stage companies in the US and China, targeting consumer, frontier tech, health, and fintech industries.",
+    "uid": "crcm-ventures",
+    "is_individual": false,
+    "name": "CRCM Ventures",
+    "website": "www.crcmventures.com\/"
+  },
+  {
+    "name": "Route 66 Ventures",
+    "uid": "route-66-ventures",
+    "website": "route66ventures.com\/",
+    "is_individual": false,
+    "description": "Route 66 Ventures provides venture capital and credit solutions to emerging financial technology and services companies."
+  },
+  {
+    "name": "RRE Ventures",
+    "is_individual": false,
+    "description": "RRE Ventures is a venture capital firm that offers early-stage funding to software, internet, and communications companies.",
+    "uid": "rre-ventures",
+    "website": "rre.com\/"
+  },
+  {
+    "name": "Seagate Technology",
+    "is_individual": false,
+    "uid": "seagate-technology",
+    "website": "www.seagate.com",
+    "description": "Seagate offers consumers and businesses with data storage solutions to create, share, and preserve digital content."
+  },
+  {
+    "description": "Knight Enterprise Fund is a venture capital firm based in Florida that finances early stage investments of media and technology companies.",
+    "is_individual": false,
+    "name": "Knight Enterprise Fund",
+    "uid": "knight-enterprise-fund",
+    "website": "knightfoundation.org\/enterprise-fund"
+  },
+  {
+    "description": "Mouro Capital is a venture capital firm backing entrepreneurs who are shaping the future of financial services.",
+    "uid": "mouro-capital",
+    "name": "Mouro Capital",
+    "website": "www.mourocapital.com\/",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "uid": "abstract-ventures",
+    "description": "Abstract Ventures is a sector agnostic venture investor in Pre-seed, Seed, and Series A startup companies.",
+    "name": "Abstract Ventures",
+    "website": "www.abstract.vc"
+  },
+  {
+    "uid": "accenture",
+    "website": "www.accenture.com\/in-en",
+    "description": "Accenture is a professional services company, providing services and solutions in strategy, consulting, digital, technology and operations.",
+    "is_individual": false,
+    "name": "Accenture"
+  },
+  {
+    "name": "SBI Investment",
+    "website": "www.sbinvestment.co.jp\/",
+    "description": "SBI Investment supports the business development and growth of private venture companies through fund investment.",
+    "is_individual": false,
+    "uid": "sbi-investment"
+  },
+  {
+    "uid": "scb-10x",
+    "name": "SCB 10X",
+    "website": "scb10x.com\/",
+    "is_individual": false,
+    "description": "SCB 10X is an investment firm that invests in technology startups."
+  },
+  {
+    "uid": "standard-chartered-bank",
+    "description": "Standard Chartered Bank is an international banking group.",
+    "is_individual": false,
+    "name": "Standard Chartered Bank",
+    "website": "www.sc.com"
+  },
+  {
+    "description": "PMT Ventures is an investment and research firm empowering the next generation of Web 3.0",
+    "uid": "pmt-ventures",
+    "website": "pmt.vc\/",
+    "name": "PMT Ventures",
+    "is_individual": false
+  },
+  {
+    "website": "www.tetragoninv.com\/",
+    "uid": "tetragon-financial-group-limited",
+    "name": "Tetragon Financial Group Limited",
+    "is_individual": false,
+    "description": "Tetragon Financial Group aims to provide stable returns to investors across various credit, equity, interest rate, and real estate cycles."
+  },
+  {
+    "uid": "nirvana-capital",
+    "description": "Nirvana Capital is a blockchain focused fund.",
+    "is_individual": false,
+    "website": "nirvana.capital\/",
+    "name": "Nirvana Capital"
+  },
+  {
+    "description": "A fund dedicated to backing the most brilliant minds in the blockchain space",
+    "is_individual": false,
+    "uid": "au21-capital",
+    "website": "au21.capital\/",
+    "name": "AU21 Capital"
+  },
+  {
+    "description": "500 Startups is a global venture capital firm with a network of startup programs for founders, mentors, and investors.",
+    "uid": "500-startups",
+    "website": "500.co",
+    "is_individual": false,
+    "name": "500 Startups"
+  },
+  {
+    "name": "Passport Capital",
+    "uid": "passport-capital",
+    "description": "Passport Capital LLC is a San Francisco based, global investment firm founded by John H. Burbank III in 2000.",
+    "is_individual": false,
+    "website": "www.passportcapital.com"
+  },
+  {
+    "is_individual": false,
+    "uid": "reciprocal-ventures",
+    "website": "recvc.com",
+    "name": "Reciprocal Ventures",
+    "description": "Reciprocal Ventures is a venture capital firm focused exclusively on FinTech."
+  },
+  {
+    "uid": "rockaway-ventures",
+    "website": "",
+    "description": "Rockaway Ventures (Fund of Rockaway Capital) focuses on late-stage venture and growth equity ESG investments in digital economy in Europe",
+    "name": "Rockaway Ventures",
+    "is_individual": false
+  },
+  {
+    "description": "Jump Trading is a globally-positioned, proprietary trading firm.",
+    "name": "Jump Trading",
+    "website": "www.jumptrading.com\/",
+    "uid": "jump-trading",
+    "is_individual": false
+  },
+  {
+    "description": "Sourcing the best crypto and blockchain investments globally through funds, co-investments and directs.",
+    "is_individual": false,
+    "uid": "l1-digital",
+    "name": "L1 Digital",
+    "website": "l1.digital"
+  },
+  {
+    "uid": "memetic-capital",
+    "name": "Memetic Capital",
+    "website": "",
+    "is_individual": false,
+    "description": "Memetic Capital is an investment firm."
+  },
+  {
+    "is_individual": false,
+    "uid": "iconiz",
+    "name": "ICONIZ",
+    "description": "ICONIZ is the world’s leading blockchain accelerator for startups.",
+    "website": "www.iconiz.io"
+  },
+  {
+    "is_individual": false,
+    "description": "Node Capital is a venture capital company focusing on blockchain industry.",
+    "website": "www.nodecap.com",
+    "uid": "node-capital",
+    "name": "Node Capital"
+  },
+  {
+    "uid": "dcm-ventures",
+    "name": "DCM Ventures",
+    "is_individual": false,
+    "website": "www.dcm.com",
+    "description": "DCM Ventures is an early-stage venture capital firm that invests in the mobile, consumer internet, communications, and service sectors."
+  },
+  {
+    "website": "www.heuristiccapital.com\/",
+    "uid": "heuristic-capital",
+    "is_individual": false,
+    "description": "Heuristic Capital Partners is an early stage hardware focused venture fund.",
+    "name": "Heuristic Capital"
+  },
+  {
+    "uid": "sierra-ventures",
+    "description": "Sierra Ventures is an early-stage venture firm investing globally with a focus on next generation enterprise and emerging technologies.",
+    "name": "Sierra Ventures",
+    "website": "www.sierraventures.com",
+    "is_individual": false
+  },
+  {
+    "uid": "sparkland-capital",
+    "website": "www.sparklandcap.com\/",
+    "description": "Sparkland Capital is an early-stage venture capital firm that invests in frontier technologies.",
+    "name": "Sparkland Capital",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "description": "The Venture Reality Fund invests in early stage AI, AR & VR startups defining the future of computing",
+    "uid": "the-venture-reality-fund",
+    "name": "The Venture Reality Fund",
+    "website": "www.thevrfund.com"
+  },
+  {
+    "website": "",
+    "description": "",
+    "uid": "zhiping-capital",
+    "is_individual": false,
+    "name": "Zhiping Capital"
+  },
+  {
+    "description": "Samsung NEXT invests in transformative early-stage software and services startups.",
+    "website": "samsungnext.com\/ventures",
+    "uid": "samsung-next",
+    "name": "Samsung NEXT",
+    "is_individual": false
+  },
+  {
+    "website": "www.uphonestcapital.com\/",
+    "is_individual": false,
+    "description": "UpHonest Capital is an international venture capital firm that specializes in providing investment capital to early-stage startups.",
+    "uid": "uphonest-capital",
+    "name": "UpHonest Capital"
+  },
+  {
+    "uid": "wei-fund",
+    "is_individual": false,
+    "description": "Angel fund in Silicon Valley",
+    "website": "",
+    "name": "Wei Fund"
+  },
+  {
+    "is_individual": false,
+    "uid": "stripe",
+    "description": "Stripe is a developer-oriented commerce company helping small and large companies accept web and mobile payments.",
+    "website": "stripe.com",
+    "name": "Stripe"
+  },
+  {
+    "website": "capital-chain.com\/en\/index.html",
+    "description": "Chain Capital specializes in investing projects in Blockchain and offers incubation, advisory, and financial services.",
+    "uid": "chain-capital",
+    "is_individual": false,
+    "name": "Chain Capital"
+  },
+  {
+    "name": "Cardinal Capital",
+    "uid": "cardinal-capital",
+    "description": "Blockchain, Cryptocurrency, Fintech",
+    "website": "www.cardinal.vc",
+    "is_individual": false
+  },
+  {
+    "website": "www.yieldventures.io\/",
+    "description": "bringing awareness to yield generation for the masses and deploying capital as venture builders",
+    "name": "yield ventures",
+    "is_individual": false,
+    "uid": "yield-ventures"
+  },
+  {
+    "description": "Pillar VC invests in seed-stage companies in Boston, supporting unstoppable founders with capital, connections, coaching, and peer support.",
+    "website": "pillar.vc\/",
+    "is_individual": false,
+    "name": "Pillar VC",
+    "uid": "pillar-vc"
+  },
+  {
+    "website": "www.usv.com",
+    "is_individual": false,
+    "description": "Union Square Ventures is a venture capital firm focused on early-stage, growth-capital, late stage, and startup financing.",
+    "uid": "union-square-ventures",
+    "name": "Union Square Ventures"
+  },
+  {
+    "is_individual": false,
+    "name": "Kosmos Ventures",
+    "uid": "kosmos-ventures",
+    "website": "kosmos.vc",
+    "description": "Kosmos Ventures is the leading and largest Australian based multi-strategy VC firm specializing in blockchain-based assets."
+  },
+  {
+    "description": "Early stage blockchain venture fund",
+    "uid": "vlane-capital",
+    "name": "VLane Capital",
+    "is_individual": false,
+    "website": ""
+  },
+  {
+    "is_individual": false,
+    "description": "ICONIUM is backing the best Blockchain-based token sales and invest in digital assets Worldwide.",
+    "uid": "iconium",
+    "name": "ICONIUM",
+    "website": "www.iconium.it"
+  },
+  {
+    "description": "Mission-driven crypto asset fund. Fundamentals first.",
+    "name": "High Naut Capital",
+    "website": "www.highnaut.com",
+    "is_individual": false,
+    "uid": "high-naut-capital"
+  },
+  {
+    "name": "Dolfin",
+    "website": "dolfin.com\/",
+    "description": "An independent investment firm providing custody, trading and asset management to institutional and private clients.",
+    "uid": "dolfin",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "name": "ZBS CAPITAL",
+    "website": "zbs.capital",
+    "description": "ZBS Capital is a venture capital fund focused on companies building a decentralized world",
+    "uid": "zbs-capital"
+  },
+  {
+    "name": "Tally Capital",
+    "uid": "tally-capital",
+    "website": "tallycapital.com\/",
+    "description": "Blockchain technology represents one of the greatest generational opportunities for entrepreneurs and investors.",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "description": "BCA Fund is an investment Firm.",
+    "uid": "bca-fund",
+    "name": "BCA Fund",
+    "website": ""
+  },
+  {
+    "website": "www.consensuscapitalholdings.com\/",
+    "name": "Consensus Capital Holdings",
+    "uid": "consensus-capital-holdings",
+    "description": "Consensus Capital Holdings is a private investment and management firm.",
+    "is_individual": false
+  },
+  {
+    "website": "",
+    "name": "UniValues Associates",
+    "description": "UniValues Associates is a investment firm.",
+    "uid": "univalues-associates",
+    "is_individual": false
+  },
+  {
+    "description": "ZhenFund invests in TMT, healthcare, and education among other sectors.",
+    "name": "ZhenFund",
+    "uid": "zhenfund",
+    "website": "www.zhenfund.com",
+    "is_individual": false
+  },
+  {
+    "description": "Matrix Partners China builds long-term relationships with entrepreneurs and helps them build significant companies.",
+    "uid": "matrix-partners-china",
+    "name": "Matrix Partners China",
+    "is_individual": false,
+    "website": "www.matrixpartners.com.cn\/"
+  },
+  {
+    "website": "www.sequoiacap.com\/china\/en\/",
+    "uid": "sequoia-capital-china",
+    "name": "Sequoia Capital China",
+    "is_individual": false,
+    "description": "Sequoia Capital China is a VC firm focused on seed stage, mid stage, late stage, and growth investments in the fintech sector."
+  },
+  {
+    "name": "Connect Capital",
+    "website": "connect.capital\/",
+    "description": "Connect Capital is a blockchain and digital assets investments fund.",
+    "uid": "connect-capital",
+    "is_individual": false
+  },
+  {
+    "uid": "cypher-capital",
+    "website": "www.cyphercapital.net\/",
+    "name": "Cypher Capital",
+    "description": "Cypher Capital is a early stage VC and consultant firm",
+    "is_individual": false
+  },
+  {
+    "website": "www.acapital.com",
+    "is_individual": false,
+    "name": "A.Capital Ventures",
+    "uid": "a-capital-ventures",
+    "description": "A.Capital Ventures is an early stage venture capital firm investing in consumer and enterprise technology companies."
+  },
+  {
+    "is_individual": false,
+    "name": "Variant Alternative Income Fund",
+    "website": "funds.variantinvestments.com\/",
+    "description": "Variant Alternative Income Fund is a continuously-offered, non-diversified, registered closed-end fund with limited liquidity.",
+    "uid": "variant-alternative-income-fund"
+  },
+  {
+    "website": "rbf.capital",
+    "is_individual": false,
+    "uid": "rockaway-blockchain-fund",
+    "name": "Rockaway Blockchain Fund",
+    "description": "Traditional VC investor into digital assets. We invest globally into outstanding founders building next generation of financial services."
+  },
+  {
+    "description": "SOSV is a global VC firm with $1B AUM and 1,000+ investments, that operates HAX, IndieBio, Chinaccelerator, MOX, and dlab.",
+    "uid": "sosv",
+    "name": "SOSV",
+    "website": "sosv.com\/",
+    "is_individual": false
+  },
+  {
+    "description": "Genesis One Capital operates as a blockchain investment firm.",
+    "name": "Genesis One Capital",
+    "uid": "genesis-one-capital",
+    "website": "genesisone.capital",
+    "is_individual": false
+  },
+  {
+    "uid": "simulation-ventures",
+    "is_individual": false,
+    "website": "",
+    "description": "Venture Capital firm focused on AI and frontier tech",
+    "name": "Simulation Ventures"
+  },
+  {
+    "uid": "visary-capital",
+    "name": "Visary Capital",
+    "website": "visary.capital",
+    "is_individual": false,
+    "description": "A thesis-driven fund for the new digital ecnomy."
+  },
+  {
+    "description": "Hex Capital is an investment firm",
+    "website": "hex.capital\/",
+    "is_individual": false,
+    "uid": "hex-capital",
+    "name": "Hex Capital"
+  },
+  {
+    "website": "defialliance.co\/",
+    "name": "DeFi Alliance",
+    "uid": "defi-alliance",
+    "is_individual": false,
+    "description": "An accelerator helping DeFi startups source liquidity and support from a broad industry network"
+  },
+  {
+    "uid": "jump-capital",
+    "is_individual": false,
+    "description": "Jump Capital is a venture capital firm specializing in Series A and B expansion stage investments in technology and software.",
+    "name": "Jump Capital",
+    "website": "www.jumpcap.com"
+  },
+  {
+    "description": "Nascent Ventures is a venture capital investment and management firm that provides support for gig entrepreneurs and technology startups.",
+    "uid": "nascent-ventures",
+    "name": "Nascent Ventures",
+    "website": "nascentventures.co.uk\/",
+    "is_individual": false
+  },
+  {
+    "uid": "dragonfly-capital-management",
+    "name": "Dragonfly Capital Management",
+    "description": "The premium service starts with an in depth Technical Analysis of the Macro Markets and their influencers.",
+    "website": "dragonflycap.com",
+    "is_individual": false
+  },
+  {
+    "website": "ftx.com\/",
+    "is_individual": false,
+    "name": "FTX",
+    "description": "FTX Exchange is a cryptocurrency exchange company that develops a mobile trading platform.",
+    "uid": "ftx"
+  },
+  {
+    "description": "Republic Capital works with high net-worth individuals and family offices to syndicate investment opportunities.",
+    "is_individual": false,
+    "name": "Republic Capital",
+    "website": "www.republiclabs.co\/",
+    "uid": "republic-capital"
+  },
+  {
+    "website": "www.struckcapitalcrypto.com",
+    "description": "Struck Capital Crypto is a multi-strategy crypto fund based in Los Angeles.",
+    "uid": "struck-capital-crypto",
+    "name": "Struck Capital Crypto",
+    "is_individual": false
+  },
+  {
+    "name": "Binance Smart Chain",
+    "website": "www.binance.org\/en\/accelerator",
+    "uid": "binance-smart-chain",
+    "is_individual": false,
+    "description": "Binance Smart Chain is a sovereign smart contract blockchain delivering Ethereum Virtual Machine (EVM) compatible programmability."
+  },
+  {
+    "description": "Incuba Alpha is a crypto fund derived from Japan with focus on early entrepreneurs in Decentralized Finance (Defi), DAO, and Web3.",
+    "is_individual": false,
+    "uid": "incuba-alpha",
+    "name": "Incuba Alpha",
+    "website": "www.incuba.capital\/"
+  },
+  {
+    "name": "Hyperchain Capital",
+    "website": "hyperchain.capital\/",
+    "is_individual": false,
+    "uid": "hyperchain-capital",
+    "description": "HyperChain Capital is a digital asset management company that focuses on Blockchain-based projects and decentralized protocols."
+  },
+  {
+    "uid": "neo",
+    "description": "NEO is a community-based non-profit block chain project, is the use of block chain technology and digital identity for digital assets...",
+    "name": "NEO",
+    "website": "neo.org\/",
+    "is_individual": false
+  },
+  {
+    "name": "Obsidian Capital",
+    "uid": "obsidian-capital",
+    "description": "Obsidian Capital is focused exclusively on Intelligent Blockchain, DLT projects, Digital and Crypto Assets.",
+    "website": "obsidiancapital.fund\/",
+    "is_individual": false
+  },
+  {
+    "description": "Investing in expertly sourced initial coin offerings that undergo deep-dive technical validation and generate rapid returns.",
+    "name": "G2H2 Capital",
+    "is_individual": false,
+    "uid": "g2h2-capital",
+    "website": "g2h2.capital"
+  },
+  {
+    "website": "www.fintech.io",
+    "is_individual": false,
+    "name": "FinTech Collective",
+    "description": "FinTech Collective is a New York-based venture capital fund, focused exclusively on financial services technology companies.",
+    "uid": "fintech-collective"
+  },
+  {
+    "uid": "axia8-ventures",
+    "is_individual": false,
+    "description": "Axia8 Ventures is a Shanghai-based venture capital and private equity firm.",
+    "name": "Axia8 Ventures",
+    "website": ""
+  },
+  {
+    "description": "",
+    "is_individual": false,
+    "uid": "bitlink-capital",
+    "website": "",
+    "name": "Bitlink Capital"
+  },
+  {
+    "description": "BitScale invest in teams and solutions that bring transparency and efficiency.",
+    "is_individual": false,
+    "website": "bitscale.capital\/",
+    "uid": "bitscale",
+    "name": "BitScale"
+  },
+  {
+    "name": "BoxOne Ventures",
+    "uid": "boxone-ventures",
+    "description": "BoxOne Ventures is an investment firm.",
+    "website": "www.boxoneventures.com\/",
+    "is_individual": false
+  },
+  {
+    "description": "Cumberland provides financial institutions and high-net-worth individuals with the access they need to capitalize on the crypto asset space.",
+    "uid": "cumberland",
+    "name": "Cumberland",
+    "website": "cumberland.io\/",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "website": "innovating.capital",
+    "name": "Innovating Capital",
+    "uid": "innovating-capital",
+    "description": "Innovating Capital is a premier technology fund with a focus on financial, cybersecurity, insurance, and life sciences."
+  },
+  {
+    "is_individual": false,
+    "description": "",
+    "name": "K42",
+    "uid": "k42",
+    "website": ""
+  },
+  {
+    "website": "krypital.com\/",
+    "is_individual": false,
+    "name": "Krypital Group",
+    "uid": "krypital-group",
+    "description": "Krypital Group is a global venture capital firm and blockchain incubator providing end to end services such as project incubation."
+  },
+  {
+    "is_individual": false,
+    "name": "OK Blockchain Capital",
+    "website": "www.okcoin.com\/capital",
+    "uid": "ok-blockchain-capital",
+    "description": "OK Blockchain Capital provides fully-integrated blockchain services for extraordinary projects."
+  },
+  {
+    "name": "Cabin VC",
+    "website": "www.cabin.vc\/",
+    "uid": "cabin-vc",
+    "is_individual": false,
+    "description": "We are participating in the wave of digital change of blockchain technology to real society via public welfare and investing."
+  },
+  {
+    "uid": "binance",
+    "description": "Binance is a cryptocurrency exchange platform that combines digital technology and finance.",
+    "is_individual": false,
+    "name": "Binance",
+    "website": "www.binance.com"
+  },
+  {
+    "description": "Cadenza Capital Management is an investment firm with a focus on digital finance.",
+    "uid": "cadenza-capital-management",
+    "name": "Cadenza Capital Management",
+    "website": "cadenza.vc",
+    "is_individual": false
+  },
+  {
+    "uid": "primitive-ventures",
+    "name": "Primitive Ventures",
+    "is_individual": false,
+    "website": "primitive.ventures\/",
+    "description": "Primitive Ventures is an international venture investment firm that invests on blockchain and cryptocurrency technologies."
+  },
+  {
+    "website": "www.dcp.capital",
+    "is_individual": false,
+    "uid": "dragonfly-capital-partners",
+    "description": "Dragonfly Capital Partners are investing in and supporting the most promising opportunities in the cryptoasset class.",
+    "name": "Dragonfly Capital Partners"
+  },
+  {
+    "name": "Amino Capital",
+    "description": "Amino Capital focusing on data driven startups, and blockchain powered next generation protocols.",
+    "uid": "amino-capital",
+    "website": "www.aminocapital.com",
+    "is_individual": false
+  },
+  {
+    "name": "Plasma Capital",
+    "website": "www.plasmacapital.net",
+    "uid": "plasma-capital",
+    "description": "Plasma capital is an investment firm specialising in blockchain technology and digital assets.",
+    "is_individual": false
+  },
+  {
+    "uid": "caffeinated-capital",
+    "website": "caffeinatedcapital.com\/",
+    "name": "Caffeinated Capital",
+    "is_individual": false,
+    "description": "Caffeinated Capital is a San Francisco based technology investment firm founded by Raymond Tonsing."
+  },
+  {
+    "is_individual": false,
+    "name": "Kindred Ventures",
+    "website": "www.kindredventures.com",
+    "description": "Kindred Ventures is a seed-stage venture capital fund based in San Francisco, California.",
+    "uid": "kindred-ventures"
+  },
+  {
+    "description": "a16z crypto is a venture fund that will invest in crypto companies and protocols.",
+    "uid": "a16z-crypto",
+    "website": "a16z.com\/crypto\/",
+    "name": "a16z crypto",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "uid": "bain-capital-ventures",
+    "name": "Bain Capital Ventures",
+    "website": "baincapitalventures.com",
+    "description": "Bain Capital Ventures invests in seed to growth-stage startups that uses tech to disrupt existing markets or create entirely new ones."
+  },
+  {
+    "name": "Craft Ventures",
+    "description": "Craft Ventures is an early-stage venture fund specializing in the craft of building great companies.",
+    "uid": "craft-ventures",
+    "website": "craftventures.com\/",
+    "is_individual": false
+  },
+  {
+    "uid": "vy-capital",
+    "website": "www.vycapital.com",
+    "description": "Vy Capital is an investment firm that focuses on the internet and software industry.",
+    "name": "Vy Capital",
+    "is_individual": false
+  },
+  {
+    "uid": "gsr",
+    "is_individual": false,
+    "website": "www.gsr.io",
+    "name": "GSR",
+    "description": "GSR, founded in 2013, is a global leader in digital asset trading and market making."
+  },
+  {
+    "name": "RockTree Capital",
+    "website": "www.rocktreecapital.com\/",
+    "is_individual": false,
+    "description": "RockTree Capital is a pioneer in international merchant banking.",
+    "uid": "rocktree-capital"
+  },
+  {
+    "is_individual": false,
+    "name": "Scalar Capital",
+    "uid": "scalar-capital",
+    "description": "Scalar Capital is a hedge fund company specializing in cryptoassets.",
+    "website": "scalar.capital"
+  },
+  {
+    "description": "Crypto market maker focused on high-frequency algorithmic trading and market making services.",
+    "uid": "wintermute-trading",
+    "name": "Wintermute Trading",
+    "is_individual": false,
+    "website": "www.wintermute-trading.com\/"
+  },
+  {
+    "uid": "finlink-capital",
+    "name": "Finlink Capital",
+    "website": "",
+    "description": "Finlink Capital is an investment firm.",
+    "is_individual": false
+  },
+  {
+    "uid": "kronos-research",
+    "name": "Kronos Research",
+    "is_individual": false,
+    "description": "Kronos delivers superior trading performance and liquidity",
+    "website": "kronosresearch.com"
+  },
+  {
+    "website": "menai.io\/",
+    "is_individual": false,
+    "name": "Menai Financial Group",
+    "uid": "menai-financial-group",
+    "description": "Menai is developing the fundamental components of markets and investment infrastructure."
+  },
+  {
+    "uid": "mgnr-io",
+    "website": "mgnr.io\/",
+    "name": "mgnr.io",
+    "is_individual": false,
+    "description": "mgnr.io is a systematic proprietary trading firm that uses innovative quantitative research and rigorous engineering."
+  },
+  {
+    "description": "Proprietary trading and market making firm",
+    "uid": "sixtant",
+    "website": "sixtant.io",
+    "name": "Sixtant",
+    "is_individual": false
+  },
+  {
+    "website": "www.starkware.co",
+    "is_individual": false,
+    "uid": "starkware-industries",
+    "name": "StarkWare Industries",
+    "description": "StarkWare Industries develops a full-proof stack in generating and verifying proofs of computational integrity in the blockchain."
+  },
+  {
+    "website": "",
+    "is_individual": false,
+    "name": "Ethereal Ventures",
+    "description": "Ethereal Ventures a new venture fund established by Joseph Lubin.",
+    "uid": "ethereal-ventures"
+  },
+  {
+    "is_individual": false,
+    "name": "Figment",
+    "uid": "figment",
+    "website": "figment.io",
+    "description": "Figment supports the adoption, growth and long term success of the Web 3 ecosystem."
+  },
+  {
+    "name": "CoinGecko",
+    "website": "www.coingecko.com",
+    "description": "CoinGecko provides a data platform, digital currency prices, and fundamental analysis of the cryptocurrency market.",
+    "uid": "coingecko",
+    "is_individual": false
+  },
+  {
+    "name": "TokenSuite Ventures",
+    "description": "TokenSuite Ventures is a blockchain incubator that focuses on investing in, developing, and marketing innovative blockchain solutions.",
+    "uid": "tokensuite-ventures",
+    "website": "tokensuite.ventures\/",
+    "is_individual": false
+  },
+  {
+    "description": "Collider Ventures is an early-stage venture capital blockchain & cryptocurrency fund.",
+    "name": "Collider Ventures",
+    "is_individual": false,
+    "uid": "collider-ventures",
+    "website": "www.collider.vc\/"
+  },
+  {
+    "website": "g1.vc\/",
+    "name": "G1 Ventures",
+    "description": "Blockchain VC with practical approach",
+    "uid": "g1-ventures",
+    "is_individual": false
+  },
+  {
+    "name": "Gnosis",
+    "description": "Gnosis provides a decentralized platform for prediction markets.",
+    "website": "gnosis.io\/",
+    "uid": "gnosis",
+    "is_individual": false
+  },
+  {
+    "description": "Crypto.com Capital is a venture arm dedicated on investing in crypto startups at Seed and Series A stages.",
+    "name": "Crypto.com Capital",
+    "website": "crypto.com\/capital",
+    "is_individual": false,
+    "uid": "crypto-com-capital"
+  },
+  {
+    "uid": "fisher8-capital",
+    "name": "Fisher8 Capital",
+    "is_individual": false,
+    "description": "Fisher8 Capital operates as an investment firm.",
+    "website": "www.fisher8.capital\/"
+  },
+  {
+    "uid": "harvest-finance",
+    "website": "harvest.finance\/",
+    "name": "Harvest Finance",
+    "description": "Harvest Finance automatically farms the highest yields in DeFi.",
+    "is_individual": false
+  },
+  {
+    "website": "token.im\/",
+    "name": "imToken",
+    "uid": "imtoken",
+    "description": "imToken is the world’s largest Ethereum digital asset wallet.",
+    "is_individual": false
+  },
+  {
+    "name": "LedgerPrime",
+    "website": "www.ledgerprime.com\/",
+    "uid": "ledgerprime",
+    "description": "LedgerPrime is a Digital Asset Investment Firm",
+    "is_individual": false
+  },
+  {
+    "uid": "origin-capital",
+    "website": "www.origincapital.ie\/",
+    "name": "Origin Capital",
+    "description": "Origin Capital provides a real alternative to traditional funding options in the Irish commercial real estate market.",
+    "is_individual": false
+  },
+  {
+    "uid": "parataxis-capital",
+    "website": "www.parataxis.io\/",
+    "description": "Parataxis Capital is a multi-strategy investment firm focused on the digital asset sector",
+    "name": "Parataxis Capital",
+    "is_individual": false
+  },
+  {
+    "uid": "strategic-round-capital",
+    "is_individual": false,
+    "website": "www.src.capital\/",
+    "description": "Strategic Round Capital invests in early-stage blockchain projects.",
+    "name": "Strategic Round Capital"
+  },
+  {
+    "name": "TRGC",
+    "website": "trgc.io\/",
+    "uid": "trgc",
+    "is_individual": false,
+    "description": "TRGC is a digital asset fund focused on investment opportunities that will spark the internet’s next paradigm shift."
+  },
+  {
+    "is_individual": false,
+    "name": "Standard Crypto",
+    "website": "standardcrypto.vc\/",
+    "description": "Standard Crypto is an investment firm.",
+    "uid": "standard-crypto"
+  },
+  {
+    "website": "alphasigma.fund\/",
+    "is_individual": false,
+    "description": "Alpha Sigma Capital is a hedge fund management firm investing in technology companies that are leveraging blockchain technology.",
+    "name": "Alpha Sigma Capital",
+    "uid": "alpha-sigma-capital"
+  },
+  {
+    "uid": "tether",
+    "name": "Tether",
+    "website": "tether.to",
+    "is_individual": false,
+    "description": "Tether Holdings operates a platform to store, send, and receive local currency person to person globally."
+  },
+  {
+    "website": "tokentus.com\/",
+    "description": "Venture capital investor for blockchain based business models.",
+    "is_individual": false,
+    "name": "tokentus investment AG",
+    "uid": "tokentus-investment-ag"
+  },
+  {
+    "is_individual": false,
+    "description": "Caisse de Depot et Placement du Quebec is a Canadian fund management company focused on retirement plans and insurance policies.",
+    "website": "www.cdpq.com\/",
+    "name": "Caisse de Depot et Placement du Quebec",
+    "uid": "caisse-de-depot-et-placement-du-quebec"
+  },
+  {
+    "description": "WestCap is an early growth-oriented investment firm that specializes in the fields of e-commerce, mobile payments, and private markets.",
+    "website": "www.westcap.com\/",
+    "uid": "westcap",
+    "name": "WestCap",
+    "is_individual": false
+  },
+  {
+    "name": "Scanate",
+    "website": "scanate.co\/",
+    "description": "Scanate is a vertical agnostic fund that invests off its balance sheet.",
+    "is_individual": false,
+    "uid": "scanate"
+  },
+  {
+    "website": "",
+    "name": "Walden Bridge Capital",
+    "description": "Walden Bridge Capital",
+    "uid": "walden-bridge-capital",
+    "is_individual": false
+  },
+  {
+    "name": "Wyre Capital",
+    "is_individual": false,
+    "description": "Wyre Capital invests in digital assets and projects driving the decentralization of finance, applications, and the web.",
+    "website": "sendwyre.com",
+    "uid": "wyre-capital"
+  },
+  {
+    "description": "Bloccelerate is a global accelerator and a fund focused on investing in blockchain companies all over the world.",
+    "website": "www.bloccelerate.vc\/",
+    "name": "Bloccelerate",
+    "is_individual": false,
+    "uid": "bloccelerate"
+  },
+  {
+    "website": "compound.vc\/",
+    "description": "Compound is a venture capital firm that invests in bleeding-edge technology built by outliers.",
+    "name": "Compound",
+    "uid": "compound",
+    "is_individual": false
+  },
+  {
+    "uid": "south-park-commons",
+    "website": "www.southparkcommons.com",
+    "is_individual": false,
+    "name": "South Park Commons",
+    "description": "South Park Commons brings together talented people to share ideas, explore directions, and realize the opportunities that’ll get you there."
+  },
+  {
+    "description": "Transmedia Capital is one of the leading micro funds in Silicon Valley.",
+    "name": "Transmedia Capital",
+    "uid": "transmedia-capital",
+    "website": "www.transmediacapital.com",
+    "is_individual": false
+  },
+  {
+    "name": "Genesis Capital",
+    "uid": "genesis-capital",
+    "description": "Genesis Capital is the largest institutional digital asset lender, including over $10B in 2020 YTD.",
+    "is_individual": false,
+    "website": ""
+  },
+  {
+    "is_individual": false,
+    "name": "2020 Ventures",
+    "description": "2020 Ventures is a privately-held fund-investing company for startups operating in technology, media, retail, and finance industries.",
+    "uid": "2020-ventures",
+    "website": "2020.co"
+  },
+  {
+    "uid": "coil",
+    "name": "Coil",
+    "description": "Coil specializes in providing web content monetization solutions.",
+    "website": "coil.com\/",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "description": "Fund investing in teams that revolutionize exchanges between seekers and providers of goods, services, and information.",
+    "uid": "hard-yaka",
+    "website": "hardyaka.com\/",
+    "name": "Hard Yaka"
+  },
+  {
+    "description": "Xpring is a Ripple initiative that builds infrastructure",
+    "website": "xpring.co\/",
+    "name": "Xpring",
+    "uid": "xpring",
+    "is_individual": false
+  },
+  {
+    "website": "www.tomahawk.vc\/",
+    "is_individual": false,
+    "description": "Entrepreneur-led early stage venture capital firm",
+    "uid": "tomahawk-vc",
+    "name": "Tomahawk.VC"
+  },
+  {
+    "website": "angeldao.org\/",
+    "description": "AngelDAO operates as a decentralized autonomous organization.",
+    "is_individual": false,
+    "uid": "angeldao",
+    "name": "AngelDAO"
+  },
+  {
+    "uid": "cmb-international-capital-corporation",
+    "name": "CMB International Capital Corporation",
+    "website": "www.cmbi.com.hk\/cmbisc\/index.aspx",
+    "is_individual": false,
+    "description": "CMB International Capital Corporation offers comprehensive professional services and financial advisory services."
+  },
+  {
+    "uid": "signal-ventures",
+    "website": "signal.vc",
+    "is_individual": false,
+    "name": "Signal Ventures",
+    "description": "Hedge Fund, Venture Capital"
+  },
+  {
+    "website": "handshake.org\/",
+    "description": "Handshake is a decentralized, permissionless naming protocol compatible.",
+    "is_individual": false,
+    "uid": "handshake",
+    "name": "Handshake"
+  },
+  {
+    "name": "SparkLabs Korea",
+    "website": "sparklabs.co.kr\/lb\/index.php",
+    "description": "SparkLabs Korea is a startup accelerator with a focus on companies from the Internet, mobile, e-commerce, and digital media sectors.",
+    "uid": "sparklabs-korea",
+    "is_individual": false
+  },
+  {
+    "uid": "3commas",
+    "website": "3commas.io",
+    "is_individual": false,
+    "name": "3Commas",
+    "description": "3Commas provides a platform for cryptocurrency investors to trade with minimal risks, limit losses, and increase profits."
+  },
+  {
+    "description": "One Block Capital is a leading blockchain investment & advisory group based in Hong Kong.",
+    "uid": "one-block-capital",
+    "name": "One Block Capital",
+    "website": "oneblockcapital.com",
+    "is_individual": false
+  },
+  {
+    "description": "Raydium provides on-chain liquidity to a central limit order book, meaning that pools have access to all order flow and liquidity on Serum.",
+    "name": "Raydium",
+    "website": "raydium.io\/",
+    "is_individual": false,
+    "uid": "raydium"
+  },
+  {
+    "website": "www.solidity.ventures\/",
+    "is_individual": false,
+    "name": "Solidity Ventures",
+    "description": "Solidity Ventures is a venture capital firm investing in DeFi primitives and key infrastructure for layer-1 blockchain platforms.",
+    "uid": "solidity-ventures"
+  },
+  {
+    "name": "Dunamu & Partners",
+    "website": "dunamupartners.com\/",
+    "uid": "dunamu-partners",
+    "description": "Dunamu & Partners is the investment arm of Dunamu, primarily investing in blockchain&fintech, data&AI, and consumer services sectors.",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "uid": "seax-ventures",
+    "name": "SeaX Ventures",
+    "description": "Southeast Asia Exponential Ventures is a venture capital firm investing globally in early-stage companies",
+    "website": ""
+  },
+  {
+    "description": "Sequoia Capital India is a venture capital firm that invests in consumer, technology, and healthcare.",
+    "uid": "sequoia-capital-india",
+    "website": "www.sequoiacap.com\/india\/",
+    "is_individual": false,
+    "name": "Sequoia Capital India"
+  },
+  {
+    "description": "Woodstock is an investment firm.",
+    "website": "",
+    "is_individual": false,
+    "uid": "woodstock",
+    "name": "Woodstock"
+  },
+  {
+    "uid": "makerdao",
+    "name": "MakerDAO",
+    "description": "Maker is a decentralized autonomous organization on the Ethereum blockchain.",
+    "is_individual": false,
+    "website": "makerdao.com\/"
+  },
+  {
+    "website": "dlab.vc",
+    "is_individual": false,
+    "uid": "dlab",
+    "description": "dlab is a startup accelerator and venture studio run by SOSV that explores new topics in decentralization and blockchain technology.",
+    "name": "dlab"
+  },
+  {
+    "uid": "emurgo",
+    "is_individual": false,
+    "name": "Emurgo",
+    "description": "Emurgo develops, support, and incubate commercial ventures on Cardano.",
+    "website": "www.emurgo.io\/"
+  },
+  {
+    "name": "Raystone Capital",
+    "description": "Raystone Capital is an asset management company.",
+    "website": "www.raystonecapital.com\/",
+    "is_individual": false,
+    "uid": "raystone-capital"
+  },
+  {
+    "uid": "outlier-ventures-base-camp",
+    "name": "Outlier Ventures Base Camp",
+    "website": "outlierventures.io\/base-camp\/",
+    "description": "Outlier Ventures Base Camp finances and provides a launch pad for pre-seed projects.",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "name": "Jun Capital",
+    "uid": "jun-capital",
+    "website": "en.zhijuncapital.com\/",
+    "description": "Jun Capital provides an investment management service."
+  },
+  {
+    "is_individual": false,
+    "uid": "megala-ventures",
+    "description": "Megala Ventures is an institutional investor of Blockchain and distributed ledger technologies.",
+    "website": "megala.ventures\/",
+    "name": "Megala Ventures"
+  },
+  {
+    "is_individual": false,
+    "uid": "bitblock-capital",
+    "website": "www.bitblockcap.com\/",
+    "description": "BitBlock is a blockchain investment, consulting and service corporation.",
+    "name": "BitBlock Capital"
+  },
+  {
+    "website": "bixincapital.com",
+    "description": "Bixin Ventures devotes to discover promising projects in the Blockchain revolution and to grow them fast.",
+    "name": "Bixin Ventures",
+    "is_individual": false,
+    "uid": "bixin-ventures"
+  },
+  {
+    "website": "btc12.com\/",
+    "description": "BTC12 Capital is a blockchain investment fund.",
+    "is_individual": false,
+    "uid": "btc12-capital",
+    "name": "BTC12 Capital"
+  },
+  {
+    "website": "sparkdigitalcapital.com\/",
+    "description": "Spark Digital Capital is a family office that invests in blockchain enabled companies.",
+    "name": "Spark Digital Capital",
+    "uid": "spark-digital-capital",
+    "is_individual": false
+  },
+  {
+    "uid": "zmt-capital",
+    "description": "Technology driven investment firm focused on Fintech, Mobile, Hardware, AI, Blockchain and Cryptocurrencies",
+    "is_individual": false,
+    "website": "www.zmtcapital.com",
+    "name": "ZMT Capital"
+  },
+  {
+    "description": "Animoca Brands develops and publishes mobile games and products based on popular intellectual property.",
+    "uid": "animoca-brands",
+    "name": "Animoca Brands",
+    "website": "www.animocabrands.com",
+    "is_individual": false
+  },
+  {
+    "description": "500 Startups Vietnam is a tech focused seed stage investor",
+    "uid": "500-startups-vietnam",
+    "name": "500 Startups Vietnam",
+    "is_individual": false,
+    "website": "vietnam.500.co\/"
+  },
+  {
+    "is_individual": false,
+    "description": "ConsenSys develops enterprise applications, invests in startups, builds developer tools, and offers blockchain education.",
+    "name": "ConsenSys",
+    "website": "www.consensys.net",
+    "uid": "consensys"
+  },
+  {
+    "name": "Pangea Blockchain Fund",
+    "website": "www.pangeablockchain.ch",
+    "description": "Pangea Blockchain Fund offers intellectual and financial capital to early-stage blockchain companies from around the world",
+    "uid": "pangea-blockchain-fund",
+    "is_individual": false
+  },
+  {
+    "name": "Cluster Capital",
+    "website": "www.cluster.vc\/",
+    "is_individual": false,
+    "uid": "cluster-capital",
+    "description": "Cluster Capital is a global network of crypto investors, media influencers, and entrepreneurs."
+  },
+  {
+    "uid": "metaverse-ventures",
+    "is_individual": false,
+    "description": "Metaverse Ventures invests in companies that are building products and services for Decentraland and the decentralized metaverse.",
+    "website": "metaverseventures.co\/",
+    "name": "Metaverse Ventures"
+  },
+  {
+    "uid": "ascensive-assets",
+    "description": "Ascensive Asset is a private investment firm focusing solely on digital assets industry",
+    "is_individual": false,
+    "name": "Ascensive Assets",
+    "website": "ascensiveassets.com\/"
+  },
+  {
+    "website": "flamingodao.xyz\/",
+    "uid": "flamingo-dao",
+    "is_individual": false,
+    "description": "Flamingo DAO is an NFT-focused DAO that aims to explore emerging investment opportunities for ownable, blockchain-based assets.",
+    "name": "Flamingo DAO"
+  },
+  {
+    "is_individual": false,
+    "description": "SevenX Ventures provides insights and operational expertise to help blockchain startups in growing.",
+    "website": "www.7xvc.com\/",
+    "uid": "sevenx-ventures",
+    "name": "SevenX Ventures"
+  },
+  {
+    "website": "",
+    "is_individual": false,
+    "uid": "sparq-ventures",
+    "name": "Sparq Ventures",
+    "description": ""
+  },
+  {
+    "uid": "bitkraft-ventures",
+    "website": "www.bitkraft.vc",
+    "is_individual": false,
+    "description": "BITKRAFT Ventures is an early-stage investment platform for gaming, esports, and interactive media.",
+    "name": "BITKRAFT Ventures"
+  },
+  {
+    "name": "Third Prime",
+    "description": "FinTech, PropTech, and Crypto sectors. We invest in world-class entrepreneurs and support them over the long haul.",
+    "website": "www.thirdprime.vc",
+    "uid": "third-prime",
+    "is_individual": false
+  },
+  {
+    "name": "Atelier Ventures",
+    "website": "www.atelierventures.co\/",
+    "is_individual": false,
+    "uid": "atelier-ventures",
+    "description": "Atelier Ventures is an early-stage venture firm investing in the Passion Economy."
+  },
+  {
+    "is_individual": false,
+    "description": "Infinity Ventures Crypto invests in future of intelligent protocols.",
+    "website": "www.ivcrypto.io\/",
+    "uid": "infinity-ventures-crypto",
+    "name": "Infinity Ventures Crypto"
+  },
+  {
+    "description": "Kingsway Capital is a investment management firm.",
+    "website": "www.kingswaycap.com\/",
+    "is_individual": false,
+    "uid": "kingsway-capital",
+    "name": "Kingsway Capital"
+  },
+  {
+    "is_individual": false,
+    "uid": "angelhub",
+    "name": "AngelHub",
+    "website": "angelhub.io\/",
+    "description": "AngelHub is the only SFC-regulated tech investment platform that enables investors to co-invest on a deal by deal basis"
+  },
+  {
+    "uid": "mindfulness-capital",
+    "description": "Embrace changes mindfully",
+    "website": "mindfulnesscap.com\/",
+    "is_individual": false,
+    "name": "Mindfulness Capital"
+  },
+  {
+    "uid": "square-enix",
+    "name": "Square Enix",
+    "website": "www.jp.square-enix.com\/",
+    "is_individual": false,
+    "description": "Square Enix develops, publishes, and markets interactive entertainment titles worldwide."
+  },
+  {
+    "description": "True Global Ventures invests in early-stage companies involved in internet, software and mobile technologies.",
+    "uid": "true-global-ventures-tgv",
+    "name": "True Global Ventures (TGV)",
+    "website": "www.tgv4plus.com",
+    "is_individual": false
+  },
+  {
+    "description": "Blue Pool Capital is a Hong Kong based alternative asset manager licensed by the Hong Kong.",
+    "is_individual": false,
+    "uid": "blue-pool-capital",
+    "name": "Blue Pool Capital",
+    "website": "www.bluepoolcapital.com"
+  },
+  {
+    "name": "Galaxy Interactive",
+    "description": "Galaxy Interactive is a venture capital firm focused on interactive content and technology companies.",
+    "is_individual": false,
+    "website": "galaxyinteractive.io",
+    "uid": "galaxy-interactive"
+  },
+  {
+    "name": "Liberty City Ventures",
+    "website": "libertycityventures.com",
+    "description": "Liberty City Ventures invest in startups that are innovating at the cross-sections of technology, media and commerce.",
+    "is_individual": false,
+    "uid": "liberty-city-ventures"
+  },
+  {
+    "uid": "softbank",
+    "description": "SoftBank provides fixed-line, mobile telephony, internet, telecommunications, and digital television products.",
+    "website": "global.softbank",
+    "name": "SoftBank",
+    "is_individual": false
+  },
+  {
+    "description": "Sterling.VC is a sports, media and real estate VC fund supported by Sterling Equities, the principal owner of the Mets, SNY, and OverwatchNY",
+    "website": "www.sterling.vc",
+    "is_individual": false,
+    "uid": "sterling-vc",
+    "name": "Sterling.VC"
+  },
+  {
+    "uid": "hillrise-ventures",
+    "is_individual": false,
+    "description": "Private investment arm of Hillrise Group. Supporting ambitious Web3 startups with early-stage venture capital.",
+    "name": "Hillrise Ventures",
+    "website": "ventures.hillrise.group"
+  },
+  {
+    "website": "ldcap.com\/",
+    "uid": "ld-capital",
+    "is_individual": false,
+    "description": "LD Capital is an VC investors in the blockchain field in Asia.",
+    "name": "LD Capital"
+  },
+  {
+    "uid": "longling-capital",
+    "description": "LongLing Capital is an investment Firm.",
+    "website": "www.longling.com\/",
+    "is_individual": false,
+    "name": "LongLing Capital"
+  },
+  {
+    "name": "Momentum 6",
+    "website": "momentum6.com\/",
+    "uid": "momentum-6",
+    "description": "Momentum 6 architect momentum for crypto and blockchain projects.",
+    "is_individual": false
+  },
+  {
+    "website": "moonwhale.io\/",
+    "name": "Moonwhale Ventures",
+    "is_individual": false,
+    "description": "Moonwhale Ventures is providing STO advisory to existing businesses and startups.",
+    "uid": "moonwhale-ventures"
+  },
+  {
+    "description": "X21 Digital incubate, advise, fund & support blockchain projects towards sustainable success.",
+    "is_individual": false,
+    "uid": "x21-digital",
+    "name": "X21 Digital",
+    "website": "x21digital.com\/"
+  },
+  {
+    "uid": "mih-ventures",
+    "name": "MiH Ventures",
+    "website": "www.mih.vc\/",
+    "is_individual": false,
+    "description": "MiH Ventures is an investment vehicle with a focus on emerging digital assets and blockchain technology."
+  },
+  {
+    "description": "Authorito is an actively managed open-ended crypto fund.",
+    "uid": "authorito-capital",
+    "name": "Authorito Capital",
+    "website": "authorito.com\/",
+    "is_individual": false
+  },
+  {
+    "name": "NGC Partners",
+    "description": "NGC Partners is an investment and asset management firm focused on the clean energy sector.",
+    "website": "www.ngcpartners.com\/",
+    "is_individual": false,
+    "uid": "ngc-partners"
+  },
+  {
+    "is_individual": false,
+    "uid": "bibox-fund",
+    "website": "",
+    "description": "",
+    "name": "Bibox Fund"
+  },
+  {
+    "website": "ely.vc",
+    "name": "Elysium Venture Capital",
+    "is_individual": false,
+    "description": "Elysium Venture Capital is an investment management group focused on global technology opportunities.",
+    "uid": "elysium-venture-capital"
+  },
+  {
+    "description": "VC, Consulting, Acceleration of FinTech and Blockchain Startups",
+    "uid": "jrr-group",
+    "name": "JRR Group",
+    "website": "www.jrr.group",
+    "is_individual": false
+  },
+  {
+    "name": "Link VC",
+    "description": "LinkVC committed to serving outstanding companies and developers in the field of blockchain.",
+    "uid": "link-vc",
+    "website": "www.linkvc.com\/",
+    "is_individual": false
+  },
+  {
+    "description": "Nirvana Venture Advisors invests in early-­stage and market leading companies in the fast growing Indian internet and mobile segments.",
+    "website": "www.nirvanaventures.in",
+    "uid": "nirvana-venture-advisors",
+    "name": "Nirvana Venture Advisors",
+    "is_individual": false
+  },
+  {
+    "description": "Aspect Ventures is a venture capital firm investing in the emerging mobile marketplace.",
+    "website": "www.aspectventures.com",
+    "name": "Aspect Ventures",
+    "is_individual": false,
+    "uid": "aspect-ventures"
+  },
+  {
+    "website": "www.canaan.com",
+    "name": "Canaan Partners",
+    "uid": "canaan-partners",
+    "is_individual": false,
+    "description": "Canaan is an early-stage venture capital firm that invests in visionaries with transformative ideas."
+  },
+  {
+    "uid": "floodgate",
+    "description": "Floodgate caters to digital businesses with early, seed, and later stage venture, and debt financing investments.",
+    "website": "www.floodgate.com",
+    "name": "Floodgate",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "description": "Hack VC is a venture capital firm investing in early-stage startups.",
+    "name": "Hack VC",
+    "uid": "hack-vc",
+    "website": "hack-vc.com"
+  },
+  {
+    "uid": "mw-partners-group",
+    "description": "MW Partners is a private investment firm focused exclusively on blockchain-enabled projects.",
+    "name": "MW Partners Group",
+    "website": "mwpartners.io",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "description": "Oyster Ventures is a venture capital firm investing in exceptional new-frontier technology companies.",
+    "name": "Oyster Ventures",
+    "website": "oyster.vc",
+    "uid": "oyster-ventures"
+  },
+  {
+    "name": "Signia Venture Partners",
+    "website": "signiaventurepartners.com\/",
+    "is_individual": false,
+    "description": "Signia Venture Partners is an early stage fund helping passionate entrepreneurs build impactful world-changing companies.",
+    "uid": "signia-venture-partners"
+  },
+  {
+    "name": "Wavemaker Genesis",
+    "is_individual": false,
+    "uid": "wavemaker-genesis",
+    "description": "Wavemaker Genesis brings an early stage venture model to the crypto economy.",
+    "website": "www.wavegp.com\/"
+  },
+  {
+    "name": "Recruit Holdings",
+    "is_individual": false,
+    "website": "recruit-holdings.com\/",
+    "description": "Recruit Holdings is a Tokyo-based company that specializes in HR and recruitment services.",
+    "uid": "recruit-holdings"
+  },
+  {
+    "website": "www.consensus-lab.com",
+    "is_individual": false,
+    "description": "Empower inspiring projects in blockchain",
+    "uid": "consensus-lab",
+    "name": "Consensus Lab"
+  },
+  {
+    "is_individual": false,
+    "description": "PaperShip Capital Pioneers In The Crypto Investment World. PaperShip Capital is an Intelligent’s way of investing in Internet Money.",
+    "website": "www.papership.capital",
+    "name": "Papership Capital",
+    "uid": "papership-capital"
+  },
+  {
+    "is_individual": false,
+    "description": "AscendEX is global operator of digital asset exchanges for diverse groups of clients from retail to institutions.",
+    "uid": "ascendex",
+    "name": "AscendEX",
+    "website": "ascendex.com\/"
+  },
+  {
+    "website": "",
+    "uid": "bixin",
+    "name": "Bixin",
+    "description": "Social networking app for game players based in Shanghai.",
+    "is_individual": false
+  },
+  {
+    "name": "Focus Labs",
+    "website": "focuslabs.io",
+    "is_individual": false,
+    "uid": "focus-labs",
+    "description": ""
+  },
+  {
+    "is_individual": false,
+    "uid": "bamboo-sea-ventures",
+    "name": "Bamboo Sea Ventures",
+    "website": "www.bamboosea.vc",
+    "description": "Angel investment firm, consulting and corporate services provider"
+  },
+  {
+    "description": "Nodex Capital was founded by Singaporean partners experienced in entrepreneurship and capital markets",
+    "is_individual": false,
+    "name": "Nodex Capital",
+    "website": "",
+    "uid": "nodex-capital"
+  },
+  {
+    "website": "www.zeroth.ai\/",
+    "name": "Zeroth.AI",
+    "uid": "zeroth-ai",
+    "description": "Zeroth is an accelerator for early-stage start-ups in artificial intelligence & machine learning companies in Asia.",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "description": "A San Francisco-based pre-seed and seed-stage firm.",
+    "name": "Yes VC",
+    "uid": "yes-vc",
+    "website": "yes.vc\/"
+  },
+  {
+    "uid": "firestartr",
+    "description": "Firestartr helps the most promising digital entrepreneurs take their companies from seed stage to Series A and beyond.",
+    "website": "www.firestartr.co",
+    "name": "Firestartr",
+    "is_individual": false
+  },
+  {
+    "name": "Haitao Capital",
+    "website": "www.haitaocapital.com\/",
+    "is_individual": false,
+    "uid": "haitao-capital",
+    "description": "Haitao Capital is a first China-macro driven early stage venture fund."
+  },
+  {
+    "description": "Founder-First Capital for Innovative Entrepreneurs who want to Change the World.",
+    "uid": "struck-capital",
+    "name": "Struck Capital",
+    "website": "www.struckcapital.com",
+    "is_individual": false
+  },
+  {
+    "uid": "threshold",
+    "description": "Threshold is an early-stage venture capital firm that focuses on conviction investment strategy.",
+    "website": "threshold.vc",
+    "is_individual": false,
+    "name": "Threshold"
+  },
+  {
+    "is_individual": false,
+    "name": "Base Ventures",
+    "description": "Base Ventures is a company investing in seed-stage technology companies.",
+    "website": "base.ventures",
+    "uid": "base-ventures"
+  },
+  {
+    "uid": "fusion-fund",
+    "name": "Fusion Fund",
+    "website": "fusionfund.com\/",
+    "description": "Fusion Fund invests in early stage companies with technological and data advantages in industrial, enterprise, and healthcare applications.",
+    "is_individual": false
+  },
+  {
+    "uid": "mission-and-market",
+    "is_individual": false,
+    "description": "Mission and Market is a micro-venture capital firm focused on seed investments in many areas, including big data, software-powered biotech.",
+    "website": "m14t.com\/",
+    "name": "Mission and Market"
+  },
+  {
+    "website": "www.ycombinator.com",
+    "uid": "y-combinator",
+    "description": "Y Combinator is a startup accelerator that invests in a wide range of startups twice a year.",
+    "is_individual": false,
+    "name": "Y Combinator"
+  },
+  {
+    "description": "CDL is a nonprofit that delivers an objectives-based program for massively scalable, seed-stage, science, and technology-based companies.",
+    "name": "Creative Destruction Lab (CDL)",
+    "is_individual": false,
+    "website": "www.creativedestructionlab.com\/",
+    "uid": "creative-destruction-lab-cdl"
+  },
+  {
+    "uid": "satoshi-fund",
+    "website": "satoshi.fund\/",
+    "description": "Satoshi Fund is the securest way to invest in Blockchain Assets.",
+    "is_individual": false,
+    "name": "Satoshi Fund"
+  },
+  {
+    "description": "BitFury’s investment arm which supports the growth of the Bitcoin ecosystem through strategic partnerships and business opportunities.",
+    "is_individual": false,
+    "uid": "bitfury-capital",
+    "name": "BitFury Capital",
+    "website": "bitfurycapital.com\/"
+  },
+  {
+    "uid": "bitmain",
+    "website": "www.bitmain.com",
+    "description": "Bitmain is a design and manufacture of high performance computing chips and software.",
+    "is_individual": false,
+    "name": "Bitmain"
+  },
+  {
+    "uid": "coefficient-ventures",
+    "website": "www.coefficientventures.com",
+    "is_individual": false,
+    "description": "Coefficient Ventures is an asset management firm that specializes in blockchain technology investments.",
+    "name": "Coefficient Ventures"
+  },
+  {
+    "uid": "notation-capital",
+    "website": "notation.vc",
+    "is_individual": false,
+    "description": "Notation Capital is a pre-seed venture capital firm that work with technical founding teams.",
+    "name": "Notation Capital"
+  },
+  {
+    "description": "Y Combinator Continuity is an investment fund dedicated to supporting founders as they scale their companies.",
+    "name": "Y Combinator Continuity Fund",
+    "is_individual": false,
+    "website": "www.ycombinator.com\/continuity\/",
+    "uid": "y-combinator-continuity-fund"
+  },
+  {
+    "description": "Daedalus Angel Syndicate is a blockchain-focused angel collective.",
+    "uid": "daedalus-angel-syndicate",
+    "is_individual": false,
+    "website": "",
+    "name": "Daedalus Angel Syndicate"
+  },
+  {
+    "description": "Family Office, Venture Capital, Digital Assets, Cryptocurrency",
+    "is_individual": false,
+    "name": "Double Peak Group",
+    "uid": "double-peak-group",
+    "website": "doublepeak.io"
+  },
+  {
+    "is_individual": false,
+    "website": "www.facultycapital.com\/",
+    "uid": "faculty-capital",
+    "description": "Faculty Capital is a value-driven venture capital firm.",
+    "name": "Faculty Capital"
+  },
+  {
+    "is_individual": false,
+    "uid": "impossible-finance",
+    "name": "Impossible Finance",
+    "website": "impossible.finance\/",
+    "description": "Impossible Finance uses decentralised financial protocols to give everyone the same access to financial products."
+  },
+  {
+    "name": "Collective Ventures",
+    "uid": "collective-ventures",
+    "website": "collective-ventures.org",
+    "description": "Moving financial inclusion forward.",
+    "is_individual": false
+  },
+  {
+    "name": "CoinUnited",
+    "uid": "coinunited",
+    "website": "www.coinunited.io\/",
+    "is_individual": false,
+    "description": "CoinUnited aims to popularize and promote the development and application of cryptocurrency in Hong Kong and Asia."
+  },
+  {
+    "is_individual": false,
+    "website": "el8v.io\/",
+    "description": "Elevate Ventures is an investment firm.",
+    "uid": "elevate-ventures",
+    "name": "Elevate Ventures"
+  },
+  {
+    "website": "sanctumventure.com\/",
+    "description": "Sanctum Ventures is an investment firm.",
+    "uid": "sanctum-ventures",
+    "is_individual": false,
+    "name": "Sanctum Ventures"
+  },
+  {
+    "website": "www.solana.foundation\/",
+    "uid": "solana-foundation",
+    "description": "Solana Foundation is to build, support, and grow the Solana network and its community while driving mass adoption for blockchain.",
+    "is_individual": false,
+    "name": "Solana Foundation"
+  },
+  {
+    "name": "Transfero Swiss",
+    "website": "transferoswiss.ch\/",
+    "is_individual": false,
+    "uid": "transfero-swiss",
+    "description": "Transfero Swiss is a financial service company which focuses on the adoption of digital assets."
+  },
+  {
+    "description": "Cota Capital is an SEC-registered multi-stage investment firm focused on private and public enterprise technology companies.",
+    "uid": "cota-capital",
+    "name": "Cota Capital",
+    "is_individual": false,
+    "website": "cotacapital.com\/"
+  },
+  {
+    "name": "The House Fund",
+    "website": "thehouse.fund",
+    "is_individual": false,
+    "description": "The House Fund is a pre-seed and early stage venture capital fund focused on the boldest Berkeley startups.",
+    "uid": "the-house-fund"
+  },
+  {
+    "description": "Accel is an early and growth-stage venture capital firm that helps a global community of entrepreneurs.",
+    "uid": "accel",
+    "website": "www.accel.com",
+    "name": "Accel",
+    "is_individual": false
+  },
+  {
+    "description": "Basis Set Ventures is an early-stage investment firm focused on artificial intelligence and its practical application.",
+    "uid": "basis-set-ventures",
+    "website": "www.basisset.com",
+    "name": "Basis Set Ventures",
+    "is_individual": false
+  },
+  {
+    "description": "Chainfund Capital is a Global FinTech Fund that invests in the next generation of financial technology.",
+    "is_individual": false,
+    "website": "www.chainfund.capital",
+    "name": "Chainfund Capital",
+    "uid": "chainfund-capital"
+  },
+  {
+    "description": "Dekrypt Capital is a Investment firm focused on core blockchain infrastructure, privacy-preserving protocols, and early-stage ventures.",
+    "is_individual": false,
+    "uid": "dekrypt-capital",
+    "name": "Dekrypt Capital",
+    "website": "dekrypt.capital"
+  },
+  {
+    "description": "Blockchain and venture arm of JD Capital, a $9B AUM public PE fund in China.",
+    "name": "JLAB | JD capital",
+    "is_individual": false,
+    "uid": "jlab-jd-capital",
+    "website": "www.jdcapital.com\/about1\/"
+  },
+  {
+    "description": "Lux Capital is an investment firm investing in counter-conventional, early-stage science, and tech ventures.",
+    "uid": "lux-capital",
+    "website": "www.luxcapital.com",
+    "is_individual": false,
+    "name": "Lux Capital"
+  },
+  {
+    "is_individual": false,
+    "name": "MState",
+    "website": "www.mstate.io\/",
+    "uid": "mstate",
+    "description": "MState invests in distributed system (blockchain) companies that sell to enterprise."
+  },
+  {
+    "uid": "norís-capital",
+    "is_individual": false,
+    "description": "Uniting with the most promising startup teams to build and deploy visionary innovations.",
+    "website": "www.noris.capital",
+    "name": "Norís Capital"
+  },
+  {
+    "website": "coinsgroup.io\/",
+    "description": "Global Capital & Marketing Resources for Blockchain Ventures",
+    "uid": "coins-group",
+    "name": "COINS GROUP",
+    "is_individual": false
+  },
+  {
+    "website": "www.deepwell.ventures",
+    "uid": "deepwell-ventures",
+    "description": "Early Stage Venture Capital Investors",
+    "name": "DeepWell Ventures",
+    "is_individual": false
+  },
+  {
+    "description": "Venture Capital Fund in Blockchain & Distributed Ledger Technology (DLT)",
+    "name": "Maven 11 Capital",
+    "website": "www.maven11.com",
+    "is_individual": false,
+    "uid": "maven-11-capital"
+  },
+  {
+    "description": "Bitfinex is a digital asset trading platform offering state-of-the-art services for digital currency traders and global liquidity providers.",
+    "website": "www.bitfinex.com\/",
+    "uid": "bitfinex",
+    "is_individual": false,
+    "name": "Bitfinex"
+  },
+  {
+    "name": "Caballeros Capital",
+    "website": "caballeroscapital.com\/",
+    "is_individual": false,
+    "description": "Caballeros Capital is a private investment firm focused on investing in the blockchain innovation space.",
+    "uid": "caballeros-capital"
+  },
+  {
+    "uid": "synaitken",
+    "name": "Synaitken",
+    "website": "www.synaitken.com\/",
+    "is_individual": false,
+    "description": ""
+  },
+  {
+    "description": "the operator of South Korea's largest cryptocurrency exchange Upbit",
+    "uid": "dunamu",
+    "website": "",
+    "is_individual": false,
+    "name": "Dunamu"
+  },
+  {
+    "uid": "hof-capital",
+    "is_individual": false,
+    "description": "HOF Capital is a global multistage VC firm with $1 billion in AUM that partners with ambitious entrepreneurs from idea to IPO.",
+    "name": "HOF Capital",
+    "website": "www.hofvc.com"
+  },
+  {
+    "uid": "okex",
+    "website": "www.okex.com",
+    "is_individual": false,
+    "name": "OKEx",
+    "description": "OKEx is a digital asset exchange that provides advanced financial services to traders globally by using blockchain technology."
+  },
+  {
+    "uid": "translink-capital",
+    "is_individual": false,
+    "website": "www.translinkcapital.com",
+    "description": "Translink Capital helps entrepreneurs develop customer connections and partnerships in Asia.",
+    "name": "Translink Capital"
+  },
+  {
+    "name": "Kakao Ventures",
+    "website": "www.medium.com\/kakaoventures",
+    "is_individual": false,
+    "description": "The most active & founder-friendly seed VC of Korea (managing external LP based funds as independent subsidiary of Kakao Corp.)",
+    "uid": "kakao-ventures"
+  },
+  {
+    "name": "Morningstar Ventures",
+    "is_individual": false,
+    "description": "Morningstar Ventures is an investment firm.",
+    "uid": "morningstar-ventures",
+    "website": "morningstar.ventures\/"
+  },
+  {
+    "name": "Impact51",
+    "website": "www.impact51.com\/",
+    "description": "We are a business angel partnership of like-minded, friends and senior executives who invest with passion, personal cash and expertise.",
+    "uid": "impact51",
+    "is_individual": false
+  },
+  {
+    "website": "dascapital.io",
+    "name": "Das Capital",
+    "uid": "das-capital",
+    "is_individual": false,
+    "description": "Das Capital is an investment fund operated by Japanese serial entrepreneur\/investor Shinji Kimura."
+  },
+  {
+    "name": "East Ventures",
+    "uid": "east-ventures",
+    "is_individual": false,
+    "website": "east.vc",
+    "description": "East Ventures is an early stage venture fund focusing on SEA and Japan with 4 unicorns in its portfolio."
+  },
+  {
+    "is_individual": false,
+    "name": "Globe Advisors",
+    "uid": "globe-advisors",
+    "website": "globe-advisors.com",
+    "description": "Globe Advisors is an independent investor that finds companies that are expected to grow significantly in the future."
+  },
+  {
+    "description": "Maffin Inc. is an investment firm.",
+    "uid": "maffin-inc",
+    "website": "",
+    "name": "Maffin Inc.",
+    "is_individual": false
+  },
+  {
+    "description": "OKWAVE creates Q&A community site that aims to enhance the response to inquiries from customers for companies.",
+    "uid": "okwave",
+    "website": "www.okwave.co.jp",
+    "is_individual": false,
+    "name": "OKWave"
+  },
+  {
+    "description": "Saison Ventures is a venture capital firm that invests in seed and early-stage investments and information technology sectors.",
+    "uid": "saison-ventures",
+    "name": "Saison Ventures",
+    "website": "",
+    "is_individual": false
+  },
+  {
+    "website": "",
+    "uid": "sbi-crypto-investment",
+    "name": "SBI Crypto Investment",
+    "is_individual": false,
+    "description": "SBI Crypto Investment is a digital asset venture investment company ."
+  },
+  {
+    "website": "www.ambergroup.io",
+    "description": "Amber Group is a one-stop crypto finance service provider that provides liquidity provision, trading and asset management services 24\/7.",
+    "name": "Amber Group",
+    "uid": "amber-group",
+    "is_individual": false
+  },
+  {
+    "website": "",
+    "uid": "capital6-eagle",
+    "is_individual": false,
+    "description": "Capital6 Eagle is a venture capital firm, specilize in investing with technology startups.",
+    "name": "Capital6 Eagle"
+  },
+  {
+    "uid": "copernicus-asset-management",
+    "is_individual": false,
+    "name": "Copernicus Asset Management",
+    "description": "Copernicus Asset Management SA, a Lugano-based financial services group",
+    "website": "www.copernicus-am.com\/"
+  },
+  {
+    "is_individual": false,
+    "uid": "alumni-ventures",
+    "description": "Alumni Ventures Group provides diversified venture portfolios to individual investors who previously haven't had access to VC.",
+    "website": "www.avgfunds.com",
+    "name": "Alumni Ventures"
+  },
+  {
+    "is_individual": false,
+    "uid": "breyer-capital",
+    "name": "Breyer Capital",
+    "website": "breyercapital.com",
+    "description": "Breyer Capital is a global venture capital and private equity investor that focuses on catalyzing high-impact entrepreneurs."
+  },
+  {
+    "description": "General Catalyst is a venture capital firm that provides early-stage and growth equity investments.",
+    "website": "www.generalcatalyst.com",
+    "uid": "general-catalyst",
+    "name": "General Catalyst",
+    "is_individual": false
+  },
+  {
+    "description": "Venture firm backing companies tackling challenges at the intersection of finance & technology.",
+    "name": "Fenway Summer Ventures",
+    "website": "www.fenwaysummer.com",
+    "uid": "fenway-summer-ventures",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "website": "oakinv.com",
+    "name": "Oak Investment Partners",
+    "uid": "oak-investment-partners",
+    "description": "Oak Investment Partners is a multi-stage venture capital and private equity firm."
+  },
+  {
+    "description": "BoomStartup is a Utah-based accelerator that provides seed funding and mentorship to tech entrepreneurs.",
+    "uid": "boomstartup",
+    "name": "BoomStartup",
+    "website": "boomstartup.com",
+    "is_individual": false
+  },
+  {
+    "description": "GS Growth provides preferred equity and mezzanine capital to high-growth and technology driven companies.",
+    "uid": "gs-growth",
+    "name": "GS Growth",
+    "is_individual": false,
+    "website": "www.goldmansachs.com\/gsgrowth"
+  },
+  {
+    "description": "Baidu is a search engine that enables individuals to obtain information and finds what they need.",
+    "name": "Baidu",
+    "website": "www.baidu.com",
+    "is_individual": false,
+    "uid": "baidu"
+  },
+  {
+    "is_individual": false,
+    "uid": "china-everbright-investment-management",
+    "website": "www.ebinvest.com\/",
+    "description": "China Everbright Investment Management Ltd.",
+    "name": "China Everbright Investment Management"
+  },
+  {
+    "is_individual": false,
+    "uid": "cicc",
+    "description": "CICC, a joint venture investment bank, provides investment banking, capital market, individual sales, and trading services to its clients.",
+    "website": "www.cicc.com\/index_en.xhtml",
+    "name": "CICC"
+  },
+  {
+    "is_individual": false,
+    "uid": "creditease",
+    "website": "creditease.cn",
+    "description": "CreditEase is a business consulting firm that offers wealth management services.",
+    "name": "CreditEase"
+  },
+  {
+    "is_individual": false,
+    "website": "en.ceinnovationcap.com\/",
+    "description": "CE Innovation Capital is an investment firm that provides digital innovation and wealth management services.",
+    "name": "CE Innovation Capital",
+    "uid": "ce-innovation-capital"
+  },
+  {
+    "is_individual": false,
+    "description": "Tusk Venture Partners invests in early-stage technology startups operating in highly-regulated markets.",
+    "uid": "tusk-venture-partners",
+    "website": "tusk.vc",
+    "name": "Tusk Venture Partners"
+  },
+  {
+    "uid": "digital-finance-group",
+    "name": "Digital Finance Group",
+    "is_individual": false,
+    "description": "Diversified investment group that manages $1B in digital & blockchain assets across multiple funds, an incubator and global projects",
+    "website": "www.dfg.group\/"
+  },
+  {
+    "description": "SharesPost Investment Management manages the public Sharespost 100 Fund (PRIVX) and other funds.",
+    "uid": "sharespost-investment-management",
+    "name": "SharesPost Investment Management",
+    "website": "sharespost.com\/sharespost-100-fund\/",
+    "is_individual": false
+  },
+  {
+    "uid": "atlas-merchant-capital",
+    "is_individual": false,
+    "name": "Atlas Merchant Capital",
+    "description": "Atlas Merchant Capital LLC (“Atlas”) was founded in 2013 by Bob Diamond, who has more than 30 years of experience in global financial",
+    "website": "www.atlasmerchantcapital.com"
+  },
+  {
+    "name": "Fidelity Management and Research Company",
+    "website": "www.fidelity.com",
+    "is_individual": false,
+    "description": "Fidelity Management and Research Company is a privately-owned investment manager.",
+    "uid": "fidelity-management-and-research-company"
+  },
+  {
+    "uid": "intersection-fintech-ventures",
+    "name": "Intersection Fintech Ventures",
+    "website": "",
+    "description": "We invest in the leading fintech companies in the world while our search firm, Intersection Growth Partners, builds the leadership teams.",
+    "is_individual": false
+  },
+  {
+    "description": "Marshall Wace is an investment firm with over $22 billion in assets under management.",
+    "uid": "marshall-wace",
+    "website": "www.mwam.com\/",
+    "is_individual": false,
+    "name": "Marshall Wace"
+  },
+  {
+    "is_individual": false,
+    "description": "Valor is an investment firm that focuses on cross-border financial and investment opportunities.",
+    "uid": "valor-capital-group",
+    "name": "Valor Capital Group",
+    "website": "www.valorcapitalgroup.com"
+  },
+  {
+    "description": "Investment arm for the personal and philanthropic assets of Michael R. Bloomberg",
+    "uid": "willett-advisors-llc",
+    "name": "Willett Advisors LLC",
+    "website": "www.willettadvisors.com",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "description": "10T Holdings is a growth equity fund that invests in private companies operating in the digital asset ecosystem.",
+    "name": "10T Holdings",
+    "website": "10tfund.com",
+    "uid": "10t-holdings"
+  },
+  {
+    "uid": "jane-street-capital",
+    "website": "www.janestreet.com",
+    "is_individual": false,
+    "description": "Jane Street Capital is a company that specializes in equity and bonds.",
+    "name": "Jane Street Capital"
+  },
+  {
+    "description": "K5 Global is a VC firm and incubator that provides capital and guidance to startups across all sectors",
+    "website": "www.k5global.com\/",
+    "name": "K5 Global",
+    "is_individual": false,
+    "uid": "k5-global"
+  },
+  {
+    "website": "www.marcyvp.com\/",
+    "uid": "marcy-venture-partners",
+    "is_individual": false,
+    "description": "Marcy Venture Partners is a venture capital firm investing on consumer, culture, and mass-market brands.",
+    "name": "Marcy Venture Partners"
+  },
+  {
+    "uid": "newflow-partners",
+    "name": "Newflow Partners",
+    "is_individual": false,
+    "description": "Strategic advisory & direct investment for closely-held companies.",
+    "website": "www.newflowpartners.com"
+  },
+  {
+    "uid": "united-talent-agency",
+    "website": "www.unitedtalent.com",
+    "is_individual": false,
+    "name": "United Talent Agency",
+    "description": "United Talent Agency is a talent and literary agency representing actors, writers, directors, producers, recording artists and more."
+  },
+  {
+    "is_individual": false,
+    "name": "VanEck",
+    "website": "www.vaneck.com\/",
+    "uid": "vaneck",
+    "description": "We offer investors intelligently designed investment strategies that take advantage of targeted market opportunities."
+  },
+  {
+    "description": "WndrCo is a holding company that invests in, acquires, develops, and operates consumer technology businesses for the long term.",
+    "uid": "wndrco",
+    "website": "www.wndrco.com\/",
+    "is_individual": false,
+    "name": "WndrCo"
+  },
+  {
+    "is_individual": false,
+    "description": "Raptor Group Holdings is an alternative investment firm that provides investment management and advisory services.",
+    "name": "Raptor Group",
+    "website": "www.raptorgroup.com\/",
+    "uid": "raptor-group"
+  },
+  {
+    "description": "Family office for the Mack Family",
+    "uid": "solon-mack-capital",
+    "name": "Solon Mack Capital",
+    "website": "www.solonmack.com",
+    "is_individual": false
+  },
+  {
+    "description": "Alua Capital is a venture capital firm.",
+    "is_individual": false,
+    "uid": "alua-capital",
+    "website": "",
+    "name": "Alua Capital"
+  },
+  {
+    "name": "Declaration Partners",
+    "is_individual": false,
+    "website": "declarationpartners.com",
+    "uid": "declaration-partners",
+    "description": "Declaration Partners is an investment management organization that focuses primarily on making direct investments."
+  },
+  {
+    "is_individual": false,
+    "description": "Mithril is a global technology investment firm investing in the technology, macroeconomics and finance sectors.",
+    "website": "www.mithril.com\/",
+    "uid": "mithril-capital-management",
+    "name": "Mithril Capital Management"
+  },
+  {
+    "description": "",
+    "website": "www.og-tech.vc",
+    "is_individual": false,
+    "uid": "o-g-tech",
+    "name": "O.G. Tech"
+  },
+  {
+    "uid": "paypal-ventures",
+    "website": "www.paypal.com\/us\/webapps\/mpp\/paypal-ventures",
+    "description": "PayPal Ventures is a corporate VC, investing in financial services, commerce enablement, and data and infrastructure companies.",
+    "is_individual": false,
+    "name": "PayPal Ventures"
+  },
+  {
+    "description": "RIT Capital Partners plc is an investment trust listed on the London Stock Exchange with net assets of some £1.9 billion.",
+    "uid": "rit-capital-partners",
+    "name": "RIT Capital Partners",
+    "is_individual": false,
+    "website": "www.ritcap.com"
+  },
+  {
+    "name": "Senator Investment Group",
+    "website": "clients.senatorlp.com\/guest.aspx",
+    "is_individual": false,
+    "description": "Senator Investment Group is a hedge-fund firm providing services to pooled investment vehicles.",
+    "uid": "senator-investment-group"
+  },
+  {
+    "name": "Oak HC\/FT",
+    "description": "Oak HC\/FT is a venture and growth equity investment firm that focuses on healthcare information services and financial service technology.",
+    "uid": "oak-hc-ft",
+    "website": "www.oakhcft.com\/",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "website": "foundercollective.com",
+    "description": "Founder Collective is a seed-stage venture capital fund that helps entrepreneurs build their businesses.",
+    "uid": "founder-collective",
+    "name": "Founder Collective"
+  },
+  {
+    "website": "www.trueventures.com",
+    "name": "True Ventures",
+    "uid": "true-ventures",
+    "is_individual": false,
+    "description": "True Ventures is a venture capital firm that invests in early-stage technology startups."
+  },
+  {
+    "uid": "cognisa-capital",
+    "is_individual": false,
+    "name": "Cognisa Capital",
+    "website": "cognisacapital.com",
+    "description": "Cognisa Capital is a diversified investment Fund that is focused exclusively on blockchain opportunities."
+  },
+  {
+    "website": "",
+    "is_individual": false,
+    "description": "Curios Endeavors is a personal angel investment entity.",
+    "uid": "curious-endeavors",
+    "name": "Curious Endeavors"
+  },
+  {
+    "description": "Future\\Perfect Ventures is an early stage VC firm focused on decentralized technologies including blockchain, crypto, IoT, and AI.",
+    "name": "Future\\Perfect Ventures",
+    "is_individual": false,
+    "website": "futureperfectventures.com",
+    "uid": "future-perfect-ventures"
+  },
+  {
+    "uid": "lakestar",
+    "description": "Lakestar is a venture capital firm investing in technology companies led by exceptional entrepreneurs.",
+    "is_individual": false,
+    "website": "www.lakestar.com",
+    "name": "Lakestar"
+  },
+  {
+    "name": "Social Capital",
+    "is_individual": false,
+    "website": "www.socialcapital.com",
+    "description": "Social Capital is a venture capital investment firm that partners with entrepreneurs at all stages.",
+    "uid": "social-capital"
+  },
+  {
+    "website": "www.dtcp.capital\/",
+    "uid": "dtcp",
+    "name": "DTCP",
+    "is_individual": false,
+    "description": "DTCP is an investment management firm focused on growth equity and digital infrastructure."
+  },
+  {
+    "is_individual": false,
+    "description": "Galois Capital is a crypto trading fund, its Alpha Fund focuses on strategies in algorithmic market making and OTC trading.",
+    "uid": "galois-capital",
+    "name": "Galois Capital",
+    "website": "galois.capital\/"
+  },
+  {
+    "website": "race.capital\/",
+    "name": "Race Capital",
+    "description": "Race Capital is an early stage venture capital firm based in Silicon Valley.",
+    "uid": "race-capital",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "name": "40 North Ventures",
+    "uid": "40-north-ventures",
+    "description": "40 North Ventures is a venture capital fund that focuses on technology investments.",
+    "website": "www.40northventures.com\/"
+  },
+  {
+    "uid": "altimeter-capital",
+    "description": "Altimeter is a technology-focused investment firm managing a public equity fund and growth-stage private equity funds.",
+    "name": "Altimeter Capital",
+    "website": "www.altimeter.com",
+    "is_individual": false
+  },
+  {
+    "description": "Bond is a venture capital firm that supports visionary founders throughout their life cycle of innovation and growth.",
+    "uid": "bond",
+    "name": "Bond",
+    "website": "www.bondcap.com",
+    "is_individual": false
+  },
+  {
+    "name": "Hudson River Trading",
+    "website": "www.hudsonrivertrading.com",
+    "is_individual": false,
+    "description": "Hudson River Trading opertes as a multi-asset class quantitative trading firm.",
+    "uid": "hudson-river-trading"
+  },
+  {
+    "description": "Insight Partners is a private equity firm that invests in growth-stage technology and software companies.",
+    "uid": "insight-partners",
+    "website": "www.insightpartners.com",
+    "name": "Insight Partners",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "website": "www.nea.com",
+    "uid": "new-enterprise-associates",
+    "description": "New Enterprise Associates is a global venture capital firm investing in technology and healthcare.",
+    "name": "New Enterprise Associates"
+  },
+  {
+    "description": "Ribbit Capital is a venture capital firm that invests in early-stage companies.",
+    "name": "Ribbit Capital",
+    "uid": "ribbit-capital",
+    "website": "ribbitcap.com",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "uid": "softbank-vision-fund",
+    "name": "SoftBank Vision Fund",
+    "description": "SoftBank Vision Fund specializes in growth capital and social impact investments.",
+    "website": "visionfund.com\/"
+  },
+  {
+    "is_individual": false,
+    "description": "Third Point Ventures is an investment firm that focuses on enterprise, fintech, mobile, and healthcare innovation.",
+    "website": "www.thirdpointventures.com\/",
+    "uid": "third-point-ventures",
+    "name": "Third Point Ventures"
+  },
+  {
+    "uid": "willoughby-capital",
+    "description": "Willoughby Capital is an investment firm focused on partnering with growth companies across private and public markets.",
+    "website": "www.willcapllc.com",
+    "name": "Willoughby Capital",
+    "is_individual": false
+  },
+  {
+    "website": "asiaalpha.com\/",
+    "name": "Asia Alpha",
+    "is_individual": false,
+    "description": "Asia Alpha is a family office investing in top-performing alternative assets including Venture Capital and Private Equity.",
+    "uid": "asia-alpha"
+  },
+  {
+    "uid": "blackrock",
+    "name": "BlackRock",
+    "website": "www.blackrock.com",
+    "is_individual": false,
+    "description": "BlackRock is an investment company that offers its services to institutions, intermediaries, foundations, and individual investors."
+  },
+  {
+    "uid": "iconiq-growth",
+    "name": "ICONIQ Growth",
+    "is_individual": false,
+    "website": "iconiqgrowth.com\/",
+    "description": "ICONIQ Growth is a tech-focused venture capital investment firm that partners with entrepreneurs."
+  },
+  {
+    "description": "Institutional Venture Partners is a later-stage venture capital firm that focuses on technology and media companies.",
+    "website": "www.ivp.com",
+    "is_individual": false,
+    "uid": "institutional-venture-partners",
+    "name": "Institutional Venture Partners"
+  },
+  {
+    "uid": "ontario-teachers-pension-plan",
+    "website": "www.otpp.com",
+    "is_individual": false,
+    "description": "Ontario Teachers' Pension Plan invests and administers the pensions of active and retired teachers.",
+    "name": "Ontario Teachers' Pension Plan"
+  },
+  {
+    "is_individual": false,
+    "name": "Sea Capital",
+    "website": "www.theseacapital.com\/",
+    "uid": "sea-capital",
+    "description": "The SEA Capital is a private equity firm."
+  },
+  {
+    "uid": "telstra-ventures",
+    "website": "telstraventures.com\/",
+    "description": "Telstra Ventures invests in technology companies and offers synergy revenues to its portfolio companies.",
+    "name": "Telstra Ventures",
+    "is_individual": false
+  },
+  {
+    "uid": "temasek-holdings",
+    "name": "Temasek Holdings",
+    "is_individual": false,
+    "description": "Temasek is an investment company with a focus on delivering sustainable returns over the long term.",
+    "website": "www.temasek.com.sg"
+  },
+  {
+    "website": "tigerglobal.com",
+    "is_individual": false,
+    "uid": "tiger-global-management",
+    "name": "Tiger Global Management",
+    "description": "Tiger Global Management is an investment firm that deploys capital globally in both public and private markets."
+  },
+  {
+    "uid": "5-blocks-capital",
+    "description": "5 Blocks Captial is a private investment company. We provide liquidity, marketing and funding for projects with high potential.",
+    "name": "5 BLOCKS CAPITAL",
+    "website": "",
+    "is_individual": false
+  },
+  {
+    "name": "Matrix Partners",
+    "description": "Matrix Partners is a venture capital firm that focuses on seed and early-stage investments.",
+    "uid": "matrix-partners",
+    "website": "www.matrixpartners.com",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "uid": "infinity-blockchain-holdings",
+    "name": "Infinity Blockchain Holdings",
+    "description": "Infinity Blockchain Holdings is an Investment Firm",
+    "website": ""
+  },
+  {
+    "uid": "krungsri-finnovate",
+    "description": "Krungsri Finnovate is a venture capital firm aiming to be a strategic investor supporting startups to grow toward their set goals.",
+    "name": "Krungsri Finnovate",
+    "website": "www.krungsrifinnovate.com\/en\/",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "name": "Master Ad Public Company",
+    "uid": "master-ad-public-company",
+    "website": "www.masterad.com\/",
+    "description": "Master Ad Public Company (MACO) provides outdoor advertising solutions."
+  },
+  {
+    "website": "www.mindworks.vc\/",
+    "is_individual": false,
+    "uid": "mindworks-capital",
+    "description": "MindWorks is a Pan-Asia venture capital firm established in 2013 with offices in Hong Kong, Beijing, and Jakarta.",
+    "name": "MindWorks Capital"
+  },
+  {
+    "website": "www.planbmedia.co.th",
+    "description": "Plan B Media is a company focused on the outdoor media industry in Asia.",
+    "name": "Plan B Media",
+    "is_individual": false,
+    "uid": "plan-b-media"
+  },
+  {
+    "name": "ArkStream Capital",
+    "website": "arkstreamcapital.medium.com\/",
+    "is_individual": false,
+    "uid": "arkstream-capital",
+    "description": "ArkStream Capital is a crypto fund dedicated to growing Web3.0 unicorns."
+  },
+  {
+    "name": "Tembusu Partners",
+    "website": "www.tembusupartners.com",
+    "is_individual": false,
+    "description": "Tembusu Partners is a Singapore-based private equity firm focused on investments in growth stage companies.",
+    "uid": "tembusu-partners"
+  },
+  {
+    "name": "Dialectic",
+    "is_individual": false,
+    "description": "Dialectic is a Swiss capital enterprise focused on deployment of human and financial capital into alternative assets.",
+    "uid": "dialectic",
+    "website": "dialectic.ch\/"
+  },
+  {
+    "website": "www.blockchaincompanies.com",
+    "uid": "blockchain-companies-llc",
+    "is_individual": false,
+    "description": "Investment in web3 projects.",
+    "name": "Blockchain Companies LLC"
+  },
+  {
+    "name": "Centrality",
+    "website": "www.centrality.ai\/",
+    "is_individual": false,
+    "uid": "centrality",
+    "description": "Centrality is developing a peer-to-peer blockchain marketplace"
+  },
+  {
+    "website": "www.fourthrevolution.capital\/",
+    "description": "4RC is a venture capital firm investing and building exclusively in blockchain technology and digital assets.",
+    "uid": "fourth-revolution-capital",
+    "name": "Fourth Revolution Capital",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "name": "Evernew Capital",
+    "uid": "evernew-capital",
+    "website": "www.evernewcap.com\/",
+    "description": "Evernew Capital is a venture fund focused on supporting decentralized finance (DeFi), NFT, and infrastructure projects."
+  },
+  {
+    "is_individual": false,
+    "uid": "moonrock-capital",
+    "website": "www.moonrockcapital.io\/",
+    "name": "Moonrock Capital",
+    "description": "Moonrock Capital is a Blockchain Advisory and Investment Partnership based in London and Hamburg."
+  },
+  {
+    "uid": "woodstock-fund",
+    "is_individual": false,
+    "name": "Woodstock Fund",
+    "description": "Woodstock Fund is a multi-asset investment fund.",
+    "website": "woodstockfund.com\/"
+  },
+  {
+    "name": "Metapurse",
+    "description": "Metapurse is a crypto-exclusive fund that specializes in identifying early-stage projects.",
+    "website": "www.metapurse.fund\/",
+    "is_individual": false,
+    "uid": "metapurse"
+  },
+  {
+    "name": "01A",
+    "description": "01A is a venture firm founded by a team of operators to help entrepreneurs build great companies.",
+    "uid": "01a",
+    "is_individual": false,
+    "website": "01a.com\/"
+  },
+  {
+    "description": "Venrock is a venture capital firm investing in technology and healthcare companies.",
+    "is_individual": false,
+    "name": "Venrock",
+    "website": "www.venrock.com",
+    "uid": "venrock"
+  },
+  {
+    "description": "The Alchemist Accelerator is a venture-backed initiative focused on accelerating startups whose revenue comes from enterprises.",
+    "name": "Alchemist Accelerator",
+    "is_individual": false,
+    "uid": "alchemist-accelerator",
+    "website": "www.alchemistaccelerator.com"
+  },
+  {
+    "is_individual": false,
+    "description": "cFund is an early-stage sector agnostic venture firm in the Blockchain industry.",
+    "name": "cFund",
+    "website": "cfund.vc\/",
+    "uid": "cfund"
+  },
+  {
+    "uid": "block-crafters-capital",
+    "name": "Block Crafters Capital",
+    "is_individual": false,
+    "description": "Block Crafters Capital is a subsidiary of Block Crafters which provides professional asset management and crypto fund service.",
+    "website": "www.blockcrafters.capital\/"
+  },
+  {
+    "is_individual": false,
+    "name": "GBIC",
+    "description": "GBIC is a crypto\/blockchain investor and accelerator.",
+    "uid": "gbic",
+    "website": "gbic.io\/"
+  },
+  {
+    "name": "Coin98 Finance",
+    "description": "Coin98 Finance is a Crypto-focused software company.",
+    "is_individual": false,
+    "website": "coin98.app\/",
+    "uid": "coin98-finance"
+  },
+  {
+    "name": "GBV Capital",
+    "uid": "gbv-capital",
+    "website": "gbv.capital\/",
+    "is_individual": false,
+    "description": "GBV Capital focuses exclusively on investment related to blockchain technology, digital currency, and cryptocurrency"
+  },
+  {
+    "uid": "maple-leaf-capital",
+    "website": "",
+    "is_individual": false,
+    "description": "Maple Leaf Capital is dedicated to Web3 Investing and Buidling.",
+    "name": "Maple Leaf Capital"
+  },
+  {
+    "name": "Ternary Capital",
+    "is_individual": false,
+    "uid": "ternary-capital",
+    "description": "Ternary Capital believe in the convergence of Traditional Finance with Decentralized Finance (DeFi).",
+    "website": "www.ternary.capital\/"
+  },
+  {
+    "is_individual": false,
+    "website": "www.thelao.io\/",
+    "uid": "the-lao",
+    "name": "The LAO",
+    "description": "The LAO is a global group of enthusiasts and experts supporting the work of ethereum builders."
+  },
+  {
+    "description": "DG Lab is a unique, non-conventional venture capital fund that combines both investment and world-class R&D capabilities.",
+    "uid": "dg-lab",
+    "website": "www.dglab.com\/en\/",
+    "name": "DG Lab",
+    "is_individual": false
+  },
+  {
+    "website": "dgventures.com\/",
+    "is_individual": false,
+    "description": "DG Ventures is the investment subsidiary of Digital Garage Group, providing partnerships for entrepreneurs building innovative.",
+    "name": "DG Ventures",
+    "uid": "dg-ventures"
+  },
+  {
+    "uid": "ksk-angel-fund",
+    "description": "KSK Angel Fund is a venture capital firm that offers data about the technology for services sectors.",
+    "website": "www.kskangel.com\/",
+    "name": "KSK Angel Fund",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "description": "Nomura is an investment banking and securities firm that serve the needs of individuals, institutions, corporate and governments.",
+    "uid": "nomura",
+    "name": "Nomura",
+    "website": "www.nomura.com\/"
+  },
+  {
+    "is_individual": false,
+    "description": "Pioneer Fund is a venture capital firm investing in the top Y Combinator startups.",
+    "website": "www.pioneerfund.vc",
+    "uid": "pioneer-fund",
+    "name": "Pioneer Fund"
+  },
+  {
+    "name": "VentureSouq",
+    "is_individual": false,
+    "description": "VentureSouq (VSQ) is an investment platform for global early-stage technology businesses",
+    "uid": "venturesouq",
+    "website": "www.venturesouq.com"
+  },
+  {
+    "description": "The First Singapore Government-Supported Blockchain Accelerator",
+    "website": "tribex.co\/accelerator\/",
+    "is_individual": false,
+    "uid": "tribe-accelerator",
+    "name": "Tribe Accelerator"
+  },
+  {
+    "description": "Haystack is a venture capital firm that backs up outlier founders at the earliest stages.",
+    "uid": "haystack",
+    "name": "Haystack",
+    "is_individual": false,
+    "website": "www.haystack.vc"
+  },
+  {
+    "uid": "winklevoss-capital",
+    "website": "winklevosscapital.com",
+    "name": "Winklevoss Capital",
+    "is_individual": false,
+    "description": "We believe in determined entrepreneurs and reinforce their pursuit of a frictionless world."
+  },
+  {
+    "description": "Fintech, Payment, Blockchain, Real Estate, BioTech, Agriculture, Education",
+    "uid": "twin-capital-asset-management",
+    "name": "TWIN CAPITAL ASSET MANAGEMENT",
+    "website": "",
+    "is_individual": false
+  },
+  {
+    "uid": "the-ark-fund",
+    "website": "www.arkfund.co\/",
+    "name": "The Ark Fund",
+    "description": "The Ark Fund is a venture capital firm that specializes in providing pre-seed and seed stage funding to technology companies.",
+    "is_individual": false
+  },
+  {
+    "uid": "lombardstreet-ventures",
+    "website": "lombardstreet.io",
+    "is_individual": false,
+    "description": "Lombardstreet Ventures operates as a pre-seed\/seed venture capital firm.",
+    "name": "Lombardstreet Ventures"
+  },
+  {
+    "is_individual": false,
+    "website": "www.kilowattcapital.com",
+    "name": "Kilowatt Capital LLC",
+    "description": "Kilowatt Capital LLC A privately held company in San Francisco",
+    "uid": "kilowatt-capital-llc"
+  },
+  {
+    "name": "Launch Code Capital",
+    "website": "launchcodecapital.com",
+    "is_individual": false,
+    "uid": "launch-code-capital",
+    "description": "Seed and early stage investor in blockchain technology and cryptocurrency infrastructure."
+  },
+  {
+    "name": "Dorm Room Fund",
+    "is_individual": false,
+    "website": "dormroomfund.com",
+    "uid": "dorm-room-fund",
+    "description": "Dorm Room Fund is the strongest community of entrepreneurial students in the nation"
+  },
+  {
+    "website": "marcbell.com\/venture-capital\/",
+    "name": "Marc Bell Ventures",
+    "uid": "marc-bell-ventures",
+    "is_individual": false,
+    "description": "Marc Bell Capital is an investment firm with a focus on venture capital, private equity, finance, hospitality, and theatrical endeavors."
+  },
+  {
+    "uid": "fantail-ventures",
+    "name": "Fantail Ventures",
+    "website": "www.fantailventures.com",
+    "description": "Early stage technology investments, based in New York City.",
+    "is_individual": false
+  },
+  {
+    "uid": "rising-tide",
+    "name": "Rising Tide",
+    "website": "rtf.vc\/",
+    "description": "Rising Tide is a Silicon Valley-based venture capital firm funding entrepreneurs that help carry the founders’ visions.",
+    "is_individual": false
+  },
+  {
+    "name": "Frontier Ventures",
+    "description": "Frontier Ventures invests in early stage internet companies with network effects and connects them with global markets.",
+    "website": "frontier.ventures\/",
+    "uid": "frontier-ventures",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "website": "www.techstars.com",
+    "description": "Techstars is a global platform that provides investment and innovation.",
+    "name": "Techstars",
+    "uid": "techstars"
+  },
+  {
+    "name": "Techstars Berlin Accelerator",
+    "website": "www.techstars.com\/programs\/berlin-program\/",
+    "uid": "techstars-berlin-accelerator",
+    "is_individual": false,
+    "description": "Techstars Berlin Accelerator attracts founders from all over Europe who are coming to build their companies."
+  },
+  {
+    "description": "Investment firm with active contributions in the Blockchain sector.",
+    "website": "www.orcas.vc",
+    "name": "ORCAS",
+    "uid": "orcas",
+    "is_individual": false
+  },
+  {
+    "website": "jdcapital.com",
+    "is_individual": false,
+    "description": "JD Capital is an investment firm with deep roots in equity investment and management.",
+    "name": "JD Capital",
+    "uid": "jd-capital"
+  },
+  {
+    "name": "Mapleblock Capital",
+    "website": "mapleblock.capital\/",
+    "is_individual": false,
+    "description": "Investment firm that exclusively consults and invests in cryptoassets and blockchain companies",
+    "uid": "mapleblock-capital"
+  },
+  {
+    "name": "Ceyuan Ventures",
+    "website": "www.ceyuan.com",
+    "description": "Ceyuan Ventures is a Beijing-based early stage venture capital firm focused on IT and emerging growth companies.",
+    "uid": "ceyuan-ventures",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "description": "FREES FUND is a venture capital firm that provides both early and growth stage investment to technology startups in both China and the U.S.",
+    "uid": "frees-fund",
+    "name": "FREES FUND",
+    "website": "www.freesvc.com\/"
+  },
+  {
+    "is_individual": false,
+    "website": "www.wxblockchain.com\/",
+    "uid": "wanxiang-blockchain",
+    "name": "Wanxiang Blockchain",
+    "description": "Wanxiang Blockchain provides technology, capital and resources to industrial development and business adoption in blockchain industry."
+  },
+  {
+    "is_individual": false,
+    "description": "Access Ventures invest across asset classes, with focus on SaaS, operating orgs, and real estate.",
+    "website": "accessventures.org\/",
+    "uid": "access-ventures",
+    "name": "Access Ventures"
+  },
+  {
+    "website": "www.blockchain.space\/",
+    "description": "Block Chain Space is a focused startup accelerator for talented visionaries creating disruptive solutions to real-world problems.",
+    "name": "Block Chain Space",
+    "is_individual": false,
+    "uid": "block-chain-space"
+  },
+  {
+    "website": "propel.vc",
+    "is_individual": false,
+    "name": "Propel Venture Partners",
+    "uid": "propel-venture-partners",
+    "description": "Propel Venture Partners is a venture capital firm that focuses on opportunities at the intersection of technology and finance."
+  },
+  {
+    "description": "Social Leverage is a Venture Capital firm which specializes in early-stage investments in the Software, Consumer, and Fintech industries.",
+    "website": "www.socialleverage.com",
+    "uid": "social-leverage",
+    "is_individual": false,
+    "name": "Social Leverage"
+  },
+  {
+    "uid": "sound-ventures",
+    "website": "www.soundventures.com",
+    "name": "Sound Ventures",
+    "is_individual": false,
+    "description": "Sound Ventures is a venture capital firm that seeks to invest in the technology sector."
+  },
+  {
+    "website": "www.plugandplaytechcenter.com\/",
+    "is_individual": false,
+    "name": "Plug and Play Tech Center",
+    "description": "Plug and Play is an innovation platform bringing together startups and large corporations.",
+    "uid": "plug-and-play-tech-center"
+  },
+  {
+    "website": "www.dalmacapital.com",
+    "description": "Hedge fund manager, accelerator, pioneer in the institutionalization of crypto asset management, custody and investment banking",
+    "name": "Dalma Capital",
+    "is_individual": false,
+    "uid": "dalma-capital"
+  },
+  {
+    "is_individual": false,
+    "website": "kbw-ventures.com",
+    "uid": "kbw-ventures",
+    "name": "KBW Ventures",
+    "description": "KBW Ventures is an asset management firm focusing exclusively on venture capital, value creation, and growth equity."
+  },
+  {
+    "is_individual": false,
+    "uid": "preangel",
+    "website": "www.pre-angel.com",
+    "description": "PreAngel is a Beijing-based investment fund focused on early-stage internet startups.",
+    "name": "PreAngel"
+  },
+  {
+    "name": "Tuling Capital",
+    "website": "",
+    "uid": "tuling-capital",
+    "description": "Tuling Capital is a Venture Capital focusing on early-stage investment in the areas of AI, Robotics, VR\/AR, Blockchain and Fintech.",
+    "is_individual": false
+  },
+  {
+    "website": "cryptodiscover.io",
+    "is_individual": false,
+    "name": "CryptoDiscover",
+    "uid": "cryptodiscover",
+    "description": "CryptoDiscover is an Asia-focused blockchain investment and advisory firm."
+  },
+  {
+    "uid": "gva-capital",
+    "website": "gva.capital",
+    "is_individual": false,
+    "name": "GVA Capital",
+    "description": "GVA Capital is an early-stage, Silicon Valley based VC firm with $120m under management"
+  },
+  {
+    "website": "www.techsquare.co",
+    "uid": "techsquare-labs",
+    "name": "TechSquare Labs",
+    "description": "TechSquare Labs is an incubator, seed fund and 15k sf of coworking and corporate innovation space.",
+    "is_individual": false
+  },
+  {
+    "description": "Iterative Capital Management is an alternative investment management firm specializing in cryptocurrencies and blockchain technology.",
+    "name": "Iterative Capital Management",
+    "website": "iterativeinstinct.com",
+    "uid": "iterative-capital-management",
+    "is_individual": false
+  },
+  {
+    "uid": "state-of-utah",
+    "website": "www.utah.gov\/",
+    "name": "State of Utah",
+    "description": "State of Utah provides links to government information sites and departments.",
+    "is_individual": false
+  },
+  {
+    "website": "www.bnktothefuture.com\/",
+    "is_individual": false,
+    "uid": "bnktothefuture",
+    "description": "BnkToTheFuture is an online platform that facilitates investments in FinTech, blockchain, and bitcoin companies.",
+    "name": "BnkToTheFuture"
+  },
+  {
+    "description": "Tank Stream Ventures is a web-technology focused fund investing in early-stage startups.",
+    "is_individual": false,
+    "website": "www.tankstream.vc",
+    "uid": "tank-stream-ventures",
+    "name": "Tank Stream Ventures"
+  },
+  {
+    "description": "Giant Ventures is a multi-stage, thesis-driven firm backing purpose-driven founders.",
+    "name": "Giant Ventures",
+    "uid": "giant-ventures",
+    "website": "www.giant.vc\/",
+    "is_individual": false
+  },
+  {
+    "description": "NFX operates as a pre-seed and seed stage VC that is transforming how true innovators are funded.",
+    "name": "NFX",
+    "website": "www.nfx.com",
+    "is_individual": false,
+    "uid": "nfx"
+  },
+  {
+    "name": "NECO Eco Fund",
+    "description": "NECO Eco Fund is an eco-investment fund .",
+    "uid": "neco-eco-fund",
+    "website": "",
+    "is_individual": false
+  },
+  {
+    "description": "ConsenSys Ventures is a venture capital arm ConsenSys, a blockchain venture production studio.",
+    "uid": "consensys-ventures",
+    "name": "ConsenSys Ventures",
+    "website": "consensys.vc",
+    "is_individual": false
+  },
+  {
+    "name": "PANONY",
+    "website": "www.panony.com",
+    "description": "Your Blockchain Insider & Advisor",
+    "uid": "panony",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "uid": "soul-capital",
+    "description": "Soul Capital is an impact investment organisation that invests in social enterprises.",
+    "name": "Soul Capital",
+    "website": "www.soulcapital.org\/"
+  },
+  {
+    "description": "Charge Ventures is a venture capital firm based in New York that invests in early stage companies.",
+    "uid": "charge-ventures",
+    "is_individual": false,
+    "website": "www.charge.vc\/",
+    "name": "Charge Ventures"
+  },
+  {
+    "website": "www.boxgroup.com",
+    "is_individual": false,
+    "uid": "boxgroup",
+    "description": "BoxGroup is an early-stage investment fund that invests in technology companies.",
+    "name": "BoxGroup"
+  },
+  {
+    "name": "Northzone",
+    "description": "Northzone is an early-stage venture capital fund built on experience spanning multiple economic and disruptive technology cycles.",
+    "uid": "northzone",
+    "website": "www.northzone.com",
+    "is_individual": false
+  },
+  {
+    "name": "StakeZero Ventures",
+    "is_individual": false,
+    "website": "",
+    "description": "StakeZero Ventures is a Early stage blockchain VC.",
+    "uid": "stakezero-ventures"
+  },
+  {
+    "name": "Apex Capital Partners",
+    "website": "www.apexcapital.com.au\/",
+    "is_individual": false,
+    "description": "Apex Capital Partners is a company that offers real-estate issues services.",
+    "uid": "apex-capital-partners"
+  },
+  {
+    "description": "Galaxy Digital is a NYC-based multi-strategy investment firm focused on digital assets and blockchain technology.",
+    "website": "vc.eos.io\/partners\/galaxy\/",
+    "uid": "eos-vc-fund",
+    "is_individual": false,
+    "name": "EOS VC Fund"
+  },
+  {
+    "name": "Prosus Ventures",
+    "is_individual": false,
+    "website": "www.prosus.com\/ventures",
+    "description": "Prosus Ventures is a venture investing arm of Prosus that invests in technology startups.",
+    "uid": "prosus-ventures"
+  },
+  {
+    "uid": "reinventure",
+    "description": "Reinventure makes investments from seed through to Series A, alongside Westpac Banking Corporation as a primary LP.",
+    "name": "Reinventure",
+    "website": "reinventure.com.au",
+    "is_individual": false
+  },
+  {
+    "uid": "airtree-ventures",
+    "is_individual": false,
+    "name": "AirTree Ventures",
+    "website": "www.airtree.vc",
+    "description": "AirTree Ventures is a venture capital fund that supports Australian and Kiwi technology entrepreneurs."
+  },
+  {
+    "uid": "king-river-capital",
+    "name": "King River Capital",
+    "is_individual": false,
+    "website": "www.kingriver.co\/",
+    "description": "King River Capital invests in high-growth software and AI-driven technology businesses that are solving critical problems."
+  },
+  {
+    "uid": "possible-ventures",
+    "description": "Possible Ventures backs ambitious teams building frontier technology to positively impact people and the planet.",
+    "name": "Possible Ventures",
+    "website": "possible.ventures",
+    "is_individual": false
+  },
+  {
+    "name": "Vayner\/RSE",
+    "description": "Vayner\/RSE is a New York-based venture capital firm specialized in institutional financing and seed-stage investments.",
+    "uid": "vayner-rse",
+    "is_individual": false,
+    "website": "vaynerrse.com\/"
+  },
+  {
+    "name": "GV",
+    "website": "www.gv.com",
+    "uid": "gv",
+    "is_individual": false,
+    "description": "GV provides venture capital funding to bold new companies."
+  },
+  {
+    "name": "NEO Global Capital (NGC)",
+    "website": "ngc.fund\/",
+    "uid": "neo-global-capital-ngc",
+    "is_individual": false,
+    "description": "Invest in inspiring projects related to blockchain"
+  },
+  {
+    "is_individual": false,
+    "uid": "qcp-soteria",
+    "description": "QCP Soteria assists clients in areas including token sale advisory, legal analysis, pre and post token listing strategies.",
+    "name": "QCP Soteria",
+    "website": "qsnholdings.com\/"
+  },
+  {
+    "website": "www.hashkey.com",
+    "description": "Hashkey is a digital asset group that focuses on developing the blockchain and digital asset industry.",
+    "uid": "hashkey",
+    "name": "Hashkey",
+    "is_individual": false
+  },
+  {
+    "description": "Equilibrium Capital is a global asset management platform",
+    "uid": "equilibrium-capital",
+    "website": "www.eq-cap.com\/agriculture\/",
+    "is_individual": false,
+    "name": "Equilibrium Capital"
+  },
+  {
+    "uid": "b-cryptos",
+    "description": "Japan's first ever FSA-licensed digital assets investment firm, supporting entrepreneurs in blockchain globally.",
+    "website": "bcryptos.com\/",
+    "is_individual": false,
+    "name": "B Cryptos"
+  },
+  {
+    "is_individual": false,
+    "description": "Digital Assets Group is a leading cryptocurrency tech house, bringing trustworthy products and management advisory services.",
+    "uid": "digital-assets-group",
+    "name": "Digital Assets Group",
+    "website": "digitalassetsgroup.se\/"
+  },
+  {
+    "name": "Tuesday Capital",
+    "description": "Tuesday Capital (formerly known as CrunchFund) is a seed stage focused venture firm",
+    "uid": "tuesday-capital",
+    "website": "tuesday.vc\/",
+    "is_individual": false
+  },
+  {
+    "website": "www.momentumlondon.com\/",
+    "name": "Momentum London",
+    "description": "Momentum London connects high growth businesses with large corporates to validate markets and open commercial opportunities.",
+    "is_individual": false,
+    "uid": "momentum-london"
+  },
+  {
+    "description": "Galaxy Investment Partners is a NYC based multi-strategy investment firm that focuses on digital assets and blockchain technology.",
+    "name": "Galaxy Investment Partners",
+    "uid": "galaxy-investment-partners",
+    "website": "",
+    "is_individual": false
+  },
+  {
+    "description": "DCVC backs entrepreneurs using Deep Tech to solve problems and multiply the benefits of capitalism for everyone while reducing its cost.",
+    "is_individual": false,
+    "uid": "dcvc",
+    "name": "DCVC",
+    "website": "www.dcvc.com"
+  },
+  {
+    "description": "Delphi Ventures was founded over 25 years ago as one of the first venture capital firms to focus on investing in life sciences companies.",
+    "name": "Delphi Ventures",
+    "uid": "delphi-ventures",
+    "website": "www.delphiventures.com",
+    "is_individual": false
+  },
+  {
+    "description": "Morgan Creek Digital is a hedge fund backed by Morgan Creek Capital.",
+    "website": "www.morgancreekcap.com\/",
+    "is_individual": false,
+    "uid": "morgan-creek-digital",
+    "name": "Morgan Creek Digital"
+  },
+  {
+    "is_individual": false,
+    "description": "R&R Ventures is a new fund run by former Time Warner CEO, Dick Parsons, and media investor, Ron Lauder.",
+    "name": "R&R Ventures",
+    "website": "www.rrventuresdev.com",
+    "uid": "r-r-ventures"
+  },
+  {
+    "is_individual": false,
+    "name": "Greylock",
+    "uid": "greylock",
+    "description": "Greylock Partners invests in entrepreneurs that focus on consumer and enterprise software companies.",
+    "website": "www.greylock.com"
+  },
+  {
+    "description": "June Fund is a technology investor that invests in new paradigms across all stages.",
+    "website": "www.june.fund",
+    "uid": "june-fund",
+    "is_individual": false,
+    "name": "June Fund"
+  },
+  {
+    "uid": "dag-ventures",
+    "website": "www.dagventures.com",
+    "description": "DAG Ventures is an American venture capital firm.",
+    "name": "DAG Ventures",
+    "is_individual": false
+  },
+  {
+    "website": "globalbrains.com",
+    "description": "Global Brain Corporation is a venture capital firm that invests in companies from seed\/early to pre-IPO startups.",
+    "is_individual": false,
+    "uid": "global-brain-corporation",
+    "name": "Global Brain Corporation"
+  },
+  {
+    "description": "LUN Partners Group is a global investment group.",
+    "website": "www.lunpartners.com",
+    "name": "LUN Partners Group",
+    "uid": "lun-partners-group",
+    "is_individual": false
+  },
+  {
+    "is_individual": false,
+    "website": "www.kineticcapitalpartners.com",
+    "description": "Kinetic Capital Limited Partnership targets private equity investments using Value for Growth and\/or Break-up Value approaches.",
+    "uid": "kinetic-capital",
+    "name": "Kinetic Capital"
+  },
+  {
+    "website": "",
+    "description": "",
+    "uid": "karnika-yashwant",
+    "is_individual": true,
+    "name": "Karnika Yashwant"
+  },
+  {
+    "name": "George Burke",
+    "description": "",
+    "uid": "george-burke",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "name": "Connor B. Milner",
+    "uid": "connor-b-milner",
+    "description": "",
+    "is_individual": true,
+    "website": ""
+  },
+  {
+    "name": "Arbi Khodagholian",
+    "is_individual": true,
+    "uid": "arbi-khodagholian",
+    "website": "",
+    "description": ""
+  },
+  {
+    "uid": "antonio-furtado",
+    "description": "",
+    "website": "",
+    "name": "Antonio Furtado",
+    "is_individual": true
+  },
+  {
+    "description": "",
+    "is_individual": true,
+    "uid": "zachary-snader",
+    "website": "",
+    "name": "Zachary Snader"
+  },
+  {
+    "name": "Julian Sarokin",
+    "is_individual": true,
+    "description": "",
+    "uid": "julian-sarokin",
+    "website": ""
+  },
+  {
+    "website": "",
+    "is_individual": true,
+    "description": "",
+    "uid": "alexis-berthoud",
+    "name": "Alexis Berthoud"
+  },
+  {
+    "website": "",
+    "uid": "buddy-shakhashir",
+    "name": "Buddy Shakhashir",
+    "description": "",
+    "is_individual": true
+  },
+  {
+    "description": "",
+    "is_individual": true,
+    "website": "",
+    "uid": "daniel-oon",
+    "name": "Daniel Oon"
+  },
+  {
+    "uid": "chris-mccann",
+    "description": "",
+    "name": "Chris McCann",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "uid": "crypto-chan",
+    "name": "Crypto Chan",
+    "description": "",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "name": "Jesse Powell",
+    "website": "",
+    "description": "",
+    "uid": "jesse-powell",
+    "is_individual": true
+  },
+  {
+    "name": "Tim Kendall",
+    "description": "",
+    "website": "",
+    "is_individual": true,
+    "uid": "tim-kendall"
+  },
+  {
+    "name": "Nurzhas Makishev",
+    "description": "",
+    "uid": "nurzhas-makishev",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "name": "Dalip Jaggi",
+    "is_individual": true,
+    "uid": "dalip-jaggi",
+    "description": "",
+    "website": ""
+  },
+  {
+    "is_individual": true,
+    "name": "Adam Morley",
+    "website": "",
+    "uid": "adam-morley",
+    "description": ""
+  },
+  {
+    "is_individual": true,
+    "name": "Andreas Schwartz",
+    "description": "",
+    "uid": "andreas-schwartz",
+    "website": ""
+  },
+  {
+    "uid": "apoorv-gupta",
+    "name": "Apoorv Gupta",
+    "website": "",
+    "is_individual": true,
+    "description": ""
+  },
+  {
+    "is_individual": true,
+    "website": "",
+    "description": "",
+    "uid": "kenzi-wang",
+    "name": "Kenzi Wang"
+  },
+  {
+    "uid": "kevin-rose",
+    "name": "Kevin Rose",
+    "is_individual": true,
+    "description": "",
+    "website": ""
+  },
+  {
+    "uid": "lyndon-rive",
+    "name": "Lyndon Rive",
+    "website": "",
+    "description": "",
+    "is_individual": true
+  },
+  {
+    "description": "",
+    "uid": "thomas-larthe",
+    "name": "Thomas Larthe",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "uid": "leon-hillmann",
+    "name": "Leon Hillmann",
+    "description": "",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "name": "Nathan Doctor",
+    "uid": "nathan-doctor",
+    "is_individual": true,
+    "website": "",
+    "description": ""
+  },
+  {
+    "uid": "kenneth-bok",
+    "name": "Kenneth Bok",
+    "is_individual": true,
+    "website": "",
+    "description": ""
+  },
+  {
+    "is_individual": true,
+    "description": "",
+    "name": "Benjamin Kong",
+    "website": "",
+    "uid": "benjamin-kong"
+  },
+  {
+    "description": "",
+    "is_individual": true,
+    "website": "",
+    "name": "Kingsley Advani",
+    "uid": "kingsley-advani"
+  },
+  {
+    "is_individual": true,
+    "website": "",
+    "description": "",
+    "uid": "harrison-uffindell",
+    "name": "Harrison Uffindell"
+  },
+  {
+    "name": "Ben Davenport",
+    "description": "",
+    "uid": "ben-davenport",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "uid": "fred-ehrsam",
+    "is_individual": true,
+    "name": "Fred Ehrsam",
+    "description": "",
+    "website": ""
+  },
+  {
+    "uid": "anthony-di-iorio",
+    "website": "",
+    "description": "",
+    "is_individual": true,
+    "name": "Anthony Di Iorio"
+  },
+  {
+    "uid": "bo-shen",
+    "website": "",
+    "is_individual": true,
+    "name": "Bo Shen",
+    "description": ""
+  },
+  {
+    "description": "",
+    "uid": "jason-fang",
+    "name": "Jason Fang",
+    "is_individual": true,
+    "website": ""
+  },
+  {
+    "website": "",
+    "name": "Jeremy Gardner",
+    "is_individual": true,
+    "description": "",
+    "uid": "jeremy-gardner"
+  },
+  {
+    "is_individual": true,
+    "website": "",
+    "uid": "matthew-roszak",
+    "name": "Matthew Roszak",
+    "description": ""
+  },
+  {
+    "name": "Mingxing Xu",
+    "website": "",
+    "description": "",
+    "uid": "mingxing-xu",
+    "is_individual": true
+  },
+  {
+    "uid": "xiaolai-li",
+    "is_individual": true,
+    "description": "",
+    "name": "Xiaolai Li",
+    "website": ""
+  },
+  {
+    "name": "Tim Draper",
+    "is_individual": true,
+    "description": "",
+    "uid": "tim-draper",
+    "website": ""
+  },
+  {
+    "is_individual": true,
+    "name": "Illia Polosukhin",
+    "uid": "illia-polosukhin",
+    "website": "",
+    "description": ""
+  },
+  {
+    "website": "",
+    "uid": "loi-luu",
+    "is_individual": true,
+    "name": "Loi Luu",
+    "description": ""
+  },
+  {
+    "description": "",
+    "is_individual": true,
+    "uid": "kain-warwick",
+    "name": "Kain Warwick",
+    "website": ""
+  },
+  {
+    "website": "",
+    "description": "",
+    "uid": "mark-cuban",
+    "name": "Mark Cuban",
+    "is_individual": true
+  },
+  {
+    "name": "Edith Yeung",
+    "website": "",
+    "description": "",
+    "uid": "edith-yeung",
+    "is_individual": true
+  },
+  {
+    "uid": "casper-cheng",
+    "is_individual": true,
+    "description": "",
+    "website": "",
+    "name": "Casper Cheng"
+  },
+  {
+    "description": "",
+    "uid": "alexander-pack",
+    "name": "Alexander Pack",
+    "is_individual": true,
+    "website": ""
+  },
+  {
+    "website": "",
+    "description": "",
+    "uid": "andrew-kang",
+    "name": "Andrew Kang",
+    "is_individual": true
+  },
+  {
+    "uid": "calvin-liu",
+    "description": "",
+    "website": "",
+    "is_individual": true,
+    "name": "Calvin Liu"
+  },
+  {
+    "is_individual": true,
+    "uid": "george-lambeth",
+    "description": "",
+    "name": "George Lambeth",
+    "website": ""
+  },
+  {
+    "uid": "regan-bozman",
+    "name": "Regan Bozman",
+    "website": "",
+    "description": "",
+    "is_individual": true
+  },
+  {
+    "name": "Tony Sheng",
+    "is_individual": true,
+    "description": "",
+    "uid": "tony-sheng",
+    "website": ""
+  },
+  {
+    "uid": "jon-carr-harris",
+    "description": "",
+    "website": "",
+    "name": "Jon Carr-Harris",
+    "is_individual": true
+  },
+  {
+    "description": "",
+    "website": "",
+    "is_individual": true,
+    "uid": "phil-daian",
+    "name": "Phil Daian"
+  },
+  {
+    "description": "",
+    "uid": "avichal-garg",
+    "website": "",
+    "name": "Avichal Garg",
+    "is_individual": true
+  },
+  {
+    "is_individual": true,
+    "website": "",
+    "uid": "brian-armstrong",
+    "description": "",
+    "name": "Brian Armstrong"
+  },
+  {
+    "website": "",
+    "uid": "christopher-golda",
+    "name": "Christopher Golda",
+    "is_individual": true,
+    "description": ""
+  },
+  {
+    "name": "David King",
+    "uid": "david-king",
+    "is_individual": true,
+    "description": "",
+    "website": ""
+  },
+  {
+    "description": "",
+    "website": "",
+    "uid": "elad-gil",
+    "name": "Elad Gil",
+    "is_individual": true
+  },
+  {
+    "is_individual": true,
+    "uid": "jack-herrick",
+    "description": "",
+    "name": "Jack Herrick",
+    "website": ""
+  },
+  {
+    "uid": "scott-belsky",
+    "name": "Scott Belsky",
+    "website": "",
+    "is_individual": true,
+    "description": ""
+  },
+  {
+    "name": "Kevin Hartz",
+    "uid": "kevin-hartz",
+    "website": "",
+    "description": "",
+    "is_individual": true
+  },
+  {
+    "description": "",
+    "uid": "naval-ravikant",
+    "is_individual": true,
+    "website": "",
+    "name": "Naval Ravikant"
+  },
+  {
+    "is_individual": true,
+    "website": "",
+    "description": "",
+    "uid": "do-kwon",
+    "name": "Do Kwon"
+  },
+  {
+    "name": "Arthur Cheong",
+    "website": "",
+    "is_individual": true,
+    "description": "",
+    "uid": "arthur-cheong"
+  },
+  {
+    "description": "",
+    "name": "Itamar Lesuisse",
+    "website": "",
+    "uid": "itamar-lesuisse",
+    "is_individual": true
+  },
+  {
+    "is_individual": true,
+    "description": "",
+    "name": "Julien Niset",
+    "website": "",
+    "uid": "julien-niset"
+  },
+  {
+    "description": "",
+    "name": "Stani Kulechov",
+    "is_individual": true,
+    "website": "",
+    "uid": "stani-kulechov"
+  },
+  {
+    "name": "Taiyang Zhang",
+    "website": "",
+    "is_individual": true,
+    "uid": "taiyang-zhang",
+    "description": ""
+  },
+  {
+    "description": "",
+    "is_individual": true,
+    "uid": "tang-hongbo",
+    "name": "Tang Hongbo",
+    "website": ""
+  },
+  {
+    "is_individual": true,
+    "name": "Kyle Wang",
+    "uid": "kyle-wang",
+    "description": "",
+    "website": ""
+  },
+  {
+    "is_individual": true,
+    "website": "",
+    "description": "",
+    "name": "Alex Marinier",
+    "uid": "alex-marinier"
+  },
+  {
+    "description": "",
+    "name": "David Hoffmann",
+    "is_individual": true,
+    "uid": "david-hoffmann",
+    "website": ""
+  },
+  {
+    "is_individual": true,
+    "name": "Meltem Demirors",
+    "description": "",
+    "website": "",
+    "uid": "meltem-demirors"
+  },
+  {
+    "name": "Andrew Lee",
+    "description": "",
+    "website": "",
+    "is_individual": true,
+    "uid": "andrew-lee"
+  },
+  {
+    "uid": "richard-f-dulude",
+    "name": "Richard F. Dulude",
+    "website": "",
+    "is_individual": true,
+    "description": ""
+  },
+  {
+    "description": "",
+    "uid": "alexis-ohanian",
+    "website": "",
+    "is_individual": true,
+    "name": "Alexis Ohanian"
+  },
+  {
+    "is_individual": true,
+    "uid": "gabriel-leydon",
+    "description": "",
+    "name": "Gabriel Leydon",
+    "website": ""
+  },
+  {
+    "name": "Jyri Engestrom",
+    "description": "",
+    "uid": "jyri-engestrom",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "is_individual": true,
+    "name": "Richard Muirhead",
+    "website": "",
+    "description": "",
+    "uid": "richard-muirhead"
+  },
+  {
+    "website": "",
+    "uid": "andrea-dusi",
+    "name": "Andrea Dusi",
+    "is_individual": true,
+    "description": ""
+  },
+  {
+    "description": "",
+    "name": "Kris Cheng",
+    "uid": "kris-cheng",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "uid": "sandeep-nailwal",
+    "name": "Sandeep Nailwal",
+    "description": "",
+    "is_individual": true,
+    "website": ""
+  },
+  {
+    "is_individual": true,
+    "website": "",
+    "name": "Evan Cheng",
+    "uid": "evan-cheng",
+    "description": ""
+  },
+  {
+    "name": "Dennis Liu",
+    "uid": "dennis-liu",
+    "website": "",
+    "description": "",
+    "is_individual": true
+  },
+  {
+    "name": "David LEE Kuo Chuen",
+    "description": "",
+    "uid": "david-lee-kuo-chuen",
+    "is_individual": true,
+    "website": ""
+  },
+  {
+    "is_individual": true,
+    "name": "Dentons Rodyk",
+    "uid": "dentons-rodyk",
+    "website": "",
+    "description": ""
+  },
+  {
+    "name": "Lon Wong",
+    "is_individual": true,
+    "website": "",
+    "description": "",
+    "uid": "lon-wong"
+  },
+  {
+    "website": "",
+    "uid": "michael-schelper",
+    "name": "Michael Schelper",
+    "is_individual": true,
+    "description": ""
+  },
+  {
+    "description": "",
+    "website": "",
+    "is_individual": true,
+    "uid": "子轩-xiong",
+    "name": "子轩 xiong"
+  },
+  {
+    "uid": "erik-voorhees",
+    "description": "",
+    "is_individual": true,
+    "website": "",
+    "name": "Erik Voorhees"
+  },
+  {
+    "uid": "marc-geller",
+    "website": "",
+    "description": "",
+    "is_individual": true,
+    "name": "Marc Geller"
+  },
+  {
+    "name": "Seb Audet",
+    "is_individual": true,
+    "uid": "seb-audet",
+    "website": "",
+    "description": ""
+  },
+  {
+    "website": "",
+    "is_individual": true,
+    "description": "",
+    "uid": "suhail-gangji",
+    "name": "Suhail Gangji"
+  },
+  {
+    "name": "Leonard Schrank",
+    "is_individual": true,
+    "website": "",
+    "uid": "leonard-schrank",
+    "description": ""
+  },
+  {
+    "uid": "michele-burns",
+    "name": "Michele Burns",
+    "website": "",
+    "description": "",
+    "is_individual": true
+  },
+  {
+    "is_individual": true,
+    "description": "",
+    "uid": "glenn-hutchins",
+    "website": "",
+    "name": "Glenn Hutchins"
+  },
+  {
+    "uid": "sam-palmisano",
+    "website": "",
+    "name": "Sam Palmisano",
+    "description": "",
+    "is_individual": true
+  },
+  {
+    "website": "",
+    "uid": "michael-j-price",
+    "is_individual": true,
+    "name": "Michael J. Price",
+    "description": ""
+  },
+  {
+    "name": "Jay W. Jordan II",
+    "uid": "jay-w-jordan-ii",
+    "is_individual": true,
+    "website": "",
+    "description": ""
+  },
+  {
+    "website": "",
+    "is_individual": true,
+    "name": "James Pallotta",
+    "uid": "james-pallotta",
+    "description": ""
+  },
+  {
+    "name": "Jay Jordan",
+    "description": "",
+    "uid": "jay-jordan",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "uid": "ken-moelis",
+    "name": "Ken Moelis",
+    "description": "",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "description": "",
+    "is_individual": true,
+    "website": "",
+    "name": "Taz Patel",
+    "uid": "taz-patel"
+  },
+  {
+    "uid": "arianna-simpson",
+    "name": "Arianna Simpson",
+    "website": "",
+    "description": "",
+    "is_individual": true
+  },
+  {
+    "description": "",
+    "uid": "jack-dorsey",
+    "name": "Jack Dorsey",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "name": "Julia Popowitz",
+    "is_individual": true,
+    "description": "",
+    "website": "",
+    "uid": "julia-popowitz"
+  },
+  {
+    "website": "",
+    "description": "",
+    "name": "Linda Xie",
+    "is_individual": true,
+    "uid": "linda-xie"
+  },
+  {
+    "website": "",
+    "description": "",
+    "uid": "nitesh-banta",
+    "name": "Nitesh Banta",
+    "is_individual": true
+  },
+  {
+    "description": "",
+    "uid": "reid-hoffman",
+    "name": "Reid Hoffman",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "uid": "tanguy-chau",
+    "name": "Tanguy Chau",
+    "description": "",
+    "is_individual": true,
+    "website": ""
+  },
+  {
+    "website": "",
+    "description": "",
+    "is_individual": true,
+    "uid": "vijay-pandurangan",
+    "name": "Vijay Pandurangan"
+  },
+  {
+    "description": "",
+    "name": "Warren Hogarth",
+    "website": "",
+    "uid": "warren-hogarth",
+    "is_individual": true
+  },
+  {
+    "is_individual": true,
+    "website": "",
+    "description": "",
+    "name": "Kevin Han",
+    "uid": "kevin-han"
+  },
+  {
+    "website": "",
+    "uid": "alan-howard",
+    "name": "Alan Howard",
+    "is_individual": true,
+    "description": ""
+  },
+  {
+    "website": "",
+    "is_individual": true,
+    "description": "",
+    "uid": "thoma-bravo",
+    "name": "Thoma Bravo"
+  },
+  {
+    "description": "",
+    "is_individual": true,
+    "website": "",
+    "name": "Andrew Keys",
+    "uid": "andrew-keys"
+  },
+  {
+    "description": "",
+    "website": "",
+    "is_individual": true,
+    "uid": "henry-rouquairol",
+    "name": "Henry Rouquairol"
+  },
+  {
+    "website": "",
+    "uid": "betty-chen",
+    "name": "Betty Chen",
+    "is_individual": true,
+    "description": ""
+  },
+  {
+    "uid": "bobby-ong",
+    "is_individual": true,
+    "description": "",
+    "name": "Bobby Ong",
+    "website": ""
+  },
+  {
+    "uid": "jordan-momtazi",
+    "website": "",
+    "description": "",
+    "name": "Jordan Momtazi",
+    "is_individual": true
+  },
+  {
+    "is_individual": true,
+    "name": "Larry Cermak",
+    "uid": "larry-cermak",
+    "website": "",
+    "description": ""
+  },
+  {
+    "description": "",
+    "name": "Leo Chang",
+    "is_individual": true,
+    "website": "",
+    "uid": "leo-chang"
+  },
+  {
+    "is_individual": true,
+    "name": "Ruitao Su",
+    "uid": "ruitao-su",
+    "description": "",
+    "website": ""
+  },
+  {
+    "uid": "suji-yan",
+    "name": "Suji Yan",
+    "website": "",
+    "is_individual": true,
+    "description": ""
+  },
+  {
+    "description": "",
+    "uid": "tm-lee",
+    "website": "",
+    "name": "TM Lee",
+    "is_individual": true
+  },
+  {
+    "description": "",
+    "uid": "jun-hasegawa",
+    "name": "Jun Hasegawa",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "name": "Kevin Ding",
+    "uid": "kevin-ding",
+    "description": "",
+    "is_individual": true,
+    "website": ""
+  },
+  {
+    "is_individual": true,
+    "website": "",
+    "uid": "david-j-la-placa",
+    "name": "David J. La Placa",
+    "description": ""
+  },
+  {
+    "uid": "henok-tekle",
+    "website": "",
+    "is_individual": true,
+    "description": "",
+    "name": "Henok Tekle"
+  },
+  {
+    "uid": "kal-vepuri",
+    "description": "",
+    "name": "Kal Vepuri",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "is_individual": true,
+    "uid": "shana-fisher",
+    "description": "",
+    "website": "",
+    "name": "Shana Fisher"
+  },
+  {
+    "website": "",
+    "name": "Qasar Younis",
+    "description": "",
+    "uid": "qasar-younis",
+    "is_individual": true
+  },
+  {
+    "description": "",
+    "uid": "omar-darwazah",
+    "is_individual": true,
+    "website": "",
+    "name": "Omar Darwazah"
+  },
+  {
+    "name": "Ryan Fang",
+    "is_individual": true,
+    "website": "",
+    "uid": "ryan-fang",
+    "description": ""
+  },
+  {
+    "name": "Ashton Kutcher",
+    "is_individual": true,
+    "uid": "ashton-kutcher",
+    "website": "",
+    "description": ""
+  },
+  {
+    "name": "Chris Hitchen",
+    "is_individual": true,
+    "website": "",
+    "uid": "chris-hitchen",
+    "description": ""
+  },
+  {
+    "is_individual": true,
+    "name": "Guy Oseary",
+    "description": "",
+    "website": "",
+    "uid": "guy-oseary"
+  },
+  {
+    "description": "",
+    "website": "",
+    "name": "Russell Cook",
+    "is_individual": true,
+    "uid": "russell-cook"
+  },
+  {
+    "name": "Curtis Lee",
+    "uid": "curtis-lee",
+    "website": "",
+    "is_individual": true,
+    "description": ""
+  },
+  {
+    "website": "",
+    "is_individual": true,
+    "description": "",
+    "uid": "garry-tan",
+    "name": "Garry Tan"
+  },
+  {
+    "description": "",
+    "is_individual": true,
+    "name": "Gil Penchina",
+    "website": "",
+    "uid": "gil-penchina"
+  },
+  {
+    "name": "Kamal Ravikant",
+    "uid": "kamal-ravikant",
+    "description": "",
+    "website": "",
+    "is_individual": true
+  },
+  {
+    "name": "Randall Kaplan",
+    "is_individual": true,
+    "website": "",
+    "description": "",
+    "uid": "randall-kaplan"
+  },
+  {
+    "uid": "non-fungible-chan",
+    "name": "NON-fungible Chan",
+    "website": "",
+    "is_individual": true,
+    "description": ""
+  },
+  {
+    "website": "",
+    "uid": "tyler-scriven",
+    "is_individual": true,
+    "description": "",
+    "name": "Tyler Scriven"
+  },
+  {
+    "uid": "gabriel-jarrosson",
+    "website": "",
+    "name": "Gabriel Jarrosson",
+    "is_individual": true,
+    "description": ""
+  },
+  {
+    "uid": "balaji-srinivasan",
+    "website": "",
+    "description": "",
+    "name": "Balaji Srinivasan",
+    "is_individual": true
+  },
+  {
+    "name": "Ben Rubin",
+    "uid": "ben-rubin",
+    "is_individual": true,
+    "description": "",
+    "website": ""
+  }
+]
