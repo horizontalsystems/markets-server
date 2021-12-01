@@ -1,5 +1,4 @@
 const Sequelize = require('sequelize')
-const configJson = require('./config.json')
 const Coin = require('./models/Coin')
 const CoinCategories = require('./models/CoinCategories')
 const CoinTvl = require('./models/DefiProtocolTvl')
@@ -21,8 +20,8 @@ const AddressRank = require('./models/AddressRank')
 const Currency = require('./models/Currency')
 const CurrencyRate = require('./models/CurrencyRate')
 const GlobalMarket = require('./models/GlobalMarket')
+const config = require('./config')
 
-const config = configJson[process.env.NODE_ENV || 'development']
 const sequelize = new Sequelize(
   config.database,
   config.username,
