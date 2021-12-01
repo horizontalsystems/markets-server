@@ -21,13 +21,15 @@ class FundsInvested extends SequelizeModel {
             'Series E',
             'Private Equity Round',
             'Corporate Round',
+            'Non Equity Assistance',
+            'Convertible Note',
+            'Debt Financing',
+            'Seed',
+            'Grant'
           ]),
           allowNull: false
         },
-        amount: {
-          type: DataTypes.DECIMAL,
-          allowNull: false
-        },
+        amount: DataTypes.DECIMAL,
         date: {
           type: DataTypes.DATEONLY,
           allowNull: false
