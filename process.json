@@ -24,5 +24,17 @@
       "name": "sync-stats",
       "script": "scripts/sync-stats.js"
     }
-  ]
+  ],
+  "deploy": {
+    "production": {
+      "user": "deploy",
+      "host": [
+        "159.89.94.233"
+      ],
+      "ref": "origin/master",
+      "repo": "https://github.com/horizontalsystems/markets-server.git",
+      "path": "/home/deploy/markets-server-pm2",
+      "post-deploy": "npm install --production"
+    }
+  }
 }

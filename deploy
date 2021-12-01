@@ -1,0 +1,68 @@
+#!/usr/bin/env node
+
+const { Command } = require('commander')
+const { execSync } = require('child_process')
+
+const program = new Command()
+const execute = cmd => {
+  execSync(`pm2 deploy process.json production exec "${cmd}"`, { stdio: 'inherit' })
+}
+
+const deployTasks = (deploy, env, apps) => {
+  ['setup', 'update', 'revert', 'curr', 'prev', 'list'].forEach(cmd => {
+    deploy
+      .command(cmd)
+      .action(() => {
+        execSync(`pm2 deploy process.json ${env} ${cmd}`, { stdio: 'inherit' })
+      })
+  })
+
+  deploy
+    .command('setup:node')
+    .action(() => {
+      execute('curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash')
+      execute('nvm install --lts')
+      execute('nvm install-latest-npm')
+      execute('npm install pm2 -g')
+    });
+
+  apps.forEach(app => {
+    deploy
+      .command(`${app}:start`)
+      .alias(`${app}:restart`)
+      .action(() => {
+        execute(`pm2 startOrRestart process.json --env production --only ${app}`)
+      })
+
+    deploy
+      .command(`${app}:stop`)
+      .action(() => {
+        execute(`pm2 stop process.json --only ${app}`)
+      })
+
+    deploy
+      .command(`${app}:logs`)
+      .action(() => {
+        execute(`pm2 logs ${app}`)
+      })
+  })
+}
+
+const production = program
+  .command('production')
+  .description('run commands for production env')
+
+const productionSyncer = program
+  .command('production_syncer')
+  .description('run commands for production env')
+
+const development = program
+  .command('development')
+  .description('run commands for development env')
+
+deployTasks(production, 'production', ['app', 'sync-currency-rates', 'sync-stats', 'sync-global-markets'])
+deployTasks(productionSyncer, 'production_syncer', ['sync-coins'])
+
+deployTasks(development, 'development', ['app', 'sync-currency-rates', 'sync-stats', 'sync-global-markets'])
+
+program.parse(process.argv)
