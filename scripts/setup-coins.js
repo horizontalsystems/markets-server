@@ -158,10 +158,4 @@ async function start() {
   }
 }
 
-start()
-  .catch(e => {
-    console.log(e)
-  })
-  .finally(() => {
-    process.exit(0)
-  })
+module.exports = start()
