@@ -15,17 +15,21 @@ module.exports = shipit => {
       repositoryUrl: 'https://github.com/horizontalsystems/markets-server.git',
       shared: {
         overwrite: true,
-        files: ['.env'],
+        files: ['.env', '.bq-key.json'],
         dirs: ['node_modules']
       }
     },
-    production: {
+    prod_api: {
       branch: 'master',
-      servers: ['deploy@147.182.182.176'],
+      servers: ['deploy@159.89.94.233'],
     },
-    development: {
+    prod_syncer: {
+      branch: 'master',
+      servers: ['deploy@147.182.167.89'],
+    },
+    dev_api: {
       branch: 'develop',
-      servers: ['deploy@147.182.182.176']
+      servers: ['deploy@161.35.110.248']
     }
   })
 
