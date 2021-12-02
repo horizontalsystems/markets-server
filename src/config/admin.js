@@ -1,8 +1,13 @@
+const connect = require('connect-session-sequelize')
+const session = require('express-session')
 const AdminJS = require('adminjs')
 const CountryList = require('country-list')
 const AdminJSExpress = require('@adminjs/express')
 const AdminJSSequelize = require('@adminjs/sequelize')
 const sequelize = require('../db/sequelize')
+const db = require('../db/sequelize')
+
+const SequelizeStore = connect(session.Store)
 
 AdminJS.registerAdapter(AdminJSSequelize)
 
@@ -114,24 +119,22 @@ const adminJs = new AdminJS({
   },
 })
 
-const tmpAdmin = {
-  email: 'admin@mail.com',
-  password: 'admin'
+const sessionStore = {
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: new SequelizeStore({ db: db.sequelize })
 }
 
 const router = AdminJSExpress.buildAuthenticatedRouter(adminJs, {
   authenticate: async (email, password) => {
-    if (tmpAdmin.password === password && tmpAdmin.email === email) {
-      return tmpAdmin
+    if (process.env.ADMIN_EMAIL === email && process.env.ADMIN_PASS === password) {
+      return true
     }
 
     return null
   },
-  cookieName: 'key-cookie-name',
-  cookiePassword: 'key-cookie-password'
-}, null, {
-  resave: false,
-  saveUninitialized: true
-})
+  cookiePassword: process.env.COOKIE_SECRET
+}, null, sessionStore)
 
 module.exports = router
