@@ -4,11 +4,12 @@ const { Command } = require('commander')
 const { execSync } = require('child_process')
 
 const program = new Command()
-const execute = cmd => {
-  execSync(`pm2 deploy process.json production exec "${cmd}"`, { stdio: 'inherit' })
-}
 
 const deployTasks = (deploy, env, apps) => {
+  const runRemote = cmd => {
+    execSync(`pm2 deploy process.json ${env} exec "${cmd}"`, { stdio: 'inherit' })
+  }
+
   ['setup', 'update', 'revert', 'curr', 'prev', 'list'].forEach(cmd => {
     deploy
       .command(cmd)
@@ -20,10 +21,10 @@ const deployTasks = (deploy, env, apps) => {
   deploy
     .command('setup:node')
     .action(() => {
-      execute('curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash')
-      execute('nvm install --lts')
-      execute('nvm install-latest-npm')
-      execute('npm install pm2 -g')
+      runRemote('curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash')
+      runRemote('nvm install --lts')
+      runRemote('nvm install-latest-npm')
+      runRemote('npm install pm2 -g')
     });
 
   apps.forEach(app => {
@@ -31,35 +32,35 @@ const deployTasks = (deploy, env, apps) => {
       .command(`${app}:start`)
       .alias(`${app}:restart`)
       .action(() => {
-        execute(`pm2 startOrRestart process.json --env production --only ${app}`)
+        runRemote(`pm2 startOrRestart process.json --env production --only ${app}`)
       })
 
     deploy
       .command(`${app}:stop`)
       .action(() => {
-        execute(`pm2 stop process.json --only ${app}`)
+        runRemote(`pm2 stop process.json --only ${app}`)
       })
 
     deploy
       .command(`${app}:logs`)
       .action(() => {
-        execute(`pm2 logs ${app}`)
+        runRemote(`pm2 logs ${app}`)
       })
   })
 }
 
-const envCommand = environment => {
+const envCommand = env => {
   return program
-    .command(environment)
-    .description(`run commands for ${environment} env`)
+    .command(env)
+    .description(`run commands for ${env} env`)
 }
 
-const production = envCommand('production')
-const productionSyncer = envCommand('production_syncer')
-const development = envCommand('development')
+const prodApi = envCommand('production_api')
+const prodSyncer = envCommand('production_syncer')
+const dev = envCommand('development')
 
-deployTasks(production, 'production', ['app', 'sync-currency-rates', 'sync-stats', 'sync-global-markets'])
-deployTasks(productionSyncer, 'production_syncer', ['sync-coins'])
-deployTasks(development, 'development', ['app', 'sync-coins', 'sync-currency-rates', 'sync-stats', 'sync-global-markets'])
+deployTasks(prodApi, 'production_api', ['app', 'sync-currency-rates', 'sync-stats', 'sync-global-markets'])
+deployTasks(prodSyncer, 'production_syncer', ['sync-coins'])
+deployTasks(dev, 'development', ['app', 'sync-coins', 'sync-currency-rates', 'sync-stats', 'sync-global-markets'])
 
 program.parse(process.argv)
