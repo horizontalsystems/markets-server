@@ -69,6 +69,7 @@ class FundsInvested extends SequelizeModel {
       WHERE C.id = I.coin_id 
         AND C.uid = :uid
       GROUP BY I.id, C.price
+      ORDER BY I.date ASC
     `
 
     return FundsInvested.query(query, { uid })
