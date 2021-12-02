@@ -48,21 +48,18 @@ const deployTasks = (deploy, env, apps) => {
   })
 }
 
-const production = program
-  .command('production')
-  .description('run commands for production env')
+const envCommand = environment => {
+  return program
+    .command(environment)
+    .description(`run commands for ${environment} env`)
+}
 
-const productionSyncer = program
-  .command('production_syncer')
-  .description('run commands for production env')
-
-const development = program
-  .command('development')
-  .description('run commands for development env')
+const production = envCommand('production')
+const productionSyncer = envCommand('production_syncer')
+const development = envCommand('development')
 
 deployTasks(production, 'production', ['app', 'sync-currency-rates', 'sync-stats', 'sync-global-markets'])
 deployTasks(productionSyncer, 'production_syncer', ['sync-coins'])
-
-deployTasks(development, 'development', ['app', 'sync-currency-rates', 'sync-stats', 'sync-global-markets'])
+deployTasks(development, 'development', ['app', 'sync-coins', 'sync-currency-rates', 'sync-stats', 'sync-global-markets'])
 
 program.parse(process.argv)

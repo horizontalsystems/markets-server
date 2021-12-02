@@ -26,14 +26,34 @@
     }
   ],
   "deploy": {
-    "production": {
+    "production_api": {
       "user": "deploy",
       "host": [
         "159.89.94.233"
       ],
       "ref": "origin/master",
       "repo": "https://github.com/horizontalsystems/markets-server.git",
-      "path": "/home/deploy/markets-server-pm2",
+      "path": "/home/deploy/markets-server",
+      "post-deploy": "npm install --production"
+    },
+    "production_syncer": {
+      "user": "deploy",
+      "host": [
+        "147.182.167.89"
+      ],
+      "ref": "origin/master",
+      "repo": "https://github.com/horizontalsystems/markets-server.git",
+      "path": "/home/deploy/markets-server",
+      "post-deploy": "npm install --production"
+    },
+    "development": {
+      "user": "deploy",
+      "host": [
+        "161.35.110.248"
+      ],
+      "ref": "origin/master",
+      "repo": "https://github.com/horizontalsystems/markets-server.git",
+      "path": "/home/ubuntu/markets-server",
       "post-deploy": "npm install --production"
     }
   }
