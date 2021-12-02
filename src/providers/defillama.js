@@ -1,6 +1,6 @@
 const axios = require('axios').create({
   baseURL: 'https://api.llama.fi',
-  timeout: 180000
+  timeout: 180000 * 3
 })
 
 exports.getCharts = (chain) => {

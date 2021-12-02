@@ -4,7 +4,7 @@ const Syncer = require('./Syncer')
 const DefiProtocol = require('../db/models/DefiProtocol')
 const DefiProtocolTvl = require('../db/models/DefiProtocolTvl')
 const Coin = require('../db/models/Coin')
-const { percentageBetweenNumber } = require('../utils')
+const { percentageBetweenNumber, sleep } = require('../utils')
 
 class DefiProtocolSyncer extends Syncer {
 
@@ -31,6 +31,7 @@ class DefiProtocolSyncer extends Syncer {
     for (let i = 0; i < defiProtocols.length; i += 1) {
       try {
         await this.syncProtocolTvls(defiProtocols[i])
+        await sleep(300)
       } catch (e) {
         console.error(e)
       }
