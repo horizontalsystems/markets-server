@@ -72,16 +72,22 @@ class CoinSyncer {
   async updateCoins(coins) {
     logger.info(`Synced coins: ${coins.length}`)
 
-    const values = coins.map(item => [
-      item.uid,
-      item.price,
-      JSON.stringify(item.price_change),
-      JSON.stringify(item.market_data),
-      item.last_updated
-    ])
+    const values = coins.map(item => {
+      if (!item.uid || !item.price) {
+        return null
+      }
+
+      return [
+        item.uid,
+        item.price,
+        JSON.stringify(item.price_change),
+        JSON.stringify(item.market_data),
+        item.last_updated
+      ]
+    })
 
     try {
-      await Coin.updateCoins(values)
+      await Coin.updateCoins(values.filter(item => item))
     } catch (e) {
       console.log(e)
     }
