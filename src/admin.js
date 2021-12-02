@@ -6,7 +6,7 @@ const admin = require('./config/admin')
 
 async function start() {
   await sequelize.sync()
-  const port = process.env.PORT || 3000
+  const port = process.env.PORT || 3001
 
   admin.listen(port, () => {
     logger.info(`Server started on port ${port}`)

@@ -5,6 +5,14 @@
       "script": "src/app.js"
     },
     {
+      "name": "admin",
+      "script": "src/admin.js",
+      "env": {
+        "PORT": 3001,
+        "NODE_ENV": "development"
+      }
+    },
+    {
       "name": "sync-coins",
       "script": "scripts/sync-coins.js"
     },
