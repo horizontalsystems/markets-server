@@ -7,7 +7,7 @@ exports.treasuries = async ({ query, currencyRate }, res) => {
   res.send(serializer.serializeTreasuries(treasuries, currencyRate))
 }
 
-exports.investments = async ({ query, currencyRate }, res) => {
+exports.investments = async ({ query }, res) => {
   const investments = await FundsInvested.getByCoin(query.coin_uid)
-  res.send(serializer.serializeFundsInvested(investments, currencyRate))
+  res.send(serializer.serializeFundsInvested(investments))
 }

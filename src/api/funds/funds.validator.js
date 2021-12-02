@@ -16,8 +16,7 @@ module.exports = {
   // GET /v1/funds/investments
   validateInvestments: validate({
     query: Joi.object({
-      coin_uid: Joi.string().required(),
-      currency: Joi.string()
+      coin_uid: Joi.string().required()
     })
   }, options),
 

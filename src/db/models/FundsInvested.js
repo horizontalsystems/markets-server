@@ -57,7 +57,6 @@ class FundsInvested extends SequelizeModel {
         I.date,
         I.round,
         I.amount,
-        I.amount * C.price as amount_usd,
         JSON_AGG(JSON_BUILD_OBJECT(
           'name', F.name,
           'website', F.website,

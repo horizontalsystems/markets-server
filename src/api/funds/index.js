@@ -37,7 +37,6 @@ router.get('/treasuries', validateTreasuries, setCurrencyRate, controller.treasu
  * @apiGroup Fund
  *
  * @apiParam  {String=bitcoin,ethereum,...}   coin_uid        Coin's uid
- * @apiUse    Currencies
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -45,7 +44,6 @@ router.get('/treasuries', validateTreasuries, setCurrencyRate, controller.treasu
  *    "date": "2021-10-02",
  *    "round": "Venture Round",
  *    "amount": "20003003",
- *    "amount_in_currency": "200000000",
  *    "funds": [{
  *       "name": "ABC fund",
  *       "website": "https://domain.com/abc",
@@ -57,6 +55,6 @@ router.get('/treasuries', validateTreasuries, setCurrencyRate, controller.treasu
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/investments', validateInvestments, setCurrencyRate, controller.investments)
+router.get('/investments', validateInvestments, controller.investments)
 
 module.exports = router
