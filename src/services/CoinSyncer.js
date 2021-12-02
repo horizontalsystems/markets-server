@@ -50,13 +50,18 @@ class CoinSyncer {
     try {
       logger.info(`Fetching coins ${coinIds.length}`)
       return await coingecko.getMarkets(coinIds)
-    } catch ({ message, response }) {
+    } catch ({ message, response = {} }) {
       if (message) {
         console.error(message)
       }
 
-      if (response && response.status === 429) {
-        logger.info('Sleeping 30s')
+      if (response.status === 429) {
+        logger.info(`Sleeping 1min; Status ${response.status}`)
+        await utils.sleep(60000)
+      }
+
+      if (response.status >= 502 && response.status <= 504) {
+        logger.info(`Sleeping 30s; Status ${response.status}`)
         await utils.sleep(30000)
       }
 
