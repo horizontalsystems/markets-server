@@ -16,7 +16,7 @@ module.exports = {
       UPDATE coins AS c 
         set security = v.security::json,
             description = v.description::json,
-            genesis_date = genesis_date
+            genesis_date = v.genesis_date::date
       FROM (values :values) as v(uid, security, description, genesis_date)
       WHERE c.uid = v.uid
     `
