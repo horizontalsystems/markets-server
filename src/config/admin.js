@@ -1,5 +1,7 @@
+const express = require('express')
 const connect = require('connect-session-sequelize')
 const session = require('express-session')
+const morgan = require('morgan')
 const AdminJS = require('adminjs')
 const CountryList = require('country-list')
 const AdminJSExpress = require('@adminjs/express')
@@ -8,6 +10,7 @@ const sequelize = require('../db/sequelize')
 const db = require('../db/sequelize')
 
 const SequelizeStore = connect(session.Store)
+const app = express()
 
 AdminJS.registerAdapter(AdminJSSequelize)
 
@@ -137,4 +140,10 @@ const router = AdminJSExpress.buildAuthenticatedRouter(adminJs, {
   cookiePassword: process.env.COOKIE_SECRET
 }, null, sessionStore)
 
-module.exports = router
+// request logging. dev: console | production: file
+app.use(morgan('dev'))
+
+// mount admin routes
+app.use('/admin', router)
+
+module.exports = app
