@@ -55,6 +55,7 @@ const adminJs = new AdminJS({
         }
       }
     },
+    sequelize.DefiProtocol,
     sequelize.Language,
     sequelize.Platform,
     {
