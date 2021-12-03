@@ -63,7 +63,7 @@ module.exports = shipit => {
   })
 
   shipit.blTask('copy-env', () => {
-    shipit.copyToRemote('.env', `${shipit.config.deployTo}/.env`)
+    shipit.copyToRemote('.env.prod', `${shipit.config.deployTo}/shared/.env`)
   })
 
   shipit.blTask('setup:node', async () => {
