@@ -51,7 +51,7 @@ router.get('/', validateCoins, setCurrencyRate, controller.index)
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
  *  [{
- *    "date": "2021-10-07T00:00:00.000Z",
+ *    "date": 1635984000,
  *    "tvl": "15697082453.267897"
  *  }]
  *
