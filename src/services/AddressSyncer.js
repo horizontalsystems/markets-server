@@ -11,7 +11,7 @@ const logger = require('../config/logger')
 class AddressSyncer extends Syncer {
   constructor() {
     super()
-    this.ADDRESS_DATA_FETCH_PERIOD = { month: 3 }
+    this.ADDRESS_DATA_FETCH_PERIOD = { month: 24 }
     this.ADDRESSES_PER_COIN = 20
   }
 
