@@ -47,7 +47,7 @@ describe('SetupCoins', () => {
     })
 
     it('fetches & saves coins', async () => {
-      const coins = await setupCoins.syncCoins(['bitcoin', 'ethereum'])
+      const coins = await setupCoins.syncCoins(['bitcoin', 'ethereum'], true)
       expect(coins).to.have.length(2)
       expect(coins[0].uid).to.equal('bitcoin')
       expect(coins[1].uid).to.equal('ethereum')
@@ -59,9 +59,16 @@ describe('SetupCoins', () => {
       })
 
       it('saves & returns only news ones', async () => {
-        const coins = await setupCoins.syncCoins(['bitcoin', 'ethereum'])
+        const coins = await setupCoins.syncCoins(['bitcoin', 'ethereum'], true)
         expect(coins).to.have.length(1)
         expect(coins[0].uid).to.equal('ethereum')
+      })
+
+      it('saves & returns all coins', async () => {
+        const coins = await setupCoins.syncCoins(['bitcoin', 'ethereum'], false)
+        expect(coins).to.have.length(2)
+        expect(coins[0].uid).to.equal('bitcoin')
+        expect(coins[1].uid).to.equal('ethereum')
       })
     })
   })

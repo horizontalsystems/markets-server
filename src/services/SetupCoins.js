@@ -33,7 +33,7 @@ class SetupCoins {
     const languages = await Language.findAll()
     const bep2tokens = await binanceDex.getBep2Tokens()
     const coinIds = ids || (await coingecko.getCoinList()).map(coin => coin.id)
-    const coins = await this.syncCoins(coinIds)
+    const coins = await this.syncCoins(coinIds, !ids)
 
     console.log(`Synced new coins ${coins.length}`)
 
@@ -43,19 +43,21 @@ class SetupCoins {
     }
   }
 
-  async syncCoins(coinIds) {
+  async syncCoins(coinIds, returnOnlyNew) {
     console.log(`Fetching coins ${coinIds.length}`)
     const coinIdsPerPage = coinIds.splice(0, 420)
 
     const coins = await coingecko.getMarkets(coinIdsPerPage)
     const allRecords = await Coin.bulkCreate(coins, { ignoreDuplicates: true })
-    const newRecords = allRecords.filter(record => record.id)
+    const newRecords = returnOnlyNew
+      ? allRecords.filter(record => record.id)
+      : coins
 
     if (coins.length >= (coinIdsPerPage.length + coinIds.length) || coinIds.length < 1) {
       return newRecords
     }
 
-    return newRecords.concat(await this.syncCoins(coinIds))
+    return newRecords.concat(await this.syncCoins(coinIds, returnOnlyNew))
   }
 
   async syncPlatforms(coin, platforms, bep2tokens) {
