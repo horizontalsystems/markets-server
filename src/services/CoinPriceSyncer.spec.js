@@ -5,9 +5,9 @@ const { CronJob } = require('cron')
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
-const Syncer = require('./CoinSyncer')
+const Syncer = require('./CoinPriceSyncer')
 
-describe('CoinSyncer', () => {
+describe('CoinPriceSyncer', () => {
   let syncer
   let clock
 
@@ -117,7 +117,9 @@ describe('CoinSyncer', () => {
 
     it('fetches & sleeps for 30s when api responded with 429', async () => {
       const reason = { response: { status: 429 } }
-      const rejected = new Promise((_, r) => r(reason))
+      const rejected = new Promise((_, reject) => {
+        reject(reason)
+      })
       sinon.stub(coingecko, 'getMarkets').returns(rejected)
 
       await syncer.fetchCoins(['bitcoin', 'ethereum'])

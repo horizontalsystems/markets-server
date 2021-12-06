@@ -1,11 +1,11 @@
 require('dotenv/config')
 
 const sequelize = require('../src/db/sequelize')
-const CoinSyncer = require('../src/services/CoinSyncer')
+const CoinPriceSyncer = require('../src/services/CoinPriceSyncer')
 
 async function start() {
   await sequelize.sync()
-  const syncer = new CoinSyncer()
+  const syncer = new CoinPriceSyncer()
   await syncer.start()
 }
 
