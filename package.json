@@ -30,6 +30,7 @@
     "@google-cloud/bigquery": "^5.9.2",
     "adminjs": "^5.3.3",
     "axios": "^0.24.0",
+    "commander": "^8.3.0",
     "compression": "^1.7.4",
     "connect-session-sequelize": "^7.1.2",
     "cors": "^2.8.5",

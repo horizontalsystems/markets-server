@@ -3,7 +3,7 @@ const sinon = require('sinon')
 const { expect } = require('chai')
 const { DateTime } = require('luxon')
 
-const { percentageBetweenNumber, utcDate } = require('../utils')
+const utils = require('../utils')
 const DefiProtocolSyncer = require('./DefiProtocolSyncer')
 const DefiProtocol = require('../db/models/DefiProtocol')
 const DefiProtocolTvl = require('../db/models/DefiProtocolTvl')
@@ -45,6 +45,8 @@ describe('DefiProtocolSyncer', () => {
       nock(defillama).get('/protocols').reply(200, [protocol1List, protocol2List])
       nock(defillama).get('/protocol/curve').reply(200, protocol1Full)
       nock(defillama).get('/protocol/maker').reply(200, protocol2Full)
+
+      sinon.stub(utils, 'sleep')
     })
 
     it('syncs protocols & historical TVLs', async () => {
@@ -141,9 +143,9 @@ describe('DefiProtocolSyncer', () => {
         expect(defiProtocols).to.have.length(2)
 
         expect(defiProtocols[0].tvl_change.change_30d).to
-          .equal(percentageBetweenNumber(200.99, protocol1List.tvl))
+          .equal(utils.percentageBetweenNumber(200.99, protocol1List.tvl))
         expect(defiProtocols[1].tvl_change.change_30d).to
-          .equal(percentageBetweenNumber(100.99, protocol2List.tvl))
+          .equal(utils.percentageBetweenNumber(100.99, protocol2List.tvl))
       })
     })
   })
@@ -156,11 +158,11 @@ describe('DefiProtocolSyncer', () => {
       syncParams = syncer.syncParams('4h')
 
       dates.push(
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -4 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -3 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -2 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -1 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -1 })
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -4 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -3 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -2 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -1 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -1 })
       )
 
       for (let i = 0; i < dates.length; i += 1) {
@@ -190,13 +192,13 @@ describe('DefiProtocolSyncer', () => {
       syncParams = syncer.syncParams('1d')
 
       dates.push(
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -8 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -20 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -16 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -12 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -8 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -4 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -7 })
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -8 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -20 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -16 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -12 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -8 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -4 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -7 })
       )
 
       for (let i = 0; i < dates.length; i += 1) {

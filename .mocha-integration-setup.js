@@ -1,3 +1,5 @@
+require('dotenv/config')
+
 process.env.NODE_ENV = 'test'
 
 const { DateTime } = require('luxon')
@@ -62,6 +64,19 @@ const factory = {
 
     chains.forEach(chain => chainTvls[chain] = { tvl: factory.data(5, mapper) })
     return factory.defillamaProtocol(name, chainTvls, { tvl: totalTvls })
+  },
+
+  coingeckoMarket: (id, options) => {
+    return {
+      id,
+      current_price: _.random(10, 1000),
+      market_cap: _.random(100, 1000),
+      max_supply: _.random(100, 1000),
+      total_supply: _.random(100, 1000),
+      circulating_supply: _.random(100, 1000),
+      last_updated: DateTime.utc().toISO(),
+      ...options
+    }
   },
 
   createDB: () => new Promise(resolve => {
