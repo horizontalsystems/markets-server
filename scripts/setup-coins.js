@@ -11,12 +11,7 @@ const binanceDex = require('../src/providers/binance-dex')
 const web3Provider = require('../src/providers/web3')
 const coinsJoin = require('../src/db/seeders/coins.json')
 
-const coinsCache = coinsJoin.reduce((result, coin) => ({ ...result, [coin.uid]: coin }), {})
-const turndownService = new TurndownService()
-  .addRule('remove_links', {
-    filter: node => node.nodeName === 'A' && node.getAttribute('href'),
-    replacement: content => content
-  })
+const coinsCache = coinsJoin.reduce((result, item) => ({ ...result, [item.uid]: item }), {})
 
 async function syncCoins(coinIds) {
   console.log(`Fetching coins ${coinIds.length}`)
@@ -103,17 +98,18 @@ async function syncPlatforms(coin, platforms, bep2tokens) {
   }
 }
 
-function descriptionsMap(descriptions, languages) {
-  return languages.reduce((memo, lang) => {
-    const description = descriptions[lang.code]
-    if (description) {
-      memo[lang.code] = turndownService.turndown(description)
-    }
-    return memo
-  }, {})
-}
-
 async function syncCoinInfo(coin, languages, bep2tokens) {
+  const turndownService = new TurndownService()
+    .addRule('remove_links', {
+      filter: node => node.nodeName === 'A' && node.getAttribute('href'),
+      replacement: content => content
+    })
+
+  const mapDescriptions = desc => languages.reduce((descriptions, language) => {
+    const text = desc[language.code] ? turndownService.turndown(desc[language.code]) : undefined
+    return { ...descriptions, [language.code]: text }
+  })
+
   try {
     console.log('Fetching info for', coin.uid)
 
@@ -122,7 +118,7 @@ async function syncCoinInfo(coin, languages, bep2tokens) {
     const values = {
       links: coinInfo.links,
       is_defi: coinInfo.is_defi,
-      description: cached.description || descriptionsMap(coinInfo.description, languages),
+      description: cached.description || mapDescriptions(coinInfo.description),
       genesis_date: cached.genesis_date || coin.genesis_date,
       security: cached.security || coin.security
     }
