@@ -75,8 +75,14 @@ class DefiProtocol extends SequelizeModel {
     `)
   }
 
-  static getIds() {
-    return DefiProtocol.query('SELECT id, coingecko_id, defillama_id FROM defi_protocols')
+  static getIds(defillamaIds) {
+    const where = {}
+
+    if (defillamaIds) {
+      where.defillama_id = defillamaIds
+    }
+
+    return DefiProtocol.findAll({ attributes: ['id', 'coingecko_id', 'defillama_id'], where })
   }
 }
 

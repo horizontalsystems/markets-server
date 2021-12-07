@@ -26,7 +26,7 @@ exports.getProtocols = () => {
 }
 
 exports.getProtocol = id => {
-  console.log('Fetching DeFi protocol info')
+  console.log(`Fetching defi protocol info ${id}`)
 
   return axios.get(`/protocol/${id}`)
     .then(resp => resp.data)

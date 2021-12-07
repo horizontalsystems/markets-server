@@ -13,7 +13,11 @@ class DefiProtocolSyncer extends Syncer {
     await this.syncLatest()
   }
 
-  async syncHistorical() {
+  async syncHistorical(protocols) {
+    if (protocols) {
+      return this.syncHistoricalTvls(await DefiProtocol.getIds(protocols))
+    }
+
     if (await DefiProtocolTvl.exists()) {
       return
     }
@@ -26,11 +30,15 @@ class DefiProtocolSyncer extends Syncer {
       }
     }
 
-    const defiProtocols = await DefiProtocol.getIds()
+    await this.syncHistoricalTvls(await DefiProtocol.getIds())
+  }
 
-    for (let i = 0; i < defiProtocols.length; i += 1) {
+  async syncHistoricalTvls(protocols) {
+    await DefiProtocolTvl.delete(protocols.map(p => p.id))
+
+    for (let i = 0; i < protocols.length; i += 1) {
       try {
-        await this.syncProtocolTvls(defiProtocols[i])
+        await this.syncProtocolTvls(protocols[i])
         await utils.sleep(300)
       } catch (e) {
         console.error(e)
@@ -39,8 +47,6 @@ class DefiProtocolSyncer extends Syncer {
   }
 
   async syncProtocolTvls(defiProtocol) {
-    logger.info(`Syncing ${defiProtocol.defillama_id}; coingecko: ${defiProtocol.coingecko_id}`)
-
     const protocol = await defillama.getProtocol(defiProtocol.defillama_id)
     const tvls = {}
 
@@ -67,7 +73,7 @@ class DefiProtocolSyncer extends Syncer {
       }
     })
 
-    DefiProtocolTvl.bulkCreate(Object.entries(tvls).map(([, data]) => data), {
+    DefiProtocolTvl.bulkCreate(Object.values(tvls), {
       ignoreDuplicates: true
     }).then(items => {
       console.log(`Inserted ${items.length} tvl record for ${defiProtocol.defillama_id}`)

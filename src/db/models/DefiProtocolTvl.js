@@ -99,6 +99,14 @@ class DefiProtocolTvl extends SequelizeModel {
       dateTo
     })
   }
+
+  static delete(defiProtocolIds) {
+    return DefiProtocolTvl.destroy({
+      where: {
+        defi_protocol_id: defiProtocolIds
+      }
+    })
+  }
 }
 
 module.exports = DefiProtocolTvl

@@ -43,8 +43,8 @@ describe('DefiProtocolSyncer', () => {
       protocol2List = factory.defillamaProtocol('maker', { Ethereum: 70.0 })
 
       nock(defillama).get('/protocols').reply(200, [protocol1List, protocol2List])
-      nock(defillama).get('/protocol/curve').reply(200, protocol1Full)
-      nock(defillama).get('/protocol/maker').reply(200, protocol2Full)
+      nock(defillama).get('/protocol/curve').times(1).reply(200, protocol1Full)
+      nock(defillama).get('/protocol/maker').times(1).reply(200, protocol2Full)
 
       sinon.stub(utils, 'sleep')
     })
@@ -57,29 +57,59 @@ describe('DefiProtocolSyncer', () => {
 
       const defiProtocols = await DefiProtocol.findAll()
       const defiProtocolTvls = await DefiProtocolTvl.findAll({ order: ['defi_protocol_id'] })
+      const curveTvls = defiProtocolTvls.filter(i => i.defi_protocol_id === 1)
+      const makerTvls = defiProtocolTvls.filter(i => i.defi_protocol_id === 2)
 
       expect(defiProtocols).to.have.length(2)
       expect(defiProtocolTvls).to.have.length(10)
 
-      defiProtocolTvls.filter(i => i.defi_protocol_id === 1)
-        .forEach(item => {
-          const date = item.date.getTime() / 1000
-          expect(protocol1Full.tvl).to.deep
-            .include({ date, totalLiquidityUSD: parseFloat(item.tvl) })
-          expect(protocol1Full.chainTvls.Ethereum.tvl).to.deep
-            .include({ date, totalLiquidityUSD: item.chain_tvls.Ethereum })
-          expect(protocol1Full.chainTvls.Avalanche.tvl).to.deep
-            .include({ date, totalLiquidityUSD: item.chain_tvls.Avalanche })
-        })
+      curveTvls.forEach(item => {
+        const date = item.date.getTime() / 1000
+        expect(protocol1Full.tvl).to.deep
+          .include({ date, totalLiquidityUSD: parseFloat(item.tvl) })
+        expect(protocol1Full.chainTvls.Ethereum.tvl).to.deep
+          .include({ date, totalLiquidityUSD: item.chain_tvls.Ethereum })
+        expect(protocol1Full.chainTvls.Avalanche.tvl).to.deep
+          .include({ date, totalLiquidityUSD: item.chain_tvls.Avalanche })
+      })
 
-      defiProtocolTvls.filter(i => i.defi_protocol_id === 2)
-        .forEach(item => {
+      makerTvls.forEach(item => {
+        const date = item.date.getTime() / 1000
+        expect(protocol2Full.tvl).to.deep
+          .include({ date, totalLiquidityUSD: parseFloat(item.tvl) })
+        expect(protocol2Full.chainTvls.Ethereum.tvl).to.deep
+          .include({ date, totalLiquidityUSD: item.chain_tvls.Ethereum })
+      })
+    })
+
+    describe('force sync protocols historical tvls', () => {
+      let makerProtocolFull
+
+      beforeEach(async () => {
+        await syncer.syncHistorical()
+
+        makerProtocolFull = factory.defillamaProtocolFull('maker', ['Solana'])
+        nock(defillama).get('/protocol/maker').times(2).reply(200, makerProtocolFull)
+      })
+
+      it('clears protocols tvl and re-syncs', async () => {
+        await syncer.syncHistorical(['maker'])
+
+        const defiProtocols = await DefiProtocol.findAll()
+        const defiProtocolTvls = await DefiProtocolTvl.findAll({ order: ['defi_protocol_id'] })
+        const makerTvls = defiProtocolTvls.filter(i => i.defi_protocol_id === 2)
+
+        expect(defiProtocols).to.have.length(2)
+        expect(defiProtocolTvls).to.have.length(10)
+
+        makerTvls.forEach(item => {
           const date = item.date.getTime() / 1000
-          expect(protocol2Full.tvl).to.deep
+          expect(makerProtocolFull.tvl).to.deep
             .include({ date, totalLiquidityUSD: parseFloat(item.tvl) })
-          expect(protocol2Full.chainTvls.Ethereum.tvl).to.deep
-            .include({ date, totalLiquidityUSD: item.chain_tvls.Ethereum })
+          expect(makerProtocolFull.chainTvls.Solana.tvl).to.deep
+            .include({ date, totalLiquidityUSD: item.chain_tvls.Solana })
         })
+      })
     })
   })
 
