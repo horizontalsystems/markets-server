@@ -1,6 +1,6 @@
 const { CronJob } = require('cron')
 const utils = require('../utils')
-const logger = require('../config/logger')
+// const logger = require('../config/logger')
 const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
 
@@ -15,14 +15,17 @@ class CoinPriceSyncer {
   }
 
   start() {
+    console.log('start')
     this.cron.start()
   }
 
   pause() {
+    console.log('pause')
     this.cron.stop()
   }
 
   async syncSchedule() {
+    console.log('Sync schedule started')
     this.pause()
 
     const coins = await Coin.findAll({ attributes: ['uid'] })
@@ -32,7 +35,7 @@ class CoinPriceSyncer {
   }
 
   async syncCoins(coinIds) {
-    logger.info(`Syncing coins ${coinIds.length}`)
+    console.log(`Syncing coins ${coinIds.length}`)
     const coinIdsPerPage = coinIds.splice(0, 400)
 
     const coins = await this.fetchCoins(coinIdsPerPage)
@@ -48,7 +51,7 @@ class CoinPriceSyncer {
 
   async fetchCoins(coinIds) {
     try {
-      logger.info(`Fetching coins ${coinIds.length}`)
+      console.log(`Fetching coins ${coinIds.length}`)
       return await coingecko.getMarkets(coinIds)
     } catch ({ message, response = {} }) {
       if (message) {
@@ -56,12 +59,12 @@ class CoinPriceSyncer {
       }
 
       if (response.status === 429) {
-        logger.info(`Sleeping 1min; Status ${response.status}`)
+        console.log(`Sleeping 1min; Status ${response.status}`)
         await utils.sleep(60000)
       }
 
       if (response.status >= 502 && response.status <= 504) {
-        logger.info(`Sleeping 30s; Status ${response.status}`)
+        console.log(`Sleeping 30s; Status ${response.status}`)
         await utils.sleep(30000)
       }
 
@@ -70,7 +73,7 @@ class CoinPriceSyncer {
   }
 
   async updateCoins(coins) {
-    logger.info(`Synced coins: ${coins.length}`)
+    console.log(`Synced coins: ${coins.length}`)
 
     const values = coins.map(item => {
       if (!item.uid || !item.price) {
@@ -88,6 +91,7 @@ class CoinPriceSyncer {
 
     try {
       await Coin.updateCoins(values.filter(item => item))
+      console.log('Updated coins', coins.length)
     } catch (e) {
       console.log(e)
     }
