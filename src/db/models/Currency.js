@@ -27,6 +27,19 @@ class Currency extends SequelizeModel {
     const [currency] = await Currency.query('SELECT * FROM currencies WHERE code = :code', { code })
     return currency
   }
+
+  static async getByCodes(codes) {
+    return Currency.query('SELECT * FROM currencies WHERE code IN (:codes)', { codes })
+  }
+
+  static async getNewCurrencies() {
+    return Currency.query(`
+      SELECT * FROM currencies
+      WHERE id NOT IN (
+          SELECT currency_id FROM currency_rates
+      ) and code NOT ILIKE 'usd'
+    `)
+  }
 }
 
 module.exports = Currency

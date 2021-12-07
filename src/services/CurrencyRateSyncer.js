@@ -1,4 +1,5 @@
 const { DateTime } = require('luxon')
+const logger = require('../config/logger')
 const coingecko = require('../providers/coingecko')
 const CurrencyRate = require('../db/models/CurrencyRate')
 const Currency = require('../db/models/Currency')
@@ -12,13 +13,14 @@ class CurrencyRateSyncer extends Syncer {
     await this.syncLatest()
   }
 
-  async syncHistorical() {
-    if (await CurrencyRate.exists()) {
+  async syncHistorical(currencyCodes) {
+
+    if (!currencyCodes && await CurrencyRate.exists()) {
       return
     }
 
-    await this.syncHistoricalRates('10m')
-    await this.syncHistoricalRates('90d')
+    await this.syncHistoricalRates(currencyCodes, '10m')
+    await this.syncHistoricalRates(currencyCodes, '90d')
   }
 
   async syncLatest() {
@@ -68,10 +70,13 @@ class CurrencyRateSyncer extends Syncer {
     this.upsertCurrencyRates(rates)
   }
 
-  async syncHistoricalRates(period) {
+  async syncHistoricalRates(currencyCodes, period) {
     const sourceCoin = 'tether'
-    const currencies = await this.getCurrencies()
     const rates = []
+
+    const currencies = await this.getCurrencies(currencyCodes)
+
+    logger.info(`Started syncing histo rates for period: ${period}, for codes: ${currencyCodes || 'all'}`)
 
     const dateParams = period === '10m' ? {
       dateFrom: DateTime.utc().plus({ hours: -24 }),
@@ -107,12 +112,19 @@ class CurrencyRateSyncer extends Syncer {
     }
 
     this.upsertCurrencyRates(rates)
+    logger.info(`Successfully synced histo rates for period: ${period}, for codes: ${currencyCodes || 'all'}`)
   }
 
-  async getCurrencies() {
+  async getCurrencies(currencyCodes) {
     const codes = []
     const idsMap = {}
-    const currencies = await Currency.findAll()
+    let currencies
+
+    if (currencyCodes) {
+      currencies = await Currency.getByCodes(currencyCodes)
+    } else {
+      currencies = await Currency.findAll()
+    }
 
     currencies.forEach(({ id, code }) => {
       idsMap[code] = id
@@ -124,6 +136,17 @@ class CurrencyRateSyncer extends Syncer {
     return {
       codes,
       idsMap
+    }
+  }
+
+  async fetchCurrencies() {
+    const currencies = await Currency.getNewCurrencies()
+
+    if (currencies.length > 0) {
+      console.log(`Fetched new currencies: ${currencies.length}`)
+      console.log(currencies.map(i => i.code).join(','))
+    } else {
+      console.log('No new currrecncies found !')
     }
   }
 
