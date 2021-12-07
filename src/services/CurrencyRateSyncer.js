@@ -139,17 +139,6 @@ class CurrencyRateSyncer extends Syncer {
     }
   }
 
-  async fetchCurrencies() {
-    const currencies = await Currency.getNewCurrencies()
-
-    if (currencies.length > 0) {
-      console.log(`Fetched new currencies: ${currencies.length}`)
-      console.log(currencies.map(i => i.code).join(','))
-    } else {
-      console.log('No new currrecncies found !')
-    }
-  }
-
   upsertCurrencyRates(rates) {
     CurrencyRate.bulkCreate(rates, {
       updateOnDuplicate: ['rate', 'currencyId']
