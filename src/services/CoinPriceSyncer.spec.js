@@ -1,13 +1,12 @@
 const sinon = require('sinon')
-const { expect } = require('chai')
-const { CronJob } = require('cron')
-
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
 const Syncer = require('./CoinPriceSyncer')
 
 describe('CoinPriceSyncer', () => {
+
+  /** @type CoinPriceSyncer */
   let syncer
   let clock
 
@@ -22,12 +21,6 @@ describe('CoinPriceSyncer', () => {
   afterEach(() => {
     clock.restore()
     sinon.restore()
-  })
-
-  describe('#constructor', () => {
-    it('creates cron job', () => {
-      expect(syncer.cron).instanceof(CronJob)
-    })
   })
 
   describe('#start', () => {
@@ -47,22 +40,23 @@ describe('CoinPriceSyncer', () => {
   })
 
   describe('#syncSchedule', () => {
+    const coins = [{ uid: 'bitcoin' }]
+
     beforeEach(() => {
-      this.findAllStub = sinon.stub(Coin, 'findAll').returns([])
-      this.updateCoinsStub = sinon.stub(Coin, 'updateCoins')
+      sinon.stub(Coin, 'findAll').returns(coins)
+      sinon.stub(syncer, 'syncCoins')
     })
 
-    it('pauses & starts cron ', async () => {
-      const syncCoinsStub = sinon.stub(syncer, 'syncCoins')
+    it('pauses cron & syncs coins & starts cron again', async () => {
       sinon.assert.notCalled(syncer.cron.start)
-      sinon.assert.notCalled(syncCoinsStub)
+      sinon.assert.notCalled(syncer.syncCoins)
       sinon.assert.notCalled(syncer.cron.stop)
 
       await syncer.syncSchedule()
 
       sinon.assert.callOrder(
         syncer.cron.stop,
-        syncCoinsStub,
+        syncer.syncCoins,
         syncer.cron.start
       )
     })
@@ -72,58 +66,53 @@ describe('CoinPriceSyncer', () => {
     const coins = [{ uid: 'bitcoin' }, { uid: 'ethereum' }]
 
     beforeEach(() => {
-      this.updateCoinsStub = sinon.stub(syncer, 'updateCoins')
-      this.sleepStub = sinon.stub(utils, 'sleep')
+      sinon.stub(syncer, 'updateCoins')
+      sinon.stub(utils, 'sleep')
     })
 
-    it('fetches coins and saves', async () => {
-      const coinsIds = ['bitcoin', 'ethereum']
-      const fetchCoinsStub = sinon.stub(syncer, 'fetchCoins').returns(coins)
+    describe('when fetched coins', () => {
+      beforeEach(() => {
+        sinon.stub(coingecko, 'getMarkets').returns(coins)
+      })
 
-      await syncer.syncCoins(coinsIds)
-      sinon.assert.calledOnceWithExactly(fetchCoinsStub, ['bitcoin', 'ethereum'])
-      sinon.assert.calledOnceWithExactly(this.updateCoinsStub, coins)
+      it('fetches & save coins', async () => {
+        await syncer.syncCoins(coins.map(coin => coin.uid))
 
-      sinon.assert.notCalled(this.sleepStub)
+        sinon.assert.calledOnceWithExactly(syncer.updateCoins, coins)
+        sinon.assert.calledOnceWithExactly(utils.sleep, 1200)
+      })
     })
 
-    it('fetches coins by chunk cyclically', async () => {
-      const coinsIds = []
-
-      for (let i = 0; i < 800; i += 1) {
-        coinsIds.push(`coin-${i}`)
-      }
-
-      const fetchCoinsStub = sinon.stub(syncer, 'fetchCoins').returns(coins)
-
-      const chunks1 = coinsIds.slice(0, 400)
-      const chunks2 = coinsIds.slice(400, 800)
-
-      await syncer.syncCoins(coinsIds)
-
-      sinon.assert.callCount(fetchCoinsStub, 2)
-      sinon.assert.calledWith(fetchCoinsStub, chunks1)
-      sinon.assert.calledWith(fetchCoinsStub, chunks2)
-      sinon.assert.calledTwice(this.updateCoinsStub)
-
-      sinon.assert.calledOnce(this.sleepStub)
-    })
-  })
-
-  describe('#fetchCoins', () => {
-    beforeEach(() => {
-      this.sleepStub = sinon.stub(utils, 'sleep')
-    })
-
-    it('fetches & sleeps for 30s when api responded with 429', async () => {
+    describe('when API responded with 429', () => {
       const reason = { response: { status: 429 } }
       const rejected = new Promise((_, reject) => {
         reject(reason)
       })
-      sinon.stub(coingecko, 'getMarkets').returns(rejected)
 
-      await syncer.fetchCoins(['bitcoin', 'ethereum'])
-      sinon.assert.calledOnce(this.sleepStub)
+      beforeEach(() => {
+        sinon.stub(coingecko, 'getMarkets').returns(rejected)
+      })
+
+      it('fetches & sleeps for 1m', async () => {
+        await syncer.syncCoins(coins.map(coin => coin.uid))
+        sinon.assert.calledOnceWithExactly(utils.sleep, 60000)
+      })
+    })
+
+    describe('when API responded with 502', () => {
+      const reason = { response: { status: 502 } }
+      const rejected = new Promise((_, reject) => {
+        reject(reason)
+      })
+
+      beforeEach(() => {
+        sinon.stub(coingecko, 'getMarkets').returns(rejected)
+      })
+
+      it('fetches & sleeps for 30sec', async () => {
+        await syncer.syncCoins(coins.map(coin => coin.uid))
+        sinon.assert.calledOnceWithExactly(utils.sleep, 30000)
+      })
     })
   })
 })

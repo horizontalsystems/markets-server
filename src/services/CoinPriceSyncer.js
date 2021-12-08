@@ -1,6 +1,6 @@
 const { CronJob } = require('cron')
+const { chunk } = require('lodash')
 const utils = require('../utils')
-// const logger = require('../config/logger')
 const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
 
@@ -33,30 +33,22 @@ class CoinPriceSyncer {
     this.pause()
 
     const coins = await Coin.findAll({ attributes: ['uid'] })
-    await this.syncCoins(coins.map(item => item.uid))
+    const chunks = chunk(coins.map(item => item.uid), 400)
+
+    for (let i = 0; i < chunks.length; i += 1) {
+      await this.syncCoins(chunks[i])
+    }
 
     this.start()
   }
 
   async syncCoins(coinIds) {
     debug(`Syncing coins ${coinIds.length}`)
-    const coinIdsPerPage = coinIds.splice(0, 400)
 
-    const coins = await this.fetchCoins(coinIdsPerPage)
-    await this.updateCoins(coins)
-
-    if (coins.length >= (coinIdsPerPage.length + coinIds.length) || coinIds.length < 1) {
-      return
-    }
-
-    await utils.sleep(1200)
-    await this.syncCoins(coinIds)
-  }
-
-  async fetchCoins(coinIds) {
     try {
-      debug(`Fetching coins ${coinIds.length}`)
-      return await coingecko.getMarkets(coinIds)
+      const coins = await coingecko.getMarkets(coinIds)
+      await this.updateCoins(coins)
+      await utils.sleep(1200)
     } catch ({ message, response = {} }) {
       if (message) {
         console.error(message)
@@ -71,8 +63,6 @@ class CoinPriceSyncer {
         debug(`Sleeping 30s; Status ${response.status}`)
         await utils.sleep(30000)
       }
-
-      return []
     }
   }
 
