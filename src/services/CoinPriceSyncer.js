@@ -4,6 +4,10 @@ const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
 
+const debug = msg => {
+  console.log(new Date(), msg)
+}
+
 class CoinPriceSyncer {
 
   constructor() {
@@ -15,17 +19,17 @@ class CoinPriceSyncer {
   }
 
   start() {
-    console.log('start')
+    debug('start')
     this.cron.start()
   }
 
   pause() {
-    console.log('pause')
+    debug('pause')
     this.cron.stop()
   }
 
   async syncSchedule() {
-    console.log('Sync schedule started')
+    debug('Sync schedule started')
     this.pause()
 
     const coins = await Coin.findAll({ attributes: ['uid'] })
@@ -35,7 +39,7 @@ class CoinPriceSyncer {
   }
 
   async syncCoins(coinIds) {
-    console.log(`Syncing coins ${coinIds.length}`)
+    debug(`Syncing coins ${coinIds.length}`)
     const coinIdsPerPage = coinIds.splice(0, 400)
 
     const coins = await this.fetchCoins(coinIdsPerPage)
@@ -51,7 +55,7 @@ class CoinPriceSyncer {
 
   async fetchCoins(coinIds) {
     try {
-      console.log(`Fetching coins ${coinIds.length}`)
+      debug(`Fetching coins ${coinIds.length}`)
       return await coingecko.getMarkets(coinIds)
     } catch ({ message, response = {} }) {
       if (message) {
@@ -59,12 +63,12 @@ class CoinPriceSyncer {
       }
 
       if (response.status === 429) {
-        console.log(`Sleeping 1min; Status ${response.status}`)
+        debug(`Sleeping 1min; Status ${response.status}`)
         await utils.sleep(60000)
       }
 
       if (response.status >= 502 && response.status <= 504) {
-        console.log(`Sleeping 30s; Status ${response.status}`)
+        debug(`Sleeping 30s; Status ${response.status}`)
         await utils.sleep(30000)
       }
 
@@ -73,7 +77,7 @@ class CoinPriceSyncer {
   }
 
   async updateCoins(coins) {
-    console.log(`Synced coins: ${coins.length}`)
+    debug(`Synced coins: ${coins.length}`)
 
     const values = coins.map(item => {
       if (!item.uid || !item.price) {
@@ -91,9 +95,9 @@ class CoinPriceSyncer {
 
     try {
       await Coin.updateCoins(values.filter(item => item))
-      console.log('Updated coins', coins.length)
+      debug(`Updated coins ${coins.length}`)
     } catch (e) {
-      console.log(e)
+      debug(e)
     }
   }
 
