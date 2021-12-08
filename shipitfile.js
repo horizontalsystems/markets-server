@@ -43,7 +43,11 @@ module.exports = shipit => {
     })
 
     shipit.blTask(`${app}:stop`, () => {
-      remote(`pm2 stop process.json --only ${app}`)
+      remote(`pm2 stop ${app}`)
+    })
+
+    shipit.blTask(`${app}:delete`, () => {
+      remote(`pm2 delete ${app}`)
     })
 
     shipit.blTask(`${app}:restart`, () => {
