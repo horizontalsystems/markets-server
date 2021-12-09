@@ -1,5 +1,4 @@
 const { DateTime } = require('luxon')
-const { isNumber } = require('lodash')
 const fs = require('fs')
 const path = require('path')
 
@@ -20,7 +19,7 @@ exports.requireFile = file => {
 }
 
 exports.nullOrString = value => {
-  return (value || isNumber(value)) ? value.toString() : null
+  return (value || value === 0 || value === 0.0) ? value.toString() : null
 }
 
 exports.floatToString = (value, precision = 2) => {
@@ -28,7 +27,7 @@ exports.floatToString = (value, precision = 2) => {
 }
 
 exports.valueInCurrency = (value, currencyRate) => {
-  if (isNumber(value)) {
+  if (value || value === 0 || value === 0.0) {
     return String(value * currencyRate)
   }
 
