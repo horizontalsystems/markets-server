@@ -3,24 +3,24 @@ const { requireFile } = require('../utils')
 const logger = require('../config/logger')
 
 const bigquery = new BigQuery()
-const transactionStatsSQL = requireFile('db/sql/transaction_stats.sql')
-const addressRankSQL = requireFile('db/sql/address_rank.sql')
-const addressStatsSQL = requireFile('db/sql/address_stats.sql')
-const coinHoldersSQL = requireFile('db/sql/coin_holders.sql')
+const transactionStatsSQL = requireFile('providers/bigquery-sql/transaction_stats.sql')
+const addressRankSQL = requireFile('providers/bigquery-sql/address_rank.sql')
+const addressStatsSQL = requireFile('providers/bigquery-sql/address_stats.sql')
+const coinHoldersSQL = requireFile('providers/bigquery-sql/coin_holders.sql')
 
 const dexVolume = {
-  sushi: requireFile('db/sql/sushi_volumes.sql'),
-  uniswap_v2: requireFile('db/sql/uniswap_v2_volumes.sql'),
-  uniswap_v3: requireFile('db/sql/uniswap_v3_volumes.sql'),
+  sushi: requireFile('providers/bigquery-sql/sushi_volumes.sql'),
+  uniswap_v2: requireFile('providers/bigquery-sql/uniswap_v2_volumes.sql'),
+  uniswap_v3: requireFile('providers/bigquery-sql/uniswap_v3_volumes.sql'),
 }
 
 const dexLiquidity = {
-  sushi: requireFile('db/sql/sushi_liquidity.sql'),
-  sushi_bydate: requireFile('db/sql/sushi_liquidity_bydate.sql'),
-  uniswap_v2: requireFile('db/sql/uniswap_v2_liquidity.sql'),
-  uniswap_v3: requireFile('db/sql/uniswap_v3_liquidity.sql'),
-  uniswap_v2_bydate: requireFile('db/sql/uniswap_v2_liquidity_bydate.sql'),
-  uniswap_v3_bydate: requireFile('db/sql/uniswap_v3_liquidity_bydate.sql')
+  sushi: requireFile('providers/bigquery-sql/sushi_liquidity.sql'),
+  sushi_bydate: requireFile('providers/bigquery-sql/sushi_liquidity_bydate.sql'),
+  uniswap_v2: requireFile('providers/bigquery-sql/uniswap_v2_liquidity.sql'),
+  uniswap_v3: requireFile('providers/bigquery-sql/uniswap_v3_liquidity.sql'),
+  uniswap_v2_bydate: requireFile('providers/bigquery-sql/uniswap_v2_liquidity_bydate.sql'),
+  uniswap_v3_bydate: requireFile('providers/bigquery-sql/uniswap_v3_liquidity_bydate.sql')
 }
 
 exports.getTransactionsStats = async (dateFrom, dateTo, tokens, period) => {

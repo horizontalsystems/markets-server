@@ -1,6 +1,6 @@
 const { Op } = require('sequelize')
 const { DateTime } = require('luxon')
-const bigquery = require('../db/bigquery')
+const bigquery = require('../providers/bigquery')
 const Platform = require('../db/models/Platform')
 const Address = require('../db/models/Address')
 const CoinHolder = require('../db/models/CoinHolder')

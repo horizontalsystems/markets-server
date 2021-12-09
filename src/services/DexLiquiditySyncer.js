@@ -1,7 +1,7 @@
 const { DateTime } = require('luxon')
 const { utcDate } = require('../utils')
 const DexLiquidity = require('../db/models/DexLiquidity')
-const bigquery = require('../db/bigquery')
+const bigquery = require('../providers/bigquery')
 const Platform = require('../db/models/Platform')
 const Syncer = require('./Syncer')
 

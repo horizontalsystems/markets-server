@@ -1,7 +1,7 @@
 const { DateTime } = require('luxon')
 const DexVolume = require('../db/models/DexVolume')
 const Platform = require('../db/models/Platform')
-const bigquery = require('../db/bigquery')
+const bigquery = require('../providers/bigquery')
 const Syncer = require('./Syncer')
 
 class DexVolumeSyncer extends Syncer {

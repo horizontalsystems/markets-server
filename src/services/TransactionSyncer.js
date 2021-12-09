@@ -1,7 +1,7 @@
 const { DateTime } = require('luxon')
 const Transaction = require('../db/models/Transaction')
 const Platform = require('../db/models/Platform')
-const bigquery = require('../db/bigquery')
+const bigquery = require('../providers/bigquery')
 const Syncer = require('./Syncer')
 
 class TransactionSyncer extends Syncer {
