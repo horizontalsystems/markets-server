@@ -3,7 +3,9 @@ const fs = require('fs')
 const path = require('path')
 
 exports.sleep = (timeout = 1000) => {
-  return new Promise(resolve => setTimeout(resolve, timeout))
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout)
+  })
 }
 
 exports.utcDate = (format, duration = {}) => {
