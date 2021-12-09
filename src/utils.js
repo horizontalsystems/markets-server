@@ -19,11 +19,11 @@ exports.requireFile = file => {
 }
 
 exports.nullOrString = value => {
-  return value ? value.toString() : null
+  return (value || value === 0) ? value.toString() : null
 }
 
 exports.floatToString = (value, precision = 2) => {
-  return value ? value.toPrecision(precision) : null
+  return (value || value === 0) ? value.toPrecision(precision) : null
 }
 
 exports.valueInCurrency = (value, currencyRate) => {
