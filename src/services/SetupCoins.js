@@ -51,7 +51,7 @@ class SetupCoins {
     const allRecords = await Coin.bulkCreate(coins, { ignoreDuplicates: true })
     const newRecords = returnOnlyNew
       ? allRecords.filter(record => record.id)
-      : coins
+      : allRecords
 
     if (coins.length >= (coinIdsPerPage.length + coinIds.length) || coinIds.length < 1) {
       return newRecords
