@@ -1,0 +1,302 @@
+[
+  {
+    "treasury": "bitfarms_limited",
+    "amount": 2407,
+    "coin_id": 1
+  },
+  {
+    "treasury": "seetee_as",
+    "amount": 1170,
+    "coin_id": 1
+  },
+  {
+    "treasury": "voyager_digital_ltd",
+    "amount": 12260,
+    "coin_id": 1
+  },
+  {
+    "treasury": "riot_blockchain_inc",
+    "amount": 1565,
+    "coin_id": 1
+  },
+  {
+    "treasury": "osprey_bitcoin_trust",
+    "amount": 1639,
+    "coin_id": 1
+  },
+  {
+    "treasury": "nexon_co_ltd",
+    "amount": 1717,
+    "coin_id": 1
+  },
+  {
+    "treasury": "evolve_bitcoin_etf",
+    "amount": 1632,
+    "coin_id": 1
+  },
+  {
+    "treasury": "net_holding_anonim_sirketi",
+    "amount": 3,
+    "coin_id": 1
+  },
+  {
+    "treasury": "hut_mining_corp",
+    "amount": 4450,
+    "coin_id": 1
+  },
+  {
+    "treasury": "galaxy_digital_holdings",
+    "amount": 4000,
+    "coin_id": 1
+  },
+  {
+    "treasury": "bitcoin_group_se",
+    "amount": 4000,
+    "coin_id": 1
+  },
+  {
+    "treasury": "coinbase_global_inc",
+    "amount": 4487,
+    "coin_id": 1
+  },
+  {
+    "treasury": "vaneck_vectors_bitcoin_etn",
+    "amount": 3021,
+    "coin_id": 1
+  },
+  {
+    "treasury": "ci_galaxy_bitcoin_fund",
+    "amount": 3021,
+    "coin_id": 1
+  },
+  {
+    "treasury": "marathon_digital_holdings",
+    "amount": 6665,
+    "coin_id": 1
+  },
+  {
+    "treasury": "grayscale_digital_large_cap_fund",
+    "amount": 7369,
+    "coin_id": 1
+  },
+  {
+    "treasury": "21shares_ag",
+    "amount": 7769,
+    "coin_id": 1
+  },
+  {
+    "treasury": "square_inc",
+    "amount": 8027,
+    "coin_id": 1
+  },
+  {
+    "treasury": "ninepoint_bitcoin_trust",
+    "amount": 5250,
+    "coin_id": 1
+  },
+  {
+    "treasury": "stone_ridge_holdings_group",
+    "amount": 10889,
+    "coin_id": 1
+  },
+  {
+    "treasury": "bitwise_10_crypto_index_fund",
+    "amount": 13650,
+    "coin_id": 1
+  },
+  {
+    "treasury": "3iq_coinshares_bitcoin_etf",
+    "amount": 18242,
+    "coin_id": 1
+  },
+  {
+    "treasury": "3iq_the_bitcoin_fund",
+    "amount": 23459,
+    "coin_id": 1
+  },
+  {
+    "treasury": "purpose_bitcoin_etf",
+    "amount": 21652,
+    "coin_id": 1
+  },
+  {
+    "treasury": "the_tezos_foundation",
+    "amount": 24808,
+    "coin_id": 1
+  },
+  {
+    "treasury": "phunware_inc",
+    "amount": 26,
+    "coin_id": 1
+  },
+  {
+    "treasury": "etc_group_bitcoin_etp",
+    "amount": 17421,
+    "coin_id": 1
+  },
+  {
+    "treasury": "tesla_inc",
+    "amount": 43200,
+    "coin_id": 1
+  },
+  {
+    "treasury": "coin_citadel_inc",
+    "amount": 4,
+    "coin_id": 1
+  },
+  {
+    "treasury": "globant_sa",
+    "amount": 15,
+    "coin_id": 1
+  },
+  {
+    "treasury": "qwd_fintech_corp",
+    "amount": 60,
+    "coin_id": 1
+  },
+  {
+    "treasury": "mode_global_holdings",
+    "amount": 85,
+    "coin_id": 1
+  },
+  {
+    "treasury": "incrementum_digital_physical_gold_fund",
+    "amount": 197,
+    "coin_id": 1
+  },
+  {
+    "treasury": "mtgox_kk",
+    "amount": 141686,
+    "coin_id": 1
+  },
+  {
+    "treasury": "hashdex_nasdaq_crypto_index_fundo_de_indice",
+    "amount": 6015,
+    "coin_id": 1
+  },
+  {
+    "treasury": "wisdomtree_bitcoin",
+    "amount": 5700,
+    "coin_id": 1
+  },
+  {
+    "treasury": "leonteq_bitcoin_tracker_usd",
+    "amount": 2174,
+    "coin_id": 1
+  },
+  {
+    "treasury": "etf_qr_asset",
+    "amount": 661,
+    "coin_id": 1
+  },
+  {
+    "treasury": "meitu",
+    "amount": 941,
+    "coin_id": 1
+  },
+  {
+    "treasury": "argo_blockchain_plc",
+    "amount": 1268,
+    "coin_id": 1
+  },
+  {
+    "treasury": "grayscale_bitcoin_trust",
+    "amount": 654885,
+    "coin_id": 1
+  },
+  {
+    "treasury": "bit_digital_inc",
+    "amount": 489,
+    "coin_id": 1
+  },
+  {
+    "treasury": "cypherpunk_holdings_inc",
+    "amount": 360,
+    "coin_id": 1
+  },
+  {
+    "treasury": "hive_blockchain",
+    "amount": 1266,
+    "coin_id": 1
+  },
+  {
+    "treasury": "bigg_digital_assets_inc",
+    "amount": 300,
+    "coin_id": 1
+  },
+  {
+    "treasury": "advanced_bitcoin_tech",
+    "amount": 254,
+    "coin_id": 1
+  },
+  {
+    "treasury": "dmg_blockchain_solutions_inc",
+    "amount": 220,
+    "coin_id": 1
+  },
+  {
+    "treasury": "digitalx",
+    "amount": 215,
+    "coin_id": 1
+  },
+  {
+    "treasury": "digihost_technology_inc",
+    "amount": 184,
+    "coin_id": 1
+  },
+  {
+    "treasury": "block_one",
+    "amount": 164000,
+    "coin_id": 1
+  },
+  {
+    "treasury": "fortress_blockchain",
+    "amount": 163,
+    "coin_id": 1
+  },
+  {
+    "treasury": "cleanspark_inc",
+    "amount": 143,
+    "coin_id": 1
+  },
+  {
+    "treasury": "banxa_holdings_inc",
+    "amount": 136,
+    "coin_id": 1
+  },
+  {
+    "treasury": "brooker_group",
+    "amount": 122,
+    "coin_id": 1
+  },
+  {
+    "treasury": "neptune_digital_assets",
+    "amount": 100,
+    "coin_id": 1
+  },
+  {
+    "treasury": "btcs_inc",
+    "amount": 79,
+    "coin_id": 1
+  },
+  {
+    "treasury": "coinshares_xbt_provider",
+    "amount": 69730,
+    "coin_id": 1
+  },
+  {
+    "treasury": "frmo_corp",
+    "amount": 63,
+    "coin_id": 1
+  },
+  {
+    "treasury": "mogo_financing",
+    "amount": 50,
+    "coin_id": 1
+  },
+  {
+    "treasury": "macrostrategy_llc",
+    "amount": 122478,
+    "coin_id": 1
+  }
+]
