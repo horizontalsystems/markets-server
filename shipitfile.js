@@ -28,8 +28,9 @@ module.exports = shipit => {
       servers: ['deploy@147.182.167.89'],
     },
     dev_api: {
-      branch: 'develop',
-      servers: ['deploy@161.35.110.248']
+      branch: 'master',
+      servers: ['ubuntu@161.35.110.248'],
+      deployTo: '/home/ubuntu/markets-server',
     }
   })
 
