@@ -1,3 +1,4 @@
+const { times } = require('lodash')
 const sinon = require('sinon')
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
@@ -13,9 +14,6 @@ describe('CoinPriceSyncer', () => {
   beforeEach(() => {
     clock = sinon.useFakeTimers()
     syncer = new Syncer()
-
-    sinon.spy(syncer.cron, 'start')
-    sinon.spy(syncer.cron, 'stop')
   })
 
   afterEach(() => {
@@ -23,42 +21,35 @@ describe('CoinPriceSyncer', () => {
     sinon.restore()
   })
 
-  describe('#start', () => {
-    it('starts cron job', () => {
-      sinon.assert.notCalled(syncer.cron.start)
-      syncer.start()
-      sinon.assert.calledOnce(syncer.cron.start)
-    })
-  })
-
-  describe('#pause', () => {
-    it('stops cron job', () => {
-      sinon.assert.notCalled(syncer.cron.stop)
-      syncer.pause()
-      sinon.assert.calledOnce(syncer.cron.stop)
-    })
-  })
-
-  describe('#syncSchedule', () => {
-    const coins = [{ uid: 'bitcoin' }]
-
+  describe('#sync', () => {
     beforeEach(() => {
-      sinon.stub(Coin, 'findAll').returns(coins)
       sinon.stub(syncer, 'syncCoins')
     })
 
-    it('pauses cron & syncs coins & starts cron again', async () => {
-      sinon.assert.notCalled(syncer.cron.start)
-      sinon.assert.notCalled(syncer.syncCoins)
-      sinon.assert.notCalled(syncer.cron.stop)
+    describe('when coins more than chunk size', () => {
+      beforeEach(() => {
+        const coins = times(401, i => ({ uid: `name-${i}` }))
+        sinon.stub(Coin, 'findAll').returns(coins)
+      })
 
-      await syncer.syncSchedule()
+      it('syncs coins by chunk', async () => {
+        sinon.assert.notCalled(syncer.syncCoins)
+        await syncer.sync()
+        sinon.assert.calledTwice(syncer.syncCoins)
+      })
+    })
 
-      sinon.assert.callOrder(
-        syncer.cron.stop,
-        syncer.syncCoins,
-        syncer.cron.start
-      )
+    describe('when coins less than chunk size', () => {
+      beforeEach(() => {
+        const coins = [{ uid: 'bitcoin' }]
+        sinon.stub(Coin, 'findAll').returns(coins)
+      })
+
+      it('syncs coins once', async () => {
+        sinon.assert.notCalled(syncer.syncCoins)
+        await syncer.sync()
+        sinon.assert.calledOnce(syncer.syncCoins)
+      })
     })
   })
 

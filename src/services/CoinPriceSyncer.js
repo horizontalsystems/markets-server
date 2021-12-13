@@ -1,4 +1,3 @@
-const { CronJob } = require('cron')
 const { chunk } = require('lodash')
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
@@ -10,36 +9,25 @@ const debug = msg => {
 
 class CoinPriceSyncer {
 
-  constructor() {
-    this.cron = new CronJob({
-      cronTime: '* * * * * *', // every second
-      onTick: this.syncSchedule.bind(this),
-      start: false
-    })
+  async start() {
+    const running = true
+    while (running) {
+      try {
+        await this.sync()
+      } catch (e) {
+        debug(e)
+        process.exit(1)
+      }
+    }
   }
 
-  start() {
-    debug('start')
-    this.cron.start()
-  }
-
-  pause() {
-    debug('pause')
-    this.cron.stop()
-  }
-
-  async syncSchedule() {
-    debug('Sync schedule started')
-    this.pause()
-
+  async sync() {
     const coins = await Coin.findAll({ attributes: ['uid'] })
     const chunks = chunk(coins.map(item => item.uid), 400)
 
     for (let i = 0; i < chunks.length; i += 1) {
       await this.syncCoins(chunks[i])
     }
-
-    this.start()
   }
 
   async syncCoins(coinIds) {
