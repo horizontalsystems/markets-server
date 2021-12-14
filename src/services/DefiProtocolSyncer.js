@@ -73,13 +73,8 @@ class DefiProtocolSyncer extends Syncer {
       }
     })
 
-    DefiProtocolTvl.bulkCreate(Object.values(tvls), {
-      ignoreDuplicates: true
-    }).then(items => {
-      console.log(`Inserted ${items.length} tvl record for ${defiProtocol.defillama_id}`)
-    }).catch(e => {
-      console.error(e)
-    })
+    const records = await DefiProtocolTvl.bulkCreate(Object.values(tvls), { ignoreDuplicates: true })
+    console.log(`Inserted ${records.length} tvl record for ${defiProtocol.defillama_id}`)
   }
 
   async syncLatest() {
