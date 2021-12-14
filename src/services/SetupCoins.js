@@ -48,10 +48,12 @@ class SetupCoins {
     const coinIdsPerPage = coinIds.splice(0, 420)
 
     const coins = await coingecko.getMarkets(coinIdsPerPage)
-    const allRecords = await Coin.bulkCreate(coins, { ignoreDuplicates: true })
-    const newRecords = returnOnlyNew
-      ? allRecords.filter(record => record.id)
-      : allRecords
+    const options = returnOnlyNew
+      ? { ignoreDuplicates: true }
+      : { updateOnDuplicate: ['price', 'price_change', 'last_updated'] }
+
+    const allRecords = await Coin.bulkCreate(coins, options)
+    const newRecords = allRecords.filter(record => record.id)
 
     if (coins.length >= (coinIdsPerPage.length + coinIds.length) || coinIds.length < 1) {
       return newRecords
