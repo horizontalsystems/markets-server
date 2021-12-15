@@ -30,6 +30,14 @@ app.use(helmet())
 // enable CORS - Cross Origin Resource Sharing
 app.use(cors())
 
+// mount STATUS route
+app.use('/status', (req, res) => {
+  res.send({
+    code: 200,
+    status: 'ok'
+  })
+})
+
 // mount API v1 routes
 app.use('/v1', routes)
 
