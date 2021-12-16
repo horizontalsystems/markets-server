@@ -17,8 +17,7 @@ class Transaction extends SequelizeModel {
         date: {
           type: DataTypes.DATE,
           allowNull: false
-        },
-        expires_at: DataTypes.DATE
+        }
       },
       {
         sequelize,

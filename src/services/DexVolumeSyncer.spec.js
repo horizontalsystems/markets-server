@@ -32,59 +32,31 @@ describe('DexVolumeSyncer', async () => {
   })
 
   describe('#syncHistorical', () => {
+    beforeEach(() => {
+      sinon.stub(syncer, 'syncStats')
+    })
+
     describe('when already DexVolume exists', () => {
       it('returns without syncing', async () => {
         sinon.stub(DexVolume, 'exists').returns(true)
         await syncer.syncHistorical()
+        sinon.assert.notCalled(syncer.syncStats)
       })
     })
 
     describe('when no DexVolume exists', () => {
       beforeEach(() => {
         sinon.stub(DexVolume, 'exists').returns(false)
-
-        this.syncMonthlyStats = sinon.stub(syncer, 'syncMonthlyStats')
-        this.syncWeeklyStats = sinon.stub(syncer, 'syncWeeklyStats')
-        this.syncDailyStats = sinon.stub(syncer, 'syncDailyStats')
       })
 
       it('fetches monthly, weekly and daily stats in order', async () => {
         await syncer.syncHistorical()
-
+        sinon.assert.calledThrice(syncer.syncStats)
         sinon.assert.callOrder(
-          this.syncMonthlyStats,
-          this.syncWeeklyStats,
-          this.syncDailyStats
+          syncer.syncStats.withArgs({ dateFrom: '2020-12-02', dateTo: '2020-12-25' }),
+          syncer.syncStats.withArgs({ dateFrom: '2020-12-25 00:00:00+0', dateTo: '2020-12-31 08:00:00+0', dateExpiresIn: { days: 7 } }),
+          syncer.syncStats.withArgs({ dateFrom: '2020-12-31 08:00:00+0', dateTo: '2021-01-01 08:00:00+0', dateExpiresIn: { hours: 24 } })
         )
-      })
-
-      it('fetches monthly stats', async () => {
-        await syncer.syncHistorical()
-
-        sinon.assert.calledWith(this.syncMonthlyStats, {
-          dateFrom: '2020-12-02',
-          dateTo: '2020-12-25'
-        })
-      })
-
-      it('fetches weekly stats', async () => {
-        await syncer.syncHistorical()
-
-        sinon.assert.calledWith(this.syncWeeklyStats, {
-          dateFrom: '2020-12-25 00:00:00+0',
-          dateTo: '2020-12-31 08:00:00+0',
-          dateExpiresIn: { days: 7 }
-        })
-      })
-
-      it('fetches daily stats', async () => {
-        await syncer.syncHistorical()
-
-        sinon.assert.calledWith(this.syncDailyStats, {
-          dateFrom: '2020-12-31 08:00:00+0',
-          dateTo: '2021-01-01 08:00:00+0',
-          dateExpiresIn: { hours: 24 }
-        })
       })
     })
   })

@@ -1,4 +1,3 @@
-const { DateTime } = require('luxon')
 const DexVolume = require('../db/models/DexVolume')
 const Platform = require('../db/models/Platform')
 const bigquery = require('../providers/bigquery')
@@ -16,9 +15,9 @@ class DexVolumeSyncer extends Syncer {
       return
     }
 
-    await this.syncMonthlyStats(this.syncParamsHistorical('1d'), '1d')
-    await this.syncWeeklyStats(this.syncParamsHistorical('4h'), '4h')
-    await this.syncDailyStats(this.syncParamsHistorical('1h'), '1h')
+    await this.syncStats(this.syncParamsHistorical('1d'), '1d')
+    await this.syncStats(this.syncParamsHistorical('4h'), '4h')
+    await this.syncStats(this.syncParamsHistorical('1h'), '1h')
   }
 
   async syncLatest() {
@@ -31,70 +30,42 @@ class DexVolumeSyncer extends Syncer {
     await this.syncStats(dateParams, '1h')
   }
 
-  async syncWeeklyStats(dateParams) {
-    this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
-  }
-
-  async syncMonthlyStats(dateParams) {
-    this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
-  }
-
-  async adjustPoints(dateFrom, dateTo) {
+  async syncWeeklyStats({ dateFrom, dateTo }) {
     await DexVolume.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncStats({ dateFrom, dateTo, dateExpiresIn }, datePeriod) {
+  async syncMonthlyStats({ dateFrom, dateTo }) {
+    await DexVolume.deleteExpired(dateFrom, dateTo)
+  }
+
+  async syncStats({ dateFrom, dateTo }, datePeriod) {
     const platforms = await this.getPlatforms()
     const volumesV2 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.tokens, datePeriod, 'uniswap_v2')
     const volumesV3 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.tokens, datePeriod, 'uniswap_v3')
     const volumesSushi = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.tokens, datePeriod, 'sushi')
 
-    volumesV2.forEach(transfer => {
-      return this.upsertDexVolume(
-        transfer.date.value,
-        transfer.volume,
-        platforms.tokensMap[transfer.address],
-        dateExpiresIn,
-        'uniswap_v2'
-      )
+    const mapVolumes = (items, exchange) => items.map(item => {
+      return {
+        exchange,
+        volume: item.volume,
+        date: item.date.value,
+        platform_id: platforms.tokensMap[item.address]
+      }
     })
 
-    volumesV3.forEach(transfer => this.upsertDexVolume(
-      transfer.date.value,
-      transfer.volume,
-      platforms.tokensMap[transfer.address],
-      dateExpiresIn,
-      'uniswap_v3'
-    ))
+    const records = [
+      ...mapVolumes(volumesV2, 'uniswap_v2'),
+      ...mapVolumes(volumesV3, 'uniswap_v3'),
+      ...mapVolumes(volumesSushi, 'sushi')
+    ]
 
-    volumesSushi.forEach(transfer => this.upsertDexVolume(
-      transfer.date.value,
-      transfer.volume,
-      platforms.tokensMap[transfer.address],
-      dateExpiresIn,
-      'sushi'
-    ))
-  }
-
-  upsertDexVolume(date, volume, platformId, expireDuration, exchange) {
-    let expiresAt = null
-    if (expireDuration) {
-      expiresAt = DateTime.fromISO(date)
-        .plus(expireDuration)
+    if (!records.length) {
+      return
     }
 
-    DexVolume.upsert({
-      date,
-      volume,
-      exchange,
-      expires_at: expiresAt,
-      platform_id: platformId
-    })
-      .then(([dexVolume]) => {
-        console.log(JSON.stringify(dexVolume.dataValues))
-      })
-      .catch(err => {
-        console.error('Error inserting dex volume', err.message)
+    await DexVolume.bulkCreate(records, { ignoreDuplicates: true })
+      .catch(e => {
+        console.error('Error inserting dex volumes', e.message)
       })
   }
 

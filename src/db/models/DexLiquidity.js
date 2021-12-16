@@ -16,8 +16,7 @@ class DexLiquidity extends SequelizeModel {
         exchange: {
           type: DataTypes.STRING,
           allowNull: false
-        },
-        expires_at: DataTypes.DATE
+        }
       },
       {
         sequelize,

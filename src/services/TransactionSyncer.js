@@ -1,4 +1,3 @@
-const { DateTime } = require('luxon')
 const Transaction = require('../db/models/Transaction')
 const Platform = require('../db/models/Platform')
 const bigquery = require('../providers/bigquery')
@@ -16,9 +15,9 @@ class TransactionSyncer extends Syncer {
       return
     }
 
-    await this.syncMonthlyStats(this.syncParamsHistorical('1d'), '1d')
-    await this.syncWeeklyStats(this.syncParamsHistorical('4h'), '4h')
-    await this.syncDailyStats(this.syncParamsHistorical('1h'), '1h')
+    await this.syncStats(this.syncParamsHistorical('1d'), '1d')
+    await this.syncStats(this.syncParamsHistorical('4h'), '4h')
+    await this.syncStats(this.syncParamsHistorical('1h'), '1h')
   }
 
   async syncLatest() {
@@ -31,12 +30,12 @@ class TransactionSyncer extends Syncer {
     await this.syncStats(dateParams, '1h')
   }
 
-  async syncWeeklyStats(dateParams) {
-    await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
+  async syncWeeklyStats({ dateFrom, dateTo }) {
+    await this.adjustPoints(dateFrom, dateTo)
   }
 
-  async syncMonthlyStats(dateParams) {
-    await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
+  async syncMonthlyStats({ dateFrom, dateTo }) {
+    await this.adjustPoints(dateFrom, dateTo)
   }
 
   async adjustPoints(dateFrom, dateTo) {
@@ -44,38 +43,26 @@ class TransactionSyncer extends Syncer {
     await Transaction.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncStats({ dateFrom, dateTo, dateExpiresIn }, datePeriod) {
+  async syncStats({ dateFrom, dateTo }, datePeriod) {
     const platforms = await this.getPlatforms()
     const transactions = await bigquery.getTransactionsStats(dateFrom, dateTo, platforms.tokens, datePeriod)
 
-    transactions.forEach(transaction => this.upsertTransaction(
-      transaction.count,
-      transaction.volume,
-      transaction.date.value,
-      platforms.tokensMap[transaction.address],
-      dateExpiresIn
-    ))
-  }
+    const records = transactions
+      .map(transaction => ({
+        count: transaction.count,
+        volume: transaction.volume,
+        date: transaction.date.value,
+        platform_id: platforms.tokensMap[transaction.address]
+      }))
+      .filter(item => item.platform_id)
 
-  upsertTransaction(count, volume, date, platformId, expireDuration) {
-    let expiresAt = null
-    if (expireDuration) {
-      expiresAt = DateTime.fromISO(date)
-        .plus(expireDuration)
+    if (!records.length) {
+      return
     }
 
-    Transaction.upsert({
-      count,
-      volume,
-      date,
-      expires_at: expiresAt,
-      platform_id: platformId
-    })
-      .then(([transaction]) => {
-        console.log(JSON.stringify(transaction.dataValues))
-      })
-      .catch(err => {
-        console.error('Error inserting transaction', err.message)
+    return Transaction.bulkCreate(records, { ignoreDuplicates: true })
+      .catch(e => {
+        console.error('Error inserting transactions', e.message)
       })
   }
 

@@ -1,4 +1,3 @@
-const { DateTime } = require('luxon')
 const { utcDate } = require('../utils')
 const DexLiquidity = require('../db/models/DexLiquidity')
 const bigquery = require('../providers/bigquery')
@@ -22,9 +21,9 @@ class DexLiquiditySyncer extends Syncer {
       dateTo: utcDate('yyyy-MM-dd', { days: -30 })
     })
 
-    await this.syncMonthlyStats(this.syncParamsHistorical('1d'), '1d')
-    await this.syncWeeklyStats(this.syncParamsHistorical('4h'), '4h')
-    await this.syncDailyStats(this.syncParamsHistorical('1h'), '1h')
+    await this.syncStats(this.syncParamsHistorical('1d'), '1d')
+    await this.syncStats(this.syncParamsHistorical('4h'), '4h')
+    await this.syncStats(this.syncParamsHistorical('1h'), '1h')
   }
 
   async syncLatest() {
@@ -37,15 +36,11 @@ class DexLiquiditySyncer extends Syncer {
     await this.syncStats(dateParams, '1h')
   }
 
-  async syncWeeklyStats(dateParams) {
-    await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
+  async syncWeeklyStats({ dateFrom, dateTo }) {
+    await DexLiquidity.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncMonthlyStats(dateParams) {
-    await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
-  }
-
-  async adjustPoints(dateFrom, dateTo) {
+  async syncMonthlyStats({ dateFrom, dateTo }) {
     await DexLiquidity.deleteExpired(dateFrom, dateTo)
   }
 
@@ -60,7 +55,6 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncStatsHistorical(dateParams) {
-    console.log('syncStatsHistorical')
     const platforms = this.mapPlatforms(await Platform.findErc20())
 
     await this.fetchStats(dateParams, '1d', 'uniswap_v2', 'uniswap_v2', platforms)
@@ -68,8 +62,8 @@ class DexLiquiditySyncer extends Syncer {
     await this.fetchStats(dateParams, '1d', 'sushi', 'sushi', platforms)
   }
 
-  async fetchStats({ dateFrom, dateTo, dateExpiresIn }, datePeriod, exchange, queryType, platforms) {
-    const records = await bigquery.getDexLiquidity(
+  async fetchStats({ dateFrom, dateTo }, datePeriod, exchange, queryType, platforms) {
+    const data = await bigquery.getDexLiquidity(
       dateFrom,
       dateTo,
       datePeriod,
@@ -77,13 +71,19 @@ class DexLiquiditySyncer extends Syncer {
       queryType
     )
 
-    records.forEach(record => this.upsertDexLiquidity(
-      record.date.value,
-      record.volume,
-      platforms.tokensMap[record.address],
-      dateExpiresIn,
-      exchange
-    ))
+    const records = data
+      .map(item => ({
+        date: item.date.value,
+        volume: item.volume,
+        exchange,
+        platform_id: platforms.tokensMap[item.address]
+      }))
+      .filter(item => item.platform_id)
+
+    return DexLiquidity.bulkCreate(records, { ignoreDuplicates: true })
+      .catch(e => {
+        console.error('Error inserting dex liquidity', e.message)
+      })
   }
 
   mapPlatforms(platforms) {
@@ -103,28 +103,6 @@ class DexLiquiditySyncer extends Syncer {
       tokens,
       tokensMap
     }
-  }
-
-  upsertDexLiquidity(date, volume, platformId, expireDuration, exchange) {
-    let expiresAt = null
-    if (expireDuration) {
-      expiresAt = DateTime.fromISO(date)
-        .plus(expireDuration)
-    }
-
-    DexLiquidity.upsert({
-      date,
-      volume,
-      exchange,
-      expires_at: expiresAt,
-      platform_id: platformId
-    })
-      .then(([dexVolume]) => {
-        console.log(JSON.stringify(dexVolume.dataValues))
-      })
-      .catch(err => {
-        console.error('Error inserting dex liquidity', err.message)
-      })
   }
 
 }

@@ -32,70 +32,38 @@ describe('DexLiquiditySyncer', async () => {
   })
 
   describe('#syncHistorical', () => {
+    beforeEach(() => {
+      sinon.stub(syncer, 'syncStatsHistorical')
+      sinon.stub(syncer, 'syncStats')
+    })
+
     describe('when already liquidity exists', () => {
       it('returns without syncing', async () => {
         sinon.stub(DexLiquidity, 'exists').returns(true)
         await syncer.syncHistorical()
+        sinon.assert.notCalled(syncer.syncStats)
       })
     })
 
     describe('when no liquidity exists', () => {
       beforeEach(() => {
         sinon.stub(DexLiquidity, 'exists').returns(false)
-
-        sinon.stub(syncer, 'syncStatsHistorical')
-        sinon.stub(syncer, 'syncMonthlyStats')
-        sinon.stub(syncer, 'syncWeeklyStats')
-        sinon.stub(syncer, 'syncDailyStats')
       })
 
       it('fetches historical, weekly and daily stats in order', async () => {
-        await syncer.syncHistorical()
-
-        sinon.assert.callOrder(
-          syncer.syncStatsHistorical,
-          syncer.syncMonthlyStats,
-          syncer.syncWeeklyStats,
-          syncer.syncDailyStats
-        )
-      })
-
-      it('fetches historical stats', async () => {
         await syncer.syncHistorical()
 
         sinon.assert.calledWith(syncer.syncStatsHistorical, {
           dateFrom: '2020-01-01',
           dateTo: '2020-12-02'
         })
-      })
 
-      it('fetches monthly stats', async () => {
-        await syncer.syncHistorical()
-
-        sinon.assert.calledWith(syncer.syncMonthlyStats, {
-          dateFrom: '2020-12-02',
-          dateTo: '2020-12-25'
-        })
-      })
-
-      it('fetches weekly stats', async () => {
-        await syncer.syncHistorical()
-
-        sinon.assert.calledWith(syncer.syncWeeklyStats, {
-          dateFrom: '2020-12-25 00:00:00+0',
-          dateTo: '2020-12-31 08:00:00+0',
-          dateExpiresIn: { days: 7 }
-        })
-      })
-
-      it('fetches daily stats', async () => {
-        await syncer.syncHistorical()
-
-        sinon.assert.calledWith(syncer.syncDailyStats, {
-          dateFrom: '2020-12-31 08:00:00+0',
-          dateTo: '2021-01-01 08:00:00+0',
-          dateExpiresIn: { hours: 24 }
-        })
+        sinon.assert.calledThrice(syncer.syncStats)
+        sinon.assert.callOrder(
+          syncer.syncStats.withArgs({ dateFrom: '2020-12-02', dateTo: '2020-12-25' }),
+          syncer.syncStats.withArgs({ dateFrom: '2020-12-25 00:00:00+0', dateTo: '2020-12-31 08:00:00+0', dateExpiresIn: { days: 7 } }),
+          syncer.syncStats.withArgs({ dateFrom: '2020-12-31 08:00:00+0', dateTo: '2021-01-01 08:00:00+0', dateExpiresIn: { hours: 24 } })
+        )
       })
     })
   })
