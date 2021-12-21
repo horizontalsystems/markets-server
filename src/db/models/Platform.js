@@ -33,7 +33,8 @@ class Platform extends SequelizeModel {
 
   static async findByCoinUID(uid, type = 'erc20') {
     const query = `
-      SELECT platforms.* FROM platforms
+      SELECT platforms.*
+      FROM platforms
       INNER JOIN coins
          ON coins.id = platforms.coin_id
         AND coins.uid = :uid
@@ -48,13 +49,8 @@ class Platform extends SequelizeModel {
     return platform
   }
 
-  static findEthErc20() {
-    return Platform.query(`
-      SELECT * 
-      FROM platforms 
-      WHERE type IN ('ethereum', 'erc20')
-        AND decimals IS NOT NULL
-    `)
+  static getByTypes(type) {
+    return Platform.findAll({ where: { type } })
   }
 
   static findErc20() {

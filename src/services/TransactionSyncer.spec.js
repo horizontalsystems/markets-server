@@ -5,6 +5,8 @@ const { utcDate } = require('../utils')
 
 const Transaction = require('../db/models/Transaction')
 const TransactionSyncer = require('./TransactionSyncer')
+const Platform = require('../db/models/Platform')
+const bitquery = require('../providers/bitquery')
 
 describe('TransactionSyncer', async () => {
   const date = DateTime.fromISO('2021-01-01T08:10:00Z')
@@ -37,14 +39,15 @@ describe('TransactionSyncer', async () => {
 
   describe('#syncHistorical', () => {
     beforeEach(() => {
-      sinon.stub(syncer, 'syncStats')
+      sinon.stub(syncer, 'syncFromBigquery')
+      sinon.stub(syncer, 'syncFromBitquery')
     })
 
     describe('when already transactions exists', () => {
       it('returns without syncing', async () => {
         sinon.stub(Transaction, 'exists').returns(true)
         await syncer.syncHistorical()
-        sinon.assert.notCalled(syncer.syncStats)
+        sinon.assert.notCalled(syncer.syncFromBigquery)
       })
     })
 
@@ -56,11 +59,17 @@ describe('TransactionSyncer', async () => {
       it('fetches monthly, weekly and daily stats in order', async () => {
         await syncer.syncHistorical()
 
-        sinon.assert.calledThrice(syncer.syncStats)
+        sinon.assert.calledThrice(syncer.syncFromBigquery)
         sinon.assert.callOrder(
-          syncer.syncStats.withArgs({ dateFrom: '2020-12-02', dateTo: '2020-12-25' }),
-          syncer.syncStats.withArgs({ dateFrom: '2020-12-25 00:00:00+0', dateTo: '2020-12-31 08:00:00+0', dateExpiresIn: { days: 7 } }),
-          syncer.syncStats.withArgs({ dateFrom: '2020-12-31 08:00:00+0', dateTo: '2021-01-01 08:00:00+0', dateExpiresIn: { hours: 24 } })
+          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-02', dateTo: '2020-12-25' }),
+          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-25 00:00:00+0', dateTo: '2020-12-31 08:00:00+0', dateExpiresIn: { days: 7 } }),
+          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-31 08:00:00+0', dateTo: '2021-01-01 08:00:00+0', dateExpiresIn: { hours: 24 } })
+        )
+
+        sinon.assert.calledTwice(syncer.syncFromBitquery)
+        sinon.assert.callOrder(
+          syncer.syncFromBitquery.withArgs({ dateFrom: '2020-12-02', dateTo: '2020-12-25' }, 'bsc'),
+          syncer.syncFromBitquery.withArgs({ dateFrom: '2020-12-02', dateTo: '2020-12-25' }, 'solana')
         )
       })
     })
@@ -123,6 +132,35 @@ describe('TransactionSyncer', async () => {
         dateFrom: '2020-12-25',
         dateTo: '2020-12-26'
       })
+    })
+  })
+
+  describe('#syncFromBitquery', () => {
+    const dataParams = {
+      dateFrom: '2021-12-17 00:00:00+0',
+      dateTo: '2021-12-17 01:00:00+0'
+    }
+    const platforms = [
+      { id: 1, address: 'abc', type: 'bep20' }
+    ]
+
+    const transfers = [
+      { count: 20, amount: 150, currency: { address: 'abc' }, date: { startOfInterval: '2021-12-17' } }
+    ]
+
+    const transactions = [
+      { count: 10, volume: 100, platform_id: 1, date: '2021-12-17 00:00:00+0' }
+    ]
+
+    beforeEach(() => {
+      sinon.stub(Platform, 'getByTypes').returns(platforms)
+      sinon.stub(bitquery, 'getTransfers').returns(transfers)
+      sinon.stub(Transaction, 'getSummedItems').returns(transactions)
+      sinon.stub(Transaction, 'bulkCreate')
+    })
+
+    it('aggregates amount & amount', () => {
+      syncer.syncFromBitquery(dataParams, 'bsc')
     })
   })
 })

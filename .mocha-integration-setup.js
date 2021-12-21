@@ -1,23 +1,23 @@
-require('dotenv/config')
+require('dotenv').config({
+  path: '.env.test'
+})
 
-process.env.NODE_ENV = 'test'
-
-const exec = require('child_process').exec
+const { exec } = require('child_process')
 const { random, sum, range } = require('lodash')
 const { DateTime } = require('luxon')
-const db = require('./src/db/sequelize')
+const { sequelize } = require('./src/db/sequelize')
 
 before(async () => {
   await factory.createDB()
-  await db.sequelize.sync({ force: true })
+  await sequelize.sync({ force: true })
 })
 
 afterEach(async () => {
-  await db.sequelize.sync({ force: true })
+  await sequelize.sync({ force: true })
 })
 
 after(async () => {
-  await db.sequelize.close()
+  await sequelize.close()
 })
 
 const factory = {

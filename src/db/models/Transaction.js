@@ -64,6 +64,24 @@ class Transaction extends SequelizeModel {
     })
   }
 
+  static getSummedItems(dateFrom, platformIds) {
+    const query = `
+      SELECT
+        sum(count) count,
+        sum(volume) volume,
+        platform_id
+      FROM transactions 
+      WHERE date >= :dateFrom
+        AND platform_id IN (:platformIds)
+      GROUP BY platform_id
+    `
+
+    return Transaction.query(query, {
+      dateFrom,
+      platformIds
+    })
+  }
+
   static updatePoints(dateFrom, dateTo) {
     return Transaction.query(`
       UPDATE transactions
