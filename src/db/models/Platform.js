@@ -49,19 +49,19 @@ class Platform extends SequelizeModel {
     return platform
   }
 
-  static getByTypes(type) {
-    return Platform.findAll({ where: { type } })
+  static getByTypes(type, withDecimal) {
+    const where = {
+      type,
+      address: Platform.literal('address IS NOT NULL')
+    }
+
+    if (withDecimal) {
+      where.decimals = Platform.literal('decimals IS NOT NULL')
+    }
+
+    return Platform.findAll({ where })
   }
 
-  static findErc20() {
-    return Platform.query(`
-      SELECT * 
-      FROM platforms 
-      WHERE type = 'erc20'
-        AND decimals IS NOT NULL
-        AND address IS NOT NULL
-    `)
-  }
 }
 
 module.exports = Platform

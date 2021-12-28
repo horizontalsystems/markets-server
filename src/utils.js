@@ -14,6 +14,13 @@ exports.utcDate = (format, duration = {}) => {
     .toFormat(format)
 }
 
+exports.utcStartOfDay = (duration = {}) => {
+  return DateTime.utc()
+    .plus(duration)
+    .startOf('day')
+    .toSeconds()
+}
+
 exports.requireFile = file => {
   return fs.readFileSync(path.resolve(__dirname, file), 'utf8')
 }

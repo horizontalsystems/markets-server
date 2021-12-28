@@ -1,6 +1,8 @@
-const { utcDate } = require('../utils')
+const { chunk } = require('lodash')
+const { utcDate, utcStartOfDay } = require('../utils')
 const DexLiquidity = require('../db/models/DexLiquidity')
 const bigquery = require('../providers/bigquery')
+const streamingfast = require('../providers/streamingfast')
 const Platform = require('../db/models/Platform')
 const Syncer = require('./Syncer')
 
@@ -21,9 +23,11 @@ class DexLiquiditySyncer extends Syncer {
       dateTo: utcDate('yyyy-MM-dd', { days: -30 })
     })
 
-    await this.syncStats(this.syncParamsHistorical('1d'), '1d')
-    await this.syncStats(this.syncParamsHistorical('4h'), '4h')
-    await this.syncStats(this.syncParamsHistorical('1h'), '1h')
+    await this.syncFromBigquery(this.syncParamsHistorical('1d'), '1d')
+    await this.syncFromBigquery(this.syncParamsHistorical('4h'), '4h')
+    await this.syncFromBigquery(this.syncParamsHistorical('1h'), '1h')
+
+    await this.syncFromStreamingfast(utcStartOfDay({ days: -30 }), 33)
   }
 
   async syncLatest() {
@@ -33,7 +37,8 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncDailyStats(dateParams) {
-    await this.syncStats(dateParams, '1h')
+    await this.syncFromBigquery(dateParams, '1h')
+    await this.syncFromStreamingfast(utcStartOfDay())
   }
 
   async syncWeeklyStats({ dateFrom, dateTo }) {
@@ -44,65 +49,93 @@ class DexLiquiditySyncer extends Syncer {
     await DexLiquidity.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncStats(dateParams, datePeriod) {
+  async syncFromBigquery(dateParams, datePeriod) {
     const uniV2Platforms = await DexLiquidity.getWithPlatforms(dateParams.dateFrom, 'uniswap_v2')
     const uniV3platforms = await DexLiquidity.getWithPlatforms(dateParams.dateFrom, 'uniswap_v3')
     const sushiPlatforms = await DexLiquidity.getWithPlatforms(dateParams.dateFrom, 'sushi')
 
-    await this.fetchStats(dateParams, datePeriod, 'uniswap_v2', 'uniswap_v2_bydate', this.mapPlatforms(uniV2Platforms))
-    await this.fetchStats(dateParams, datePeriod, 'uniswap_v3', 'uniswap_v3_bydate', this.mapPlatforms(uniV3platforms))
-    await this.fetchStats(dateParams, datePeriod, 'sushi', 'sushi_bydate', this.mapPlatforms(sushiPlatforms))
+    await this.fetchFromBigquery(dateParams, datePeriod, 'uniswap_v2', 'uniswap_v2_bydate', this.mapPlatforms(uniV2Platforms))
+    await this.fetchFromBigquery(dateParams, datePeriod, 'uniswap_v3', 'uniswap_v3_bydate', this.mapPlatforms(uniV3platforms))
+    await this.fetchFromBigquery(dateParams, datePeriod, 'sushi', 'sushi_bydate', this.mapPlatforms(sushiPlatforms))
+  }
+
+  async syncFromStreamingfast(dateFrom, chunkSize = 100) {
+    const platforms = this.mapPlatforms(await Platform.getByTypes('bep20'))
+    const coins = chunk(platforms.list, chunkSize)
+
+    for (let i = 0; i < coins.length; i += 1) {
+      const data = await streamingfast.getPancakeLiquidity(dateFrom, coins[i])
+      const records = data.map(item => {
+        return {
+          volume: item.volume,
+          date: item.date,
+          exchange: 'pancakeswap',
+          platform_id: platforms.map[item.token.id]
+        }
+      })
+
+      await this.bulkCreate(records)
+    }
   }
 
   async syncStatsHistorical(dateParams) {
-    const platforms = this.mapPlatforms(await Platform.findErc20())
+    const platforms = this.mapPlatforms(await Platform.getByTypes('erc20', true))
 
-    await this.fetchStats(dateParams, '1d', 'uniswap_v2', 'uniswap_v2', platforms)
-    await this.fetchStats(dateParams, '1d', 'uniswap_v3', 'uniswap_v3', platforms)
-    await this.fetchStats(dateParams, '1d', 'sushi', 'sushi', platforms)
+    await this.fetchFromBigquery(dateParams, '1d', 'uniswap_v2', 'uniswap_v2', platforms)
+    await this.fetchFromBigquery(dateParams, '1d', 'uniswap_v3', 'uniswap_v3', platforms)
+    await this.fetchFromBigquery(dateParams, '1d', 'sushi', 'sushi', platforms)
   }
 
-  async fetchStats({ dateFrom, dateTo }, datePeriod, exchange, queryType, platforms) {
+  async fetchFromBigquery({ dateFrom, dateTo }, datePeriod, exchange, queryType, platforms) {
     const data = await bigquery.getDexLiquidity(
       dateFrom,
       dateTo,
       datePeriod,
-      platforms.tokens,
+      platforms.list,
       queryType
     )
 
-    const records = data
-      .map(item => ({
+    const records = data.map(item => {
+      return {
         date: item.date.value,
         volume: item.volume,
         exchange,
-        platform_id: platforms.tokensMap[item.address]
-      }))
-      .filter(item => item.platform_id)
+        platform_id: platforms.map[item.address]
+      }
+    })
 
-    return DexLiquidity.bulkCreate(records, { ignoreDuplicates: true })
-      .catch(e => {
-        console.error('Error inserting dex liquidity', e.message)
-      })
+    return this.bulkCreate(records)
   }
 
   mapPlatforms(platforms) {
-    const tokens = []
-    const tokensMap = {}
+    const list = []
+    const map = {}
 
     platforms.forEach(({ id, address, decimals, volume }) => {
-      tokensMap[address] = id
-      tokens.push({
+      map[address] = id
+      list.push({
         address,
         decimals,
         volume
       })
     })
 
-    return {
-      tokens,
-      tokensMap
+    return { list, map }
+  }
+
+  bulkCreate(records) {
+    const items = records.filter(item => item.platform_id)
+    if (!items.length) {
+      return
     }
+
+    return DexLiquidity.bulkCreate(records, { ignoreDuplicates: true })
+      .then(data => {
+        console.log('Inserted dex liquidity', data.length)
+      })
+      .catch(e => {
+        console.error('Error inserting dex liquidity', e.message)
+      })
   }
 
 }

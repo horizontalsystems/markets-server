@@ -9,7 +9,7 @@ const bitquery = require('../providers/bitquery')
 const Platform = require('../db/models/Platform')
 const Coin = require('../db/models/Coin')
 
-describe.only('DexVolumeSyncer', async () => {
+describe('DexVolumeSyncer', async () => {
   const date = DateTime.fromISO('2021-01-01T00:00:00Z')
   const syncer = new DexVolumeSyncer()
 
