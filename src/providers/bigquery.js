@@ -3,7 +3,6 @@ const { requireFile } = require('../utils')
 const logger = require('../config/logger')
 
 const transactionStatsSQL = requireFile('providers/bigquery-sql/transaction_stats.sql')
-const addressRankSQL = requireFile('providers/bigquery-sql/address_rank.sql')
 const addressStatsSQL = requireFile('providers/bigquery-sql/address_stats.sql')
 const coinHoldersSQL = requireFile('providers/bigquery-sql/coin_holders.sql')
 
@@ -61,14 +60,6 @@ class BigQueryClient extends BigQuery {
 
   getTopCoinHolders(tokens, dateFrom, addressesPerCoin) {
     return this.createQuery(coinHoldersSQL, {
-      supported_tokens: tokens,
-      date_from: dateFrom,
-      addresses_per_coin: addressesPerCoin
-    })
-  }
-
-  getTopAddresses(tokens, dateFrom, addressesPerCoin) {
-    return this.createQuery(addressRankSQL, {
       supported_tokens: tokens,
       date_from: dateFrom,
       addresses_per_coin: addressesPerCoin

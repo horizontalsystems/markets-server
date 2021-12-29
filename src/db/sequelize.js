@@ -16,7 +16,6 @@ const DexVolume = require('./models/DexVolume')
 const DexLiquidity = require('./models/DexLiquidity')
 const Address = require('./models/Address')
 const CoinHolder = require('./models/CoinHolder')
-const AddressRank = require('./models/AddressRank')
 const Currency = require('./models/Currency')
 const CurrencyRate = require('./models/CurrencyRate')
 const GlobalMarket = require('./models/GlobalMarket')
@@ -47,7 +46,6 @@ const db = {
   DexVolume: DexVolume.init(sequelize, Sequelize),
   DexLiquidity: DexLiquidity.init(sequelize, Sequelize),
   Address: Address.init(sequelize, Sequelize),
-  AddressRank: AddressRank.init(sequelize, Sequelize),
   CoinHolder: CoinHolder.init(sequelize, Sequelize),
   Currency: Currency.init(sequelize, Sequelize),
   CurrencyRate: CurrencyRate.init(sequelize, Sequelize),
