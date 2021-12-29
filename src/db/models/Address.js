@@ -98,22 +98,6 @@ class Address extends SequelizeModel {
     }))
   }
 
-  static async getRanks(uid) {
-    const platform = await Platform.findByCoinUID(uid)
-    if (!platform) {
-      return null
-    }
-
-    const query = `
-      SELECT address, volume
-      FROM address_ranks
-      WHERE platform_id = :platform_id
-      ORDER BY volume DESC
-    `
-
-    return Address.query(query, { platform_id: platform.id })
-  }
-
   static updatePoints(dateFrom, dateTo) {
     const query = `
       UPDATE addresses

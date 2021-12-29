@@ -23,13 +23,4 @@ module.exports = {
     })
   }, options),
 
-  // GET /v1/addresses/ranks
-  validateRanks: validate({
-    query: Joi.object({
-      coin_uid: Joi.string().required(),
-      interval: Joi.string().valid('1d', '7d', '30d'),
-      currency: Joi.string()
-    })
-  }, options),
-
 }

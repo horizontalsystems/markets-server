@@ -4,7 +4,6 @@ const bigquery = require('../providers/bigquery')
 const Platform = require('../db/models/Platform')
 const Address = require('../db/models/Address')
 const CoinHolder = require('../db/models/CoinHolder')
-const AddressRank = require('../db/models/AddressRank')
 const Syncer = require('./Syncer')
 const logger = require('../config/logger')
 
@@ -27,10 +26,6 @@ class AddressSyncer extends Syncer {
       await this.syncStats(this.syncParamsHistorical('1h'), '1h')
     }
 
-    if (!await AddressRank.exists()) {
-      await this.syncAddressRanks()
-    }
-
     if (!await CoinHolder.exists()) {
       await this.syncCoinHolders()
     }
@@ -45,7 +40,6 @@ class AddressSyncer extends Syncer {
 
   async syncDailyStats(dateParams) {
     await this.syncStats(dateParams, '1h')
-    await this.syncAddressRanks()
   }
 
   async syncWeeklyStats(dateParams) {
@@ -101,28 +95,6 @@ class AddressSyncer extends Syncer {
     }
   }
 
-  async syncAddressRanks() {
-    try {
-      const dateFrom = DateTime.utc().minus({ days: 1 }).toFormat('yyyy-MM-dd HH:00:00')
-      const platforms = await this.getPlatforms()
-      const addressRanks = await bigquery.getTopAddresses(platforms.tokens, dateFrom, this.ADDRESSES_PER_COIN)
-
-      // ----------Remove previous records ----------
-      await AddressRank.deleteAll()
-      // --------------------------------------------
-
-      const ranks = addressRanks.map((data) => ({
-        address: data.address,
-        volume: data.volume,
-        platform_id: platforms.tokensMap[data.coin_address]
-      }))
-
-      this.upsertAddressRanks(ranks)
-    } catch (e) {
-      logger.error(`Error syncing address ranks: ${e}`)
-    }
-  }
-
   async getPlatforms() {
     const tokens = []
     const tokensMap = {}
@@ -173,18 +145,6 @@ class AddressSyncer extends Syncer {
       })
       .catch(err => {
         console.error('Error inserting coin holders', err.message)
-      })
-  }
-
-  upsertAddressRanks(ranks) {
-    AddressRank.bulkCreate(ranks, {
-      updateOnDuplicate: ['address', 'volume', 'platform_id']
-    })
-      .then(([response]) => {
-        console.log(JSON.stringify(response.dataValues))
-      })
-      .catch(err => {
-        console.error('Error inserting address ranks', err.message)
       })
   }
 }

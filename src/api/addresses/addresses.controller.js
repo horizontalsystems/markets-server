@@ -18,15 +18,3 @@ exports.holders = async ({ query }, res) => {
     })
   }
 }
-
-exports.ranks = async ({ query }, res) => {
-  const ranks = await Address.getRanks(query.coin_uid)
-
-  if (ranks) {
-    res.send(ranks)
-  } else {
-    res.status(404).send({
-      error: 'Coin not found'
-    })
-  }
-}
