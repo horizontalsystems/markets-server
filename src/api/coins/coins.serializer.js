@@ -82,7 +82,7 @@ exports.serializeShow = (coin, language = 'en', currencyRate) => {
     name: coin.name,
     code: coin.code,
     genesis_date: coin.genesis_date,
-    description: description[language],
+    description: description[language] || description.en,
     links: coin.links,
     price: valueInCurrency(coin.price, currencyRate),
     market_data: {
