@@ -82,14 +82,14 @@ class TransactionSyncer extends Syncer {
       })
 
       if (isHourly && records.length) {
-        await this.adjustHourlyData(records, dateFrom, dateParams.dateTo)
+        await this.adjustHourlyData(records, dateFrom, dateParams.dateFrom)
       } else {
         await this.bulkCreate(records)
       }
     }
   }
 
-  async adjustHourlyData(transfers, dateFrom, dateTo) {
+  async adjustHourlyData(transfers, dateFrom, date) {
     const transactions = await Transaction.getSummedItems(dateFrom, transfers.map(item => item.platform_id))
     const transactionsMap = transactions.reduce((mapped, item) => ({
       ...mapped,
@@ -106,7 +106,7 @@ class TransactionSyncer extends Syncer {
       }
 
       return {
-        date: dateTo,
+        date,
         count: item.count - tx.count,
         volume: item.volume - tx.volume,
         platform_id: item.platform_id
