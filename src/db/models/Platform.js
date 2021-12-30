@@ -31,22 +31,16 @@ class Platform extends SequelizeModel {
     })
   }
 
-  static async findByCoinUID(uid, type = 'erc20') {
+  static async findByCoinUID(uid, type) {
     const query = `
-      SELECT platforms.*
-      FROM platforms
-      INNER JOIN coins
-         ON coins.id = platforms.coin_id
-        AND coins.uid = :uid
-      WHERE platforms.type = :type
+      SELECT P.id, P.type
+        FROM platforms P, coins C
+      WHERE C.uid = :uid
+        AND C.id = P.coin_id
+        ${type ? 'AND type = :type' : ''}
     `
 
-    const [platform] = await Platform.query(query, {
-      uid,
-      type
-    })
-
-    return platform
+    return Platform.query(query, { uid, type })
   }
 
   static getByTypes(type, withDecimal) {

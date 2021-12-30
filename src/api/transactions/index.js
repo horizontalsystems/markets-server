@@ -11,8 +11,9 @@ const router = express.Router()
  * @apiVersion 1.0.0
  * @apiGroup Transaction
  *
- * @apiParam    {String}            coin_uid    Coin's uid
- * @apiParam    {String=1d,7d,30d}  [interval]  Date interval
+ * @apiParam    {String}                    coin_uid    Coin's uid
+ * @apiParam    {String=1d,7d,30d}          [interval]  Date interval
+ * @apiParam    {String=erc20,bep20,solana} [platform]  Platforms
  *
  * @apiSuccess  {String}    date       date
  * @apiSuccess  {String}    count      count
@@ -21,9 +22,12 @@ const router = express.Router()
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
  *  [{
- *    "date": "2021-10-04T00:00:00.000Z",
- *    "count": "1679",
- *    "volume": "534523487983"
+ *    platforms: ['erc20'],
+ *    transactions: [{
+ *      "date": "2021-10-04T00:00:00.000Z",
+ *      count": "1679",
+ *      volume": "534523487983"
+ *    }
  *  }]
  *
  */

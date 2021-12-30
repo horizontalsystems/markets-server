@@ -40,28 +40,31 @@ class Transaction extends SequelizeModel {
     return !!await Transaction.findOne()
   }
 
-  static async getByCoin(uid, window, dateFrom) {
-    const platform = await Platform.findByCoinUID(uid)
-    if (!platform) {
-      return []
+  static async getByCoin(uid, platform, window, dateFrom) {
+    const platforms = await Platform.findByCoinUID(uid, platform)
+    if (!platforms.length) {
+      return {}
     }
 
     const query = `
       SELECT
         ${this.truncateDateWindow('date', window)} as date,
         SUM(count) AS count,
-        SUM(volume) AS volume
+        SUM(volume) AS volume,
+        ARRAY_AGG(distinct platform_id) as platforms
       FROM transactions
-      WHERE platform_id = :platform_id
+      WHERE platform_id IN(:platformIds)
         AND date >= :dateFrom
       GROUP by 1
       ORDER by date
     `
 
-    return Transaction.query(query, {
-      platform_id: platform.id,
-      dateFrom
+    const transactions = await Transaction.query(query, {
+      dateFrom,
+      platformIds: platforms.map(item => item.id)
     })
+
+    return { transactions, platforms }
   }
 
   static getSummedItems(dateFrom, platformIds) {
