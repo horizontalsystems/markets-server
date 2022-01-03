@@ -1,4 +1,5 @@
 const SequelizeModel = require('./SequelizeModel')
+const Platform = require('./Platform')
 
 class DexLiquidity extends SequelizeModel {
 
@@ -37,6 +38,32 @@ class DexLiquidity extends SequelizeModel {
 
   static async exists() {
     return !!await DexLiquidity.findOne()
+  }
+
+  static async getByCoin(uid, platform, window, dateFrom) {
+    const platforms = await Platform.findByCoinUID(uid, platform)
+    if (!platforms.length) {
+      return {}
+    }
+
+    const query = `
+      SELECT
+        ${this.truncateDateWindow('date', window)} as date,
+        SUM(volume) AS volume,
+        ARRAY_AGG(distinct platform_id) as platforms
+      FROM dex_liquidities
+      WHERE platform_id IN(:platformIds)
+        AND date >= :dateFrom
+      GROUP by 1
+      ORDER by date
+    `
+
+    const liquidity = await DexLiquidity.query(query, {
+      dateFrom,
+      platformIds: platforms.map(item => item.id)
+    })
+
+    return { liquidity, platforms }
   }
 
   static getWithPlatforms(date, exchange) {
