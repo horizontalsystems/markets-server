@@ -51,7 +51,7 @@ class TransactionSyncer extends Syncer {
   }
 
   async syncFromBigquery({ dateFrom, dateTo }, datePeriod) {
-    const platforms = this.mapPlatforms(await Platform.getByTypes(['ethereum', 'erc20']), true)
+    const platforms = await this.getPlatforms(['ethereum', 'erc20'], true, false)
     const transactions = await bigquery.getTransactionsStats(dateFrom, dateTo, platforms.list, datePeriod)
     const records = transactions.map(transaction => {
       return {
@@ -66,7 +66,7 @@ class TransactionSyncer extends Syncer {
   }
 
   async syncFromBitquery(dateParams, network, isHourly) {
-    const platforms = this.mapPlatforms(await Platform.getByTypes(network === 'bsc' ? 'bep20' : network))
+    const platforms = await this.getPlatforms(network === 'bsc' ? 'bep20' : network)
     const chunks = chunk(platforms.list, 100)
     const dateFrom = dateParams.dateFrom.slice(0, 10)
 
@@ -116,7 +116,8 @@ class TransactionSyncer extends Syncer {
     return this.bulkCreate(records)
   }
 
-  mapPlatforms(platforms, withDecimals) {
+  async getPlatforms(types, withDecimals, withAddress = true) {
+    const platforms = await Platform.getByTypes(types, withDecimals, withAddress)
     const list = []
     const map = {}
 

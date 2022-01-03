@@ -43,14 +43,15 @@ class Platform extends SequelizeModel {
     return Platform.query(query, { uid, type })
   }
 
-  static getByTypes(type, withDecimal) {
-    const where = {
-      type,
-      address: Platform.literal('address IS NOT NULL')
-    }
+  static getByTypes(type, withDecimal, withAddress = true) {
+    const where = { type }
 
     if (withDecimal) {
       where.decimals = Platform.literal('decimals IS NOT NULL')
+    }
+
+    if (withAddress) {
+      where.address = Platform.literal('address IS NOT NULL')
     }
 
     return Platform.findAll({ where })
