@@ -16,7 +16,7 @@ module.exports = shipit => {
       shared: {
         overwrite: true,
         files: ['.env', '.bq-key.json'],
-        dirs: ['node_modules']
+        dirs: ['node_modules', 'docs']
       }
     },
     prod_api: {
