@@ -44,6 +44,16 @@ class Address extends SequelizeModel {
     return !!await Address.findOne()
   }
 
+  static async existsForPlatforms(platforms) {
+    const query = `
+      SELECT COUNT(*)
+      FROM addresses a , platforms p
+      WHERE a.platform_id = p.id AND p.type IN (:platforms)
+    `
+    const [result] = await Address.query(query, { platforms })
+    return result
+  }
+
   static async getByCoinUid(uid, window, dateFrom) {
     const platform = await Platform.findByCoinUID(uid)
     if (!platform) {
