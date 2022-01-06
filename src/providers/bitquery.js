@@ -5,16 +5,93 @@ const axios = require('axios').create({
 })
 
 class Bitquery {
-  async getTransfers(dateFrom, platforms, network) {
-    let chain
+
+  getChain(network) {
     switch (network) {
       case 'bsc':
-        chain = 'ethereum(network: bsc)'
-        break
+        return 'ethereum(network: bsc)'
       default:
-        chain = `${network}(network: ${network})`
+        return `${network}(network: ${network})`
     }
 
+  }
+
+  async getTransferSenders(dateFrom, dateTo, platforms, network) {
+    const chain = this.getChain(network)
+    const query = {
+      variables: {
+        since: dateFrom,
+        till: dateTo,
+        tokens: platforms.map(item => item.address)
+      },
+      query: `query ($since: ISO8601DateTime!, $till: ISO8601DateTime!, $tokens: [String!]) {
+        res:${chain} {
+          transfers(time: { since: $since, till: $till }, currency: { in: $tokens }) {
+            account : sender {
+              address
+            }
+            currency {
+              address
+            }
+          }
+        }
+      }`
+    }
+
+    return axios.post('/', query)
+      .then(({ data }) => data)
+      .then(({ data }) => {
+        if (!data || !data.res || !data.res.transfers) {
+          return []
+        }
+
+        return data.res.transfers
+      })
+      .catch(e => {
+        console.log(e)
+        return []
+      })
+  }
+
+  async getTransferReceivers(dateFrom, dateTo, platforms, network) {
+    const chain = this.getChain(network)
+    const query = {
+      variables: {
+        since: dateFrom,
+        till: dateTo,
+        tokens: platforms.map(item => item.address)
+      },
+      query: `query ($since: ISO8601DateTime!, $till: ISO8601DateTime!, $tokens: [String!]) {
+        res:${chain} {
+          transfers(time: { since: $since, till: $till }, currency: { in: $tokens }) {
+            account : receiver {
+              address
+            }
+            currency {
+              address
+            }
+          }
+        }
+      }`
+    }
+
+    return axios.post('/', query)
+      .then(({ data }) => data)
+      .then(({ data }) => {
+        if (!data || !data.res || !data.res.transfers) {
+          return []
+        }
+
+        return data.res.transfers
+      })
+      .catch(e => {
+        console.log(e)
+        return []
+      })
+  }
+
+  async getTransfers(dateFrom, platforms, network) {
+    const chain = this.getChain(network)
     const query = {
       variables: {
         since: dateFrom,
@@ -52,14 +129,7 @@ class Bitquery {
   }
 
   async getDexVolumes(dateFrom, platforms, network, exchange, interval) {
-    let chain
-    switch (network) {
-      case 'bsc':
-        chain = 'ethereum(network: bsc)'
-        break
-      default:
-        chain = `${network}(network: ${network})`
-    }
+    const chain = this.getChain(network)
 
     const query = {
       variables: {
