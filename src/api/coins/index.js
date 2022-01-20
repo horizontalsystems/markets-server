@@ -1,7 +1,7 @@
 const express = require('express')
 const controller = require('./coins.controller')
 const { validateCoins, validateShow } = require('./coins.validator')
-const { setCurrencyRate } = require('../middlewares')
+const { setCurrencyRate, setDateInterval } = require('../middlewares')
 
 const router = express.Router()
 
@@ -114,5 +114,59 @@ router.get('/:uid/details', setCurrencyRate, controller.details)
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
 router.get('/:uid/twitter', controller.twitter)
+
+/**
+ * @api {get} /v1/coins/:uid/price_chart Get coin price charts
+ * @apiDescription Get coin's historical price chart
+ * @apiVersion 1.0.0
+ * @apiGroup Coin
+ *
+ * @apiParam    {String}            uid   Coin's uid
+ * @apiParam    {String=1d,7d,30d} [interval]  Date interval
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [
+ *     {
+ *     "date": 1641945600,
+ *     "price": "43658"
+ *     },
+ *     {
+ *     "date": 1642032000,
+ *     "price": "43847"
+ *     }
+ *  ]
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ * @apiError (Not Found 404)    NotFound          Coin does not exist
+ */
+router.get('/:uid/price_chart', setDateInterval, setCurrencyRate, controller.price_chart)
+
+/**
+ * @api {get} /v1/coins/:uid/volume_chart Get coin volume charts
+ * @apiDescription Get coin's historical volume chart
+ * @apiVersion 1.0.0
+ * @apiGroup Coin
+ *
+ * @apiParam    {String}            uid   Coin's uid
+ * @apiParam    {String=1d,7d,30d} [interval]  Date interval
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [
+ *     {
+ *     "date": 1641945600,
+ *     "volume": "43658"
+ *     },
+ *     {
+ *     "date": 1642032000,
+ *     "volume": "43847"
+ *     }
+ *  ]
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ * @apiError (Not Found 404)    NotFound          Coin does not exist
+ */
+router.get('/:uid/volume_chart', setDateInterval, setCurrencyRate, controller.volume_chart)
 
 module.exports = router

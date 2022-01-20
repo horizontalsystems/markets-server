@@ -2,6 +2,7 @@ const { chunk } = require('lodash')
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
+const CoinMarket = require('../db/models/CoinMarket')
 
 const debug = msg => {
   console.log(new Date(), msg)
@@ -55,7 +56,7 @@ class CoinPriceSyncer {
   }
 
   async updateCoins(coins) {
-    debug(`Synced coins: ${coins.length}`)
+    debug(`Syncing coins: ${coins.length}`)
 
     const values = coins.map(item => {
       if (!item.uid || !item.price) {
@@ -73,7 +74,8 @@ class CoinPriceSyncer {
 
     try {
       await Coin.updateCoins(values.filter(item => item))
-      debug(`Updated coins ${coins.length}`)
+      await CoinMarket.insertMarkets(values.filter(item => item))
+      debug(`Updated coins and markets : ${coins.length}`)
     } catch (e) {
       debug(e)
     }
