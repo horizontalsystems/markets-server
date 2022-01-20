@@ -1,5 +1,6 @@
 const Coin = require('../../db/models/Coin')
 const Platform = require('../../db/models/Platform')
+const CoinMarket = require('../../db/models/CoinMarket')
 const serializer = require('./coins.serializer')
 
 exports.index = async ({ query, currencyRate }, res) => {
@@ -68,4 +69,14 @@ exports.twitter = async ({ params }, res) => {
     res.status(404)
     res.send({ error: 'Coin not found' })
   }
+}
+
+exports.price_chart = async ({ params, currencyRate, dateFrom, dateInterval }, res) => {
+  const priceChart = await CoinMarket.getPriceChart(params.uid, dateInterval, dateFrom)
+  res.send(serializer.serializePriceChart(priceChart, currencyRate))
+}
+
+exports.volume_chart = async ({ params, currencyRate, dateFrom, dateInterval }, res) => {
+  const volumeChart = await CoinMarket.getVolumeChart(params.uid, dateInterval, dateFrom)
+  res.send(serializer.serializeVolumeChart(volumeChart, currencyRate))
 }

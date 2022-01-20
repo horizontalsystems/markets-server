@@ -118,3 +118,17 @@ exports.serializeDetails = (coin, currencyRate) => {
 exports.serializeTwitter = coin => ({
   twitter: nullOrString(coin.twitter)
 })
+
+exports.serializePriceChart = (priceChart, currencyRate) => {
+  return priceChart.map(item => ({
+    date: Math.round(new Date(item.date).getTime() / 1000),
+    price: valueInCurrency(item.price, currencyRate)
+  }))
+}
+
+exports.serializeVolumeChart = (volumeChart, currencyRate) => {
+  return volumeChart.map(item => ({
+    date: Math.round(new Date(item.date).getTime() / 1000),
+    total_volume: valueInCurrency(item.volume, currencyRate)
+  }))
+}
