@@ -21,6 +21,7 @@ class CurrencyRateSyncer extends Syncer {
 
     await this.syncHistoricalRates(currencyCodes, '10m')
     await this.syncHistoricalRates(currencyCodes, '90d')
+    logger.info('Successfully synced histo rates !!!')
   }
 
   async syncLatest() {
@@ -83,7 +84,7 @@ class CurrencyRateSyncer extends Syncer {
       dateTo: DateTime.utc(),
       dateExpiresIn: { hours: 24 }
     } : {
-      dateFrom: DateTime.utc().plus({ days: -90 }),
+      dateFrom: DateTime.utc().plus({ month: -12 }),
       dateTo: DateTime.utc().plus({ days: -1 }),
       dateExpiresIn: { days: 90 }
     }
