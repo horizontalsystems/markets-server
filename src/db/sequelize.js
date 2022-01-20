@@ -19,6 +19,7 @@ const CoinHolder = require('./models/CoinHolder')
 const Currency = require('./models/Currency')
 const CurrencyRate = require('./models/CurrencyRate')
 const GlobalMarket = require('./models/GlobalMarket')
+const CoinMarket = require('./models/CoinMarket')
 const config = require('./config')
 
 const sequelize = new Sequelize(
@@ -49,7 +50,8 @@ const db = {
   CoinHolder: CoinHolder.init(sequelize, Sequelize),
   Currency: Currency.init(sequelize, Sequelize),
   CurrencyRate: CurrencyRate.init(sequelize, Sequelize),
-  GlobalMarket: GlobalMarket.init(sequelize, Sequelize)
+  GlobalMarket: GlobalMarket.init(sequelize, Sequelize),
+  CoinMarket: CoinMarket.init(sequelize, Sequelize)
 }
 
 // This creates relationships in the ORM
