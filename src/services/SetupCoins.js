@@ -1,5 +1,5 @@
 const TurndownService = require('turndown')
-const { difference } = require('lodash')
+const { difference, chunk } = require('lodash')
 const { sleep } = require('../utils')
 const Coin = require('../db/models/Coin')
 const Platform = require('../db/models/Platform')
@@ -20,13 +20,31 @@ class SetupCoins {
       })
   }
 
-  async fetchCoins() {
-    const coinsList = await coingecko.getCoinList()
-    const coinsSaved = await Coin.findAll()
-    const coinsDiff = difference(coinsList.map(coin => coin.id), coinsSaved.map(coin => coin.uid))
+  async fetchCoins(minVolume) {
+    const allCoins = await coingecko.getCoinList()
+    const oldCoins = await Coin.findAll()
+    const newCoins = difference(allCoins.map(coin => coin.id), oldCoins.map(coin => coin.uid))
 
-    console.log(`Fetched new coins: ${coinsDiff.length}`)
-    console.log(coinsDiff.join(','))
+    console.log('Fetched new coins', newCoins.length)
+
+    const chunks = chunk(newCoins, 400)
+    const coins = []
+
+    for (let i = 0; i < chunks.length; i += 1) {
+      const data = await coingecko.getMarkets(chunks[i])
+      coins.push(...data)
+    }
+
+    const filtered = coins.filter(coin => {
+      if (!coin.market_data || !coin.market_data.total_volume) {
+        return false
+      }
+
+      return coin.market_data.total_volume >= minVolume
+    })
+
+    console.log(`Coins with market data ${coins.length}; ${filtered.length} coins with volume >= ${minVolume}`)
+    console.log(filtered.map(coin => coin.uid).join(','))
   }
 
   async setupCoins(ids) {

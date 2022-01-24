@@ -15,7 +15,7 @@ async function start({ all, fetch, coins }) {
   const setupCoins = new SetupCoins()
 
   if (fetch) {
-    await setupCoins.fetchCoins()
+    await setupCoins.fetchCoins(200000)
   } else if (coins) {
     await setupCoins.setupCoins(coins.split(','))
   } else if (all) {
