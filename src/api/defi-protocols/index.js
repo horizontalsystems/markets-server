@@ -29,6 +29,10 @@ const router = express.Router()
  *    "name": "aave",
  *    "logo": "https://domain.com/aave.png",
  *    "chains": ["Ethereum", "Polygon"],
+ *    "chain_tvls": {
+ *      "Ethereum": 123,
+ *      "Polygon": 123
+ *    }
  *    "tvl": "16721109202.863",
  *    "tvl_rank": 1,
  *    "tvl_change_1d": "2.871",
