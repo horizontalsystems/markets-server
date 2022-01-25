@@ -1,3 +1,4 @@
+const { DateTime } = require('luxon')
 const SequelizeModel = require('./SequelizeModel')
 const Currency = require('./Currency')
 
@@ -48,7 +49,7 @@ class CurrencyRate extends SequelizeModel {
   static async getCurrencyRate(currencyCode = Currency.baseCurrency) {
     const code = currencyCode.toLowerCase()
     if (code === Currency.baseCurrency) {
-      return 1
+      return { rate: 1, last_updated: DateTime.utc() }
     }
 
     const currency = await Currency.findByCode(code)
@@ -65,7 +66,10 @@ class CurrencyRate extends SequelizeModel {
       ]
     })
 
-    return currencyRate ? parseFloat(currencyRate.rate) : null
+    return {
+      rate: currencyRate ? parseFloat(currencyRate.rate) : null,
+      last_updated: currencyRate.date
+    }
   }
 
   static async exists() {
