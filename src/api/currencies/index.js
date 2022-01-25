@@ -27,4 +27,26 @@ const router = express.Router()
 
 router.get('/', controller.index)
 
+/**
+ * @api {get} /v1/currencies/:currencyCode Get currency rate against USD
+ * @apiDescription Get currency rate against USD
+ * @apiVersion 1.0.0
+ * @apiGroup Currency
+ *
+ * @apiParam    {String}  currencyCode Currency code
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [
+ *     {
+ *     "rate": 14.2,
+ *     "last_updated": "1642032000"
+ *     }
+ *  ]
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ * @apiError (Not Found 404)    NotFound          Currency does not exist
+ */
+router.get('/:currencyCode', controller.currencyRate)
+
 module.exports = router

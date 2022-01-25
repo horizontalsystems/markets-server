@@ -4,8 +4,9 @@ const CurrencyRate = require('../db/models/CurrencyRate')
 
 exports.setCurrencyRate = async (req, res, next) => {
 
+  const currencyRate = await CurrencyRate.getCurrencyRate(req.query.currency)
   // eslint-disable-next-line no-param-reassign
-  req.currencyRate = await CurrencyRate.getCurrencyRate(req.query.currency)
+  req.currencyRate = currencyRate.rate
 
   if (!req.currencyRate) {
     const errors = [{
