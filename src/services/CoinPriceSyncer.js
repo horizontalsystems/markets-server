@@ -1,4 +1,5 @@
-const { chunk } = require('lodash')
+const { chunk, parseInt } = require('lodash')
+const { DateTime } = require('luxon')
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
@@ -31,11 +32,11 @@ class CoinPriceSyncer {
     }
   }
 
-  async syncCoins(coinIds) {
-    debug(`Syncing coins ${coinIds.length}`)
+  async syncCoins(coinUids) {
+    debug(`Syncing coins ${coinUids.length}`)
 
     try {
-      const coins = await coingecko.getMarkets(coinIds)
+      const coins = await coingecko.getMarkets(coinUids)
       await this.updateCoins(coins)
       await utils.sleep(1200)
     } catch ({ message, response = {} }) {
@@ -62,13 +63,16 @@ class CoinPriceSyncer {
       if (!item.uid || !item.price) {
         return null
       }
+      const dt = DateTime.fromISO(item.last_updated)
+      const minutes = dt.get('minute')
 
       return [
         item.uid,
         item.price,
         JSON.stringify(item.price_change),
         JSON.stringify(item.market_data),
-        item.last_updated
+        item.last_updated,
+        dt.set({ minute: 10 * parseInt(minutes / 10) }).toFormat('yyyy-MM-dd HH:mm')
       ]
     })
 
