@@ -15,7 +15,7 @@ class CoinMarketsSyncer extends Syncer {
 
   async fetchNotSyncedCoins() {
     const coinsNotSynced = await CoinMarket.getNotSyncedCoins()
-    const uids = coinsNotSynced.map(i => i.uid )
+    const uids = coinsNotSynced.map(i => i.uid)
 
     console.log(`Fetched not synced coins: ${uids.length}`)
     console.log(uids.join(','))
@@ -31,9 +31,7 @@ class CoinMarketsSyncer extends Syncer {
       return
     }
 
-    await this.sync(this.syncParamsHistorical('10m'), coinIds)
     await this.sync(this.syncParamsHistorical('1d'), coinIds)
-    await this.sync(this.syncParamsHistorical('4h'), coinIds)
   }
 
   async syncWeeklyStats(dateParams) {
@@ -135,7 +133,7 @@ class CoinMarketsSyncer extends Syncer {
       case '1d':
         return {
           dateFrom: DateTime.utc().plus({ month: -12 }),
-          dateTo: DateTime.utc().plus({ days: -7 }),
+          dateTo: DateTime.utc(),
           period
         }
       default:
