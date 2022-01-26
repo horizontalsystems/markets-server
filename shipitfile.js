@@ -4,6 +4,9 @@ const deploy = require('shipit-deploy')
 const shared = require('shipit-shared')
 const { apps } = require('./process.json')
 
+/**
+ * @param {Shipit} shipit
+ */
 module.exports = shipit => {
   deploy(shipit)
   shared(shipit)

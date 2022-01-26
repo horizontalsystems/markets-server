@@ -2,6 +2,8 @@ const sinon = require('sinon')
 const CurrencyRateSyncer = require('./CurrencyRateSyncer')
 
 describe('CurrencyRateSyncer', async () => {
+
+  /** @type CurrencyRateSyncer */
   let syncer
 
   beforeEach(() => {

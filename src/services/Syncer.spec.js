@@ -10,6 +10,7 @@ describe('Syncer', async () => {
   const date = DateTime.fromSQL('2021-01-01 00:10:00Z')
   const dateFormat = 'yyyy-MM-dd HH:mm:00Z'
 
+  /** @type Syncer */
   let syncer
   let clock
 

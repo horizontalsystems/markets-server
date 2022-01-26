@@ -3,6 +3,7 @@ const AddressSyncer = require('./AddressSyncer')
 
 describe('AddressSyncer', async () => {
 
+  /** @type AddressSyncer */
   let syncer
 
   beforeEach(() => {
