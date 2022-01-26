@@ -40,10 +40,10 @@ class CoinMarket extends SequelizeModel {
       INSERT INTO coin_markets (coin_id, date, price, volume)
       ( SELECT
           c.id,
-          v.last_updated_formatted::timestamptz,
+          v.last_updated_rounded::timestamptz,
           v.price,
          (v.market_data::json ->> 'total_volume')::numeric
-        FROM (values :values) as v(uid, price, price_change, market_data, last_updated, last_updated_formatted),
+        FROM (values :values) as v(uid, price, price_change, market_data, last_updated, last_updated_rounded),
             coins c
         WHERE c.uid = v.uid
       )

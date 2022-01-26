@@ -59,12 +59,14 @@ class CoinPriceSyncer {
   async updateCoins(coins) {
     debug(`Syncing coins: ${coins.length}`)
 
+    const dt = DateTime.now()
+    const minutes = dt.get('minute')
+    const lastUpdatedRounded = dt.set({ minute: 10 * parseInt(minutes / 10) }).toFormat('yyyy-MM-dd HH:mm')
+
     const values = coins.map(item => {
       if (!item.uid || !item.price) {
         return null
       }
-      const dt = DateTime.fromISO(item.last_updated)
-      const minutes = dt.get('minute')
 
       return [
         item.uid,
@@ -72,7 +74,7 @@ class CoinPriceSyncer {
         JSON.stringify(item.price_change),
         JSON.stringify(item.market_data),
         item.last_updated,
-        dt.set({ minute: 10 * parseInt(minutes / 10) }).toFormat('yyyy-MM-dd HH:mm')
+        lastUpdatedRounded
       ]
     })
 
