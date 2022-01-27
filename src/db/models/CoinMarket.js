@@ -62,13 +62,19 @@ class CoinMarket extends SequelizeModel {
   static async getPriceChart(uid, window, dateFrom) {
     const query = `
       SELECT
-        ${this.truncateDateWindow('date', window)} as date,
-        avg(m.price) price
-      FROM coin_markets m, coins c
-      WHERE c.id = m.coin_id AND c.uid = :uid
-            AND date >= :dateFrom
-      GROUP by 1
-      ORDER by date
+          DISTINCT ON (pc.dt_group)
+          pc.date,
+          pc.price,
+          pc.volume
+      FROM
+      (
+          SELECT
+              cm.*,
+              ${this.truncateDateWindow('date', window)} AS dt_group
+          FROM coin_markets cm, coins c
+          WHERE cm.coin_id = c.id AND c.uid = :uid AND cm.date >= :dateFrom
+      ) pc
+      ORDER BY pc.dt_group, pc.date DESC
     `
 
     return CoinMarket.query(query, {
@@ -80,14 +86,20 @@ class CoinMarket extends SequelizeModel {
   static async getVolumeChart(uid, window, dateFrom) {
     const query = `
       SELECT
-        ${this.truncateDateWindow('date', window)} as date,
-        avg(m.volume) volume
-      FROM coin_markets m, coins c
-      WHERE c.id = m.coin_id AND c.uid = :uid
-            AND date >= :dateFrom
-      GROUP by 1
-      ORDER by date
-    `
+          DISTINCT ON (pc.dt_group)
+          pc.date,
+          pc.volume
+      FROM
+      (
+          SELECT
+              cm.date,
+              cm.volume,
+              ${this.truncateDateWindow('date', window)} AS dt_group
+          FROM coin_markets cm, coins c
+          WHERE cm.coin_id = c.id AND c.uid = :uid AND cm.date >= :dateFrom
+      ) pc
+      ORDER BY pc.dt_group, pc.date DESC
+`
 
     return CoinMarket.query(query, {
       dateFrom,
