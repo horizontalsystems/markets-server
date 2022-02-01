@@ -15,9 +15,9 @@ const router = express.Router()
  * @apiVersion 1.0.1
  * @apiGroup Transaction
  *
- * @apiParam    {String}                    coin_uid    Coin's uid
- * @apiParam    {String=1d,7d,30d}          [interval]  Date interval
- * @apiParam    {String=erc20,bep20,solana} [platform]  Platforms
+ * @apiParam    {String}                        coin_uid    Coin's uid
+ * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}   [interval]  Date interval
+ * @apiParam    {String=erc20,bep20,solana}     [platform]  Platforms
  *
  * @apiSuccess  {String}    date       date
  * @apiSuccess  {String}    count      count
@@ -43,9 +43,9 @@ router.get('/', validateTransactions, setDateInterval, controller.index)
  * @apiVersion 1.0.1
  * @apiGroup Transaction
  *
- * @apiParam    {String}                    coin_uid    Coin's uid
- * @apiParam    {String=1d,7d,30d}          [interval]  Date interval
- * @apiParam    {String=erc20,bep20,solana} [platform]  Platforms
+ * @apiParam    {String}                        coin_uid    Coin's uid
+ * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}   [interval]  Date interval
+ * @apiParam    {String=erc20,bep20,solana}     [platform]  Platforms
  *
  * @apiSuccess  {String}    date       date
  * @apiSuccess  {Date}      volume     volume
@@ -70,9 +70,9 @@ router.get('/dex-volumes', validateDexVolumes, setDateInterval, controller.dexVo
  * @apiVersion 1.0.1
  * @apiGroup Transaction
  *
- * @apiParam    {String}                    coin_uid    Coin's uid
- * @apiParam    {String=1d,7d,30d}          [interval]  Date interval
- * @apiParam    {String=erc20,bep20}        [platform]  Platforms
+ * @apiParam    {String}                        coin_uid    Coin's uid
+ * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}   [interval]  Date interval
+ * @apiParam    {String=erc20,bep20}            [platform]  Platforms
  *
  * @apiSuccess  {String}    date       date
  * @apiSuccess  {Date}      volume     volume

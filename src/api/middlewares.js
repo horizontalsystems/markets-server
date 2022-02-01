@@ -20,7 +20,7 @@ exports.setCurrencyRate = async (req, res, next) => {
 }
 
 exports.setDateInterval = (req, res, next) => {
-  let dateInterval
+  let dateInterval = '1d'
   let dateFrom
 
   switch (req.query.interval) {
@@ -28,14 +28,24 @@ exports.setDateInterval = (req, res, next) => {
       dateInterval = '1h'
       dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -1 })
       break
-    case '7d':
+    case '1w':
       dateInterval = '4h'
       dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -7 })
       break
-    default:
-      dateInterval = '1d'
-      dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -30 })
+    case '2w':
+      dateFrom = utcDate('yyyy-MM-dd', { days: -14 })
       break
+    case '1m':
+      dateFrom = utcDate('yyyy-MM-dd', { month: -1 })
+      break
+    case '3m':
+      dateFrom = utcDate('yyyy-MM-dd', { month: -3 })
+      break
+    case '6m':
+      dateFrom = utcDate('yyyy-MM-dd', { month: -6 })
+      break
+    default:
+      dateFrom = utcDate('yyyy-MM-dd', { month: -12 })
   }
 
   req.dateInterval = dateInterval // eslint-disable-line

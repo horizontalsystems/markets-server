@@ -48,8 +48,8 @@ router.get('/', validateCoins, setCurrencyRate, controller.index)
  * @apiVersion 1.0.0
  * @apiGroup DefiProtocols
  *
- * @apiParam    {String}            uid         Coin's uid
- * @apiParam    {String=1d,7d,30d}  interval    Date interval
+ * @apiParam    {String}                        uid         Coin's uid
+ * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}   interval    Date interval
  * @apiUse      Currencies
  *
  * @apiSuccessExample {json} Success-Response:

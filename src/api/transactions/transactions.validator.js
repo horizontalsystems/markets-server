@@ -10,7 +10,7 @@ module.exports = {
     query: Joi.object({
       coin_uid: Joi.string().required(),
       platform: Joi.string().valid('erc20', 'bep20', 'solana'),
-      interval: Joi.string().valid('1d', '7d', '30d')
+      interval: Joi.string().valid('1d', '1w', '2w', '1m', '3m', '6m', '1y')
     })
   }, options),
 
@@ -19,7 +19,7 @@ module.exports = {
     query: Joi.object({
       coin_uid: Joi.string().required(),
       platform: Joi.string().valid('erc20', 'bep20', 'solana'),
-      interval: Joi.string().valid('1d', '7d', '30d')
+      interval: Joi.string().valid('1d', '1w', '2w', '1m', '3m', '6m', '1y')
     })
   }, options),
 
@@ -28,7 +28,7 @@ module.exports = {
     query: Joi.object({
       coin_uid: Joi.string().required(),
       platform: Joi.string().valid('erc20', 'bep20'),
-      interval: Joi.string().valid('1d', '7d', '30d')
+      interval: Joi.string().valid('1d', '1w', '2w', '1m', '3m', '6m', '1y')
     })
   }, options),
 }
