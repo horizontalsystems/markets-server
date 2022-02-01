@@ -21,7 +21,7 @@ class DexVolumeSyncer extends Syncer {
     await this.syncFromBigquery(this.syncParamsHistorical('4h'), '4h')
     await this.syncFromBigquery(this.syncParamsHistorical('1h'), '1h')
 
-    await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'bsc', 'day')
+    await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'bsc', 'day', 30)
   }
 
   async syncLatest() {
@@ -32,7 +32,7 @@ class DexVolumeSyncer extends Syncer {
 
   async syncDailyStats(dateParams) {
     await this.syncFromBigquery(dateParams, '1h')
-    await this.syncFromBitquery(dateParams, 'bsc', 'hour')
+    await this.syncFromBitquery(dateParams, 'bsc', 'hour', 100)
   }
 
   async syncWeeklyStats({ dateFrom, dateTo }) {
@@ -67,7 +67,7 @@ class DexVolumeSyncer extends Syncer {
     await this.bulkCreate(records)
   }
 
-  async syncFromBitquery({ dateFrom }, network, interval) {
+  async syncFromBitquery({ dateFrom }, network, interval, chunkSize = 100) {
     let type
     let exchange
 
@@ -81,7 +81,7 @@ class DexVolumeSyncer extends Syncer {
     }
 
     const platforms = await this.getPlatforms(type)
-    const chunks = chunk(platforms.list, 100)
+    const chunks = chunk(platforms.list, chunkSize)
 
     for (let i = 0; i < chunks.length; i += 1) {
       const dexVolume = await bitquery.getDexVolumes(dateFrom.slice(0, 10), chunks[i], network, exchange, interval)

@@ -1,5 +1,7 @@
-with supported_tokens as (
-  SELECT * FROM UNNEST(@supported_tokens)
+WITH
+supported_tokens as (
+  SELECT *
+  FROM UNNEST(@supported_tokens)
 ),
 v3 as (
   SELECT

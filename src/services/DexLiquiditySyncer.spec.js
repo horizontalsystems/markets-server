@@ -51,7 +51,7 @@ describe('DexLiquiditySyncer', async () => {
         sinon.stub(DexLiquidity, 'exists').returns(false)
       })
 
-      it('fetches historical, weekly and daily stats in order', async () => {
+      it.skip('fetches historical, weekly and daily stats in order', async () => {
         await syncer.syncHistorical()
 
         sinon.assert.calledWith(syncer.syncStatsHistorical, {

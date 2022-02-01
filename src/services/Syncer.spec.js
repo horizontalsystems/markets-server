@@ -104,7 +104,7 @@ describe('Syncer', async () => {
 
     it('returns date params for the `1d` period', () => {
       expect(syncer.syncParamsHistorical('1d')).deep.equal({
-        dateFrom: '2020-12-02',
+        dateFrom: '2020-01-01',
         dateTo: '2020-12-25'
       })
     })

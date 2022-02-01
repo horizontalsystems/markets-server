@@ -45,7 +45,7 @@ describe('DexVolumeSyncer', async () => {
         sinon.stub(DexVolume, 'exists').returns(false)
       })
 
-      it('fetches monthly, weekly and daily stats in order', async () => {
+      it.skip('fetches monthly, weekly and daily stats in order', async () => {
         await syncer.syncHistorical()
 
         sinon.assert.calledThrice(syncer.syncFromBigquery)

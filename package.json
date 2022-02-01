@@ -27,7 +27,7 @@
   "dependencies": {
     "@adminjs/express": "^4.0.1",
     "@adminjs/sequelize": "^2.1.0",
-    "@google-cloud/bigquery": "^5.9.3",
+    "@google-cloud/bigquery": "^5.10.0",
     "adminjs": "^5.3.3",
     "apidoc": "^0.50.3",
     "axios": "^0.24.0",

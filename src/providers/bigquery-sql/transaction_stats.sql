@@ -1,5 +1,7 @@
-with supported_tokens as (
-  SELECT * FROM UNNEST(@supported_tokens)
+WITH
+supported_tokens as (
+  SELECT *
+  FROM UNNEST(@supported_tokens)
 ),
 transactions as (
   SELECT
@@ -26,7 +28,7 @@ SELECT
     WHEN '4h' THEN TIMESTAMP_SECONDS(4*60*60 * DIV(UNIX_SECONDS(block_timestamp), 4*60*60))
     ELSE TIMESTAMP_TRUNC(block_timestamp, DAY)
   END as date,
-  SUM(volume) as volume,
+  SUM(ifnull(volume, 0)) as volume,
   COUNT(1) AS count
 FROM transactions
 GROUP BY address, date

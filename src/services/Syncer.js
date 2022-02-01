@@ -69,7 +69,7 @@ class Syncer {
         }
       case '1d':
         return {
-          dateFrom: utcDate('yyyy-MM-dd', { days: -30 }),
+          dateFrom: utcDate('yyyy-MM-dd', { month: -12 }),
           dateTo: utcDate('yyyy-MM-dd', { days: -7 })
         }
       default:

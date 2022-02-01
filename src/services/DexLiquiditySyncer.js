@@ -20,14 +20,16 @@ class DexLiquiditySyncer extends Syncer {
 
     await this.syncStatsHistorical({
       dateFrom: '2020-01-01',
-      dateTo: utcDate('yyyy-MM-dd', { days: -30 })
+      dateTo: utcDate('yyyy-MM-dd', { month: -12 })
     })
 
-    await this.syncFromBigquery(this.syncParamsHistorical('1d'), '1d')
+    await this.syncFromBigquery({ dateFrom: utcDate('yyyy-MM-dd', { month: -12 }), dateTo: utcDate('yyyy-MM-dd', { month: -8 }) }, '1d')
+    await this.syncFromBigquery({ dateFrom: utcDate('yyyy-MM-dd', { month: -8 }), dateTo: utcDate('yyyy-MM-dd', { month: -4 }) }, '1d')
+    await this.syncFromBigquery({ dateFrom: utcDate('yyyy-MM-dd', { month: -4 }), dateTo: utcDate('yyyy-MM-dd', { days: -7 }) }, '1d')
     await this.syncFromBigquery(this.syncParamsHistorical('4h'), '4h')
     await this.syncFromBigquery(this.syncParamsHistorical('1h'), '1h')
 
-    await this.syncFromStreamingfast(utcStartOfDay({ days: -30 }), 33)
+    await this.syncFromStreamingfast(utcStartOfDay({ month: -12 }), 33)
   }
 
   async syncLatest() {
@@ -61,14 +63,14 @@ class DexLiquiditySyncer extends Syncer {
 
   async syncFromStreamingfast(dateFrom, chunkSize = 100) {
     const platforms = this.mapPlatforms(await Platform.getByTypes('bep20'))
-    const coins = chunk(platforms.list, chunkSize)
+    const chunks = chunk(platforms.list, chunkSize)
 
-    for (let i = 0; i < coins.length; i += 1) {
-      const data = await streamingfast.getPancakeLiquidity(dateFrom, coins[i])
+    for (let i = 0; i < chunks.length; i += 1) {
+      const data = await streamingfast.getPancakeLiquidity(dateFrom, chunks[i])
       const records = data.map(item => {
         return {
           volume: item.volume,
-          date: item.date,
+          date: item.date * 1000,
           exchange: 'pancakeswap',
           platform_id: platforms.map[item.token.id]
         }
@@ -80,31 +82,36 @@ class DexLiquiditySyncer extends Syncer {
 
   async syncStatsHistorical(dateParams) {
     const platforms = this.mapPlatforms(await Platform.getByTypes('erc20', true))
+    const chunkSize = platforms.list.length
 
-    await this.fetchFromBigquery(dateParams, '1d', 'uniswap_v2', 'uniswap_v2', platforms)
+    await this.fetchFromBigquery(dateParams, '1d', 'uniswap_v2', 'uniswap_v2', platforms, chunkSize)
     await this.fetchFromBigquery(dateParams, '1d', 'uniswap_v3', 'uniswap_v3', platforms)
     await this.fetchFromBigquery(dateParams, '1d', 'sushi', 'sushi', platforms)
   }
 
-  async fetchFromBigquery({ dateFrom, dateTo }, datePeriod, exchange, queryType, platforms) {
-    const data = await bigquery.getDexLiquidity(
-      dateFrom,
-      dateTo,
-      datePeriod,
-      platforms.list,
-      queryType
-    )
+  async fetchFromBigquery({ dateFrom, dateTo }, datePeriod, exchange, queryType, platforms, chunkSize = 3000) {
+    const chunks = chunk(platforms.list, chunkSize || platforms.list.length)
 
-    const records = data.map(item => {
-      return {
-        date: item.date.value,
-        volume: item.volume,
-        exchange,
-        platform_id: platforms.map[item.address]
-      }
-    })
+    for (let i = 0; i < chunks.length; i += 1) {
+      const data = await bigquery.getDexLiquidity(
+        dateFrom,
+        dateTo,
+        datePeriod,
+        chunks[i],
+        queryType
+      )
 
-    return this.bulkCreate(records)
+      const records = data.map(item => {
+        return {
+          date: item.date.value,
+          volume: item.volume,
+          exchange,
+          platform_id: platforms.map[item.address]
+        }
+      })
+
+      await this.bulkCreate(records)
+    }
   }
 
   mapPlatforms(platforms) {

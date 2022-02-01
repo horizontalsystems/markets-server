@@ -21,8 +21,8 @@ class TransactionSyncer extends Syncer {
     await this.syncFromBigquery(this.syncParamsHistorical('4h'), '4h')
     await this.syncFromBigquery(this.syncParamsHistorical('1h'), '1h')
 
-    await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'bsc')
-    await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'solana')
+    await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'bsc', false, 30)
+    await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'solana', false, 30)
   }
 
   async syncLatest() {
@@ -53,6 +53,8 @@ class TransactionSyncer extends Syncer {
   async syncFromBigquery({ dateFrom, dateTo }, datePeriod) {
     const platforms = await this.getPlatforms(['ethereum', 'erc20'], true, false)
     const transactions = await bigquery.getTransactionsStats(dateFrom, dateTo, platforms.list, datePeriod)
+    console.log(transactions)
+
     const records = transactions.map(transaction => {
       return {
         count: transaction.count,
@@ -65,9 +67,9 @@ class TransactionSyncer extends Syncer {
     return this.bulkCreate(records)
   }
 
-  async syncFromBitquery(dateParams, network, isHourly) {
+  async syncFromBitquery(dateParams, network, isHourly, chunkSize = 100) {
     const platforms = await this.getPlatforms(network === 'bsc' ? 'bep20' : network)
-    const chunks = chunk(platforms.list, 100)
+    const chunks = chunk(platforms.list, chunkSize)
     const dateFrom = dateParams.dateFrom.slice(0, 10)
 
     for (let i = 0; i < chunks.length; i += 1) {
