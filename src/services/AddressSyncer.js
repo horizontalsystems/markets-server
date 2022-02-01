@@ -70,7 +70,7 @@ class AddressSyncer extends Syncer {
   async syncStatsFromBigquery({ dateFrom, dateTo }, timePeriod) {
     try {
       const platforms = await this.getPlatforms(['ethereum', 'erc20'], true, false)
-      const addressStats = await bigquery.getAddressStats(platforms.tokens, dateFrom, dateTo, timePeriod)
+      const addressStats = await bigquery.getAddressStats(platforms.list, dateFrom, dateTo, timePeriod)
 
       const result = addressStats.map(data => ({
         count: data.address_count,
@@ -110,8 +110,8 @@ class AddressSyncer extends Syncer {
             } else {
               map[item.currency.address] = [currentValue]
             }
-            return map;
-          }, {});
+            return map
+          }, {})
 
           Object.keys(transfersMap).forEach(coinAddress => {
             const result = {
@@ -141,7 +141,7 @@ class AddressSyncer extends Syncer {
     try {
       const dateFrom = DateTime.utc().minus(this.ADDRESS_DATA_FETCH_PERIOD).toFormat('yyyy-MM-dd')
       const platforms = await this.getPlatforms()
-      const coinHolders = await bigquery.getTopCoinHolders(platforms.tokens, dateFrom, this.ADDRESSES_PER_COIN)
+      const coinHolders = await bigquery.getTopCoinHolders(platforms.list, dateFrom, this.ADDRESSES_PER_COIN)
 
       // ----------Remove previous records ----------
       await CoinHolder.deleteAll()
