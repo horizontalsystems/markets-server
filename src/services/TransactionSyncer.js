@@ -53,7 +53,6 @@ class TransactionSyncer extends Syncer {
   async syncFromBigquery({ dateFrom, dateTo }, datePeriod) {
     const platforms = await this.getPlatforms(['ethereum', 'erc20'], true, false)
     const transactions = await bigquery.getTransactionsStats(dateFrom, dateTo, platforms.list, datePeriod)
-    console.log(transactions)
 
     const records = transactions.map(transaction => {
       return {
