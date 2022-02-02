@@ -11,7 +11,7 @@ const router = express.Router()
  * @apiVersion 1.0.0
  * @apiGroup GlobalMarket
  *
- * @apiParam    {String=1d,7d,30d}  interval    Date interval
+ * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}  interval    Date interval
  * @apiUse      Currencies
  *
  * @apiSuccessExample {json} Success-Response:
@@ -34,7 +34,7 @@ router.get('/', validateGlobalMarkets, setCurrencyRate, setDateInterval, control
  * @apiGroup GlobalMarket
  *
  * @apiParam    {String=Ethereum,Binance,Avalanche,...}   chain       Chain name
- * @apiParam    {String=1d,7d,30d}                        interval    Date interval
+ * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}             interval    Date interval
  * @apiUse      Currencies
  *
  * @apiSuccessExample {json} Success-Response:

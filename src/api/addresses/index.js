@@ -12,7 +12,7 @@ const router = express.Router()
  * @apiGroup Address
  *
  * @apiParam  {String=bitcoin,ethereum,...}   coin_uid        Coin's uid
- * @apiParam  {String=1d,7d,30d}              [interval]      Date interval
+ * @apiParam  {String=1d,1w,2w,1m,3m,6m,1y}   [interval]      Date interval
  *
  * @apiSuccess  {String}    date       date
  * @apiSuccess  {String}    count      count
