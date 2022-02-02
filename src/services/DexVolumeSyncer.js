@@ -45,10 +45,6 @@ class DexVolumeSyncer extends Syncer {
 
   async syncFromBigquery({ dateFrom, dateTo }, datePeriod) {
     const platforms = await this.getPlatforms('erc20', true)
-    const volumesV2 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.list, datePeriod, 'uniswap_v2')
-    const volumesV3 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.list, datePeriod, 'uniswap_v3')
-    const volumesSushi = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.list, datePeriod, 'sushi')
-
     const mapVolumes = (items, exchange) => items.map(item => {
       return {
         exchange,
@@ -58,13 +54,12 @@ class DexVolumeSyncer extends Syncer {
       }
     })
 
-    const records = [
-      ...mapVolumes(volumesV2, 'uniswap_v2'),
-      ...mapVolumes(volumesV3, 'uniswap_v3'),
-      ...mapVolumes(volumesSushi, 'sushi')
-    ]
-
-    await this.bulkCreate(records)
+    const volumesV2 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.list, datePeriod, 'uniswap_v2')
+    await this.bulkCreate(mapVolumes(volumesV2, 'uniswap_v2'))
+    const volumesV3 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.list, datePeriod, 'uniswap_v3')
+    await this.bulkCreate(mapVolumes(volumesV3, 'uniswap_v3'))
+    const volumesSushi = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.list, datePeriod, 'sushi')
+    await this.bulkCreate(mapVolumes(volumesSushi, 'sushi'))
   }
 
   async syncFromBitquery({ dateFrom }, network, interval, chunkSize = 100) {
