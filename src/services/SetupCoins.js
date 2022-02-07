@@ -7,6 +7,7 @@ const Language = require('../db/models/Language')
 const coingecko = require('../providers/coingecko')
 const binanceDex = require('../providers/binance-dex')
 const web3Provider = require('../providers/web3')
+const solscan = require('../providers/solscan')
 const coinsJoin = require('../db/seeders/coins.json')
 
 class SetupCoins {
@@ -137,6 +138,16 @@ class SetupCoins {
           if (token) {
             decimals = token.contract_decimals
             symbol = token.symbol
+          }
+          break
+        }
+
+        case 'solana': {
+          address = platforms[platform]
+          const meta = await solscan.getMeta(address)
+          if (meta) {
+            decimals = meta.decimals
+            symbol = meta.symbol
           }
           break
         }
