@@ -12,6 +12,10 @@ class CoinHolder extends SequelizeModel {
         balance: {
           type: DataTypes.DECIMAL,
           allowNull: false
+        },
+        percentage: {
+          type: DataTypes.DECIMAL,
+          allowNull: false
         }
       },
       {
@@ -31,8 +35,8 @@ class CoinHolder extends SequelizeModel {
     return !!await CoinHolder.findOne()
   }
 
-  static deleteAll() {
-    return CoinHolder.query('DELETE FROM coin_holders')
+  static deleteAll(platformId) {
+    return CoinHolder.query('DELETE FROM coin_holders where platform_id = :platformId', { platformId })
   }
 
 }
