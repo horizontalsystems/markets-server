@@ -26,7 +26,7 @@ class Bitquery {
       },
       query: `query ($since: ISO8601DateTime!, $till: ISO8601DateTime!, $tokens: [String!]) {
         res:${chain} {
-          transfers(time: { since: $since, till: $till }, currency: { in: $tokens }) {
+          transfers(time: { since: $since, till: $till }, currency: { in: $tokens }, options: {limit: 10000}) {
             account : sender {
               address
             }
@@ -63,7 +63,7 @@ class Bitquery {
       },
       query: `query ($since: ISO8601DateTime!, $till: ISO8601DateTime!, $tokens: [String!]) {
         res:${chain} {
-          transfers(time: { since: $since, till: $till }, currency: { in: $tokens }) {
+          transfers(time: { since: $since, till: $till }, currency: { in: $tokens }, options: {limit: 10000}) {
             account : receiver {
               address
             }

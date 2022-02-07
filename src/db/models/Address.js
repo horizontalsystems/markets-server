@@ -51,7 +51,7 @@ class Address extends SequelizeModel {
       WHERE a.platform_id = p.id AND p.type IN (:platforms)
     `
     const [result] = await Address.query(query, { platforms })
-    return result
+    return result.count > 0
   }
 
   static async getByCoinUid(uid, window, dateFrom) {

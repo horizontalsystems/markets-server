@@ -9,12 +9,15 @@ const CoinHolder = require('../db/models/CoinHolder')
 const Syncer = require('./Syncer')
 const logger = require('../config/logger')
 const { sleep } = require('../utils')
+const { utcDate } = require('../utils')
 
 class AddressSyncer extends Syncer {
   constructor() {
     super()
     this.ADDRESS_DATA_FETCH_PERIOD = { month: 24 }
     this.ADDRESSES_PER_COIN = 20
+    this.BUSDT_ADDRESS = '0x55d398326f99059ff775485246999027b3197955'
+
   }
 
   async start() {
@@ -23,23 +26,23 @@ class AddressSyncer extends Syncer {
   }
 
   async syncHistorical() {
-    if ((await Address.existsForPlatforms(['ethereum', 'erc20'])).count < 1) {
+    if (!await Address.existsForPlatforms(['ethereum', 'erc20'])) {
       await this.syncStatsFromBigquery(this.syncParamsHistorical('1d'), '1d')
       await this.syncStatsFromBigquery(this.syncParamsHistorical('4h'), '4h')
       await this.syncStatsFromBigquery(this.syncParamsHistorical('1h'), '1h')
     }
 
-    if ((await Address.existsForPlatforms(['bep20'])).count < 1) {
-      await this.syncHistoStatsFromBitquery('bsc')
+    if (!await Address.existsForPlatforms(['bep20'])) {
+      await this.syncHistoStatsFromBitquery(this.syncParamsHistorical('1d'), 'bsc')
     }
 
-    if ((await Address.existsForPlatforms(['solana'])).count < 1) {
-      await this.syncHistoStatsFromBitquery('solana')
+    if (!await Address.existsForPlatforms(['solana'])) {
+      await this.syncHistoStatsFromBitquery(this.syncParamsHistorical('1d'), 'solana')
     }
 
-    if (!await CoinHolder.exists()) {
-      await this.syncCoinHolders()
-    }
+    // if (!await CoinHolder.exists()) {
+    //   await this.syncCoinHolders()
+    // }
   }
 
   async syncLatest() {
@@ -54,8 +57,8 @@ class AddressSyncer extends Syncer {
 
   async syncWeeklyStats(dateParams) {
     await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
-    await this.syncFromBitquery(dateParams, 'bsc', true)
-    await this.syncFromBitquery(dateParams, 'solana', true)
+    await this.syncStatsFromBitquery(dateParams, 'bsc', true)
+    await this.syncStatsFromBitquery(dateParams, 'solana', true)
   }
 
   async syncMonthlyStats(dateParams) {
@@ -85,15 +88,46 @@ class AddressSyncer extends Syncer {
     }
   }
 
-  async syncStatsFromBitquery({ dateFrom, dateTo }, network, chunkSize = 100) {
+  async syncLatestStatsFromBitquery(network) {
+    const dateFrom = utcDate('yyyy-MM-dd HH:00:00Z', { hours: -4 })
+    const dateTo = utcDate('yyyy-MM-dd HH:00:00Z')
+
+    logger.info(`Syncing latest address stats for ${dateFrom} -> ${dateTo}`)
+    await this.syncStatsFromBitquery({ dateFrom, dateTo }, network, 25)
+  }
+
+  async syncHistoStatsFromBitquery(dateParams, network) {
+
+    logger.info(`Start syncing historical address stats for network: ${network}`)
+
+    const dateHisto = DateTime.fromSQL(dateParams.dateFrom)
+    let dateTo = DateTime.utc()
+
+    while (dateHisto <= dateTo) {
+
+      const dateFrom = dateTo.minus({ days: 1 })
+      logger.info(`Syncing historical address stats for ${dateFrom} -> ${dateTo}`)
+
+      await this.syncStatsFromBitquery({
+        dateFrom: dateFrom.toFormat('yyyy-MM-dd 00:00:00Z'),
+        dateTo: dateTo.toFormat('yyyy-MM-dd 00:00:00Z')
+      }, network, 50)
+
+      dateTo = dateFrom
+    }
+  }
+
+  async syncStatsFromBitquery({ dateFrom, dateTo }, network, chunkSize = 20) {
     try {
       const platforms = await this.getPlatforms(network === 'bsc' ? 'bep20' : network)
-      const chunks = chunk(platforms.list, chunkSize)
       const addressStats = []
+      const isoDateFrom = DateTime.fromFormat(dateFrom, 'yyyy-MM-dd HH:00:00Z').toString()
+      const isoDateTo = DateTime.fromFormat(dateTo, 'yyyy-MM-dd HH:00:00Z').toString()
+      const chunks = this.getChunks(platforms.list, chunkSize)
 
       for (let i = 0; i < chunks.length; i += 1) {
-        const isoDateFrom = dateFrom.toFormat('yyyy-MM-dd')
-        const isoDateTo = dateTo.toFormat('yyyy-MM-dd')
+
+        logger.info(`Fetching adddress stats for chunks: ${i}/${chunks[i].length}`)
         const transfersSenders = await bitquery.getTransferSenders(isoDateFrom, isoDateTo, chunks[i], network)
         const transferReceivers = await bitquery.getTransferReceivers(isoDateFrom, isoDateTo, chunks[i], network)
 
@@ -117,7 +151,7 @@ class AddressSyncer extends Syncer {
             const result = {
               count: transfersMap[coinAddress].length,
               volume: 0,
-              date: dateTo.toFormat('yyyy-MM-dd 00:00:00Z'),
+              date: dateTo,
               platform_id: platforms.map[coinAddress]
             }
             addressStats.push(result)
@@ -135,6 +169,11 @@ class AddressSyncer extends Syncer {
     } catch (e) {
       logger.error('Error syncing address stats:', e)
     }
+  }
+
+  getChunks(platforms, chunkSize) {
+    const newList = platforms.filter(item => item.address !== this.BUSDT_ADDRESS)
+    return [...[[{ address: this.BUSDT_ADDRESS }]], ...chunk(newList, chunkSize)]
   }
 
   async syncCoinHolders() {
@@ -156,23 +195,6 @@ class AddressSyncer extends Syncer {
       this.upsertCoinHolders(holders)
     } catch (e) {
       logger.error(`Error syncing coin holders: ${e}`)
-    }
-  }
-
-  async syncHistoStatsFromBitquery(network) {
-
-    logger.info(`Start syncing historical address stats for network ${network}`)
-
-    const date30days = DateTime.utc().minus({ days: 30 })
-    let dateTo = DateTime.utc()
-
-    while (date30days <= dateTo) {
-
-      const dateFrom = dateTo.minus({ days: 1 })
-      logger.info(`Syncing historical address stats for ${dateFrom} -> ${dateTo}`)
-
-      await this.syncStatsFromBitquery({ dateFrom, dateTo }, network, 50)
-      dateTo = dateFrom
     }
   }
 
