@@ -10,7 +10,7 @@ const router = express.Router()
  * @apiGroup Token
  *
  * @apiParam  {String=erc20,bep20,bep2}    platform  Coin's platform
- * @apiParam  {String}                  address   Coin's contract address
+ * @apiParam  {String}                     address   Coin's contract address
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK

@@ -15,7 +15,7 @@ exports.info = async (req, res, next) => {
     }
 
     case 'bep2': {
-      info = await binanceDex.getTokenInfo(symbol)
+      info = await binanceDex.getTokenInfo(symbol.toUpperCase())
       break
     }
 
