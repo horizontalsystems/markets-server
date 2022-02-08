@@ -36,9 +36,8 @@ router.get('/', validateAddresses, setDateInterval, controller.index)
  * @apiVersion 1.0.0
  * @apiGroup Address
  *
- * @apiParam  {String=bitcoin,ethereum,...}  coin_uid        Coin's uid
- * @apiParam  {String=erc20,ethereum,...}    platform        Coin's platform
- * @apiParam  {Number{1-20}}                 [limit=10]      Number of holders
+ * @apiParam  {String=bitcoin,ethereum,...}                             coin_uid  Coin's uid
+ * @apiParam  {String=erc20,bep20,solana,ethereum,binance-smart-chain}  platform  Coin's platform
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  */

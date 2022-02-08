@@ -18,7 +18,7 @@ module.exports = {
   validateHolders: validate({
     query: Joi.object({
       coin_uid: Joi.string().required(),
-      platform: Joi.string().valid('erc20', 'ethereum'),
+      platform: Joi.string().valid('erc20', 'bep20', 'solana', 'ethereum', 'binance-smart-chain'),
       limit: Joi.number().min(1).max(20),
     })
   }, options),
