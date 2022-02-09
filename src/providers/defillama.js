@@ -21,8 +21,9 @@ exports.getCharts = (chain) => {
 exports.getProtocols = () => {
   console.log('Fetching DeFi protocols')
 
-  return axios.get('/protocols')
-    .then(resp => resp.data)
+  return axios.get('/protocols').then(({ data = [] }) => {
+    return data.filter(item => item.slug !== 'polygon-bridge-&-staking')
+  })
 }
 
 exports.getProtocol = id => {
