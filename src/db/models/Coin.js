@@ -101,20 +101,6 @@ class Coin extends SequelizeModel {
     return Coin.query(query, { uids })
   }
 
-  static async getMarketData(uid, type) {
-    const query = (`
-      SELECT
-        market_data,
-        P.id AS platform_id
-      FROM coins C
-      LEFT JOIN platforms P ON C.id = P.coin_id
-      WHERE C.uid = :uid AND P.type = :type
-    `)
-
-    const [marketData] = await Coin.query(query, { uid, type })
-    return marketData
-  }
-
   static async getCoinInfo(uid) {
     const coin = await Coin.findOne({
       include: [Platform, Category],

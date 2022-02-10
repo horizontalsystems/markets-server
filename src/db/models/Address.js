@@ -1,6 +1,5 @@
 const SequelizeModel = require('./SequelizeModel')
 const Platform = require('./Platform')
-const Coin = require('./Coin')
 
 class Address extends SequelizeModel {
 
@@ -73,39 +72,6 @@ class Address extends SequelizeModel {
     `
 
     return Address.query(query, { dateFrom, platform_id: platform.id })
-  }
-
-  static async getCoinHolders(uid, platform = 'erc20', limit = 10) {
-    const coin = await Coin.getMarketData(uid, platform)
-    if (!coin || !coin.market_data) {
-      return null
-    }
-
-    const supply = coin.market_data.total_supply || coin.market_data.circulating_supply
-
-    if (!supply) {
-      return []
-    }
-
-    const query = `
-      SELECT
-        address,
-        balance
-      FROM coin_holders
-      WHERE platform_id = :platform_id
-      ORDER BY balance DESC
-      LIMIT :limit
-    `
-
-    const holders = await Address.query(query, {
-      platform_id: coin.platform_id,
-      limit
-    })
-
-    return holders.map(item => ({
-      address: item.address,
-      share: (item.balance * 100) / parseFloat(supply)
-    }))
   }
 
   static updatePoints(dateFrom, dateTo) {

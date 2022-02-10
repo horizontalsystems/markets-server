@@ -1,14 +1,16 @@
+const { isEmpty } = require('lodash')
 const axios = require('axios')
   .create({
     baseURL: 'https://dex.binance.org/api/v1/',
     timeout: 180000
   })
 
-let cache = []
+let cache = {}
 
-function mapBySymbol(data) {
+function mapBy(data, field) {
   return data.reduce((memo, item) => {
-    memo[item.original_symbol] = item
+    const key = item[field]
+    memo[key.toUpperCase()] = item
     return memo
   }, {})
 }
@@ -23,17 +25,13 @@ function getBep2Tokens() {
 }
 
 exports.getTokenInfo = async symbol => {
-  if (!cache.length) {
-    cache = await getBep2Tokens().then(resp => mapBySymbol(resp.data))
+  if (isEmpty(cache)) {
+    cache = await getBep2Tokens().then(res => mapBy(res.data, 'symbol'))
   }
 
   return cache[symbol]
 }
 
 exports.getBep2Tokens = async () => {
-  if (cache.length) {
-    return mapBySymbol(cache)
-  }
-
-  return getBep2Tokens().then(resp => mapBySymbol(resp.data))
+  return getBep2Tokens().then(res => mapBy(res.data, 'original_symbol'))
 }

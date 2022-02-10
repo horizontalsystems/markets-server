@@ -20,11 +20,6 @@ class DefiProtocol extends SequelizeModel {
           allowNull: false
         },
 
-        tvl_rank: {
-          type: DataTypes.DECIMAL,
-          allowNull: false
-        },
-
         tvl_change: DataTypes.JSONB,
         //  {
         //    change_1h:  0.076,
@@ -40,10 +35,12 @@ class DefiProtocol extends SequelizeModel {
         //    staking:  14440365.167
         //  }
 
-        chains: DataTypes.ARRAY(DataTypes.STRING)
+        chains: DataTypes.ARRAY(DataTypes.STRING),
         //
         // ["ethereum", "fantom", "avalanche"]
         //
+
+        is_active: DataTypes.BOOLEAN
       },
       {
         timestamps: false,
@@ -68,10 +65,11 @@ class DefiProtocol extends SequelizeModel {
       SELECT
         C.uid,
         C.name as coin_name,
-        D.*
+        D.*,
+        ROW_NUMBER() OVER (ORDER BY tvl DESC) as tvl_rank
       FROM defi_protocols D
       LEFT JOIN coins C on C.id = D.coin_id
-      ORDER BY D.tvl_rank
+      WHERE is_active = true
     `)
   }
 
@@ -83,6 +81,14 @@ class DefiProtocol extends SequelizeModel {
     }
 
     return DefiProtocol.findAll({ attributes: ['id', 'coingecko_id', 'defillama_id'], where })
+  }
+
+  static updateStates(ids) {
+    if (!ids.length) {
+      return
+    }
+
+    return DefiProtocol.query('UPDATE defi_protocols SET is_active = false WHERE id NOT IN(:ids)', { ids })
   }
 }
 

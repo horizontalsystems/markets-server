@@ -142,6 +142,7 @@ class DefiProtocolSyncer extends Syncer {
     })
 
     const ids = coins.reduce((memo, coin) => ({ ...memo, [coin.coingecko_id]: coin.id }), {})
+    const recordIds = []
 
     for (let i = 0; i < protocols.length; i += 1) {
       const protocol = protocols[i]
@@ -155,7 +156,7 @@ class DefiProtocolSyncer extends Syncer {
         defillama_id: protocol.slug,
         coingecko_id: protocol.gecko_id,
         tvl: protocol.tvl,
-        tvl_rank: i + 1,
+        is_active: true,
         tvl_change: {
           change_1h: protocol.change_1h,
           change_1d: protocol.change_1d,
@@ -167,8 +168,11 @@ class DefiProtocolSyncer extends Syncer {
       }
 
       logger.info(`Upserting DefiProtocol; Defillama: ${protocol.slug}; Coingecko: ${protocol.gecko_id}`)
-      await DefiProtocol.upsert(values)
+      const [record] = await DefiProtocol.upsert(values)
+      recordIds.push(record.id)
     }
+
+    await DefiProtocol.updateStates(recordIds.filter(i => i))
   }
 
   async fetchProtocols() {

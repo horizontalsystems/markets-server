@@ -1,4 +1,5 @@
 const Address = require('../../db/models/Address')
+const CoinHolder = require('../../db/models/CoinHolder')
 const serializer = require('./addresses.serializer')
 
 exports.index = async ({ query, dateInterval, dateFrom }, res) => {
@@ -8,13 +9,13 @@ exports.index = async ({ query, dateInterval, dateFrom }, res) => {
 }
 
 exports.holders = async ({ query }, res) => {
-  const holders = await Address.getCoinHolders(query.coin_uid, query.platform, query.limit)
+  const holders = await CoinHolder.getList(query.coin_uid, query.platform)
 
-  if (holders) {
-    res.send(serializer.serializeCoinHolders(holders))
-  } else {
+  if (!holders || !holders.length) {
     res.status(404).send({
       error: 'Coin not found'
     })
+  } else {
+    res.send(serializer.serializeCoinHolders(holders))
   }
 }
