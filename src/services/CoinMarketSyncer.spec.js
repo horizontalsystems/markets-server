@@ -3,7 +3,7 @@ const sinon = require('sinon')
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
-const Syncer = require('./CoinPriceSyncer')
+const Syncer = require('./CoinMarketSyncer')
 
 describe('CoinPriceSyncer', () => {
 

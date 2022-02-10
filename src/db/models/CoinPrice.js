@@ -1,6 +1,6 @@
 const SequelizeModel = require('./SequelizeModel')
 
-class CoinMarket extends SequelizeModel {
+class CoinPrice extends SequelizeModel {
 
   static init(sequelize, DataTypes) {
     return super.init(
@@ -20,7 +20,7 @@ class CoinMarket extends SequelizeModel {
       },
       {
         sequelize,
-        tableName: 'coin_markets',
+        tableName: 'coin_prices',
         indexes: [{
           unique: true,
           fields: ['coin_id', 'date']
@@ -30,14 +30,14 @@ class CoinMarket extends SequelizeModel {
   }
 
   static associate(models) {
-    CoinMarket.belongsTo(models.Coin, {
+    CoinPrice.belongsTo(models.Coin, {
       foreignKey: 'coin_id'
     })
   }
 
   static insertMarkets(values) {
     const query = `
-      INSERT INTO coin_markets (coin_id, date, price, volume)
+      INSERT INTO coin_prices (coin_id, date, price, volume)
       ( SELECT
           c.id,
           v.last_updated_rounded::timestamptz,
@@ -52,11 +52,11 @@ class CoinMarket extends SequelizeModel {
 
     `
 
-    return CoinMarket.query(query, { values })
+    return CoinPrice.query(query, { values })
   }
 
   static async exists() {
-    return !!await CoinMarket.findOne()
+    return !!await CoinPrice.findOne()
   }
 
   static async getPriceChart(uid, window, dateFrom) {
@@ -71,13 +71,13 @@ class CoinMarket extends SequelizeModel {
           SELECT
               cm.*,
               ${this.truncateDateWindow('date', window)} AS dt_group
-          FROM coin_markets cm, coins c
+          FROM coin_prices cm, coins c
           WHERE cm.coin_id = c.id AND c.uid = :uid AND cm.date >= :dateFrom
       ) pc
       ORDER BY pc.dt_group, pc.date DESC
     `
 
-    return CoinMarket.query(query, {
+    return CoinPrice.query(query, {
       dateFrom,
       uid
     })
@@ -95,33 +95,48 @@ class CoinMarket extends SequelizeModel {
               cm.date,
               cm.volume,
               ${this.truncateDateWindow('date', window)} AS dt_group
-          FROM coin_markets cm, coins c
+          FROM coin_prices cm, coins c
           WHERE cm.coin_id = c.id AND c.uid = :uid AND cm.date >= :dateFrom
       ) pc
       ORDER BY pc.dt_group, pc.date DESC
 `
 
-    return CoinMarket.query(query, {
+    return CoinPrice.query(query, {
       dateFrom,
       uid
     })
   }
 
   static deleteExpired(dateFrom, dateTo) {
-    return CoinMarket.query('DELETE FROM coin_markets WHERE date > :dateFrom AND date < :dateTo', {
+    return CoinPrice.query('DELETE FROM coin_prices WHERE date > :dateFrom AND date < :dateTo', {
       dateFrom,
       dateTo
     })
   }
 
   static getNotSyncedCoins() {
-    return CoinMarket.query(`
+    return CoinPrice.query(`
       SELECT uid
       FROM coins
       WHERE id NOT IN (
-        SELECT DISTINCT(coin_id) FROM coin_markets
+        SELECT DISTINCT(coin_id) FROM coin_prices
         WHERE date < (NOW() - INTERVAL '1 HOUR'))`)
   }
+
+  static async getHistoricalPrice(coinUid, timestamp) {
+    const [result] = await CoinPrice.query(`
+      SELECT EXTRACT(epoch from date)::int as timestamp, CM.price as price
+      FROM coin_prices CM, coins C
+      WHERE CM.coin_id = C.id AND C.uid = :coinUid
+      ORDER BY ABS(EXTRACT(epoch from date) - :timestamp)
+      LIMIT 1`, {
+      coinUid,
+      timestamp: parseInt(timestamp, 10)
+    })
+
+    return result
+  }
+
 }
 
-module.exports = CoinMarket
+module.exports = CoinPrice
