@@ -156,7 +156,7 @@ class DefiProtocolSyncer extends Syncer {
         defillama_id: protocol.slug,
         coingecko_id: protocol.gecko_id,
         tvl: protocol.tvl,
-        is_active: true,
+        tvl_rank: i + 1,
         tvl_change: {
           change_1h: protocol.change_1h,
           change_1d: protocol.change_1d,
@@ -172,7 +172,7 @@ class DefiProtocolSyncer extends Syncer {
       recordIds.push(record.id)
     }
 
-    await DefiProtocol.updateStates(recordIds.filter(i => i))
+    await DefiProtocol.resetRank(recordIds.filter(i => i))
   }
 
   async fetchProtocols() {
