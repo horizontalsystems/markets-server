@@ -23,11 +23,6 @@ class Currency extends SequelizeModel {
     )
   }
 
-  static async findByCode(code) {
-    const [currency] = await Currency.query('SELECT * FROM currencies WHERE code = :code', { code })
-    return currency
-  }
-
   static async getByCodes(codes) {
     return Currency.query('SELECT * FROM currencies WHERE code IN (:codes)', { codes })
   }

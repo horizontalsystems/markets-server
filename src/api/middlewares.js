@@ -4,7 +4,7 @@ const CurrencyRate = require('../db/models/CurrencyRate')
 
 exports.setCurrencyRate = async (req, res, next) => {
 
-  const currencyRate = await CurrencyRate.getCurrencyRate(req.query.currency)
+  const currencyRate = await CurrencyRate.getCurrencyRate(req.query.currency, req.query.timestamp)
   // eslint-disable-next-line no-param-reassign
   req.currencyRate = currencyRate.rate
 

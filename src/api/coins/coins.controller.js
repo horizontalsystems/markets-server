@@ -1,6 +1,6 @@
 const Coin = require('../../db/models/Coin')
 const Platform = require('../../db/models/Platform')
-const CoinMarket = require('../../db/models/CoinMarket')
+const CoinMarket = require('../../db/models/CoinPrice')
 const serializer = require('./coins.serializer')
 
 exports.index = async ({ query, currencyRate }, res) => {
@@ -79,4 +79,9 @@ exports.price_chart = async ({ params, currencyRate, dateFrom, dateInterval }, r
 exports.volume_chart = async ({ params, currencyRate, dateFrom, dateInterval }, res) => {
   const volumeChart = await CoinMarket.getVolumeChart(params.uid, dateInterval, dateFrom)
   res.send(serializer.serializeVolumeChart(volumeChart, currencyRate))
+}
+
+exports.price_history = async ({ params, query, currencyRate }, res) => {
+  const historicalPrice = await CoinMarket.getHistoricalPrice(params.uid, query.timestamp)
+  res.send(serializer.serializePriceHistory(historicalPrice, currencyRate))
 }

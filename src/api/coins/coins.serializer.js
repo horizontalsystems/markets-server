@@ -133,3 +133,8 @@ exports.serializeVolumeChart = (volumeChart, currencyRate) => {
     total_volume: valueInCurrency(item.volume, currencyRate)
   }))
 }
+
+exports.serializePriceHistory = (priceData, currencyRate) => ({
+  timestamp: priceData.timestamp,
+  price: valueInCurrency(priceData.price, currencyRate)
+})

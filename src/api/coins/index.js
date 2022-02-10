@@ -163,4 +163,25 @@ router.get('/:uid/price_chart', setDateInterval, setCurrencyRate, controller.pri
  */
 router.get('/:uid/volume_chart', setDateInterval, setCurrencyRate, controller.volume_chart)
 
+/**
+ * @api {get} /v1/coins/:uid/price_history Get coin historical price
+ * @apiDescription Get coin's historical volume chart
+ * @apiVersion 1.0.0
+ * @apiGroup Coin
+ *
+ * @apiParam    {String}  uid   Coin's uid
+ * @apiParam    {Number}  timestamp   Unix epoch timestamp
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "date": 1641945600,
+ *    "price": "43658"
+ *  }
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ * @apiError (Not Found 404)    NotFound          Coin does not exist
+ */
+router.get('/:uid/price_history', setCurrencyRate, controller.price_history)
+
 module.exports = router
