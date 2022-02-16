@@ -20,6 +20,8 @@ const Currency = require('./models/Currency')
 const CurrencyRate = require('./models/CurrencyRate')
 const GlobalMarket = require('./models/GlobalMarket')
 const CoinPrice = require('./models/CoinPrice')
+const NftAsset = require('./models/NftAsset')
+const NftCollection = require('./models/NftCollection')
 const config = require('./config')
 
 const sequelize = new Sequelize(
@@ -51,7 +53,9 @@ const db = {
   Currency: Currency.init(sequelize, Sequelize),
   CurrencyRate: CurrencyRate.init(sequelize, Sequelize),
   GlobalMarket: GlobalMarket.init(sequelize, Sequelize),
-  CoinPrice: CoinPrice.init(sequelize, Sequelize)
+  CoinPrice: CoinPrice.init(sequelize, Sequelize),
+  NftAsset: NftAsset.init(sequelize, Sequelize),
+  NftCollection: NftCollection.init(sequelize, Sequelize)
 }
 
 // This creates relationships in the ORM
