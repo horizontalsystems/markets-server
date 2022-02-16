@@ -1,3 +1,4 @@
+const querystring = require('querystring')
 const axios = require('axios').create({
   baseURL: 'https://api.opensea.io/api/v1',
   timeout: 180000,
@@ -10,10 +11,14 @@ class Opensea {
 
   getCollections(assetOwner, offset = 0, limit = 20) {
 
-    const query = `limit=${limit}&offset=${offset}${assetOwner ? `&asset_owner=${assetOwner}` : ''}`
+    const params = { limit, offset }
+
+    if (assetOwner) {
+      params.asset_owner = assetOwner
+    }
 
     return axios
-      .get(`/collections?${query}`)
+      .get(`/collections?${querystring.stringify(params)}`)
       .then(resp => normalizer.normalizeCollections(resp.data))
   }
 
@@ -25,34 +30,35 @@ class Opensea {
 
   getAssets(owner, tokenIds, contractAddresses, collectionUid, orderDirection = 'desc', offset = 0, limit = 20) {
 
-    let query = `limit=${limit}&offset=${offset}&order_direction=${orderDirection}`
-    query += `${owner ? `&owner=${owner}` : ''}`
-    query += `${contractAddresses ? `&asset_contract_addresses=${contractAddresses}` : ''}`
-    query += `${collectionUid ? `&collection=${collectionUid}` : ''}`
+    const params = { limit, offset, order_direction: orderDirection }
+
+    if (owner) {
+      params.owner = owner
+    }
+
+    if (collectionUid) {
+      params.collection = collectionUid
+    }
 
     if (tokenIds) {
-      tokenIds.forEach(i => {
-        query += `&token_ids=${i}`
-      })
+      params.token_ids = tokenIds.split(',')
     }
 
     if (contractAddresses) {
-      contractAddresses.forEach(i => {
-        query += `&asset_contract_addresses=${i}`
-      })
+      params.asset_contract_addresses = contractAddresses.split(',')
     }
 
     return axios
-      .get(`/assets?${query}`)
+      .get(`/assets?${querystring.stringify(params)}`)
       .then(resp => normalizer.normalizeAssets(resp.data))
   }
 
   getAsset(assetContractAddress, tokenId, accountAddress) {
 
-    const query = `${accountAddress ? `&account_address=${accountAddress}` : ''}`
+    const params = `${accountAddress ? `&account_address=${accountAddress}` : ''}`
 
     return axios
-      .get(`/asset/${assetContractAddress}/${tokenId}?${query}`)
+      .get(`/asset/${assetContractAddress}/${tokenId}?${querystring.stringify(params)}`)
       .then(resp => normalizer.normalizeAsset(resp.data))
   }
 

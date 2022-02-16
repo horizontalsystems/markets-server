@@ -4,11 +4,7 @@ const NftCollection = require('../../db/models/NftCollection')
 
 exports.collections = async ({ query }, res) => {
   const collections = await opensea.getCollections(query.asset_owner, query.offset, query.limit)
-
-  // ------ Cache assets -------------
   NftCollection.upsertCollections(collections)
-  // ---------------------------------
-
   res.send(collections)
 }
 
@@ -34,10 +30,7 @@ exports.assets = async ({ query }, res) => {
     query.limit
   )
 
-  // ------ Cache assets -------------
   NftAsset.upsertAssets(assets)
-  // ---------------------------------
-
   res.send(assets)
 }
 
