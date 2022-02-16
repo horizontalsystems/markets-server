@@ -53,3 +53,20 @@ exports.setDateInterval = (req, res, next) => {
 
   next()
 }
+
+exports.error404 = (req, res) => {
+  res.status(404)
+  res.send({
+    error: 'Not found'
+  })
+}
+
+exports.error500 = (err, req, res, next) => {
+  if (err instanceof ValidationError) {
+    res.status(err.statusCode)
+  } else {
+    res.status(500)
+  }
+
+  res.json(err)
+}
