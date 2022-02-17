@@ -86,7 +86,7 @@ class NftCollection extends SequelizeModel {
       SELECT *
       FROM nft_collections
       WHERE uid = :collectionUid
-            AND ABS(EXTRACT(epoch FROM (last_updated - now()))::int/60) <= 2
+            AND ABS(EXTRACT(epoch FROM (last_updated - now()))::int/60) <= 5
     `)
 
     const [asset] = await NftCollection.query(query, { collectionUid })

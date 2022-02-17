@@ -7,7 +7,6 @@ exports.collections = async ({ query }, res) => {
   let collections = []
   try {
     collections = await opensea.getCollections(query.asset_owner, query.offset, query.limit)
-    NftCollection.upsertCollections(collections)
   } catch (e) {
     logger.error('Error fetching nft collection:', e)
   }
