@@ -45,9 +45,9 @@ const action = {
 
 router.use(
   crud('/coins', {
-    search: (uid, limit) => action.search(uid, limit, Coin, ['id', 'uid', 'name']),
-    getList: params => action.getList(params, Coin, ['id', 'uid', 'name']),
-    getOne: id => action.getOne(id, Coin, ['id', 'uid', 'name', 'description', 'security']),
+    search: (uid, limit) => action.search(uid, limit, Coin, ['id', 'uid', 'name', 'code']),
+    getList: params => action.getList(params, Coin, ['id', 'uid', 'name', 'code']),
+    getOne: id => action.getOne(id, Coin, ['id', 'uid', 'name', 'code', 'description', 'security']),
     ...action.createUpdateDelete(Coin)
   }),
 
