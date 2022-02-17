@@ -38,8 +38,10 @@ exports.normalizeAsset = asset => {
     token_id: asset.token_id,
     name: asset.name,
     symbol: asset.asset_contract.symbol,
-    contract_address: asset.asset_contract.address,
-    contract_type: asset.asset_contract.schema_name,
+    contract: {
+      address: asset.asset_contract.address,
+      type: asset.asset_contract.schema_name,
+    },
     collection_uid: asset.collection.slug,
     description: asset.description,
     image_data: {

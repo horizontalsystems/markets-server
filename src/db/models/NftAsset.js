@@ -1,4 +1,5 @@
 const SequelizeModel = require('./SequelizeModel')
+const Sequelize = require('sequelize')
 
 class NftAsset extends SequelizeModel {
 
@@ -9,13 +10,17 @@ class NftAsset extends SequelizeModel {
           type: DataTypes.STRING(100),
           allowNull: false
         },
-        contract_address: {
-          type: DataTypes.STRING(50),
+        // contract_address: {
+        //   type: DataTypes.STRING(50),
+        //   allowNull: false
+        // },
+        // contract_type: DataTypes.STRING(10),
+        // name: {
+        //   type: DataTypes.STRING(100)
+        // },
+        contract: {
+          type: DataTypes.JSONB,
           allowNull: false
-        },
-        contract_type: DataTypes.STRING(10),
-        name: {
-          type: DataTypes.STRING(100)
         },
         symbol: DataTypes.STRING(100),
         collection_uid: DataTypes.STRING(50),
@@ -65,7 +70,7 @@ class NftAsset extends SequelizeModel {
         sequelize,
         indexes: [{
           unique: true,
-          fields: ['token_id', 'contract_address']
+          fields: ['token_id', Sequelize.literal('(("contract"->>\'address\')::varchar)')]
         }]
       }
     )
@@ -73,7 +78,7 @@ class NftAsset extends SequelizeModel {
 
   static upsertAssets(assets) {
     NftAsset.bulkCreate(assets, {
-      updateOnDuplicate: ['sell_orders', 'last_sale', 'last_updated']
+      updateOnDuplicate: ['markets_data']
     }).then(() => {
       console.log('Assets successfully inserted !!!')
     })
@@ -86,7 +91,7 @@ class NftAsset extends SequelizeModel {
     const query = (`
       SELECT *
       FROM nft_assets
-      WHERE contract_address = :contractAddress
+      WHERE (contract->>'address') = :contractAddress
             AND token_id = :tokenId
             AND ABS(EXTRACT(epoch FROM (last_updated - now()))::int/60) <= 10
     `)

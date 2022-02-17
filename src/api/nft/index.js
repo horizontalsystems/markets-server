@@ -152,8 +152,10 @@ router.get('/collection/:collection_uid/stats', controller.collectionStats)
  *     "token_id": "5550",
  *     "name": "Torao #5550",
  *     "description": "Karafuru is home to 5,555 generative arts",
- *     "contract_address": "0xd2f668a8461d6761115daf8aeb3cdf5f40c532c6",
- *     "contract_type": "ERC721",
+ *     "contract" {
+ *        "address": "0xd2f668a8461d6761115daf8aeb3cdf5f40c532c6",
+ *        "type": "ERC721",
+ *     }
  *     "symbol": "KARAFURU",
  *     "collection_uid": "karafuru",
  *     "attributes": [],
