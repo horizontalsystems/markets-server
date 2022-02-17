@@ -58,8 +58,8 @@ const exposeHeaders = (req, res, next) => {
 
 app.use(exposeHeaders)
 
-// mount API v1 routes
-app.use('/admin', routes)
+// API routes
+app.use('/api', routes)
 app.use(middlewares.error404)
 app.use(middlewares.error500)
 
