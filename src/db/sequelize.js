@@ -65,6 +65,13 @@ Object.values(db)
 
 // Sequelize
 db.sequelize = sequelize
-db.sync = () => sequelize.sync()
+db.sync = async () => {
+  try {
+    await sequelize.sync()
+  } catch (e) {
+    console.log(e)
+    throw e
+  }
+}
 
 module.exports = db
