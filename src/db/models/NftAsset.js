@@ -15,13 +15,12 @@ class NftAsset extends SequelizeModel {
         },
         contract_type: DataTypes.STRING(10),
         name: {
-          type: DataTypes.STRING(100),
-          allowNull: false
+          type: DataTypes.STRING(100)
         },
         symbol: DataTypes.STRING(100),
         collection_uid: DataTypes.STRING(50),
-        last_sale: DataTypes.JSONB,
-        // {
+        markets_data: DataTypes.JSONB,
+        // last_sale: {
         //   "asset": {
         //       "decimals": 0,
         //       "token_id": "5550"
@@ -33,8 +32,9 @@ class NftAsset extends SequelizeModel {
         //   "payment_token": {
         //     ...
         //   }
-        // }
-        sell_orders: DataTypes.JSONB,
+        // },
+        // sell_orders: {},
+        // orders: {},
         image_data: DataTypes.JSONB,
         // {
         //   "image_url",
