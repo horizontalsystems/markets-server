@@ -19,13 +19,15 @@ class Opensea {
 
     return axios
       .get(`/collections?${querystring.stringify(params)}`)
-      .then(resp => normalizer.normalizeCollections(resp.data))
+      .then(
+        resp => normalizer.normalizeCollections(resp.data.collections ? resp.data.collections : resp.data)
+      )
   }
 
   getCollection(collectionUid) {
     return axios
       .get(`/collection/${collectionUid}`)
-      .then(resp => normalizer.normalizeCollection(resp.data))
+      .then(resp => normalizer.normalizeCollection(resp.data.collection ? resp.data.collection : resp.data))
   }
 
   getAssets(owner, tokenIds, contractAddresses, collectionUid, orderDirection = 'desc', offset = 0, limit = 20) {
