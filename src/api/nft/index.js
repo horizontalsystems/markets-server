@@ -4,7 +4,7 @@ const controller = require('./nft.controller')
 const router = express.Router()
 
 /**
- * @apiDefine NFT Collections
+ * @apiDefine NFT_Collections
  */
 
 /**
@@ -37,7 +37,7 @@ const router = express.Router()
 router.get('/collections', controller.collections)
 
 /**
- * @api {get} /v1/nft/collection Get NFT Collection details
+ * @api {get} /v1/nft/collection/:collection_uid Get NFT Collection details
  * @apiDescription Get NFT Collection details
  * @apiVersion 1.0.0
  * @apiGroup NFT
@@ -94,6 +94,44 @@ router.get('/collections', controller.collections)
 router.get('/collection/:collection_uid', controller.collection)
 
 /**
+ * @api {get} /v1/nft/collection/:collection_uid/stats Get NFT Collection stats data
+ * @apiDescription Get NFT Collection details
+ * @apiVersion 1.0.0
+ * @apiGroup NFT
+ *
+ * @apiParam {String}  collection_uid UID (collection slug) of the collection to retrieve details for
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "one_day_volume": 0,
+ *    "one_day_change": 0,
+ *    "one_day_sales": 0,
+ *    "one_day_average_price": 0,
+ *    "seven_day_volume": 0,
+ *    "seven_day_change": 0,
+ *    "seven_day_sales": 0,
+ *    "seven_day_average_price": 0,
+ *    "thirty_day_volume": 0,
+ *    "thirty_day_change": 0,
+ *    "thirty_day_sales": 0,
+ *    "thirty_day_average_price": 0,
+ *    "total_volume": 0,
+ *    "total_sales": 0,
+ *    "total_supply": 0,
+ *    "count": 0,
+ *    "num_owners": 0,
+ *    "average_price": 0,
+ *    "num_reports": 0,
+ *    "market_cap": 0,
+ *    "floor_price": 0
+ *  }
+ *  @apiError (Bad Request 400)  ValidationError Some parameters or Collection UID/slug are not valid
+ *  @apiError (Not Found 404)    NotFound        Collection does not exist
+ */
+router.get('/collection/:collection_uid/stats', controller.collectionStats)
+
+/**
  * @api {get} /v1/nft/assets Get NFT Assets
  * @apiDescription Get NFT assets
  * @apiVersion 1.0.0
@@ -118,6 +156,7 @@ router.get('/collection/:collection_uid', controller.collection)
  *     "contract_type": "ERC721",
  *     "symbol": "KARAFURU",
  *     "collection_uid": "karafuru",
+ *     "attributes": [],
  *     "image_data": {
  *       "image_url": "https://",
  *       "image_preview_url": "https://"
@@ -125,9 +164,11 @@ router.get('/collection/:collection_uid', controller.collection)
  *     "links": {
  *       "permalink": "https://opensea.io/assets/
  *     },
- *     "attributes": [],
- *     "last_sale": {},
- *     "sell_orders": null
+ *     "market_data": {
+ *       "last_sale": {},
+ *       "sell_orders": null
+ *       "orders": {}
+ *     }
  *   }
  * ]
  *
@@ -137,7 +178,7 @@ router.get('/collection/:collection_uid', controller.collection)
 router.get('/assets', controller.assets)
 
 /**
- * @api {get} /v1/nft/asset Get NFT Asset details
+ * @api {get} /v1/nft/asset/:contract_address/:token_id Get NFT Asset details
  * @apiDescription Get NFT asset details
  * @apiVersion 1.0.0
  * @apiGroup NFT
@@ -156,16 +197,20 @@ router.get('/assets', controller.assets)
  *     "contract_type": "ERC721",
  *     "symbol": "KARAFURU",
  *     "collection_uid": "karafuru",
+ *     "attributes": [],
  *     "image_data": {
  *       "image_url": "https://",
  *       "image_preview_url": "https://"
  *     },
  *     "links": {
+ *       "external_link": "https://opensea.io/assets/
  *       "permalink": "https://opensea.io/assets/
  *     },
- *     "attributes": [],
- *     "last_sale": {},
- *     "sell_orders": null
+ *     "market_data": {
+ *       "last_sale": {},
+ *       "sell_orders": null
+ *       "orders": {}
+ *     }
  *   }
  *
  *  @apiError (Bad Request 400)  ValidationError Some parameters or Asset address are not valid
