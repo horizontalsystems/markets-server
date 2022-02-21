@@ -21,6 +21,7 @@ class CoinHolder extends SequelizeModel {
       {
         sequelize,
         tableName: 'coin_holders',
+        timestamps: false
       }
     )
   }
