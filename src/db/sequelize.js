@@ -5,6 +5,7 @@ const CoinTvl = require('./models/DefiProtocolTvl')
 const DefiProtocol = require('./models/DefiProtocol')
 const Language = require('./models/Language')
 const Category = require('./models/Category')
+const CategoryMarketCap = require('./models/CategoryMarketCap')
 const Platform = require('./models/Platform')
 const Fund = require('./models/Fund')
 const FundsInvested = require('./models/FundsInvested')
@@ -36,6 +37,7 @@ const db = {
   Coin: Coin.init(sequelize, Sequelize),
   DefiProtocol: DefiProtocol.init(sequelize, Sequelize),
   Category: Category.init(sequelize, Sequelize),
+  CategoryMarketCap: CategoryMarketCap.init(sequelize, Sequelize),
   CoinCategories: CoinCategories.init(sequelize, Sequelize),
   CoinTvl: CoinTvl.init(sequelize, Sequelize),
   Language: Language.init(sequelize, Sequelize),
