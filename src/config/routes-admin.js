@@ -66,9 +66,9 @@ router.use(
   }),
 
   crud('/categories', {
-    search: (uid, limit) => action.search(uid, limit, Category, ['id', 'uid', 'name', 'order', 'description']),
-    getList: params => action.getList(params, Category, ['id', 'uid', 'name', 'order', 'description']),
-    getOne: id => action.getOne(id, Category, ['id', 'uid', 'name', 'order', 'description']),
+    search: (uid, limit) => action.search(uid, limit, Category, ['id', 'uid', 'name', 'order', 'description', 'enabled']),
+    getList: params => action.getList(params, Category, ['id', 'uid', 'name', 'order', 'description', 'enabled']),
+    getOne: id => action.getOne(id, Category, ['id', 'uid', 'name', 'order', 'description', 'enabled']),
     ...action.createUpdateDelete(Category)
   }),
 
