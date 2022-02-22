@@ -1,6 +1,7 @@
 const Category = require('../../db/models/Category')
 const serializer = require('./categories.serializer')
 const coinsSerializer = require('../coins/coins.serializer')
+const CategoryMarketCap = require('../../db/models/CategoryMarketCap')
 
 exports.index = async (req, res) => {
   const categories = await Category.findAll()
@@ -17,4 +18,9 @@ exports.coins = async ({ params, currencyRate }, res) => {
   ]
 
   res.send(coinsSerializer.serializeList(coins, coinFields, currencyRate))
+}
+
+exports.marketCap = async ({ params, dateFrom, dateInterval }, res) => {
+  const data = await CategoryMarketCap.getByCategory(params.uid, dateInterval, dateFrom)
+  res.send(data)
 }

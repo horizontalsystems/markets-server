@@ -35,6 +35,29 @@ class CategoryMarketCap extends SequelizeModel {
     return !!await CategoryMarketCap.findOne()
   }
 
+  static async getByCategory(uid, window, dateFrom) {
+    const query = (`
+      SELECT
+        EXTRACT(epoch FROM t2.time)::int AS date,
+        t1.market_cap
+      FROM category_market_caps t1
+      JOIN categories C on C.uid = :uid
+      JOIN (
+        SELECT
+          ${this.truncateDateWindow('date', window)} as time,
+          max(id) as max_id,
+          max(date) as max_date,
+          category_id
+         FROM category_market_caps
+        WHERE date >= :dateFrom
+        GROUP by time, category_id
+      ) t2 ON (t1.id = t2.max_id AND t1.date = t2.max_date AND t2.category_id = C.id)
+      ORDER BY date
+    `)
+
+    return CategoryMarketCap.query(query, { dateFrom, uid })
+  }
+
   static getByDate(date) {
     return CategoryMarketCap.query('SELECT * FROM category_market_caps WHERE date = :date', { date })
   }

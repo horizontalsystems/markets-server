@@ -1,6 +1,7 @@
 const express = require('express')
 const controller = require('./categories.controller')
-const { setCurrencyRate } = require('../middlewares')
+const { setCurrencyRate, setDateInterval } = require('../middlewares')
+const { validateMarketCap } = require('./categories.validator')
 
 const router = express.Router()
 
@@ -22,7 +23,11 @@ const router = express.Router()
  *    "order": 1,
  *    "description": {
  *      "en": "..."
- *    }
+ *    },
+ *    "market_cap": "1.0",
+ *    "change_24h": "1.0",
+ *    "change_1w": "1.0",
+ *    "change_1m": "1.0"
  *  }]
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
@@ -51,5 +56,18 @@ router.get('/', controller.index)
  * @apiError (Not Found 404)    NotFound          Category does not exist
  */
 router.get('/:uid/coins', setCurrencyRate, controller.coins)
+
+/**
+ * @api {get} /v1/categories/:uid/market_cap List market cap stats
+ * @apiDescription Get a list of market cap stats
+ * @apiVersion 1.0.1
+ * @apiGroup Category
+ *
+ * @apiParam    {String}            uid         Category's uid
+ * @apiParam    {String=1d,1w,1m}   [interval]  Date interval
+ *
+ */
+
+router.get('/:uid/market_cap', validateMarketCap, setDateInterval, controller.marketCap)
 
 module.exports = router
