@@ -1,5 +1,6 @@
 const Web3 = require('web3')
 const erc20Abi = require('./abi/erc20-abi.json')
+const mrc20Abi = require('./abi/mrc20-abi.json')
 const bep20Abi = require('./abi/bep20-abi.json')
 
 class Web3Provider {
@@ -28,12 +29,22 @@ class Web3Provider {
 }
 
 const ethereum = new Web3Provider('https://mainnet.infura.io/v3/d13bc12e6f5a4d3bad8d80291c74c1d3', erc20Abi)
+const polygon = new Web3Provider('https://polygon-rpc.com', mrc20Abi)
 const binance = new Web3Provider('https://bsc-dataseed1.binance.org:443', bep20Abi)
 
 exports.getTokenInfo = async (contractAddress, type) => {
-  const provider = type === 'erc20'
-    ? ethereum
-    : binance
+  let provider
+
+  switch (type) {
+    case 'bep20':
+      provider = binance
+      break
+    case 'mrc20':
+      provider = polygon
+      break
+    default:
+      provider = ethereum
+  }
 
   try {
     const decimals = await provider.getDecimals(contractAddress)
@@ -54,6 +65,15 @@ exports.getTokenInfo = async (contractAddress, type) => {
 exports.getERC20Decimals = async (contractAddress) => {
   try {
     return await ethereum.getDecimals(contractAddress)
+  } catch (e) {
+    console.log(e)
+    return null
+  }
+}
+
+exports.getMRC20Decimals = async (contractAddress) => {
+  try {
+    return await polygon.getDecimals(contractAddress)
   } catch (e) {
     console.log(e)
     return null

@@ -8,6 +8,7 @@ exports.info = async (req, res, next) => {
   let info
 
   switch (type) {
+    case 'mrc20':
     case 'erc20':
     case 'bep20': {
       info = await web3.getTokenInfo(address, type)
