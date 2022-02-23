@@ -33,6 +33,7 @@ exports.setDateInterval = (req, res, next) => {
       dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -7 })
       break
     case '2w':
+      dateInterval = '4h'
       dateFrom = utcDate('yyyy-MM-dd', { days: -14 })
       break
     case '1m':
@@ -44,8 +45,12 @@ exports.setDateInterval = (req, res, next) => {
     case '6m':
       dateFrom = utcDate('yyyy-MM-dd', { month: -6 })
       break
-    default:
+    case '1y':
       dateFrom = utcDate('yyyy-MM-dd', { month: -12 })
+      break
+    default:
+      dateInterval = '1h'
+      dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -1 })
   }
 
   req.dateInterval = dateInterval // eslint-disable-line
