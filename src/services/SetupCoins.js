@@ -62,6 +62,21 @@ class SetupCoins {
     }
   }
 
+  async forceSyncPlatforms(type) {
+    const platforms = await Platform.findAll({
+      where: {
+        type
+      }
+    })
+
+    for (let i = 0; i < platforms.length; i += 1) {
+      const platform = platforms[i]
+      console.log(`Fetching decimals for ${i}; ${platform.address}`)
+      const decimals = await web3Provider.getMRC20Decimals(platform.address)
+      await platform.update({ decimals })
+    }
+  }
+
   async syncCoins(coinIds, returnOnlyNew) {
     console.log(`Fetching coins ${coinIds.length}`)
     const coinIdsPerPage = coinIds.splice(0, 420)
@@ -130,6 +145,12 @@ class SetupCoins {
           type = 'bep20'
           address = platforms[platform]
           decimals = await web3Provider.getBEP20Decimals(address)
+          break
+
+        case 'polygon-pos':
+          type = 'mrc20'
+          address = platforms[platform]
+          decimals = await web3Provider.getMRC20Decimals(address)
           break
 
         case 'binancecoin': {

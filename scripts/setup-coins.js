@@ -7,10 +7,11 @@ const sequelize = require('../src/db/sequelize')
 const program = new Command()
   .option('-a --all', 'setup all coins')
   .option('-f --fetch', 'fetch news coins')
-  .option('-c --coins <coins>', 'setup only given setup')
+  .option('-c --coins <coins>', 'setup only given coins')
+  .option('-p --platform <platform>', 'force sync decimals for given plalform')
   .parse(process.argv)
 
-async function start({ all, fetch, coins }) {
+async function start({ all, fetch, coins, platform }) {
   await sequelize.sync()
   const setupCoins = new SetupCoins()
 
@@ -18,6 +19,8 @@ async function start({ all, fetch, coins }) {
     await setupCoins.fetchCoins(200000)
   } else if (coins) {
     await setupCoins.setupCoins(coins.split(','))
+  } else if (platform) {
+    await setupCoins.forceSyncPlatforms(platform)
   } else if (all) {
     await setupCoins.setupCoins()
   }
