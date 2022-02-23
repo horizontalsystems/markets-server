@@ -13,8 +13,12 @@ exports.serializeList = (coins, currencyRate) => {
       tvl: valueInCurrency(item.tvl, currencyRate),
       tvl_rank: parseInt(item.tvl_rank, 10),
       tvl_change_1d: nullOrString(change.change_1d),
-      tvl_change_7d: nullOrString(change.change_7d),
-      tvl_change_30d: nullOrString(change.change_30d),
+      tvl_change_1w: nullOrString(change.change_1w),
+      tvl_change_2w: nullOrString(change.change_2w),
+      tvl_change_1m: nullOrString(change.change_1m),
+      tvl_change_3m: nullOrString(change.change_3m),
+      tvl_change_6m: nullOrString(change.change_6m),
+      tvl_change_1y: nullOrString(change.change_1y),
       chains,
       chain_tvls: chains.reduce((res, key) => ({ ...res, [key]: nullOrString(chainTvls[key]) }), {})
     }

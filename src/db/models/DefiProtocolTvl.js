@@ -68,25 +68,20 @@ class DefiProtocolTvl extends SequelizeModel {
     return DefiProtocolTvl.query(query, { defi_protocol_id: defiProtocol.id, dateFrom })
   }
 
-  static getLastMonthTvls(dateTo) {
+  static getListByDate(dateTo, interval = '1 day') {
     const query = `
       SELECT
-        dc.defillama_id,
-        t1.defi_protocol_id,
-        t1.tvl
-      FROM defi_protocol_tvls t1
-      JOIN defi_protocols dc on dc.id = t1.defi_protocol_id
-      JOIN (
-        SELECT
-          max(id) as max_id,
-          max(date) as max_date
-         FROM defi_protocol_tvls
-        WHERE date <= :dateTo
-        GROUP by defi_protocol_id
-      ) t2 ON (t1.id = t2.max_id AND t1.date = t2.max_date)
+        P.defillama_id,
+        T.defi_protocol_id,
+        T.tvl
+       FROM defi_protocol_tvls T
+       JOIN defi_protocols P on P.id = T.defi_protocol_id
+      WHERE date <= :dateTo
+        AND date >= (date :dateTo - INTERVAL :interval)
+      ORDER BY T.date
     `
 
-    return DefiProtocolTvl.query(query, { dateTo })
+    return DefiProtocolTvl.query(query, { dateTo, interval })
   }
 
   static async exists() {

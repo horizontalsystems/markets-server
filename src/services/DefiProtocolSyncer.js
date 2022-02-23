@@ -4,7 +4,7 @@ const Syncer = require('./Syncer')
 const DefiProtocol = require('../db/models/DefiProtocol')
 const DefiProtocolTvl = require('../db/models/DefiProtocolTvl')
 const Coin = require('../db/models/Coin')
-const utils = require('../utils')
+const { utcDate, sleep, percentageBetweenNumber } = require('../utils')
 
 class DefiProtocolSyncer extends Syncer {
 
@@ -39,7 +39,7 @@ class DefiProtocolSyncer extends Syncer {
     for (let i = 0; i < protocols.length; i += 1) {
       try {
         await this.syncProtocolTvls(protocols[i])
-        await utils.sleep(300)
+        await sleep(300)
       } catch (e) {
         console.error(e)
       }
@@ -86,8 +86,7 @@ class DefiProtocolSyncer extends Syncer {
   async syncDailyStats({ dateTo }) {
     try {
       const protocols = await this.fetchProtocols()
-      const monthlyTvlMap = await this.getMonthlyTvlMap(dateTo)
-      await this.syncProtocols(protocols, monthlyTvlMap)
+      await this.syncProtocols(protocols, await this.mapTvlsMap())
       await this.syncLatestTvls(protocols, dateTo)
     } catch (e) {
       console.error(e)
@@ -133,7 +132,7 @@ class DefiProtocolSyncer extends Syncer {
     await DefiProtocolTvl.bulkCreate(tvls, { ignoreDuplicates: true })
   }
 
-  async syncProtocols(protocols, monthlyTvlMap = {}) {
+  async syncProtocols(protocols, prevTvlMap = {}) {
     const coins = await Coin.findAll({
       attributes: ['id', 'coingecko_id'],
       where: {
@@ -147,7 +146,7 @@ class DefiProtocolSyncer extends Syncer {
     for (let i = 0; i < protocols.length; i += 1) {
       const protocol = protocols[i]
       const coinId = ids[protocol.gecko_id]
-      const monthlyTvl = monthlyTvlMap[protocol.slug]
+      const prevTvl = prevTvlMap[protocol.slug] || {}
 
       const values = {
         name: protocol.name,
@@ -160,8 +159,12 @@ class DefiProtocolSyncer extends Syncer {
         tvl_change: {
           change_1h: protocol.change_1h,
           change_1d: protocol.change_1d,
-          change_7d: protocol.change_7d,
-          change_30d: utils.percentageBetweenNumber(monthlyTvl, protocol.tvl)
+          change_1w: protocol.change_7d,
+          change_2w: percentageBetweenNumber(prevTvl['2w'], protocol.tvl),
+          change_1m: percentageBetweenNumber(prevTvl['1m'], protocol.tvl),
+          change_3m: percentageBetweenNumber(prevTvl['3m'], protocol.tvl),
+          change_6m: percentageBetweenNumber(prevTvl['6m'], protocol.tvl),
+          change_1y: percentageBetweenNumber(prevTvl['1y'], protocol.tvl)
         },
         chain_tvls: protocol.chainTvls,
         chains: protocol.chains
@@ -187,14 +190,34 @@ class DefiProtocolSyncer extends Syncer {
     return protocols
   }
 
-  async getMonthlyTvlMap(dateTo) {
-    const tvls = await DefiProtocolTvl.getLastMonthTvls(dateTo)
+  async mapTvlsMap() {
+    const mapped = {}
 
-    return tvls.reduce((memo, item) => ({
-      ...memo,
-      [item.defillama_id]: item.tvl
-    }), {})
+    const mapBy = (items, key) => {
+      for (let i = 0; i < items.length; i += 1) {
+        const item = items[i]
+        const map = mapped[item.defillama_id] || (mapped[item.defillama_id] = {})
+
+        map[key] = item.tvl
+      }
+    }
+
+    const format = 'yyyy-MM-dd HH:00:00Z'
+    const history2w = await DefiProtocolTvl.getListByDate(utcDate(format, { days: -14 }), '4 hour')
+    const history1m = await DefiProtocolTvl.getListByDate(utcDate(format, { days: -30 }))
+    const history3m = await DefiProtocolTvl.getListByDate(utcDate(format, { days: -90 }))
+    const history6m = await DefiProtocolTvl.getListByDate(utcDate(format, { days: -180 }))
+    const history1y = await DefiProtocolTvl.getListByDate(utcDate(format, { days: -365 }))
+
+    mapBy(history2w, '2w')
+    mapBy(history1m, '1m')
+    mapBy(history3m, '3m')
+    mapBy(history6m, '6m')
+    mapBy(history1y, '1y')
+
+    return mapped
   }
+
 }
 
 module.exports = DefiProtocolSyncer
