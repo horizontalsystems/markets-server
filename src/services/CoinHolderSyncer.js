@@ -61,7 +61,7 @@ class CoinHolderSyncer extends Syncer {
       const address = platforms.list[i]
       const platform = platforms.map[address]
 
-      console.log(`Fetching major holders (${i}); ${address}`)
+      console.log(`Fetching major holders for ${chain} ${address} (${i})`)
 
       await provider.getHolders(address)
         .then(data => this.mapTokenHolders(data, platform))
