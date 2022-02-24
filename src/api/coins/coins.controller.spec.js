@@ -33,7 +33,7 @@ describe('Coins API', async () => {
 
     beforeEach(() => {
       sinon.stub(Coin, 'findAll').returns([coin])
-      sinon.stub(CurrencyRate, 'getCurrencyRate').returns(usdToEurRate)
+      sinon.stub(CurrencyRate, 'getCurrencyRate').returns({ rate: usdToEurRate })
     })
 
     it('tests currency converter', done => {

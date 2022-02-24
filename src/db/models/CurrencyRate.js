@@ -46,32 +46,37 @@ class CurrencyRate extends SequelizeModel {
     })
   }
 
-  static async getCurrencyRate(currencyCode = Currency.baseCurrency, timestamp = DateTime.utc().toSeconds()) {
+  static async getCurrencyRate(currencyCode = Currency.baseCurrency, timestamp = parseInt(DateTime.utc().ts / 1000, 10)) {
     const code = currencyCode.toLowerCase()
     if (code === Currency.baseCurrency) {
-      return { rate: 1, last_updated: DateTime.utc() }
+      return { rate: 1, last_updated: timestamp }
     }
 
-    try {
-      const [result] = await CurrencyRate.query(`
-        SELECT EXTRACT(epoch from date)::int as timestamp, rate
-        FROM currency_rates CR, currencies C
-        WHERE CR.currency_id = C.id AND C.code = :currencyCode
-        ORDER BY ABS(EXTRACT(epoch from date) - :timestamp)
-        LIMIT 1`, {
-        currencyCode,
-        timestamp: parseInt(timestamp, 10)
+    const query = `
+      SELECT
+        rate,
+        EXTRACT(epoch from date)::int as timestamp,
+        ABS(EXTRACT(epoch from date) - :timestamp) as diff
+       FROM currency_rates R, currencies C
+      WHERE R.currency_id = C.id
+        AND C.code = :currencyCode
+      ORDER BY diff
+      LIMIT 1`
+
+    const result = await CurrencyRate.query(query, { currencyCode: code, timestamp })
+      .then(rate => rate[0])
+      .catch(err => {
+        console.log(`Error fetching currency rate for ${code}`, err)
       })
 
-      return {
-        rate: result ? parseFloat(result.rate) : null,
-        last_updated: result.timestamp
-      }
-    } catch (e) {
-      console.log(`Error fetching currency rate for ${currencyCode} !!!`, e)
+    if (!result) {
+      return null
     }
 
-    return null
+    return {
+      rate: result.rate,
+      last_updated: result.timestamp
+    }
   }
 
   static async exists() {
