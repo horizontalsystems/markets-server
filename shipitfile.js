@@ -30,6 +30,10 @@ module.exports = shipit => {
       branch: 'master',
       servers: ['deploy@147.182.167.89'],
     },
+    prod_syncer2: {
+      branch: 'master',
+      servers: ['deploy@134.122.121.230'],
+    },
     dev_api: {
       branch: 'develop',
       servers: ['ubuntu@161.35.110.248'],
