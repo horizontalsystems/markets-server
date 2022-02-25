@@ -4,7 +4,7 @@ const Syncer = require('./Syncer')
 const DefiProtocol = require('../db/models/DefiProtocol')
 const DefiProtocolTvl = require('../db/models/DefiProtocolTvl')
 const Coin = require('../db/models/Coin')
-const { utcDate, sleep, percentageBetweenNumber } = require('../utils')
+const utils = require('../utils')
 
 class DefiProtocolSyncer extends Syncer {
 
@@ -39,7 +39,7 @@ class DefiProtocolSyncer extends Syncer {
     for (let i = 0; i < protocols.length; i += 1) {
       try {
         await this.syncProtocolTvls(protocols[i])
-        await sleep(300)
+        await utils.sleep(300)
       } catch (e) {
         console.error(e)
       }
@@ -160,11 +160,11 @@ class DefiProtocolSyncer extends Syncer {
           change_1h: protocol.change_1h,
           change_1d: protocol.change_1d,
           change_1w: protocol.change_7d,
-          change_2w: percentageBetweenNumber(prevTvl['2w'], protocol.tvl),
-          change_1m: percentageBetweenNumber(prevTvl['1m'], protocol.tvl),
-          change_3m: percentageBetweenNumber(prevTvl['3m'], protocol.tvl),
-          change_6m: percentageBetweenNumber(prevTvl['6m'], protocol.tvl),
-          change_1y: percentageBetweenNumber(prevTvl['1y'], protocol.tvl)
+          change_2w: utils.percentageBetweenNumber(prevTvl['2w'], protocol.tvl),
+          change_1m: utils.percentageBetweenNumber(prevTvl['1m'], protocol.tvl),
+          change_3m: utils.percentageBetweenNumber(prevTvl['3m'], protocol.tvl),
+          change_6m: utils.percentageBetweenNumber(prevTvl['6m'], protocol.tvl),
+          change_1y: utils.percentageBetweenNumber(prevTvl['1y'], protocol.tvl)
         },
         chain_tvls: protocol.chainTvls,
         chains: protocol.chains
@@ -203,11 +203,11 @@ class DefiProtocolSyncer extends Syncer {
     }
 
     const format = 'yyyy-MM-dd HH:00:00Z'
-    const history2w = await DefiProtocolTvl.getListByDate(utcDate(format, { days: -14 }), '4 hour')
-    const history1m = await DefiProtocolTvl.getListByDate(utcDate(format, { days: -30 }))
-    const history3m = await DefiProtocolTvl.getListByDate(utcDate(format, { days: -90 }))
-    const history6m = await DefiProtocolTvl.getListByDate(utcDate(format, { days: -180 }))
-    const history1y = await DefiProtocolTvl.getListByDate(utcDate(format, { days: -365 }))
+    const history2w = await DefiProtocolTvl.getListByDate(utils.utcDate(format, { days: -14 }), '4 hour')
+    const history1m = await DefiProtocolTvl.getListByDate(utils.utcDate(format, { days: -30 }))
+    const history3m = await DefiProtocolTvl.getListByDate(utils.utcDate(format, { days: -90 }))
+    const history6m = await DefiProtocolTvl.getListByDate(utils.utcDate(format, { days: -180 }))
+    const history1y = await DefiProtocolTvl.getListByDate(utils.utcDate(format, { days: -365 }))
 
     mapBy(history2w, '2w')
     mapBy(history1m, '1m')

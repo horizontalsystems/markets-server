@@ -155,8 +155,8 @@ describe('DefiProtocolSyncer', () => {
         ])
 
         await DefiProtocolTvl.bulkCreate([
-          { date: date.ts / 1000, tvl: 200.99, defi_protocol_id: 1 },
-          { date: date.ts / 1000, tvl: 100.99, defi_protocol_id: 2 }
+          { date: date.ts, tvl: 200.99, defi_protocol_id: 1 },
+          { date: date.ts, tvl: 100.99, defi_protocol_id: 2 }
         ])
       })
 
@@ -172,9 +172,9 @@ describe('DefiProtocolSyncer', () => {
         expect(defiProtocolTvls).to.have.length(4)
         expect(defiProtocols).to.have.length(2)
 
-        expect(defiProtocols[0].tvl_change.change_30d).to
+        expect(defiProtocols[0].tvl_change.change_1m).to
           .equal(utils.percentageBetweenNumber(200.99, protocol1List.tvl))
-        expect(defiProtocols[1].tvl_change.change_30d).to
+        expect(defiProtocols[1].tvl_change.change_1m).to
           .equal(utils.percentageBetweenNumber(100.99, protocol2List.tvl))
       })
     })

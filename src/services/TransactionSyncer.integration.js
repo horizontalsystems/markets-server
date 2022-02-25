@@ -145,7 +145,7 @@ describe('TransactionSyncer', async () => {
           id: 6,
           count: 10,
           volume: '100',
-          date: new Date(param1h.dateTo),
+          date: new Date(param1h.dateFrom),
           platform_id: 3
         })
       })
