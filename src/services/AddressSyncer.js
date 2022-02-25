@@ -1,23 +1,18 @@
 /* eslint-disable no-param-reassign */
 const { chunk } = require('lodash')
 const { DateTime } = require('luxon')
+const { sleep } = require('../utils')
 const bigquery = require('../providers/bigquery')
 const bitquery = require('../providers/bitquery')
 const Platform = require('../db/models/Platform')
 const Address = require('../db/models/Address')
-const CoinHolder = require('../db/models/CoinHolder')
 const Syncer = require('./Syncer')
 const logger = require('../config/logger')
-const { sleep } = require('../utils')
-const { utcDate } = require('../utils')
 
 class AddressSyncer extends Syncer {
   constructor() {
     super()
-    this.ADDRESS_DATA_FETCH_PERIOD = { month: 24 }
-    this.ADDRESSES_PER_COIN = 20
     this.BUSDT_ADDRESS = '0x55d398326f99059ff775485246999027b3197955'
-
   }
 
   async start() {
@@ -33,16 +28,12 @@ class AddressSyncer extends Syncer {
     }
 
     if (!await Address.existsForPlatforms(['bep20'])) {
-      await this.syncHistoStatsFromBitquery(this.syncParamsHistorical('1d'), 'bsc')
+      await this.syncHistoricalStatsFromBitquery(this.syncParamsHistorical('1d'), 'bsc')
     }
 
     if (!await Address.existsForPlatforms(['solana'])) {
-      await this.syncHistoStatsFromBitquery(this.syncParamsHistorical('1d'), 'solana')
+      await this.syncHistoricalStatsFromBitquery(this.syncParamsHistorical('1d'), 'solana')
     }
-
-    // if (!await CoinHolder.exists()) {
-    //   await this.syncCoinHolders()
-    // }
   }
 
   async syncLatest() {
@@ -88,24 +79,15 @@ class AddressSyncer extends Syncer {
     }
   }
 
-  async syncLatestStatsFromBitquery(network) {
-    const dateFrom = utcDate('yyyy-MM-dd HH:00:00Z', { hours: -4 })
-    const dateTo = utcDate('yyyy-MM-dd HH:00:00Z')
-
-    logger.info(`Syncing latest address stats for ${dateFrom} -> ${dateTo}`)
-    await this.syncStatsFromBitquery({ dateFrom, dateTo }, network, 25)
-  }
-
-  async syncHistoStatsFromBitquery(dateParams, network) {
-
+  async syncHistoricalStatsFromBitquery(dateParams, network) {
     logger.info(`Start syncing historical address stats for network: ${network}`)
 
-    const dateHisto = DateTime.fromSQL(dateParams.dateFrom)
+    const dateFromStart = DateTime.fromSQL(dateParams.dateFrom)
     let dateTo = DateTime.utc()
 
-    while (dateHisto <= dateTo) {
-
+    while (dateFromStart <= dateTo) {
       const dateFrom = dateTo.minus({ days: 1 })
+
       logger.info(`Syncing historical address stats for ${dateFrom} -> ${dateTo}`)
 
       await this.syncStatsFromBitquery({
@@ -126,46 +108,36 @@ class AddressSyncer extends Syncer {
       const chunks = this.getChunks(platforms.list, chunkSize)
 
       for (let i = 0; i < chunks.length; i += 1) {
+        logger.info(`Fetching address stats for chunks: ${i}/${chunks[i].length}`)
 
-        logger.info(`Fetching adddress stats for chunks: ${i}/${chunks[i].length}`)
         const transfersSenders = await bitquery.getTransferSenders(isoDateFrom, isoDateTo, chunks[i], network)
         const transferReceivers = await bitquery.getTransferReceivers(isoDateFrom, isoDateTo, chunks[i], network)
 
         const transfers = [...transfersSenders, ...transferReceivers]
+        const transfersMap = transfers.reduce((map, { account, currency }) => {
+          if (!map[currency.address]) {
+            map[currency.address] = [account.address]
+          } else if (!map[currency.address].find(t => t === account.address)) {
+            map[currency.address] = [...[account.address], ...map[currency.address]]
+          }
 
-        if (transfers.length > 0) {
-          const transfersMap = transfers.reduce((map, item) => {
-            const currentValue = item.account.address
+          return map
+        }, {})
 
-            if (map[item.currency.address]) {
-              if (!map[item.currency.address].find(f => f === currentValue)) {
-                map[item.currency.address] = [...[currentValue], ...map[item.currency.address]]
-              }
-            } else {
-              map[item.currency.address] = [currentValue]
-            }
-            return map
-          }, {})
-
-          Object.keys(transfersMap).forEach(coinAddress => {
-            const result = {
-              count: transfersMap[coinAddress].length,
-              volume: 0,
-              date: dateTo,
-              platform_id: platforms.map[coinAddress]
-            }
-            addressStats.push(result)
+        Object.keys(transfersMap).forEach(coinAddress => {
+          addressStats.push({
+            date: dateTo,
+            volume: 0,
+            count: transfersMap[coinAddress].length,
+            platform_id: platforms.map[coinAddress]
           })
+        })
 
-          // ------------------------------------------
-          sleep(3000) // wait to bypass API limits
-          // ------------------------------------------
-        }
+        sleep(3000) // wait to bypass API limits
       }
 
       this.upsertAddressStats(addressStats)
       logger.info(`Successfully synced adddress stats for date: ${dateTo}`)
-
     } catch (e) {
       logger.error('Error syncing address stats:', e)
     }
@@ -174,28 +146,6 @@ class AddressSyncer extends Syncer {
   getChunks(platforms, chunkSize) {
     const newList = platforms.filter(item => item.address !== this.BUSDT_ADDRESS)
     return [...[[{ address: this.BUSDT_ADDRESS }]], ...chunk(newList, chunkSize)]
-  }
-
-  async syncCoinHolders() {
-    try {
-      const dateFrom = DateTime.utc().minus(this.ADDRESS_DATA_FETCH_PERIOD).toFormat('yyyy-MM-dd')
-      const platforms = await this.getPlatforms()
-      const coinHolders = await bigquery.getTopCoinHolders(platforms.list, dateFrom, this.ADDRESSES_PER_COIN)
-
-      // ----------Remove previous records ----------
-      await CoinHolder.deleteAll()
-      // --------------------------------------------
-
-      const holders = coinHolders.map((data) => ({
-        address: data.address,
-        balance: data.balance,
-        platform_id: platforms.tokensMap[data.coin_address]
-      }))
-
-      this.upsertCoinHolders(holders)
-    } catch (e) {
-      logger.error(`Error syncing coin holders: ${e}`)
-    }
   }
 
   async getPlatforms(types, withDecimals, withAddress = true) {
@@ -234,17 +184,6 @@ class AddressSyncer extends Syncer {
       })
   }
 
-  upsertCoinHolders(holders) {
-    CoinHolder.bulkCreate(holders, {
-      updateOnDuplicate: ['address', 'balance', 'platform_id']
-    })
-      .then(([response]) => {
-        console.log(JSON.stringify(response.dataValues))
-      })
-      .catch(err => {
-        console.error('Error inserting coin holders', err.message)
-      })
-  }
 }
 
 module.exports = AddressSyncer
