@@ -38,18 +38,16 @@ class CoinPrice extends SequelizeModel {
   static insertMarkets(values) {
     const query = `
       INSERT INTO coin_prices (coin_id, date, price, volume)
-      ( SELECT
+        (SELECT
           c.id,
           v.last_updated_rounded::timestamptz,
           v.price,
-         (v.market_data::json ->> 'total_volume')::numeric
-        FROM (values :values) as v(uid, price, price_change, market_data, last_updated, last_updated_rounded),
-            coins c
+          (v.market_data::json ->> 'total_volume')::numeric
+        FROM (values :values) as v(uid, price, price_change, market_data, last_updated, last_updated_rounded), coins c
         WHERE c.uid = v.uid
       )
       ON CONFLICT (coin_id, date)
       DO UPDATE set price = EXCLUDED.price, volume = EXCLUDED.volume
-
     `
 
     return CoinPrice.query(query, { values })
@@ -62,49 +60,38 @@ class CoinPrice extends SequelizeModel {
   static async getPriceChart(uid, window, dateFrom) {
     const query = `
       SELECT
-          DISTINCT ON (pc.dt_group)
-          pc.date,
-          pc.price,
-          pc.volume
-      FROM
-      (
-          SELECT
-              cm.*,
-              ${this.truncateDateWindow('date', window)} AS dt_group
-          FROM coin_prices cm, coins c
-          WHERE cm.coin_id = c.id AND c.uid = :uid AND cm.date >= :dateFrom
-      ) pc
-      ORDER BY pc.dt_group, pc.date DESC
+        DISTINCT ON (cp.date_trunc)
+        EXTRACT(epoch from cp.date)::int as timestamp,
+        cp.price,
+        cp.volume
+      FROM (
+        SELECT
+          p.*,
+          ${this.truncateDateWindow('date', window)} AS date_trunc
+        FROM coin_prices p, coins c
+        WHERE p.coin_id = c.id
+          AND p.date >= :dateFrom
+          AND c.uid = :uid
+      ) cp
+      ORDER BY cp.date_trunc, cp.date DESC
     `
 
-    return CoinPrice.query(query, {
-      dateFrom,
-      uid
-    })
+    return CoinPrice.query(query, { dateFrom, uid })
   }
 
-  static async getVolumeChart(uid, window, dateFrom) {
+  static async getHistoricalPrice(coinUid, timestamp) {
     const query = `
       SELECT
-          DISTINCT ON (pc.dt_group)
-          pc.date,
-          pc.volume
-      FROM
-      (
-          SELECT
-              cm.date,
-              cm.volume,
-              ${this.truncateDateWindow('date', window)} AS dt_group
-          FROM coin_prices cm, coins c
-          WHERE cm.coin_id = c.id AND c.uid = :uid AND cm.date >= :dateFrom
-      ) pc
-      ORDER BY pc.dt_group, pc.date DESC
-`
+        EXTRACT(epoch from date)::int as timestamp,
+        cp.price as price
+      FROM coin_prices cp, coins c
+      WHERE cp.coin_id = c.id
+        AND c.uid = :coinUid
+      ORDER BY ABS(EXTRACT(epoch from date) - :timestamp)
+      LIMIT 1`
 
-    return CoinPrice.query(query, {
-      dateFrom,
-      uid
-    })
+    const [result] = await CoinPrice.query(query, { coinUid, timestamp })
+    return result
   }
 
   static deleteExpired(dateFrom, dateTo) {
@@ -113,30 +100,6 @@ class CoinPrice extends SequelizeModel {
       dateTo
     })
   }
-
-  static getNotSyncedCoins() {
-    return CoinPrice.query(`
-      SELECT uid
-      FROM coins
-      WHERE id NOT IN (
-        SELECT DISTINCT(coin_id) FROM coin_prices
-        WHERE date < (NOW() - INTERVAL '1 HOUR'))`)
-  }
-
-  static async getHistoricalPrice(coinUid, timestamp) {
-    const [result] = await CoinPrice.query(`
-      SELECT EXTRACT(epoch from date)::int as timestamp, CM.price as price
-      FROM coin_prices CM, coins C
-      WHERE CM.coin_id = C.id AND C.uid = :coinUid
-      ORDER BY ABS(EXTRACT(epoch from date) - :timestamp)
-      LIMIT 1`, {
-      coinUid,
-      timestamp: parseInt(timestamp, 10)
-    })
-
-    return result
-  }
-
 }
 
 module.exports = CoinPrice

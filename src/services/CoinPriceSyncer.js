@@ -1,4 +1,5 @@
 const { DateTime } = require('luxon')
+const { utcDate } = require('../utils')
 const logger = require('../config/logger')
 const coingecko = require('../providers/coingecko')
 const utils = require('../utils')
@@ -13,127 +14,99 @@ class CoinPriceSyncer extends Syncer {
     await this.syncLatest()
   }
 
-  async fetchNotSyncedCoins() {
-    const coinsNotSynced = await CoinPrice.getNotSyncedCoins()
-    const uids = coinsNotSynced.map(i => i.uid)
-
-    console.log(`Listed not synced coins: ${uids.length}`)
-    console.log(uids.join(','))
-  }
-
-  async syncLatest() {
-    this.cron('4h', this.syncWeeklyStats)
-    this.cron('1d', this.syncMonthlyStats)
-  }
-
-  async syncHistorical(coinIds) {
-    if (!coinIds && await CoinPrice.exists()) {
+  async syncHistorical() {
+    if (await CoinPrice.exists()) {
       return
     }
 
-    await this.sync(this.syncParamsHistorical('1d'), coinIds)
+    await this.sync(this.syncParamsHistorical('1d'))
+    await this.sync(this.syncParamsHistorical('1h'))
   }
 
-  async syncWeeklyStats(dateParams) {
-    await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
+  async syncHistoricalList(uids) {
+    await this.sync(this.syncParamsHistorical('1d'), uids)
+    await this.sync(this.syncParamsHistorical('1h'), uids)
   }
 
-  async syncMonthlyStats(dateParams) {
-    await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
+  syncLatest() {
+    this.cron('30m', this.syncDailyStats)
+    this.cron('1d', this.syncMonthlyStats)
   }
 
-  async adjustPoints(dateFrom, dateTo) {
-    await CoinPrice.deleteExpired(dateFrom, dateTo)
+  syncDailyStats({ dateFrom, dateTo }) {
+    return CoinPrice.deleteExpired(dateFrom, dateTo)
   }
 
-  async sync({ dateFrom, dateTo, period }, coinIds) {
-    let coins = []
-    if (coinIds) {
-      coins = await Coin.findAll({ attributes: ['id', 'uid'], where: { uid: coinIds } })
-    } else {
-      coins = await Coin.findAll({ attributes: ['id', 'uid'] })
-    }
+  syncMonthlyStats({ dateFrom, dateTo }) {
+    return CoinPrice.deleteExpired(dateFrom, dateTo)
+  }
 
-    logger.info(`Start syncing historical price for period:${period}, /${coins.length} coins`)
+  async sync({ dateFrom, dateTo, period }, uids) {
+    const where = uids ? { uid: uids } : null
+    const coins = await Coin.findAll({ attributes: ['id', 'uid'], where })
 
-    for (let coinsIndex = 0; coinsIndex < coins.length; coinsIndex += 1) {
+    for (let i = 0; i < coins.length; i += 1) {
+      const coin = coins[i]
+
       try {
+        logger.info(`Syncing: ${coin.uid}; Interval: ${period}. (${i + 1}/${coins.length})`)
 
-        logger.info(`Syncing "${coins[coinsIndex].uid} ...". Synced ${coinsIndex + 1} coins`)
+        const data = await coingecko.getMarketsChart(coin.uid, dateFrom.toSeconds(), dateTo.toSeconds())
 
-        const coinMarkets = []
-        const marketsChart = await coingecko.getMarketsChart(
-          coins[coinsIndex].uid,
-          'usd',
-          dateFrom.toMillis() / 1000,
-          dateTo.toMillis() / 1000
-        )
-
-        let date
-        for (let marketsIndex = 0; marketsIndex < marketsChart.prices.length; marketsIndex += 1) {
-
-          const timestamp = marketsChart.prices[marketsIndex][0]
-
-          if (period === '10m') {
-            date = DateTime.fromMillis(timestamp).toFormat('yyyy-MM-dd HH:mm:00Z')
-          } else if (period === '4h') {
-            date = DateTime.fromMillis(timestamp).toFormat('yyyy-MM-dd HH:00:00Z')
-          } else {
-            date = DateTime.fromMillis(timestamp).toFormat('yyyy-MM-dd')
-          }
-
-          coinMarkets.push({
-            date,
-            coin_id: coins[coinsIndex].id,
-            price: marketsChart.prices[marketsIndex][1],
-            volume: marketsChart.total_volumes[marketsIndex][1]
-          })
-        }
-
-        if (coinMarkets.length > 0) {
-          this.upsertCoinPrices(coinMarkets)
-        }
-
-        // ---------------------------------
+        await this.storeMarketData(data.prices, data.total_volumes, period, coin.id)
         await utils.sleep(1100)
-        // ---------------------------------
 
       } catch ({ message, response = {} }) {
+        if (message) {
+          logger.error(`Error fetching prices chart ${message}`)
+        }
 
         if (response.status === 429) {
-          logger.error(`Sleeping 1min (histo-price sync); Status ${response.status}`)
+          logger.error(`Sleeping 60s (coin-price-syncer); Status ${response.status}`)
           await utils.sleep(60000)
         }
 
         if (response.status >= 502 && response.status <= 504) {
-          logger.error(`Sleeping 30s (histo-price sync); Status ${response.status}`)
+          logger.error(`Sleeping 30s (coin-price-syncer); Status ${response.status}`)
           await utils.sleep(30000)
         }
       }
     }
 
     logger.info(`Successfully synced historical prices for period: ${period}`)
+  }
 
+  storeMarketData(prices, totalVolumes, period, coinId) {
+    const records = []
+
+    for (let marketsIndex = 0; marketsIndex < prices.length; marketsIndex += 1) {
+      const timestamp = prices[marketsIndex][0]
+      const date = DateTime.fromMillis(timestamp).toFormat('yyyy-MM-dd HH:00:00Z')
+
+      records.push({
+        date,
+        coin_id: coinId,
+        price: prices[marketsIndex][1],
+        volume: totalVolumes[marketsIndex][1]
+      })
+    }
+
+    this.upsertCoinPrices(records)
   }
 
   syncParamsHistorical(period) {
+    const now = DateTime.utc()
     switch (period) {
-      case '10m':
+      case '1h':
         return {
-          dateFrom: DateTime.utc().plus({ hours: -24 }),
-          dateTo: DateTime.utc(),
-          period
-        }
-      case '4h':
-        return {
-          dateFrom: DateTime.utc().plus({ days: -7 }),
-          dateTo: DateTime.utc().plus({ days: -1 }),
+          dateFrom: now.plus({ days: -30 }),
+          dateTo: now,
           period
         }
       case '1d':
         return {
-          dateFrom: DateTime.utc().plus({ month: -12 }),
-          dateTo: DateTime.utc(),
+          dateFrom: now.plus({ month: -24 }),
+          dateTo: now,
           period
         }
       default:
@@ -141,15 +114,34 @@ class CoinPriceSyncer extends Syncer {
     }
   }
 
-  upsertCoinPrices(coinMarkerts) {
-    CoinPrice.bulkCreate(coinMarkerts, {
-      updateOnDuplicate: ['coin_id', 'date', 'price', 'volume']
-    })
-      .then((response) => {
-        console.log(`Successfully inserted "${response.length}" data`)
+  syncParams(period) {
+    switch (period) {
+      case '30m':
+        return {
+          dateFrom: utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, minutes: -30 }),
+          dateTo: utcDate('yyyy-MM-dd HH:00:00Z', { days: -30 }),
+        }
+      case '1d':
+        return {
+          dateFrom: utcDate('yyyy-MM-dd', { days: -31 }),
+          dateTo: utcDate('yyyy-MM-dd', { days: -30 })
+        }
+      default:
+        return {}
+    }
+  }
+
+  upsertCoinPrices(prices) {
+    if (!prices.length) {
+      return
+    }
+
+    CoinPrice.bulkCreate(prices, { ignoreDuplicates: true })
+      .then(records => {
+        console.log(`Successfully inserted "${records.length}" coin prices`)
       })
       .catch(err => {
-        console.error('Error inserting historical coin prices:', err.message)
+        console.log(`Error inserting coin prices ${err.message}`)
       })
   }
 }

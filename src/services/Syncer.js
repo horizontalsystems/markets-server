@@ -16,6 +16,8 @@ class Syncer {
     switch (time) {
       case '10m':
         return '0 */10 * * * *'
+      case '30m':
+        return '0 */30 * * * *'
       case '1h':
         return '0 * * * *'
       case '4h':
