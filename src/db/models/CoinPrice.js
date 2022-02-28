@@ -57,7 +57,7 @@ class CoinPrice extends SequelizeModel {
     return !!await CoinPrice.findOne()
   }
 
-  static async getPriceChart(uid, window, dateFrom) {
+  static async getPriceChart(uid, interval, dateFrom) {
     const query = `
       SELECT
         DISTINCT ON (cp.date_trunc)
@@ -67,10 +67,10 @@ class CoinPrice extends SequelizeModel {
       FROM (
         SELECT
           p.*,
-          ${this.truncateDateWindow('date', window)} AS date_trunc
+          ${this.truncateDateWindow('date', interval)} AS date_trunc
         FROM coin_prices p, coins c
         WHERE p.coin_id = c.id
-          AND p.date >= :dateFrom
+          AND EXTRACT(epoch from p.date) >= :dateFrom
           AND c.uid = :uid
       ) cp
       ORDER BY cp.date_trunc, cp.date DESC

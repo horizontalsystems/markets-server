@@ -71,8 +71,8 @@ exports.twitter = async ({ params }, res) => {
   }
 }
 
-exports.price_chart = async ({ params, currencyRate, dateFrom, dateInterval }, res) => {
-  const pricesChart = await CoinMarket.getPriceChart(params.uid, dateInterval, dateFrom)
+exports.price_chart = async ({ params, query, currencyRate }, res) => {
+  const pricesChart = await CoinMarket.getPriceChart(params.uid, query.interval, query.from_timestamp)
   res.send(serializer.serializePriceChart(pricesChart, currencyRate))
 }
 

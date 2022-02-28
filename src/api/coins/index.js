@@ -1,7 +1,7 @@
 const express = require('express')
 const controller = require('./coins.controller')
 const { validateCoins, validateShow, validateChart } = require('./coins.validator')
-const { setCurrencyRate, setChartDateInterval } = require('../middlewares')
+const { setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
 
@@ -121,8 +121,9 @@ router.get('/:uid/twitter', controller.twitter)
  * @apiVersion 1.0.0
  * @apiGroup Coin
  *
- * @apiParam    {String}                        uid   Coin's uid
- * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}   [interval]  Date interval
+ * @apiParam    {String}                   uid             Coin's uid
+ * @apiParam    {Number}                   from_timestamp  Timestamp
+ * @apiParam    {String=30m,1h,4h,8h,1d}   [interval]      Date interval
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -139,7 +140,7 @@ router.get('/:uid/twitter', controller.twitter)
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/:uid/price_chart', validateChart, setChartDateInterval, setCurrencyRate, controller.price_chart)
+router.get('/:uid/price_chart', validateChart, setCurrencyRate, controller.price_chart)
 
 /**
  * @api {get} /v1/coins/:uid/price_history Get coin historical price

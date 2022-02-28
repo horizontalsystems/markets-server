@@ -36,7 +36,8 @@ module.exports = {
       uid: Joi.string().required()
     }),
     query: Joi.object({
-      interval: Joi.string().valid('1d', '1w', '2w', '1m', '3m', '6m', '1y'),
+      from_timestamp: Joi.number().required(),
+      interval: Joi.string().valid('30m', '1h', '4h', '8h', '1d'),
       currency: Joi.string()
     })
   }, options),

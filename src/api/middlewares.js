@@ -59,46 +59,6 @@ exports.setDateInterval = (req, res, next) => {
   next()
 }
 
-exports.setChartDateInterval = (req, res, next) => {
-  let dateInterval = '1d'
-  let dateFrom
-
-  switch (req.query.interval) {
-    case '1d':
-      dateInterval = '30m'
-      dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -2 })
-      break
-    case '1w':
-      dateInterval = '4h'
-      dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -14 })
-      break
-    case '2w':
-      dateInterval = '8h'
-      dateFrom = utcDate('yyyy-MM-dd', { days: -28 })
-      break
-    case '1m':
-      dateFrom = utcDate('yyyy-MM-dd', { month: -2 })
-      break
-    case '3m':
-      dateFrom = utcDate('yyyy-MM-dd', { month: -6 })
-      break
-    case '6m':
-      dateFrom = utcDate('yyyy-MM-dd', { month: -12 })
-      break
-    case '1y':
-      dateFrom = utcDate('yyyy-MM-dd', { month: -24 })
-      break
-    default:
-      dateInterval = '1h'
-      dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -2 })
-  }
-
-  req.dateInterval = dateInterval // eslint-disable-line
-  req.dateFrom = dateFrom // eslint-disable-line
-
-  next()
-}
-
 exports.error404 = (req, res) => {
   res.status(404)
   res.send({
