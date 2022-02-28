@@ -1,7 +1,7 @@
 const express = require('express')
 const controller = require('./coins.controller')
-const { validateCoins, validateShow } = require('./coins.validator')
-const { setCurrencyRate, setDateInterval } = require('../middlewares')
+const { validateCoins, validateShow, validateChart } = require('./coins.validator')
+const { setCurrencyRate, setChartDateInterval } = require('../middlewares')
 
 const router = express.Router()
 
@@ -127,41 +127,19 @@ router.get('/:uid/twitter', controller.twitter)
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
  *  [{
- *    "date": 1641945600,
- *    "price": "43658"
+ *    "timestamp": 1641945600,
+ *    "price": "43658",
+ *    "volume": "4365"
  *   }, {
- *    "date": 1642032000,
- *    "price": "43847"
+ *    "timestamp": 1642032000,
+ *    "price": "43847",
+ *    "volume": "438"
  *  }]
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/:uid/price_chart', setDateInterval, setCurrencyRate, controller.price_chart)
-
-/**
- * @api {get} /v1/coins/:uid/volume_chart Get coin volume charts
- * @apiDescription Get coin's historical volume chart
- * @apiVersion 1.0.0
- * @apiGroup Coin
- *
- * @apiParam    {String}                        uid   Coin's uid
- * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}   [interval]  Date interval
- *
- * @apiSuccessExample {json} Success-Response:
- *  HTTP/1.1 200 OK
- *  [{
- *    "date": 1641945600,
- *    "volume": "43658"
- *   },{
- *    "date": 1642032000,
- *    "volume": "43847"
- *  }]
- *
- * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
- * @apiError (Not Found 404)    NotFound          Coin does not exist
- */
-router.get('/:uid/volume_chart', setDateInterval, setCurrencyRate, controller.volume_chart)
+router.get('/:uid/price_chart', validateChart, setChartDateInterval, setCurrencyRate, controller.price_chart)
 
 /**
  * @api {get} /v1/coins/:uid/price_history Get coin historical price

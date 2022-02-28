@@ -13,7 +13,7 @@ async function start({ coins }) {
   const syncer = new CoinPriceSyncer()
 
   if (coins) {
-    await syncer.syncHistoricalList(coins)
+    await syncer.syncHistoricalList(coins.split(','))
   } else {
     await syncer.start()
   }

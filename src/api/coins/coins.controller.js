@@ -72,16 +72,11 @@ exports.twitter = async ({ params }, res) => {
 }
 
 exports.price_chart = async ({ params, currencyRate, dateFrom, dateInterval }, res) => {
-  const priceChart = await CoinMarket.getPriceChart(params.uid, dateInterval, dateFrom)
-  res.send(serializer.serializePriceChart(priceChart, currencyRate))
-}
-
-exports.volume_chart = async ({ params, currencyRate, dateFrom, dateInterval }, res) => {
-  const volumeChart = await CoinMarket.getVolumeChart(params.uid, dateInterval, dateFrom)
-  res.send(serializer.serializeVolumeChart(volumeChart, currencyRate))
+  const pricesChart = await CoinMarket.getPriceChart(params.uid, dateInterval, dateFrom)
+  res.send(serializer.serializePriceChart(pricesChart, currencyRate))
 }
 
 exports.price_history = async ({ params, query, currencyRate }, res) => {
-  const historicalPrice = await CoinMarket.getHistoricalPrice(params.uid, query.timestamp)
+  const historicalPrice = await CoinMarket.getHistoricalPrice(params.uid, parseInt(query.timestamp, 10))
   res.send(serializer.serializePriceHistory(historicalPrice, currencyRate))
 }

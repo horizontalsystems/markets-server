@@ -30,4 +30,14 @@ module.exports = {
       currency: Joi.string()
     })
   }, options),
+
+  validateChart: validate({
+    params: Joi.object({
+      uid: Joi.string().required()
+    }),
+    query: Joi.object({
+      interval: Joi.string().valid('1d', '1w', '2w', '1m', '3m', '6m', '1y'),
+      currency: Joi.string()
+    })
+  }, options),
 }
