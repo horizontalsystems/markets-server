@@ -1,5 +1,4 @@
 const { DateTime } = require('luxon')
-const { utcDate } = require('../utils')
 const logger = require('../config/logger')
 const coingecko = require('../providers/coingecko')
 const utils = require('../utils')
@@ -14,18 +13,16 @@ class CoinPriceSyncer extends Syncer {
     await this.syncLatest()
   }
 
-  async syncHistorical() {
+  async syncHistorical(uids) {
+    if (uids) {
+      return this.syncHistory(uids)
+    }
+
     if (await CoinPrice.exists()) {
       return
     }
 
-    await this.sync(this.syncParamsHistorical('1d'))
-    await this.sync(this.syncParamsHistorical('1h'))
-  }
-
-  async syncHistoricalList(uids) {
-    await this.sync(this.syncParamsHistorical('1d'), uids)
-    await this.sync(this.syncParamsHistorical('1h'), uids)
+    await this.syncHistory()
   }
 
   syncLatest() {
@@ -41,42 +38,46 @@ class CoinPriceSyncer extends Syncer {
     return CoinPrice.deleteExpired(dateFrom, dateTo)
   }
 
-  async sync({ dateFrom, dateTo, period }, uids) {
+  async syncHistory(uids) {
     const where = uids ? { uid: uids } : null
     const coins = await Coin.findAll({ attributes: ['id', 'uid'], where })
+
+    const syncParams1d = this.syncParamsHistorical('1d')
+    const syncParams1h = this.syncParamsHistorical('1h')
 
     for (let i = 0; i < coins.length; i += 1) {
       const coin = coins[i]
 
-      try {
-        logger.info(`Syncing: ${coin.uid}; Interval: ${period}. (${i + 1}/${coins.length})`)
+      logger.info(`Syncing: ${coin.uid}. (${i + 1}/${coins.length})`)
 
-        const data = await coingecko.getMarketsChart(coin.uid, dateFrom.toSeconds(), dateTo.toSeconds())
-
-        await this.storeMarketData(data.prices, data.total_volumes, period, coin.id)
-        await utils.sleep(1100)
-
-      } catch ({ message, response = {} }) {
-        if (message) {
-          logger.error(`Error fetching prices chart ${message}`)
-        }
-
-        if (response.status === 429) {
-          logger.error(`Sleeping 60s (coin-price-syncer); Status ${response.status}`)
-          await utils.sleep(60000)
-        }
-
-        if (response.status >= 502 && response.status <= 504) {
-          logger.error(`Sleeping 30s (coin-price-syncer); Status ${response.status}`)
-          await utils.sleep(30000)
-        }
-      }
+      await this.syncRange(syncParams1d.dateFrom, syncParams1d.dateTo, coin)
+      await this.syncRange(syncParams1h.dateFrom, syncParams1h.dateTo, coin)
     }
-
-    logger.info(`Successfully synced historical prices for period: ${period}`)
   }
 
-  storeMarketData(prices, totalVolumes, period, coinId) {
+  async syncRange(dateFrom, dateTo, coin) {
+    try {
+      const data = await coingecko.getMarketsChart(coin.uid, dateFrom.toSeconds(), dateTo.toSeconds())
+      await this.storeMarketData(data.prices, data.total_volumes, coin.id)
+      await utils.sleep(1100)
+    } catch ({ message, response = {} }) {
+      if (message) {
+        logger.error(`Error fetching prices chart ${message}`)
+      }
+
+      if (response.status === 429) {
+        logger.error(`Sleeping 60s (coin-price-syncer); Status ${response.status}`)
+        await utils.sleep(60000)
+      }
+
+      if (response.status >= 502 && response.status <= 504) {
+        logger.error(`Sleeping 30s (coin-price-syncer); Status ${response.status}`)
+        await utils.sleep(30000)
+      }
+    }
+  }
+
+  storeMarketData(prices, totalVolumes, coinId) {
     const records = []
 
     for (let marketsIndex = 0; marketsIndex < prices.length; marketsIndex += 1) {
@@ -100,14 +101,12 @@ class CoinPriceSyncer extends Syncer {
       case '1h':
         return {
           dateFrom: now.plus({ days: -30 }),
-          dateTo: now,
-          period
+          dateTo: now
         }
       case '1d':
         return {
           dateFrom: now.plus({ month: -24 }),
-          dateTo: now,
-          period
+          dateTo: now
         }
       default:
         return {}
@@ -118,13 +117,13 @@ class CoinPriceSyncer extends Syncer {
     switch (period) {
       case '30m':
         return {
-          dateFrom: utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, minutes: -30 }),
-          dateTo: utcDate('yyyy-MM-dd HH:00:00Z', { days: -30 }),
+          dateFrom: utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, minutes: -30 }),
+          dateTo: utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30 }),
         }
       case '1d':
         return {
-          dateFrom: utcDate('yyyy-MM-dd', { days: -31 }),
-          dateTo: utcDate('yyyy-MM-dd', { days: -30 })
+          dateFrom: utils.utcDate('yyyy-MM-dd', { days: -31 }),
+          dateTo: utils.utcDate('yyyy-MM-dd', { days: -30 })
         }
       default:
         return {}
