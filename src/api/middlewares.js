@@ -4,17 +4,17 @@ const CurrencyRate = require('../db/models/CurrencyRate')
 
 exports.setCurrencyRate = async (req, res, next) => {
 
-  const currencyRate = await CurrencyRate.getCurrencyRate(req.query.currency, req.query.timestamp)
-  // eslint-disable-next-line no-param-reassign
-  req.currencyRate = currencyRate.rate
-
-  if (!req.currencyRate) {
+  const record = await CurrencyRate.getCurrencyRate(req.query.currency, req.query.timestamp)
+  if (!record || !record.rate) {
     const errors = [{
       currency: 'Wrong currency code'
     }]
 
     return next(new ValidationError(errors, { statusCode: 400, error: 'Bad Request' }))
   }
+
+  // eslint-disable-next-line no-param-reassign
+  req.currencyRate = record.rate
 
   next()
 }
