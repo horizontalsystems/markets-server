@@ -14,8 +14,14 @@ exports.index = async ({ query, currencyRate }, res) => {
   if (query.fields) {
     fields = query.fields.split(',').slice(0, limit)
   }
-  if (fields.includes('platforms')) {
+  if (fields.includes('all_platforms')) {
     options.include = Platform
+  }
+  if (fields.includes('platforms')) {
+    options.include = {
+      model: Platform,
+      where: { type: ['erc20', 'bep20'] }
+    }
   }
   if (limit) {
     options.limit = limit

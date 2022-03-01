@@ -47,6 +47,7 @@ function mapCoinAttribute(coin, field, currencyRate) {
     case 'last_updated':
       return Math.round(new Date(coin.last_updated).getTime() / 1000)
     case 'platforms':
+    case 'all_platforms':
       return mapPlatforms(coin.Platforms)
 
     default:
