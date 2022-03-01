@@ -78,8 +78,7 @@ class DefiProtocolSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('1h', this.syncDailyStats)
-    this.cron('4h', this.syncWeeklyStats)
+    this.cron('30m', this.syncDailyStats)
     this.cron('1d', this.syncMonthlyStats)
   }
 
@@ -99,6 +98,23 @@ class DefiProtocolSyncer extends Syncer {
 
   async syncMonthlyStats({ dateFrom, dateTo }) {
     await DefiProtocolTvl.deleteExpired(dateFrom, dateTo)
+  }
+
+  syncParams(period) {
+    switch (period) {
+      case '30m':
+        return {
+          dateFrom: utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30 }),
+          dateTo: utils.utcDate('yyyy-MM-dd HH:mm:00Z'),
+        }
+      case '1d':
+        return {
+          dateFrom: utils.utcDate('yyyy-MM-dd', { days: -31 }),
+          dateTo: utils.utcDate('yyyy-MM-dd', { days: -30 })
+        }
+      default:
+        return {}
+    }
   }
 
   async syncLatestTvls(protocols, dateTo) {

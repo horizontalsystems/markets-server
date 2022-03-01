@@ -134,7 +134,7 @@ describe('DefiProtocolSyncer', () => {
       expect(await DefiProtocol.findAll()).to.have.length(0)
       expect(await DefiProtocolTvl.findAll()).to.have.length(0)
 
-      await syncer.syncDailyStats(syncer.syncParams('1h'))
+      await syncer.syncDailyStats(syncer.syncParams('30m'))
 
       const defiProtocols = await DefiProtocol.findAll()
       const defiProtocolTvls = await DefiProtocolTvl.findAll()
@@ -145,9 +145,7 @@ describe('DefiProtocolSyncer', () => {
 
     context('when tvls exists', () => {
       beforeEach(async () => {
-        const dateParams = syncer.syncParams('1h')
-        const date = DateTime.fromFormat(dateParams.dateTo, 'yyyy-MM-dd HH:00:00Z')
-          .plus({ days: -30 })
+        const dateParams = syncer.syncParams('30m')
 
         await DefiProtocol.bulkCreate([
           { ...protocol1List, defillama_id: protocol1List.slug, tvl_rank: 1 },
@@ -155,8 +153,8 @@ describe('DefiProtocolSyncer', () => {
         ])
 
         await DefiProtocolTvl.bulkCreate([
-          { date: date.ts, tvl: 200.99, defi_protocol_id: 1 },
-          { date: date.ts, tvl: 100.99, defi_protocol_id: 2 }
+          { date: dateParams.dateFrom, tvl: 200.99, defi_protocol_id: 1 },
+          { date: dateParams.dateFrom, tvl: 100.99, defi_protocol_id: 2 }
         ])
       })
 
@@ -164,7 +162,7 @@ describe('DefiProtocolSyncer', () => {
         expect(await DefiProtocol.findAll()).to.have.length(2)
         expect(await DefiProtocolTvl.findAll()).to.have.length(2)
 
-        await syncer.syncDailyStats(syncer.syncParams('1h'))
+        await syncer.syncDailyStats(syncer.syncParams('30m'))
 
         const defiProtocols = await DefiProtocol.findAll()
         const defiProtocolTvls = await DefiProtocolTvl.findAll()
@@ -180,40 +178,6 @@ describe('DefiProtocolSyncer', () => {
     })
   })
 
-  describe('#syncWeeklyStats', () => {
-    let syncParams
-    const dates = []
-
-    beforeEach(async () => {
-      syncParams = syncer.syncParams('4h')
-
-      dates.push(
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -4 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -3 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -2 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -1 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -1 })
-      )
-
-      for (let i = 0; i < dates.length; i += 1) {
-        const date = dates[i]
-        await DefiProtocolTvl.create({ date, tvl: 100 })
-      }
-    })
-
-    it('deletes expired points', async () => {
-      expect(await DefiProtocolTvl.findAll()).to.have.length(5)
-
-      await syncer.syncWeeklyStats(syncParams)
-
-      const defiProtocolTvls = await DefiProtocolTvl.findAll()
-
-      expect(defiProtocolTvls).to.have.length(2)
-      expect(defiProtocolTvls[0].date).to.deep.equal(new Date(dates[0]))
-      expect(defiProtocolTvls[1].date).to.deep.equal(new Date(dates[4]))
-    })
-  })
-
   describe('#syncMonthlyStats', () => {
     let syncParams
     const dates = []
@@ -222,13 +186,13 @@ describe('DefiProtocolSyncer', () => {
       syncParams = syncer.syncParams('1d')
 
       dates.push(
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -8 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -20 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -16 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -12 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -8 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -4 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -7 })
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -31 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -20 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -16 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -12 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -8 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -4 }),
+        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30 })
       )
 
       for (let i = 0; i < dates.length; i += 1) {

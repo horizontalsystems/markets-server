@@ -12,8 +12,7 @@ class GlobalMarketsSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('1h', this.syncDailyStats)
-    this.cron('4h', this.syncWeeklyStats)
+    this.cron('30m', this.syncDailyStats)
     this.cron('1d', this.syncMonthlyStats)
   }
 
@@ -29,15 +28,28 @@ class GlobalMarketsSyncer extends Syncer {
     await this.syncLatestMarkets(dateTo)
   }
 
-  async syncWeeklyStats({ dateFrom, dateTo }) {
-    await GlobalMarket.deleteExpired(dateFrom, dateTo)
-  }
-
   async syncMonthlyStats({ dateFrom, dateTo }) {
     await GlobalMarket.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncLatestMarkets(date, retry = 0) {
+  syncParams(period) {
+    switch (period) {
+      case '30m':
+        return {
+          dateFrom: utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30 }),
+          dateTo: utils.utcDate('yyyy-MM-dd HH:mm:00Z'),
+        }
+      case '1d':
+        return {
+          dateFrom: utils.utcDate('yyyy-MM-dd', { days: -31 }),
+          dateTo: utils.utcDate('yyyy-MM-dd', { days: -30 })
+        }
+      default:
+        return {}
+    }
+  }
+
+  async syncLatestMarkets(dateTo, retry = 0) {
     if (retry >= 3) {
       return
     }
@@ -48,7 +60,7 @@ class GlobalMarketsSyncer extends Syncer {
       const protocols = await defillama.getProtocols()
 
       const record = {
-        date,
+        date: dateTo,
         tvl: 0,
         chain_tvls: {},
         market_cap: globalMarkets.total_market_cap.usd,
@@ -76,7 +88,7 @@ class GlobalMarketsSyncer extends Syncer {
       if (e.response) {
         console.log(`Retrying due to error ${e.message}; Retry count ${retry + 1}`)
         await utils.sleep(1000)
-        await this.syncLatestMarkets(date, retry + 1)
+        await this.syncLatestMarkets(dateTo, retry + 1)
       } else {
         console.error(e)
       }

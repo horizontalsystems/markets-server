@@ -91,7 +91,7 @@ describe('GlobalMarketsSyncer', () => {
     }
 
     beforeEach(() => {
-      syncParams = syncer.syncParams('1h')
+      syncParams = syncer.syncParams('30m')
     })
 
     describe('when fetched market data', () => {
@@ -184,38 +184,6 @@ describe('GlobalMarketsSyncer', () => {
     })
   })
 
-  describe('#syncWeeklyStats', () => {
-    let syncParams
-    const dates = []
-
-    beforeEach(async () => {
-      syncParams = syncer.syncParams('4h')
-      dates.push(
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -4 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -3 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -2 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -1 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -1 })
-      )
-
-      for (let i = 0; i < dates.length; i += 1) {
-        const date = dates[i]
-        await GlobalMarket.create({ date })
-      }
-    })
-
-    it('deletes expired points', async () => {
-      expect(await GlobalMarket.findAll()).to.have.length(5)
-      await syncer.syncWeeklyStats(syncParams)
-
-      const globalMarkets = await GlobalMarket.findAll()
-
-      expect(globalMarkets).to.have.length(2)
-      expect(globalMarkets[0].date).to.deep.equal(new Date(dates[0]))
-      expect(globalMarkets[1].date).to.deep.equal(new Date(dates[4]))
-    })
-  })
-
   describe('#syncMonthlyStats', () => {
     let syncParams
     const dates = []
@@ -224,13 +192,13 @@ describe('GlobalMarketsSyncer', () => {
       syncParams = syncer.syncParams('1d')
 
       dates.push(
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -8 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -20 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -16 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -12 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -8 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -7, hours: -4 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -7 })
+        utcDate('yyyy-MM-dd HH:00:00Z', { days: -31 }),
+        utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -20 }),
+        utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -16 }),
+        utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -12 }),
+        utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -8 }),
+        utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -4 }),
+        utcDate('yyyy-MM-dd HH:00:00Z', { days: -30 })
       )
 
       for (let i = 0; i < dates.length; i += 1) {
