@@ -115,6 +115,8 @@ class SetupCoins {
         return upsert(coin.uid, 8)
       case 'ethereum':
         return upsert('ethereum', 18)
+      case 'matic-network':
+        return upsert('polygon', 18)
       case 'binancecoin':
         await upsert('binance-smart-chain', 18)
         await upsert('bep2', 18, null, 'BNB')
