@@ -36,7 +36,7 @@ module.exports = shipit => {
     },
     dev_api: {
       branch: 'develop',
-      servers: ['ubuntu@161.35.110.248'],
+      servers: ['ubuntu@64.227.4.125'],
       deployTo: '/home/ubuntu/markets-server',
     }
   })
