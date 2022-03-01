@@ -51,6 +51,10 @@ exports.getTokenInfo = async (contractAddress, type) => {
     const name = await provider.getName(contractAddress)
     const symbol = await provider.getSymbol(contractAddress)
 
+    if (!decimals || !name || !symbol) {
+      return null
+    }
+
     return {
       decimals: parseInt(decimals, 10),
       name,
