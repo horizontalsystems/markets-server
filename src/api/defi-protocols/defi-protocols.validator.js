@@ -15,7 +15,8 @@ module.exports = {
   // GET /v1/defi-coins/:uid/tvls
   validateTvls: validate({
     query: Joi.object({
-      interval: Joi.string().valid('1d', '1w', '2w', '1m', '3m', '6m', '1y'),
+      // @deprecated intervals 7d,30d
+      interval: Joi.string().valid('1d', '1w', '2w', '1m', '3m', '6m', '1y', '7d', '30d'),
       currency: Joi.string()
     })
   }, options),
