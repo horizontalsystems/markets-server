@@ -25,7 +25,7 @@ exports.setDateInterval = (req, res, next) => {
 
   switch (req.query.interval) {
     case '1d':
-      dateInterval = '1h'
+      dateInterval = '30m'
       dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -1 })
       break
     case '1w':
@@ -33,7 +33,7 @@ exports.setDateInterval = (req, res, next) => {
       dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -7 })
       break
     case '2w':
-      dateInterval = '4h'
+      dateInterval = '8h'
       dateFrom = utcDate('yyyy-MM-dd', { days: -14 })
       break
     case '1m':
@@ -49,7 +49,7 @@ exports.setDateInterval = (req, res, next) => {
       dateFrom = utcDate('yyyy-MM-dd', { month: -12 })
       break
     default:
-      dateInterval = '1h'
+      dateInterval = '30m'
       dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -1 })
   }
 
