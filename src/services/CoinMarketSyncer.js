@@ -1,4 +1,4 @@
-const { chunk, parseInt } = require('lodash')
+const { parseInt } = require('lodash')
 const { DateTime } = require('luxon')
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
@@ -25,7 +25,7 @@ class CoinMarketSyncer {
 
   async sync() {
     const coins = await Coin.findAll({ attributes: ['uid'] })
-    const chunks = chunk(coins.map(item => item.uid), 400)
+    const chunks = this.chunk(coins.map(item => item.uid))
 
     for (let i = 0; i < chunks.length; i += 1) {
       await this.syncCoins(chunks[i])
@@ -57,34 +57,58 @@ class CoinMarketSyncer {
   }
 
   async updateCoins(coins) {
-    debug(`Syncing coins: ${coins.length}`)
-
     const dt = DateTime.now()
     const minutes = dt.get('minute')
-    const lastUpdatedRounded = dt.set({ minute: 10 * parseInt(minutes / 10) }).toFormat('yyyy-MM-dd HH:mm')
+    const minutesRounded = dt.set({ minute: 10 * parseInt(minutes / 10), })
 
-    const values = coins.map(item => {
-      if (!item.uid || !item.price) {
-        return null
-      }
-
-      return [
+    const values = coins
+      .filter(c => c.uid && c.price)
+      .map(item => [
         item.uid,
         item.price,
         JSON.stringify(item.price_change),
         JSON.stringify(item.market_data),
         item.last_updated,
-        lastUpdatedRounded
-      ]
-    })
+        minutesRounded.toFormat('yyyy-MM-dd HH:mm')
+      ])
+
+    if (!values.length) {
+      return
+    }
 
     try {
-      await Coin.updateCoins(values.filter(item => item))
-      await CoinPrice.insertMarkets(values.filter(item => item))
-      debug(`Updated coins and markets : ${coins.length}`)
+      await Coin.updateCoins(values)
+      await CoinPrice.insertMarkets(values)
+      debug(`Synced coins ${values.length}`)
     } catch (e) {
       debug(e)
     }
+  }
+
+  chunk(array) {
+    const chunk = []
+    const chunkSize = 6000 // to fit header buffers
+
+    let size = 0
+    let index = 0
+
+    for (let i = 0; i < array.length; i += 1) {
+      const item = array[i]
+
+      if (size > chunkSize) {
+        size = 0
+        index += 1
+      }
+
+      if (!chunk[index]) {
+        chunk[index] = []
+      }
+
+      chunk[index].push(item)
+      size += item.length
+    }
+
+    return chunk
   }
 
 }
