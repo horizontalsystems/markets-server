@@ -71,8 +71,25 @@ class SetupCoins {
 
     for (let i = 0; i < platforms.length; i += 1) {
       const platform = platforms[i]
-      console.log(`Fetching decimals for ${i}; ${platform.address}`)
-      const decimals = await web3Provider.getMRC20Decimals(platform.address)
+
+      let getDecimals
+      switch (platform.type) {
+        case 'optimistic-ethereum':
+          getDecimals = web3Provider.getOptimismDecimals
+          break
+        case 'binance-smart-chain':
+          getDecimals = web3Provider.getBEP20Decimals
+          break
+        case 'polygon-pos':
+          getDecimals = web3Provider.getMRC20Decimals
+          break
+        default:
+          getDecimals = web3Provider.getERC20Decimals
+          break
+      }
+
+      const decimals = await getDecimals(platform.address)
+      console.log(`Fetched decimals (${decimals}) for ${platform.address} ${i}; `)
       await platform.update({ decimals })
     }
   }
@@ -114,7 +131,9 @@ class SetupCoins {
       case 'zcash':
         return upsert(coin.uid, 8)
       case 'ethereum':
-        return upsert('ethereum', 18)
+        await upsert('ethereum', 18)
+        await upsert('optimistic-ethereum', 18)
+        return
       case 'matic-network':
         return upsert('polygon', 18)
       case 'binancecoin':
@@ -153,6 +172,12 @@ class SetupCoins {
           type = 'mrc20'
           address = platforms[platform]
           decimals = await web3Provider.getMRC20Decimals(address)
+          break
+
+        case 'optimistic-ethereum':
+          type = 'optimistic-ethereum'
+          address = platforms[platform]
+          decimals = await web3Provider.getOptimismDecimals(address)
           break
 
         case 'binancecoin': {

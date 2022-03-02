@@ -29,6 +29,7 @@ class Web3Provider {
 }
 
 const ethereum = new Web3Provider('https://mainnet.infura.io/v3/d13bc12e6f5a4d3bad8d80291c74c1d3', erc20Abi)
+const optimism = new Web3Provider('https://mainnet.optimism.io', erc20Abi)
 const polygon = new Web3Provider('https://polygon-rpc.com', mrc20Abi)
 const binance = new Web3Provider('https://bsc-dataseed1.binance.org:443', bep20Abi)
 
@@ -41,6 +42,9 @@ exports.getTokenInfo = async (contractAddress, type) => {
       break
     case 'mrc20':
       provider = polygon
+      break
+    case 'optimistic-ethereum':
+      provider = optimism
       break
     default:
       provider = ethereum
@@ -69,6 +73,15 @@ exports.getTokenInfo = async (contractAddress, type) => {
 exports.getERC20Decimals = async (contractAddress) => {
   try {
     return await ethereum.getDecimals(contractAddress)
+  } catch (e) {
+    console.log(e)
+    return null
+  }
+}
+
+exports.getOptimismDecimals = async (contractAddress) => {
+  try {
+    return await optimism.getDecimals(contractAddress)
   } catch (e) {
     console.log(e)
     return null
