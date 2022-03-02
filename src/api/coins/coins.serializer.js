@@ -1,12 +1,22 @@
 const { nullOrString, valueInCurrency } = require('../../utils')
 
-function mapPlatforms(platforms) {
-  return platforms.map(platform => ({
-    type: platform.type,
-    decimals: platform.decimals,
-    address: platform.address,
-    symbol: platform.symbol
-  }))
+function mapPlatforms(platforms, legacy) {
+  const legacyPlatforms = ['erc20', 'bep20', 'bep2', 'bitcoin', 'bitcoin-cash', 'litecoin', 'dash', 'zcash', 'ethereum', 'binance-smart-chain']
+
+  return platforms.map(platform => {
+    let { decimals } = platform
+
+    // @deprecated
+    if (legacy && !legacyPlatforms.includes(platform.type)) {
+      decimals = null
+    }
+
+    return {
+      decimals,
+      type: platform.type,
+      address: platform.address
+    }
+  })
 }
 
 function mapCoinAttribute(coin, field, currencyRate) {
@@ -47,6 +57,7 @@ function mapCoinAttribute(coin, field, currencyRate) {
     case 'last_updated':
       return Math.round(new Date(coin.last_updated).getTime() / 1000)
     case 'platforms':
+      return mapPlatforms(coin.Platforms, true)
     case 'all_platforms':
       return mapPlatforms(coin.Platforms)
 
@@ -74,7 +85,7 @@ exports.serializeList = (coins, fields, currencyRate) => {
   })
 }
 
-exports.serializeShow = (coin, language = 'en', currencyRate) => {
+exports.serializeShow = (coin, language, currencyRate) => {
   const market = coin.market_data || {}
   const description = coin.description || {}
 
