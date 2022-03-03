@@ -62,8 +62,8 @@ describe('TransactionSyncer', async () => {
         sinon.assert.calledThrice(syncer.syncFromBigquery)
         sinon.assert.callOrder(
           syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-02', dateTo: '2020-12-25' }),
-          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-25 00:00:00+0', dateTo: '2020-12-31 08:00:00+0', dateExpiresIn: { days: 7 } }),
-          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-31 08:00:00+0', dateTo: '2021-01-01 08:00:00+0', dateExpiresIn: { hours: 24 } })
+          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-25 00:00:00+0', dateTo: '2020-12-31 08:00:00+0' }),
+          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-31 08:00:00+0', dateTo: '2021-01-01 08:00:00+0' })
         )
 
         sinon.assert.calledTwice(syncer.syncFromBitquery)
@@ -94,8 +94,7 @@ describe('TransactionSyncer', async () => {
 
       sinon.assert.calledWith(syncer.syncDailyStats, {
         dateFrom: '2021-01-01 08:00:00+0',
-        dateTo: '2021-01-01 09:00:00+0',
-        dateExpiresIn: { hours: 24 }
+        dateTo: '2021-01-01 09:00:00+0'
       })
     })
 
@@ -111,8 +110,7 @@ describe('TransactionSyncer', async () => {
 
       sinon.assert.calledWith(syncer.syncWeeklyStats, {
         dateFrom: '2020-12-31 08:00:00+0',
-        dateTo: '2020-12-31 12:00:00+0',
-        dateExpiresIn: { days: 7 }
+        dateTo: '2020-12-31 12:00:00+0'
       })
     })
 

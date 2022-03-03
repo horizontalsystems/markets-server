@@ -5,9 +5,9 @@ const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
 const Syncer = require('./CoinMarketSyncer')
 
-describe('CoinPriceSyncer', () => {
+describe('CoinMarketSyncer', () => {
 
-  /** @type CoinPriceSyncer */
+  /** @type CoinMarketSyncer */
   let syncer
   let clock
 
@@ -28,7 +28,7 @@ describe('CoinPriceSyncer', () => {
 
     describe('when coins more than chunk size', () => {
       beforeEach(() => {
-        const coins = times(401, i => ({ uid: `name-${i}` }))
+        const coins = times(401, i => ({ uid: `long-coin-name-${i}` }))
         sinon.stub(Coin, 'findAll').returns(coins)
       })
 

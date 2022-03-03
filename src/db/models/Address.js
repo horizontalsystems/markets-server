@@ -17,9 +17,6 @@ class Address extends SequelizeModel {
         date: {
           type: DataTypes.DATE,
           allowNull: false
-        },
-        expires_at: {
-          type: DataTypes.DATE
         }
       },
       {

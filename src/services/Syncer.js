@@ -36,14 +36,12 @@ class Syncer {
       case '1h':
         return {
           dateFrom: utcDate('yyyy-MM-dd HH:00:00Z', { hours: -1 }),
-          dateTo: utcDate('yyyy-MM-dd HH:00:00Z'),
-          dateExpiresIn: { hours: 24 }
+          dateTo: utcDate('yyyy-MM-dd HH:00:00Z')
         }
       case '4h':
         return {
           dateFrom: utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -4 }),
-          dateTo: utcDate('yyyy-MM-dd HH:00:00Z', { days: -1 }),
-          dateExpiresIn: { days: 7 }
+          dateTo: utcDate('yyyy-MM-dd HH:00:00Z', { days: -1 })
         }
       case '1d':
         return {
@@ -60,14 +58,12 @@ class Syncer {
       case '1h':
         return {
           dateFrom: utcDate('yyyy-MM-dd HH:00:00Z', { hours: -24 }),
-          dateTo: utcDate('yyyy-MM-dd HH:00:00Z'),
-          dateExpiresIn: { hours: 24 }
+          dateTo: utcDate('yyyy-MM-dd HH:00:00Z')
         }
       case '4h':
         return {
           dateFrom: utcDate('yyyy-MM-dd 00:00:00Z', { days: -7 }),
-          dateTo: utcDate('yyyy-MM-dd HH:00:00Z', { days: -1 }),
-          dateExpiresIn: { days: 7 }
+          dateTo: utcDate('yyyy-MM-dd HH:00:00Z', { days: -1 })
         }
       case '1d':
         return {

@@ -31,10 +31,8 @@ class CurrencyRateSyncer extends Syncer {
   }
 
   async syncDailyRates() {
-    const dateExpiresIn = { hours: 24 }
     const date = DateTime.utc()
-
-    await this.syncRates(date, dateExpiresIn)
+    await this.syncRates(date)
   }
 
   async syncNinetyDaysRates() {
@@ -55,17 +53,15 @@ class CurrencyRateSyncer extends Syncer {
     await CurrencyRate.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncRates(date, dateExpiresIn) {
+  async syncRates(date) {
     const sourceCoin = 'tether'
     const currencies = await this.getCurrencies()
     const pricesResponse = await coingecko.getLatestCoinPrice([sourceCoin], currencies.codes)
-    const expiresAt = dateExpiresIn ? date.plus(dateExpiresIn) : null
 
     const rates = currencies.codes.map(code => ({
       date,
       currencyId: currencies.idsMap[code],
-      rate: pricesResponse[sourceCoin][code],
-      expires_at: expiresAt
+      rate: pricesResponse[sourceCoin][code]
     }))
 
     this.upsertCurrencyRates(rates)
@@ -81,12 +77,10 @@ class CurrencyRateSyncer extends Syncer {
 
     const dateParams = period === '10m' ? {
       dateFrom: DateTime.utc().plus({ hours: -24 }),
-      dateTo: DateTime.utc(),
-      dateExpiresIn: { hours: 24 }
+      dateTo: DateTime.utc()
     } : {
       dateFrom: DateTime.utc().plus({ month: -12 }),
-      dateTo: DateTime.utc().plus({ days: -1 }),
-      dateExpiresIn: { days: 90 }
+      dateTo: DateTime.utc().plus({ days: -1 })
     }
 
     for (let index = 0; index < currencies.codes.length; index += 1) {
@@ -104,8 +98,7 @@ class CurrencyRateSyncer extends Syncer {
         rates.push({
           date,
           currencyId: currencies.idsMap[currencies.codes[index]],
-          rate: value,
-          expires_at: date.plus(dateParams.dateExpiresIn)
+          rate: value
         })
       })
 

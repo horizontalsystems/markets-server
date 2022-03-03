@@ -41,8 +41,7 @@ describe('Syncer', async () => {
 
       sinon.assert.calledWith(onTick, {
         dateFrom: '2021-01-01 00:00:00+0',
-        dateTo: '2021-01-01 01:00:00+0',
-        dateExpiresIn: { hours: 24 }
+        dateTo: '2021-01-01 01:00:00+0'
       })
     })
   })
@@ -63,16 +62,14 @@ describe('Syncer', async () => {
     it('returns date params for the `1h` period', () => {
       expect(syncer.syncParams('1h')).deep.equal({
         dateFrom: '2020-12-31 23:00:00+0',
-        dateTo: '2021-01-01 00:00:00+0',
-        dateExpiresIn: { hours: 24 }
+        dateTo: '2021-01-01 00:00:00+0'
       })
     })
 
     it('returns date params for the `4h` period', () => {
       expect(syncer.syncParams('4h')).deep.equal({
         dateFrom: '2020-12-30 20:00:00+0',
-        dateTo: '2020-12-31 00:00:00+0',
-        dateExpiresIn: { days: 7 }
+        dateTo: '2020-12-31 00:00:00+0'
       })
     })
 
@@ -89,16 +86,14 @@ describe('Syncer', async () => {
     it('returns date params for the `1h` period', () => {
       expect(syncer.syncParamsHistorical('1h')).deep.equal({
         dateFrom: '2020-12-31 00:00:00+0',
-        dateTo: '2021-01-01 00:00:00+0',
-        dateExpiresIn: { hours: 24 }
+        dateTo: '2021-01-01 00:00:00+0'
       })
     })
 
     it('returns date params for the `4h` period', () => {
       expect(syncer.syncParamsHistorical('4h')).deep.equal({
         dateFrom: '2020-12-25 00:00:00+0',
-        dateTo: '2020-12-31 00:00:00+0',
-        dateExpiresIn: { days: 7 }
+        dateTo: '2020-12-31 00:00:00+0'
       })
     })
 

@@ -63,8 +63,8 @@ describe('DexLiquiditySyncer', async () => {
         sinon.assert.calledOnce(syncer.syncFromStreamingfast)
         sinon.assert.callOrder(
           syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-02', dateTo: '2020-12-25' }),
-          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-25 00:00:00+0', dateTo: '2020-12-31 08:00:00+0', dateExpiresIn: { days: 7 } }),
-          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-31 08:00:00+0', dateTo: '2021-01-01 08:00:00+0', dateExpiresIn: { hours: 24 } }),
+          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-25 00:00:00+0', dateTo: '2020-12-31 08:00:00+0' }),
+          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-31 08:00:00+0', dateTo: '2021-01-01 08:00:00+0' }),
         )
       })
     })
