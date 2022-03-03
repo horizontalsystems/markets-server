@@ -14,7 +14,8 @@ function mapPlatforms(platforms, legacy) {
     return {
       decimals,
       type: platform.type,
-      address: platform.address
+      address: platform.address,
+      symbol: platform.symbol
     }
   })
 }
