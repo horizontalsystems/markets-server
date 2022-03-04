@@ -8,7 +8,8 @@ exports.info = async (req, res, next) => {
   let info
 
   switch (type) {
-    case 'optimistic-ethereum':
+    case 'optimism':
+    case 'arbitrum-one':
     case 'mrc20':
     case 'erc20':
     case 'bep20': {

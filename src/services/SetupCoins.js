@@ -74,8 +74,11 @@ class SetupCoins {
 
       let getDecimals
       switch (platform.type) {
-        case 'optimistic-ethereum':
+        case 'optimism':
           getDecimals = web3Provider.getOptimismDecimals
+          break
+        case 'arbitrum-one':
+          getDecimals = web3Provider.getArbitrumOneDecimals
           break
         case 'binance-smart-chain':
           getDecimals = web3Provider.getBEP20Decimals
@@ -89,7 +92,7 @@ class SetupCoins {
       }
 
       const decimals = await getDecimals(platform.address)
-      console.log(`Fetched decimals (${decimals}) for ${platform.address} ${i}; `)
+      console.log(`Fetched decimals (${decimals}) for ${platform.address} ${i + 1}; `)
       await platform.update({ decimals })
     }
   }
@@ -132,7 +135,8 @@ class SetupCoins {
         return upsert(coin.uid, 8)
       case 'ethereum':
         await upsert('ethereum', 18)
-        await upsert('optimistic-ethereum', 18)
+        await upsert('ethereum-optimism', 18)
+        await upsert('ethereum-arbitrum-one', 18)
         return
       case 'matic-network':
         return upsert('polygon', 18)
@@ -178,6 +182,12 @@ class SetupCoins {
           type = 'optimistic-ethereum'
           address = platforms[platform]
           decimals = await web3Provider.getOptimismDecimals(address)
+          break
+
+        case 'arbitrum-one':
+          type = 'arbitrum-one'
+          address = platforms[platform]
+          decimals = await web3Provider.getArbitrumOneDecimals(address)
           break
 
         case 'binancecoin': {
