@@ -36,13 +36,13 @@ class GlobalMarketsSyncer extends Syncer {
     switch (period) {
       case '30m':
         return {
-          dateFrom: utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30 }),
-          dateTo: utils.utcDate('yyyy-MM-dd HH:mm:00Z'),
+          dateFrom: utils.utcDate({ days: -30 }),
+          dateTo: utils.utcDate(),
         }
       case '1d':
         return {
-          dateFrom: utils.utcDate('yyyy-MM-dd', { days: -31 }),
-          dateTo: utils.utcDate('yyyy-MM-dd', { days: -30 })
+          dateFrom: utils.utcDate({ days: -31 }, 'yyyy-MM-dd'),
+          dateTo: utils.utcDate({ days: -30 }, 'yyyy-MM-dd')
         }
       default:
         return {}

@@ -90,7 +90,7 @@ describe('TransactionSyncer', async () => {
 
       clock.tick(60 * 60 * 1000)
 
-      expect(utcDate(dateFormat)).to.equal('2021-01-01 09:10:00+0')
+      expect(utcDate({}, dateFormat)).to.equal('2021-01-01 09:10:00+0')
 
       sinon.assert.calledWith(syncer.syncDailyStats, {
         dateFrom: '2021-01-01 08:00:00+0',
@@ -102,11 +102,11 @@ describe('TransactionSyncer', async () => {
       syncer.syncLatest()
 
       sinon.assert.notCalled(syncer.syncWeeklyStats)
-      expect(utcDate(dateFormat)).to.equal('2021-01-01 08:10:00+0')
+      expect(utcDate({}, dateFormat)).to.equal('2021-01-01 08:10:00+0')
 
       clock.tick(4 * 60 * 60 * 1000)
 
-      expect(utcDate(dateFormat)).to.equal('2021-01-01 12:10:00+0')
+      expect(utcDate({}, dateFormat)).to.equal('2021-01-01 12:10:00+0')
 
       sinon.assert.calledWith(syncer.syncWeeklyStats, {
         dateFrom: '2020-12-31 08:00:00+0',
@@ -118,13 +118,13 @@ describe('TransactionSyncer', async () => {
       syncer.syncLatest()
 
       sinon.assert.notCalled(syncer.syncMonthlyStats)
-      expect(utcDate(dateFormat)).to.equal('2021-01-01 08:10:00+0')
+      expect(utcDate({}, dateFormat)).to.equal('2021-01-01 08:10:00+0')
 
       //          15 hours       50 minutes
       clock.tick((15 * 60 * 60 + 50 * 60) * 1000)
       sinon.assert.called(syncer.syncMonthlyStats)
 
-      expect(utcDate(dateFormat)).to.equal('2021-01-02 00:00:00+0')
+      expect(utcDate({}, dateFormat)).to.equal('2021-01-02 00:00:00+0')
 
       sinon.assert.calledWith(syncer.syncMonthlyStats, {
         dateFrom: '2020-12-25',

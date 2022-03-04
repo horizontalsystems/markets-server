@@ -26,33 +26,33 @@ exports.setDateInterval = (req, res, next) => {
   switch (req.query.interval) {
     case '1d':
       dateInterval = '30m'
-      dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -1 })
+      dateFrom = utcDate({ days: -1 })
       break
     case '7d': // @deprecated use 1w instead
     case '1w':
       dateInterval = '4h'
-      dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -7 })
+      dateFrom = utcDate({ days: -7 })
       break
     case '2w':
       dateInterval = '8h'
-      dateFrom = utcDate('yyyy-MM-dd', { days: -14 })
+      dateFrom = utcDate({ days: -14 }, 'yyyy-MM-dd')
       break
     case '30d': // @deprecated use 1m instead
     case '1m':
-      dateFrom = utcDate('yyyy-MM-dd', { month: -1 })
+      dateFrom = utcDate({ month: -1 }, 'yyyy-MM-dd')
       break
     case '3m':
-      dateFrom = utcDate('yyyy-MM-dd', { month: -3 })
+      dateFrom = utcDate({ month: -3 }, 'yyyy-MM-dd')
       break
     case '6m':
-      dateFrom = utcDate('yyyy-MM-dd', { month: -6 })
+      dateFrom = utcDate({ month: -6 }, 'yyyy-MM-dd')
       break
     case '1y':
-      dateFrom = utcDate('yyyy-MM-dd', { month: -12 })
+      dateFrom = utcDate({ month: -12 }, 'yyyy-MM-dd')
       break
     default:
       dateInterval = '30m'
-      dateFrom = utcDate('yyyy-MM-dd HH:00:00', { days: -1 })
+      dateFrom = utcDate({ days: -1 })
   }
 
   req.dateInterval = dateInterval // eslint-disable-line

@@ -104,13 +104,13 @@ class DefiProtocolSyncer extends Syncer {
     switch (period) {
       case '30m':
         return {
-          dateFrom: utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30 }),
-          dateTo: utils.utcDate('yyyy-MM-dd HH:mm:00Z'),
+          dateFrom: utils.utcDate({ days: -30 }),
+          dateTo: utils.utcDate(),
         }
       case '1d':
         return {
-          dateFrom: utils.utcDate('yyyy-MM-dd', { days: -31 }),
-          dateTo: utils.utcDate('yyyy-MM-dd', { days: -30 })
+          dateFrom: utils.utcDate({ days: -31 }, 'yyyy-MM-dd'),
+          dateTo: utils.utcDate({ days: -30 }, 'yyyy-MM-dd')
         }
       default:
         return {}
@@ -218,12 +218,11 @@ class DefiProtocolSyncer extends Syncer {
       }
     }
 
-    const format = 'yyyy-MM-dd HH:00:00Z'
-    const history2w = await DefiProtocolTvl.getListByDate(utils.utcDate(format, { days: -14 }), '4 hour')
-    const history1m = await DefiProtocolTvl.getListByDate(utils.utcDate(format, { days: -30 }))
-    const history3m = await DefiProtocolTvl.getListByDate(utils.utcDate(format, { days: -90 }))
-    const history6m = await DefiProtocolTvl.getListByDate(utils.utcDate(format, { days: -180 }))
-    const history1y = await DefiProtocolTvl.getListByDate(utils.utcDate(format, { days: -365 }))
+    const history2w = await DefiProtocolTvl.getListByDate(utils.utcDate({ days: -14 }), '4 hour')
+    const history1m = await DefiProtocolTvl.getListByDate(utils.utcDate({ days: -30 }))
+    const history3m = await DefiProtocolTvl.getListByDate(utils.utcDate({ days: -90 }))
+    const history6m = await DefiProtocolTvl.getListByDate(utils.utcDate({ days: -180 }))
+    const history1y = await DefiProtocolTvl.getListByDate(utils.utcDate({ days: -365 }))
 
     mapBy(history2w, '2w')
     mapBy(history1m, '1m')

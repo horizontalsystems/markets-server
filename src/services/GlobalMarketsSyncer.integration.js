@@ -192,13 +192,13 @@ describe('GlobalMarketsSyncer', () => {
       syncParams = syncer.syncParams('1d')
 
       dates.push(
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -31 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -20 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -16 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -12 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -8 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -4 }),
-        utcDate('yyyy-MM-dd HH:00:00Z', { days: -30 })
+        utcDate({ days: -31 }),
+        utcDate({ days: -30, hours: -20 }),
+        utcDate({ days: -30, hours: -16 }),
+        utcDate({ days: -30, hours: -12 }),
+        utcDate({ days: -30, hours: -8 }),
+        utcDate({ days: -30, hours: -4 }),
+        utcDate({ days: -30 })
       )
 
       for (let i = 0; i < dates.length; i += 1) {

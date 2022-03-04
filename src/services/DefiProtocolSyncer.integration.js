@@ -186,13 +186,13 @@ describe('DefiProtocolSyncer', () => {
       syncParams = syncer.syncParams('1d')
 
       dates.push(
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -31 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -20 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -16 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -12 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -8 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30, hours: -4 }),
-        utils.utcDate('yyyy-MM-dd HH:00:00Z', { days: -30 })
+        utils.utcDate({ days: -31 }),
+        utils.utcDate({ days: -30, hours: -20 }),
+        utils.utcDate({ days: -30, hours: -16 }),
+        utils.utcDate({ days: -30, hours: -12 }),
+        utils.utcDate({ days: -30, hours: -8 }),
+        utils.utcDate({ days: -30, hours: -4 }),
+        utils.utcDate({ days: -30 })
       )
 
       for (let i = 0; i < dates.length; i += 1) {

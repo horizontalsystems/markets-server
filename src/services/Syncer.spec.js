@@ -35,9 +35,9 @@ describe('Syncer', async () => {
       syncer.cron('1h', onTick)
 
       sinon.assert.notCalled(onTick)
-      expect(utcDate(dateFormat)).to.equal('2021-01-01 00:10:00+0')
+      expect(utcDate({}, dateFormat)).to.equal('2021-01-01 00:10:00+0')
       clock.tick(60 * 60 * 1000)
-      expect(utcDate(dateFormat)).to.equal('2021-01-01 01:10:00+0')
+      expect(utcDate({}, dateFormat)).to.equal('2021-01-01 01:10:00+0')
 
       sinon.assert.calledWith(onTick, {
         dateFrom: '2021-01-01 00:00:00+0',

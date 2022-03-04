@@ -20,12 +20,12 @@ class DexLiquiditySyncer extends Syncer {
 
     await this.syncStatsHistorical({
       dateFrom: '2020-01-01',
-      dateTo: utcDate('yyyy-MM-dd', { month: -12 })
+      dateTo: utcDate({ month: -12 }, 'yyyy-MM-dd')
     })
 
-    await this.syncFromBigquery({ dateFrom: utcDate('yyyy-MM-dd', { month: -12 }), dateTo: utcDate('yyyy-MM-dd', { month: -8 }) }, '1d')
-    await this.syncFromBigquery({ dateFrom: utcDate('yyyy-MM-dd', { month: -8 }), dateTo: utcDate('yyyy-MM-dd', { month: -4 }) }, '1d')
-    await this.syncFromBigquery({ dateFrom: utcDate('yyyy-MM-dd', { month: -4 }), dateTo: utcDate('yyyy-MM-dd', { days: -7 }) }, '1d')
+    await this.syncFromBigquery({ dateFrom: utcDate({ month: -12 }, 'yyyy-MM-dd'), dateTo: utcDate({ month: -8 }, 'yyyy-MM-dd') }, '1d')
+    await this.syncFromBigquery({ dateFrom: utcDate({ month: -8 }, 'yyyy-MM-dd'), dateTo: utcDate({ month: -4 }, 'yyyy-MM-dd') }, '1d')
+    await this.syncFromBigquery({ dateFrom: utcDate({ month: -4 }, 'yyyy-MM-dd'), dateTo: utcDate({ days: -7 }, 'yyyy-MM-dd') }, '1d')
     await this.syncFromBigquery(this.syncParamsHistorical('4h'), '4h')
     await this.syncFromBigquery(this.syncParamsHistorical('1h'), '1h')
 

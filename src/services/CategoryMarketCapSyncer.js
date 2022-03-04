@@ -14,7 +14,7 @@ class CategoryMarketCapSyncer extends Syncer {
       return
     }
 
-    const date = utcDate('yyyy-MM-dd HH:00:00Z')
+    const date = utcDate()
     const marketCaps = await Category.getMarketCaps()
     const categories = []
     const categoryMarketCaps = []
@@ -98,10 +98,9 @@ class CategoryMarketCapSyncer extends Syncer {
       }
     }
 
-    const format = 'yyyy-MM-dd HH:00:00Z'
-    const history24h = await CategoryMarketCap.findAll({ where: { date: utcDate(format, { hours: -1 }) } })
-    const history1w = await CategoryMarketCap.findAll({ where: { date: utcDate(format, { days: -7 }) } })
-    const history1m = await CategoryMarketCap.findAll({ where: { date: utcDate(format, { days: -30 }) } })
+    const history24h = await CategoryMarketCap.findAll({ where: { date: utcDate({ hours: -1 }) } })
+    const history1w = await CategoryMarketCap.findAll({ where: { date: utcDate({ days: -7 }) } })
+    const history1m = await CategoryMarketCap.findAll({ where: { date: utcDate({ days: -30 }) } })
 
     mapBy(history24h, '24h')
     mapBy(history1w, '1w')

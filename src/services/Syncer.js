@@ -35,18 +35,18 @@ class Syncer {
     switch (period) {
       case '1h':
         return {
-          dateFrom: utcDate('yyyy-MM-dd HH:00:00Z', { hours: -1 }),
-          dateTo: utcDate('yyyy-MM-dd HH:00:00Z')
+          dateFrom: utcDate({ hours: -1 }),
+          dateTo: utcDate()
         }
       case '4h':
         return {
-          dateFrom: utcDate('yyyy-MM-dd HH:00:00Z', { days: -1, hours: -4 }),
-          dateTo: utcDate('yyyy-MM-dd HH:00:00Z', { days: -1 })
+          dateFrom: utcDate({ days: -1, hours: -4 }),
+          dateTo: utcDate({ days: -1 })
         }
       case '1d':
         return {
-          dateFrom: utcDate('yyyy-MM-dd', { days: -8 }),
-          dateTo: utcDate('yyyy-MM-dd', { days: -7 })
+          dateFrom: utcDate({ days: -8 }, 'yyyy-MM-dd'),
+          dateTo: utcDate({ days: -7 }, 'yyyy-MM-dd')
         }
       default:
         return {}
@@ -57,18 +57,18 @@ class Syncer {
     switch (period) {
       case '1h':
         return {
-          dateFrom: utcDate('yyyy-MM-dd HH:00:00Z', { hours: -24 }),
-          dateTo: utcDate('yyyy-MM-dd HH:00:00Z')
+          dateFrom: utcDate({ hours: -24 }),
+          dateTo: utcDate()
         }
       case '4h':
         return {
-          dateFrom: utcDate('yyyy-MM-dd 00:00:00Z', { days: -7 }),
-          dateTo: utcDate('yyyy-MM-dd HH:00:00Z', { days: -1 })
+          dateFrom: utcDate({ days: -7 }),
+          dateTo: utcDate({ days: -1 })
         }
       case '1d':
         return {
-          dateFrom: utcDate('yyyy-MM-dd', { month: -12 }),
-          dateTo: utcDate('yyyy-MM-dd', { days: -7 })
+          dateFrom: utcDate({ month: -12 }, 'yyyy-MM-dd'),
+          dateTo: utcDate({ days: -7 }, 'yyyy-MM-dd')
         }
       default:
         return {}
