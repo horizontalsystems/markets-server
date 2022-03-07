@@ -18,34 +18,24 @@ class TransactionSyncer extends Syncer {
     }
 
     await this.syncFromBigquery(this.syncParamsHistorical('1d'), '1d')
-    await this.syncFromBigquery(this.syncParamsHistorical('4h'), '4h')
-    await this.syncFromBigquery(this.syncParamsHistorical('1h'), '1h')
+    await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m')
 
     await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'bsc', false, 30)
     await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'solana', false, 30)
   }
 
   async syncLatest() {
-    this.cron('1h', this.syncDailyStats)
-    this.cron('4h', this.syncWeeklyStats)
+    this.cron('30m', this.syncDailyStats)
     this.cron('1d', this.syncMonthlyStats)
   }
 
   async syncDailyStats(dateParams) {
-    await this.syncFromBigquery(dateParams, '1h')
+    await this.syncFromBigquery(dateParams, '30m')
     await this.syncFromBitquery(dateParams, 'bsc', true)
     await this.syncFromBitquery(dateParams, 'solana', true)
   }
 
-  async syncWeeklyStats({ dateFrom, dateTo }) {
-    await this.adjustPoints(dateFrom, dateTo)
-  }
-
   async syncMonthlyStats({ dateFrom, dateTo }) {
-    await this.adjustPoints(dateFrom, dateTo)
-  }
-
-  async adjustPoints(dateFrom, dateTo) {
     await Transaction.updatePoints(dateFrom, dateTo)
     await Transaction.deleteExpired(dateFrom, dateTo)
   }

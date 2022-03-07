@@ -79,7 +79,6 @@ describe('TransactionSyncer', async () => {
 
     beforeEach(() => {
       sinon.stub(syncer, 'syncDailyStats')
-      sinon.stub(syncer, 'syncWeeklyStats')
       sinon.stub(syncer, 'syncMonthlyStats')
     })
 
@@ -93,24 +92,8 @@ describe('TransactionSyncer', async () => {
       expect(utcDate({}, dateFormat)).to.equal('2021-01-01 09:10:00+0')
 
       sinon.assert.calledWith(syncer.syncDailyStats, {
-        dateFrom: '2021-01-01 08:00:00+0',
+        dateFrom: '2021-01-01 08:30:00+0',
         dateTo: '2021-01-01 09:00:00+0'
-      })
-    })
-
-    it('fetches weekly stats when 4 hours pass', () => {
-      syncer.syncLatest()
-
-      sinon.assert.notCalled(syncer.syncWeeklyStats)
-      expect(utcDate({}, dateFormat)).to.equal('2021-01-01 08:10:00+0')
-
-      clock.tick(4 * 60 * 60 * 1000)
-
-      expect(utcDate({}, dateFormat)).to.equal('2021-01-01 12:10:00+0')
-
-      sinon.assert.calledWith(syncer.syncWeeklyStats, {
-        dateFrom: '2020-12-31 08:00:00+0',
-        dateTo: '2020-12-31 12:00:00+0'
       })
     })
 

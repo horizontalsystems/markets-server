@@ -50,8 +50,8 @@ volume_entry AS (
 SELECT
   coin_address,
   CASE @period
+    WHEN '30m' THEN TIMESTAMP_SECONDS(30*60 * DIV(UNIX_SECONDS(block_timestamp), 30*60))
     WHEN '1h' THEN TIMESTAMP_TRUNC(block_timestamp, HOUR)
-    WHEN '4h' THEN TIMESTAMP_SECONDS(4*60*60 * DIV(UNIX_SECONDS(block_timestamp), 4*60*60))
     WHEN '1d' THEN TIMESTAMP_TRUNC(block_timestamp, DAY)
   END as block_date,
   COUNT(DISTINCT address) as address_count,

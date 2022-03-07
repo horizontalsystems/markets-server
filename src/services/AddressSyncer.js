@@ -23,8 +23,7 @@ class AddressSyncer extends Syncer {
   async syncHistorical() {
     if (!await Address.existsForPlatforms(['ethereum', 'erc20'])) {
       await this.syncStatsFromBigquery(this.syncParamsHistorical('1d'), '1d')
-      await this.syncStatsFromBigquery(this.syncParamsHistorical('4h'), '4h')
-      await this.syncStatsFromBigquery(this.syncParamsHistorical('1h'), '1h')
+      await this.syncStatsFromBigquery(this.syncParamsHistorical('30m'), '30m')
     }
 
     if (!await Address.existsForPlatforms(['bep20'])) {
@@ -37,17 +36,14 @@ class AddressSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('1h', this.syncDailyStats)
-    this.cron('4h', this.syncWeeklyStats)
+    this.cron('30m', this.syncDailyStats)
     this.cron('1d', this.syncMonthlyStats)
   }
 
   async syncDailyStats(dateParams) {
-    await this.syncStatsFromBigquery(dateParams, '1h')
-  }
-
-  async syncWeeklyStats(dateParams) {
     await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
+
+    await this.syncStatsFromBigquery(dateParams, '30m')
     await this.syncStatsFromBitquery(dateParams, 'bsc', true)
     await this.syncStatsFromBitquery(dateParams, 'solana', true)
   }
@@ -115,10 +111,12 @@ class AddressSyncer extends Syncer {
 
         const transfers = [...transfersSenders, ...transferReceivers]
         const transfersMap = transfers.reduce((map, { account, currency }) => {
-          if (!map[currency.address]) {
+          const mapElement = map[currency.address]
+
+          if (!mapElement) {
             map[currency.address] = [account.address]
-          } else if (!map[currency.address].find(t => t === account.address)) {
-            map[currency.address] = [...[account.address], ...map[currency.address]]
+          } else if (!mapElement.find(t => t === account.address)) {
+            map[currency.address] = [...[account.address], ...mapElement]
           }
 
           return map

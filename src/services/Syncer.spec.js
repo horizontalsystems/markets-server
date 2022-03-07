@@ -7,7 +7,7 @@ const { utcDate } = require('../utils')
 const Syncer = require('./Syncer')
 
 describe('Syncer', async () => {
-  const date = DateTime.fromSQL('2021-01-01 00:10:00Z')
+  const date = DateTime.fromSQL('2021-01-01 00:00:00Z')
   const dateFormat = 'yyyy-MM-dd HH:mm:00Z'
 
   /** @type Syncer */
@@ -26,22 +26,22 @@ describe('Syncer', async () => {
   describe('#cron', () => {
     it('creates cron job', () => {
       const onTick = sinon.spy()
-      const cron = syncer.cron('1h', onTick)
+      const cron = syncer.cron('30m', onTick)
       expect(cron).instanceof(CronJob)
     })
 
     it('calls a given function at the specified time pass', () => {
       const onTick = sinon.spy()
-      syncer.cron('1h', onTick)
+      syncer.cron('30m', onTick)
 
       sinon.assert.notCalled(onTick)
-      expect(utcDate({}, dateFormat)).to.equal('2021-01-01 00:10:00+0')
-      clock.tick(60 * 60 * 1000)
-      expect(utcDate({}, dateFormat)).to.equal('2021-01-01 01:10:00+0')
+      expect(utcDate({}, dateFormat)).to.equal('2021-01-01 00:00:00+0')
+      clock.tick(30 * 60 * 1000)
+      expect(utcDate({}, dateFormat)).to.equal('2021-01-01 00:30:00+0')
 
       sinon.assert.calledWith(onTick, {
         dateFrom: '2021-01-01 00:00:00+0',
-        dateTo: '2021-01-01 01:00:00+0'
+        dateTo: '2021-01-01 00:30:00+0'
       })
     })
   })
@@ -59,17 +59,10 @@ describe('Syncer', async () => {
   })
 
   describe('#syncParams', () => {
-    it('returns date params for the `1h` period', () => {
-      expect(syncer.syncParams('1h')).deep.equal({
-        dateFrom: '2020-12-31 23:00:00+0',
+    it('returns date params for the `30m` period', () => {
+      expect(syncer.syncParams('30m')).deep.equal({
+        dateFrom: '2020-12-31 23:30:00+0',
         dateTo: '2021-01-01 00:00:00+0'
-      })
-    })
-
-    it('returns date params for the `4h` period', () => {
-      expect(syncer.syncParams('4h')).deep.equal({
-        dateFrom: '2020-12-30 20:00:00+0',
-        dateTo: '2020-12-31 00:00:00+0'
       })
     })
 
@@ -83,24 +76,17 @@ describe('Syncer', async () => {
 
   describe('#syncParamsHistorical', () => {
 
-    it('returns date params for the `1h` period', () => {
-      expect(syncer.syncParamsHistorical('1h')).deep.equal({
-        dateFrom: '2020-12-31 00:00:00+0',
+    it('returns date params for the `30m` period', () => {
+      expect(syncer.syncParamsHistorical('30m')).deep.equal({
+        dateFrom: '2020-12-02 00:00:00+0',
         dateTo: '2021-01-01 00:00:00+0'
-      })
-    })
-
-    it('returns date params for the `4h` period', () => {
-      expect(syncer.syncParamsHistorical('4h')).deep.equal({
-        dateFrom: '2020-12-25 00:00:00+0',
-        dateTo: '2020-12-31 00:00:00+0'
       })
     })
 
     it('returns date params for the `1d` period', () => {
       expect(syncer.syncParamsHistorical('1d')).deep.equal({
         dateFrom: '2020-01-01',
-        dateTo: '2020-12-25'
+        dateTo: '2021-01-01'
       })
     })
   })

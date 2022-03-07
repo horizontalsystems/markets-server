@@ -26,25 +26,19 @@ class DexLiquiditySyncer extends Syncer {
     await this.syncFromBigquery({ dateFrom: utcDate({ month: -12 }, 'yyyy-MM-dd'), dateTo: utcDate({ month: -8 }, 'yyyy-MM-dd') }, '1d')
     await this.syncFromBigquery({ dateFrom: utcDate({ month: -8 }, 'yyyy-MM-dd'), dateTo: utcDate({ month: -4 }, 'yyyy-MM-dd') }, '1d')
     await this.syncFromBigquery({ dateFrom: utcDate({ month: -4 }, 'yyyy-MM-dd'), dateTo: utcDate({ days: -7 }, 'yyyy-MM-dd') }, '1d')
-    await this.syncFromBigquery(this.syncParamsHistorical('4h'), '4h')
-    await this.syncFromBigquery(this.syncParamsHistorical('1h'), '1h')
+    await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m')
 
     await this.syncFromStreamingfast(utcStartOfDay({ month: -12 }), 33)
   }
 
   async syncLatest() {
-    this.cron('1h', this.syncDailyStats)
-    this.cron('4h', this.syncWeeklyStats)
+    this.cron('30m', this.syncDailyStats)
     this.cron('1d', this.syncMonthlyStats)
   }
 
   async syncDailyStats(dateParams) {
-    await this.syncFromBigquery(dateParams, '1h')
+    await this.syncFromBigquery(dateParams, '30m')
     await this.syncFromStreamingfast(utcStartOfDay())
-  }
-
-  async syncWeeklyStats({ dateFrom, dateTo }) {
-    await DexLiquidity.deleteExpired(dateFrom, dateTo)
   }
 
   async syncMonthlyStats({ dateFrom, dateTo }) {

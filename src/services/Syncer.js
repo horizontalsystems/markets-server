@@ -33,15 +33,15 @@ class Syncer {
 
   syncParams(period) {
     switch (period) {
+      case '30m':
+        return {
+          dateFrom: utcDate({ minute: -30 }, 'yyyy-MM-dd HH:mm:00Z'),
+          dateTo: utcDate({}, 'yyyy-MM-dd HH:mm:00Z')
+        }
       case '1h':
         return {
-          dateFrom: utcDate({ hours: -1 }),
+          dateFrom: utcDate({ minute: -30 }),
           dateTo: utcDate()
-        }
-      case '4h':
-        return {
-          dateFrom: utcDate({ days: -1, hours: -4 }),
-          dateTo: utcDate({ days: -1 })
         }
       case '1d':
         return {
@@ -55,20 +55,15 @@ class Syncer {
 
   syncParamsHistorical(period) {
     switch (period) {
-      case '1h':
+      case '30m':
         return {
-          dateFrom: utcDate({ hours: -24 }),
+          dateFrom: utcDate({ days: -30 }),
           dateTo: utcDate()
-        }
-      case '4h':
-        return {
-          dateFrom: utcDate({ days: -7 }),
-          dateTo: utcDate({ days: -1 })
         }
       case '1d':
         return {
           dateFrom: utcDate({ month: -12 }, 'yyyy-MM-dd'),
-          dateTo: utcDate({ days: -7 }, 'yyyy-MM-dd')
+          dateTo: utcDate({}, 'yyyy-MM-dd')
         }
       default:
         return {}

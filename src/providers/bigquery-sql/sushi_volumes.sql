@@ -41,8 +41,8 @@ swaps AS (
 SELECT
   token0 as address,
   CASE @period
+    WHEN '30m' THEN TIMESTAMP_SECONDS(30*60 * DIV(UNIX_SECONDS(block_timestamp), 30*60))
     WHEN '1h' THEN TIMESTAMP_TRUNC(block_timestamp, HOUR)
-    WHEN '4h' THEN TIMESTAMP_SECONDS(4*60*60 * DIV(UNIX_SECONDS(block_timestamp), 4*60*60))
     ELSE TIMESTAMP_TRUNC(block_timestamp, DAY)
   END AS date,
   SUM (ifnull(safe_cast(amount0 AS BIGNUMERIC),0)) / POW(10,T.decimals) AS volume

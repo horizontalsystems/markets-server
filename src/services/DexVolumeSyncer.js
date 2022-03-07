@@ -18,25 +18,23 @@ class DexVolumeSyncer extends Syncer {
     }
 
     await this.syncFromBigquery(this.syncParamsHistorical('1d'), '1d')
-    await this.syncFromBigquery(this.syncParamsHistorical('4h'), '4h')
-    await this.syncFromBigquery(this.syncParamsHistorical('1h'), '1h')
+    await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m')
 
     await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'bsc', 'day', 30)
   }
 
   async syncLatest() {
-    this.cron('1h', this.syncDailyStats)
-    this.cron('4h', this.syncWeeklyStats)
+    this.cron('30m', this.syncDailyStatsBigquery)
+    this.cron('1h', this.syncDailyStatsBitquery)
     this.cron('1d', this.syncMonthlyStats)
   }
 
-  async syncDailyStats(dateParams) {
-    await this.syncFromBigquery(dateParams, '1h')
-    await this.syncFromBitquery(dateParams, 'bsc', 'hour', 100)
+  async syncDailyStatsBigquery(dateParams) {
+    await this.syncFromBigquery(dateParams, '30m')
   }
 
-  async syncWeeklyStats({ dateFrom, dateTo }) {
-    await DexVolume.deleteExpired(dateFrom, dateTo)
+  async syncDailyStatsBitquery(dateParams) {
+    await this.syncFromBitquery(dateParams, 'bsc', 'hour', 100)
   }
 
   async syncMonthlyStats({ dateFrom, dateTo }) {
