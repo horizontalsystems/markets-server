@@ -13,7 +13,6 @@ class Bitquery {
       default:
         return `${network}(network: ${network})`
     }
-
   }
 
   async getTransferSenders(dateFrom, dateTo, platforms, network) {
@@ -27,7 +26,7 @@ class Bitquery {
       query: `query ($since: ISO8601DateTime!, $till: ISO8601DateTime!, $tokens: [String!]) {
         res:${chain} {
           transfers(time: { since: $since, till: $till }, currency: { in: $tokens }, options: {limit: 10000}) {
-            account : sender {
+            account: sender {
               address
             }
             currency {
@@ -38,19 +37,7 @@ class Bitquery {
       }`
     }
 
-    return axios.post('/', query)
-      .then(({ data }) => data)
-      .then(({ data }) => {
-        if (!data || !data.res || !data.res.transfers) {
-          return []
-        }
-
-        return data.res.transfers
-      })
-      .catch(e => {
-        console.log(e)
-        return []
-      })
+    return this.fetchTransfers(query)
   }
 
   async getTransferReceivers(dateFrom, dateTo, platforms, network) {
@@ -64,7 +51,7 @@ class Bitquery {
       query: `query ($since: ISO8601DateTime!, $till: ISO8601DateTime!, $tokens: [String!]) {
         res:${chain} {
           transfers(time: { since: $since, till: $till }, currency: { in: $tokens }, options: {limit: 10000}) {
-            account : receiver {
+            account: receiver {
               address
             }
             currency {
@@ -75,19 +62,7 @@ class Bitquery {
       }`
     }
 
-    return axios.post('/', query)
-      .then(({ data }) => data)
-      .then(({ data }) => {
-        if (!data || !data.res || !data.res.transfers) {
-          return []
-        }
-
-        return data.res.transfers
-      })
-      .catch(e => {
-        console.log(e)
-        return []
-      })
+    return this.fetchTransfers(query)
   }
 
   async getTransfers(dateFrom, platforms, network) {
@@ -113,19 +88,7 @@ class Bitquery {
       }`
     }
 
-    return axios.post('/', query)
-      .then(({ data }) => data)
-      .then(({ data }) => {
-        if (!data || !data.res || !data.res.transfers) {
-          return []
-        }
-
-        return data.res.transfers
-      })
-      .catch(e => {
-        console.log(e)
-        return []
-      })
+    return this.fetchTransfers(query)
   }
 
   async getDexVolumes(dateFrom, platforms, network, exchange, interval) {
@@ -164,6 +127,22 @@ class Bitquery {
         }
 
         return data.res.dexTrades
+      })
+      .catch(e => {
+        console.log(e)
+        return []
+      })
+  }
+
+  fetchTransfers(query) {
+    return axios.post('/', query)
+      .then(({ data }) => data)
+      .then(({ data }) => {
+        if (!data || !data.res || !data.res.transfers) {
+          return []
+        }
+
+        return data.res.transfers
       })
       .catch(e => {
         console.log(e)
