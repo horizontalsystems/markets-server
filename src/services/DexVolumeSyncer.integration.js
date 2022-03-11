@@ -1,11 +1,10 @@
 const sinon = require('sinon')
 const { expect } = require('chai')
 const { DateTime } = require('luxon')
-
+const { bitquery } = require('../providers/bitquery')
+const bigquery = require('../providers/bigquery')
 const DexVolumeSyncer = require('./DexVolumeSyncer')
 const DexVolume = require('../db/models/DexVolume')
-const bigquery = require('../providers/bigquery')
-const bitquery = require('../providers/bitquery')
 const Platform = require('../db/models/Platform')
 const Coin = require('../db/models/Coin')
 

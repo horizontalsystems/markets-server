@@ -1,6 +1,6 @@
+const bitquery = require('../../providers/bitquery').bitqueryProxy
 const Address = require('../../db/models/Address')
 const CoinHolder = require('../../db/models/CoinHolder')
-const bitquery = require('../../providers/bitquery')
 const serializer = require('./addresses.serializer')
 const Platforms = require('../../db/models/Platform')
 
@@ -32,7 +32,7 @@ exports.coins = async ({ params, query }, res, next) => {
     ])
 
   try {
-    const balances = await Platforms.getBalances(values)
+    const balances = await Platforms.getBalances(values, query.chain)
     res.send({
       block_number: data.blockNumber,
       balances

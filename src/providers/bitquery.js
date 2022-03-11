@@ -1,16 +1,22 @@
 const { get } = require('lodash')
-const axios = require('axios').create({
-  baseURL: 'https://graphql.bitquery.io',
-  timeout: 180000,
-  headers: { 'X-API-KEY': process.env.BITQUERY_KEY }
-})
+const axios = require('axios')
 
 class Bitquery {
+
+  constructor(apiKey) {
+    this.axios = axios.create({
+      baseURL: 'https://graphql.bitquery.io',
+      timeout: 180000,
+      headers: { 'X-API-KEY': apiKey }
+    })
+  }
 
   getChain(network) {
     switch (network) {
       case 'bsc':
         return 'ethereum(network: bsc)'
+      case 'matic':
+        return 'ethereum(network: matic)'
       default:
         return `${network}(network: ${network})`
     }
@@ -41,7 +47,7 @@ class Bitquery {
       }`
     }
 
-    return axios.post('/', query)
+    return this.axios.post('/', query)
       .then(({ data }) => data)
       .then(({ data }) => {
         const balances = get(data, 'res.address[0].balances')
@@ -73,7 +79,7 @@ class Bitquery {
       }`
     }
 
-    return axios.post('/', query)
+    return this.axios.post('/', query)
       .then(({ data }) => data)
       .then(({ data }) => {
         return get(data, 'res.blocks[0].count') || 0
@@ -188,7 +194,7 @@ class Bitquery {
       }`
     }
 
-    return axios.post('/', query)
+    return this.axios.post('/', query)
       .then(({ data }) => data)
       .then(({ data }) => {
         if (!data || !data.res || !data.res.dexTrades) {
@@ -204,7 +210,7 @@ class Bitquery {
   }
 
   fetchTransfers(query) {
-    return axios.post('/', query)
+    return this.axios.post('/', query)
       .then(({ data }) => data)
       .then(({ data }) => {
         if (!data || !data.res || !data.res.transfers) {
@@ -220,4 +226,5 @@ class Bitquery {
   }
 }
 
-module.exports = new Bitquery()
+exports.bitquery = new Bitquery(process.env.BITQUERY_KEY)
+exports.bitqueryProxy = new Bitquery(process.env.BITQUERY_KEY_PROXY)

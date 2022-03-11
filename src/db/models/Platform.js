@@ -57,9 +57,21 @@ class Platform extends SequelizeModel {
     return Platform.findAll({ where })
   }
 
-  static getBalances(values) {
+  static getBalances(values, chain) {
     if (!values.length) {
       return []
+    }
+
+    let platform
+    switch (chain) {
+      case 'bsc':
+        platform = 'bep20'
+        break
+      case 'matic':
+        platform = 'polygon-pos'
+        break
+      default:
+        platform = 'erc20'
     }
 
     const query = `
@@ -70,10 +82,11 @@ class Platform extends SequelizeModel {
      FROM (values :values) as V(address, value) 
      JOIN platforms P on P.address = V.address
      JOIN coins C on C.id = P.coin_id
+     WHERE type = :platform
      ORDER BY C.code
     `
 
-    return Platform.query(query, { values })
+    return Platform.query(query, { values, platform })
   }
 
 }

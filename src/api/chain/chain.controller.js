@@ -1,4 +1,4 @@
-const bitquery = require('../../providers/bitquery')
+const bitquery = require('../../providers/bitquery').bitqueryProxy
 
 exports.blockNumber = async ({ params }, res, next) => {
   try {

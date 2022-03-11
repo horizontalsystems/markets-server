@@ -1,8 +1,8 @@
 const { chunk } = require('lodash')
+const { bitquery } = require('../providers/bitquery')
+const bigquery = require('../providers/bigquery')
 const DexVolume = require('../db/models/DexVolume')
 const Platform = require('../db/models/Platform')
-const bigquery = require('../providers/bigquery')
-const bitquery = require('../providers/bitquery')
 const Syncer = require('./Syncer')
 
 class DexVolumeSyncer extends Syncer {

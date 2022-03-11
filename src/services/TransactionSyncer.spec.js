@@ -2,11 +2,10 @@ const sinon = require('sinon')
 const { DateTime } = require('luxon')
 const { expect } = require('chai')
 const { utcDate } = require('../utils')
-
+const { bitquery } = require('../providers/bitquery')
 const Transaction = require('../db/models/Transaction')
 const TransactionSyncer = require('./TransactionSyncer')
 const Platform = require('../db/models/Platform')
-const bitquery = require('../providers/bitquery')
 
 describe('TransactionSyncer', async () => {
   const date = DateTime.fromISO('2021-01-01T08:10:00Z')
