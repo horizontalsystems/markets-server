@@ -61,6 +61,29 @@ class Bitquery {
       })
   }
 
+  async getBlockNumber(network) {
+    const chain = this.getChain(network)
+    const query = {
+      query: `{
+        res:${chain} {
+          blocks {
+            count
+          }
+        }
+      }`
+    }
+
+    return axios.post('/', query)
+      .then(({ data }) => data)
+      .then(({ data }) => {
+        return get(data, 'res.blocks[0].count') || 0
+      })
+      .catch(e => {
+        console.log(e)
+        return 0
+      })
+  }
+
   async getTransferSenders(dateFrom, dateTo, platforms, network) {
     const chain = this.getChain(network)
     const query = {
