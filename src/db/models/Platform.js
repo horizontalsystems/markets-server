@@ -57,6 +57,25 @@ class Platform extends SequelizeModel {
     return Platform.findAll({ where })
   }
 
+  static getBalances(values) {
+    if (!values.length) {
+      return []
+    }
+
+    const query = `
+      SELECT
+        V.value,
+        V.address,
+        C.price
+     FROM (values :values) as V(address, value) 
+     JOIN platforms P on P.address = V.address
+     JOIN coins C on C.id = P.coin_id
+     ORDER BY C.code
+    `
+
+    return Platform.query(query, { values })
+  }
+
 }
 
 module.exports = Platform

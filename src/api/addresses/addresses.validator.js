@@ -6,6 +6,16 @@ const options = {
 
 module.exports = {
   // GET /v1/addresses
+  validateAddressCoins: validate({
+    params: Joi.object({
+      address: Joi.string().required()
+    }),
+    query: Joi.object({
+      chain: Joi.string().required().valid('ethereum', 'bsc', 'matic')
+    })
+  }, options),
+
+  // GET /v1/addresses
   validateAddresses: validate({
     query: Joi.object({
       coin_uid: Joi.string().required(),

@@ -1,6 +1,8 @@
 const Address = require('../../db/models/Address')
 const CoinHolder = require('../../db/models/CoinHolder')
+const bitquery = require('../../providers/bitquery')
 const serializer = require('./addresses.serializer')
+const Platforms = require('../../db/models/Platform')
 
 exports.index = async ({ query, dateInterval, dateFrom }, res) => {
   const addresses = await Address.getByCoinUid(query.coin_uid, dateInterval, dateFrom)
@@ -17,5 +19,25 @@ exports.holders = async ({ query }, res) => {
     })
   } else {
     res.send(serializer.serializeCoinHolders(holders))
+  }
+}
+
+exports.coins = async ({ params, query }, res, next) => {
+  const data = await bitquery.getAddressCoins(params.address, query.chain)
+  const values = data.balances
+    .filter(item => item.value > 0 && item.currency.tokenType === 'ERC20')
+    .map(item => [
+      item.currency.address,
+      item.value
+    ])
+
+  try {
+    const balances = await Platforms.getBalances(values)
+    res.send({
+      block_number: data.blockNumber,
+      balances
+    })
+  } catch (e) {
+    next(e)
   }
 }

@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./addresses.controller')
-const { validateAddresses, validateHolders } = require('./addresses.validator')
+const { validateAddresses, validateHolders, validateAddressCoins } = require('./addresses.validator')
 const { setDateInterval } = require('../middlewares')
 
 const router = express.Router()
@@ -42,5 +42,18 @@ router.get('/', validateAddresses, setDateInterval, controller.index)
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  */
 router.get('/holders', validateHolders, controller.holders)
+
+/**
+ * @api {get} /v1/addresses/:address/coins List coin holders
+ * @apiDescription Get a list of coin holders
+ * @apiVersion 1.0.0
+ * @apiGroup Address
+ *
+ * @apiParam  {String=bitcoin,ethereum,...} address   Address
+ * @apiParam  {String=ethereum,bsc,solana}  chain     Address's chain
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ */
+router.get('/:address/coins', validateAddressCoins, controller.coins)
 
 module.exports = router

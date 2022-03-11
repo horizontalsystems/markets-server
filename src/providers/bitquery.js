@@ -1,3 +1,4 @@
+const { get } = require('lodash')
 const axios = require('axios').create({
   baseURL: 'https://graphql.bitquery.io',
   timeout: 180000,
@@ -13,6 +14,51 @@ class Bitquery {
       default:
         return `${network}(network: ${network})`
     }
+  }
+
+  getAddressCoins(address, network) {
+    const chain = this.getChain(network)
+    const query = {
+      variables: {
+        address
+      },
+      query: `query ($address: String!) {
+        res:${chain} {
+          address(address: { is: $address }) {
+            balances {
+              value
+              currency {
+                address
+                symbol
+                tokenType
+              }
+            }
+          }
+          blocks {
+            count
+          }
+        }
+      }`
+    }
+
+    return axios.post('/', query)
+      .then(({ data }) => data)
+      .then(({ data }) => {
+        const balances = get(data, 'res.address[0].balances')
+        const blockNumber = get(data, 'res.blocks[0].count')
+
+        return {
+          balances: balances || [],
+          blockNumber: blockNumber || 0
+        }
+      })
+      .catch(e => {
+        console.log(e)
+        return {
+          balances: [],
+          blockNumber: 0
+        }
+      })
   }
 
   async getTransferSenders(dateFrom, dateTo, platforms, network) {
