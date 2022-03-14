@@ -6,7 +6,11 @@ const logger = require('../../config/logger')
 exports.collections = async ({ query }, res) => {
   let collections = []
   try {
-    collections = await opensea.getCollections(query.asset_owner, query.offset, query.limit)
+    if (query.asset_owner) {
+      collections = await opensea.getCollections(query.asset_owner, query.offset, query.limit)
+    } else {
+      collections = await NftCollection.getCollections(query.limit)
+    }
   } catch (e) {
     logger.error('Error fetching nft collection:', e)
   }
