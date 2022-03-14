@@ -38,9 +38,9 @@ exports.getProtocol = id => {
     .then(resp => resp.data)
 }
 
-exports.getNftCollections = () => {
+exports.getNftCollections = (limit = 100) => {
   console.log('Fetching NFT Collections')
 
-  return axiosNft.get('/collections')
+  return axiosNft.get(`/collections?limit=${limit}`)
     .then(resp => resp.data.data)
 }
