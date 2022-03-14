@@ -13,9 +13,10 @@ const router = express.Router()
  * @apiVersion 1.0.0
  * @apiGroup NFT
  *
- * @apiParam {String}                          asset_owner Currency code
- * @apiParam {Number{-2147483648-2147483648}}  offset For pagination. Number of contracts offset
- * @apiParam {NUmber{1-300}}                   limit For pagination. Maximum number of contracts to return
+ * @apiParam {String}                          [asset_owner] Asset owner address. If not specified all collections will be returned
+ * @apiParam {Number{-2147483648-2147483648}}  [offset]      For pagination. Number of contracts offset (Deprecated and will we replaced by page parameter)
+ * @apiParam {Number{-2147483648-2147483648}}  [page=1]      For pagination. Number of contracts offset
+ * @apiParam {NUmber{1-300}}                   [limit=300]   For pagination. Maximum number of collections to return
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -42,7 +43,7 @@ router.get('/collections', controller.collections)
  * @apiVersion 1.0.0
  * @apiGroup NFT
  *
- * @apiParam {String}  collection_uid UID (collection slug) of the collection to retrieve details for
+ * @apiParam {String}  [collection_uid] UID (collection slug) of the collection to retrieve details for
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -99,7 +100,7 @@ router.get('/collection/:collection_uid', controller.collection)
  * @apiVersion 1.0.0
  * @apiGroup NFT
  *
- * @apiParam {String}  collection_uid UID (collection slug) of the collection to retrieve details for
+ * @apiParam {String}  [collection_uid] UID (collection slug) of the collection to retrieve details for
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -137,13 +138,14 @@ router.get('/collection/:collection_uid/stats', controller.collectionStats)
  * @apiVersion 1.0.0
  * @apiGroup NFT
  *
- * @apiParam {String}                          owner                     The address of the owner of the assets
- * @apiParam {String}                          token_ids                 Comma separated token_IDs to search
- * @apiParam {String}                          contract_addresses        Comma separated contract addresses to search
- * @apiParam {String}                          collection                Limit responses to members of a collection
- * @apiParam {String=asc,desc}                 order_direction           Can be asc for ascending or desc for descending
- * @apiParam {Number{-2147483648-2147483648}}  offset                    Offset
- * @apiParam {NUmber{1-50}}                    limit                     Limit. Defaults to 20, capped at 50.
+ * @apiParam {String}                          [owner]                     The address of the owner of the assets
+ * @apiParam {String}                          [token_ids]                 Comma separated token_IDs to search
+ * @apiParam {String}                          [contract_addresses]        Comma separated contract addresses to search
+ * @apiParam {String}                          [collection]                Limit responses to members of a collection
+ * @apiParam {String=asc,desc}                 [order_direction]           Can be asc for ascending or desc for descending
+ * @apiParam {Number{-2147483648-2147483648}}  [offset]                    For pagination (Deprecated and will we replaced by page parameter)
+ * @apiParam {Number{-2147483648-2147483648}}  [page=1]                    For pagination.
+ * @apiParam {NUmber{1-50}}                    [limit]                     Limit. Defaults to 20, capped at 50.
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK

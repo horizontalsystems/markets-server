@@ -4,12 +4,15 @@ const NftCollection = require('../../db/models/NftCollection')
 const logger = require('../../config/logger')
 
 exports.collections = async ({ query }, res) => {
+  const { limit = 100, page = 1 } = query
+  const offset = query.offset ? query.offset : limit * (page - 1)
   let collections = []
+
   try {
     if (query.asset_owner) {
-      collections = await opensea.getCollections(query.asset_owner, query.offset, query.limit)
+      collections = await opensea.getCollections(query.asset_owner, offset, limit)
     } else {
-      collections = await NftCollection.getCollections(query.limit)
+      collections = await NftCollection.getCollections(offset, limit)
     }
   } catch (e) {
     logger.error('Error fetching nft collection:', e)
@@ -51,7 +54,10 @@ exports.collectionStats = async ({ params }, res) => {
 }
 
 exports.assets = async ({ query }, res) => {
+  const { limit = 100, page = 1 } = query
+  const offset = query.offset ? query.offset : limit * (page - 1)
   let assets = []
+
   try {
     assets = await opensea.getAssets(
       query.owner,
@@ -59,8 +65,8 @@ exports.assets = async ({ query }, res) => {
       query.contract_addresses,
       query.collection,
       query.order_direction,
-      query.offset,
-      query.limit
+      offset,
+      limit
     )
   } catch (e) {
     logger.error('Error fetching nft assets:', e)

@@ -93,15 +93,16 @@ class NftCollection extends SequelizeModel {
     return asset
   }
 
-  static async getCollections(limit = 10) {
+  static async getCollections(offset = 0, limit = 100) {
     const query = (`
       SELECT uid, name, image_data, stats
       FROM nft_collections
       ORDER BY (stats ->> 'total_volume')::float DESC
+      OFFSET :offset
       LIMIT :limit
     `)
 
-    return NftCollection.query(query, { limit })
+    return NftCollection.query(query, { offset, limit })
   }
 
   static getByUids(uids) {
