@@ -28,6 +28,10 @@ class Opensea {
     return axios
       .get(`/collection/${collectionUid}`)
       .then(resp => normalizer.normalizeCollection(resp.data.collection ? resp.data.collection : resp.data))
+      .catch(e => {
+        console.error(e.message)
+        return null
+      })
   }
 
   getAssets(owner, tokenIds, contractAddresses, collectionUid, orderDirection = 'desc', offset = 0, limit = 20) {
