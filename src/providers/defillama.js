@@ -8,8 +8,6 @@ const axiosNft = require('axios').create({
   timeout: 180000 * 3
 })
 
-const normalizer = require('./defillama-normalizer')
-
 exports.getCharts = (chain) => {
   const url = chain
     ? `/charts/${chain}`
@@ -45,16 +43,4 @@ exports.getNftCollections = () => {
 
   return axiosNft.get('/collections')
     .then(resp => resp.data.data)
-}
-
-exports.getNftCollection = uid => {
-  console.log(`Fetching NFT ${uid} collection`)
-
-  return axiosNft.get(`/collection/${uid}`).then(resp => {
-    if (Object.values(resp.data).length > 0) {
-      return normalizer.normalizeNftCollection(resp.data[0])
-    }
-
-    return {}
-  })
 }
