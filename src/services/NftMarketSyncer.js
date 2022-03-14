@@ -20,16 +20,11 @@ class NftMarketSyncer extends Syncer {
 
   async syncLatest() {
     this.cron('30m', this.syncDailyStats)
-    this.cron('4h', this.syncWeeklyStats)
     this.cron('1d', this.syncMonthlyStats)
   }
 
   async syncDailyStats({ dateTo }) {
     await this.syncMarkets(dateTo)
-  }
-
-  async syncWeeklyStats({ dateFrom, dateTo }) {
-    await this.adjustPoints(dateFrom, dateTo)
   }
 
   async syncMonthlyStats({ dateFrom, dateTo }) {
