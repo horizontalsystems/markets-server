@@ -35,8 +35,8 @@ class Syncer {
     switch (period) {
       case '30m':
         return {
-          dateFrom: utcDate({ minute: -30 }, 'yyyy-MM-dd HH:mm:00Z'),
-          dateTo: utcDate({}, 'yyyy-MM-dd HH:mm:00Z')
+          dateFrom: utcDate({ minute: -30 }),
+          dateTo: utcDate({})
         }
       case '1h':
         return {
@@ -45,8 +45,8 @@ class Syncer {
         }
       case '1d':
         return {
-          dateFrom: utcDate({ days: -8 }, 'yyyy-MM-dd'),
-          dateTo: utcDate({ days: -7 }, 'yyyy-MM-dd')
+          dateFrom: utcDate({ days: -31 }, 'yyyy-MM-dd'),
+          dateTo: utcDate({ days: -30 }, 'yyyy-MM-dd')
         }
       default:
         return {}

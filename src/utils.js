@@ -8,7 +8,7 @@ exports.sleep = (timeout = 1000) => {
   })
 }
 
-exports.utcDate = (duration = {}, format = 'yyyy-MM-dd HH:00:00Z') => {
+exports.utcDate = (duration = {}, format = 'yyyy-MM-dd HH:mm:00Z') => {
   return DateTime.utc()
     .plus(duration)
     .toFormat(format)

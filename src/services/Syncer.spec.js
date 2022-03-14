@@ -68,8 +68,8 @@ describe('Syncer', async () => {
 
     it('returns date params for the `1d` period', () => {
       expect(syncer.syncParams('1d')).deep.equal({
-        dateFrom: '2020-12-24',
-        dateTo: '2020-12-25'
+        dateFrom: '2020-12-01',
+        dateTo: '2020-12-02'
       })
     })
   })

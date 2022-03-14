@@ -96,7 +96,7 @@ describe('TransactionSyncer', async () => {
       })
     })
 
-    it('fetches monthly stats when 1 day pass', () => {
+    it('clears monthly stats when 1 day pass', () => {
       syncer.syncLatest()
 
       sinon.assert.notCalled(syncer.syncMonthlyStats)
@@ -109,8 +109,8 @@ describe('TransactionSyncer', async () => {
       expect(utcDate({}, dateFormat)).to.equal('2021-01-02 00:00:00+0')
 
       sinon.assert.calledWith(syncer.syncMonthlyStats, {
-        dateFrom: '2020-12-25',
-        dateTo: '2020-12-26'
+        dateFrom: '2020-12-02',
+        dateTo: '2020-12-03'
       })
     })
   })

@@ -145,7 +145,7 @@ describe('DefiProtocolSyncer', () => {
 
     context('when tvls exists', () => {
       beforeEach(async () => {
-        const dateParams = syncer.syncParams('30m')
+        const dateFrom = utils.utcDate({ days: -30 })
 
         await DefiProtocol.bulkCreate([
           { ...protocol1List, defillama_id: protocol1List.slug, tvl_rank: 1 },
@@ -153,8 +153,8 @@ describe('DefiProtocolSyncer', () => {
         ])
 
         await DefiProtocolTvl.bulkCreate([
-          { date: dateParams.dateFrom, tvl: 200.99, defi_protocol_id: 1 },
-          { date: dateParams.dateFrom, tvl: 100.99, defi_protocol_id: 2 }
+          { date: dateFrom, tvl: 200.99, defi_protocol_id: 1 },
+          { date: dateFrom, tvl: 100.99, defi_protocol_id: 2 }
         ])
       })
 

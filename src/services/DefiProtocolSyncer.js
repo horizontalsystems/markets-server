@@ -92,29 +92,8 @@ class DefiProtocolSyncer extends Syncer {
     }
   }
 
-  async syncWeeklyStats({ dateFrom, dateTo }) {
-    await DefiProtocolTvl.deleteExpired(dateFrom, dateTo)
-  }
-
   async syncMonthlyStats({ dateFrom, dateTo }) {
     await DefiProtocolTvl.deleteExpired(dateFrom, dateTo)
-  }
-
-  syncParams(period) {
-    switch (period) {
-      case '30m':
-        return {
-          dateFrom: utils.utcDate({ days: -30 }),
-          dateTo: utils.utcDate(),
-        }
-      case '1d':
-        return {
-          dateFrom: utils.utcDate({ days: -31 }, 'yyyy-MM-dd'),
-          dateTo: utils.utcDate({ days: -30 }, 'yyyy-MM-dd')
-        }
-      default:
-        return {}
-    }
   }
 
   async syncLatestTvls(protocols, dateTo) {
