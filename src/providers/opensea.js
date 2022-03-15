@@ -34,16 +34,20 @@ class Opensea {
       })
   }
 
-  getAssets(owner, tokenIds, contractAddresses, collectionUid, orderDirection = 'desc', offset = 0, limit = 20) {
+  getAssets(owner, tokenIds, contractAddresses, collectionUid, cursor, includeOrders = false, orderDirection = 'desc', limit = 20) {
 
-    const params = { limit, offset, order_direction: orderDirection }
+    const params = { limit, order_direction: orderDirection, include_orders: includeOrders }
 
     if (owner) {
       params.owner = owner
     }
 
     if (collectionUid) {
-      params.collection = collectionUid
+      params.collection_slug = collectionUid
+    }
+
+    if (cursor) {
+      params.cursor = cursor
     }
 
     if (tokenIds) {
@@ -59,9 +63,9 @@ class Opensea {
       .then(resp => normalizer.normalizeAssets(resp.data))
   }
 
-  getAsset(assetContractAddress, tokenId, accountAddress) {
+  getAsset(assetContractAddress, tokenId, accountAddress, includeOrders = false) {
 
-    const params = `${accountAddress ? `&account_address=${accountAddress}` : ''}`
+    const params = `&include_orders=${includeOrders}${accountAddress ? `&account_address=${accountAddress}` : ''}`
 
     return axios
       .get(`/asset/${assetContractAddress}/${tokenId}?${querystring.stringify(params)}`)

@@ -54,8 +54,6 @@ exports.collectionStats = async ({ params }, res) => {
 }
 
 exports.assets = async ({ query }, res) => {
-  const { limit = 100, page = 1 } = query
-  const offset = query.offset ? query.offset : limit * (page - 1)
   let assets = []
 
   try {
@@ -63,10 +61,11 @@ exports.assets = async ({ query }, res) => {
       query.owner,
       query.token_ids,
       query.contract_addresses,
-      query.collection,
+      query.collection_uid,
+      query.cursor,
+      query.include_orders,
       query.order_direction,
-      offset,
-      limit
+      query.limit
     )
   } catch (e) {
     logger.error('Error fetching nft assets:', e)
@@ -80,7 +79,12 @@ exports.asset = async ({ params, query }, res) => {
     asset = await NftAsset.getCachedAsset(params.contract_address, params.token_id)
 
     if (!asset) {
-      asset = await opensea.getAsset(params.contract_address, params.token_id, query.account_address)
+      asset = await opensea.getAsset(
+        params.contract_address,
+        params.token_id,
+        query.account_address,
+        query.include_orders
+      )
       NftAsset.upsertAssets([asset])
     }
   } catch (e) {

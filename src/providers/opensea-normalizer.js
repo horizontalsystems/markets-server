@@ -62,6 +62,12 @@ exports.normalizeAsset = asset => {
   }
 }
 
-exports.normalizeAssets = ({ assets }) => {
-  return assets.map(asset => this.normalizeAsset(asset))
+exports.normalizeAssets = ({ next, previous, assets }) => {
+  return {
+    cursor: {
+      next,
+      previous
+    },
+    assets: assets.map(asset => this.normalizeAsset(asset))
+  }
 }
