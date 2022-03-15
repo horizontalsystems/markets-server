@@ -1,4 +1,3 @@
-const connect = require('connect-session-sequelize')
 const session = require('express-session')
 const express = require('express')
 const morgan = require('morgan')
@@ -9,11 +8,9 @@ const cors = require('cors')
 const helmet = require('helmet')
 const middlewares = require('../api/middlewares')
 const routes = require('./routes-admin')
-const db = require('../db/sequelize')
 
 // create an express application
 const app = express()
-const Store = connect(session.Store)
 
 // request logging. dev: console | production: file
 app.use(morgan('dev'))
@@ -38,10 +35,10 @@ app.use(cors())
 // session
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SECRET,
+    cookie: { secure: true },
     saveUninitialized: true,
-    resave: false,
-    store: new Store({ db: db.sequelize })
+    resave: false
   })
 )
 
@@ -55,7 +52,7 @@ app.use(exposeHeaders)
 const login = (req, res) => {
   const { username, password } = req.body
   if (username === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASS) {
-    const accessToken = jwt.sign({ username }, process.env.COOKIE_SECRET, { expiresIn: '30d' })
+    const accessToken = jwt.sign({ username }, process.env.SECRET, { expiresIn: '30d' })
     res.json({ accessToken })
   } else {
     res.send('Username or password incorrect')
@@ -70,7 +67,7 @@ function checkAuth(req, res, next) {
     return res.sendStatus(401)
   }
 
-  jwt.verify(token, process.env.COOKIE_SECRET, (err, payload) => {
+  jwt.verify(token, process.env.SECRET, (err, payload) => {
     if (err) {
       console.log(err)
       return res.sendStatus(403)
