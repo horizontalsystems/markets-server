@@ -61,7 +61,7 @@ router.use(
   crud('/coins', {
     search: (q, limit) => action.search(q, limit, Coin, ['id', 'uid', 'name', 'code']),
     getList: params => action.getList(params, Coin, ['id', 'uid', 'name', 'code']),
-    getOne: id => action.getOne(id, Coin, ['id', 'uid', 'name', 'code', 'description', 'security']),
+    getOne: id => action.getOne(id, Coin, ['id', 'uid', 'name', 'code', 'description', 'security', 'links']),
     ...action.createUpdateDelete(Coin)
   }),
 
