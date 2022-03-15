@@ -1,5 +1,6 @@
 const express = require('express')
 const controller = require('./nft.controller')
+const { validateCollections, validateAssets } = require('./nft.validator')
 
 const router = express.Router()
 
@@ -35,7 +36,7 @@ const router = express.Router()
  *  @apiError (Bad Request 400)  ValidationError Some parameters or Owner address are  not valid
  */
 
-router.get('/collections', controller.collections)
+router.get('/collections', validateCollections, controller.collections)
 
 /**
  * @api {get} /v1/nft/collection/:collection_uid Get NFT Collection details
@@ -179,7 +180,7 @@ router.get('/collection/:collection_uid/stats', controller.collectionStats)
  *  @apiError (Bad Request 400)  ValidationError Some parameters are not valid
  */
 
-router.get('/assets', controller.assets)
+router.get('/assets', validateAssets, controller.assets)
 
 /**
  * @api {get} /v1/nft/asset/:contract_address/:token_id Get NFT Asset details
