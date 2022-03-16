@@ -1,3 +1,4 @@
+const { DateTime } = require('luxon')
 const opensea = require('../../providers/opensea')
 const NftAsset = require('../../db/models/NftAsset')
 const NftCollection = require('../../db/models/NftCollection')
@@ -28,7 +29,10 @@ exports.collection = async ({ params }, res) => {
 
     if (!collection) {
       collection = await opensea.getCollection(params.collection_uid)
-      NftCollection.upsertCollections([collection])
+
+      if (collection) {
+        NftCollection.upsertCollections([collection])
+      }
     }
   } catch (e) {
     logger.error('Error fetching nft collection:', e)
@@ -38,19 +42,25 @@ exports.collection = async ({ params }, res) => {
 }
 
 exports.collectionStats = async ({ params }, res) => {
-  let collection = {}
+
   try {
-    collection = await NftCollection.getCachedCollection(params.collection_uid)
+    const collection = await NftCollection.getCachedCollection(params.collection_uid)
 
     if (!collection) {
-      collection = await opensea.getCollection(params.collection_uid)
-      NftCollection.upsertCollections([collection])
+      const collectionStats = await opensea.getCollectionStats(params.collection_uid)
+      if (collectionStats) {
+        NftCollection.update(
+          { stats: collectionStats, last_updated: DateTime.utc().toISO() },
+          { where: { uid: params.collection_uid } }
+        )
+      }
+      return res.send(collectionStats)
     }
+
+    return res.send(collection.stats)
   } catch (e) {
     logger.error('Error fetching nft collection:', e)
   }
-
-  res.send(collection.stats)
 }
 
 exports.assets = async ({ query }, res) => {
