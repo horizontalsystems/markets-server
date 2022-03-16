@@ -69,9 +69,9 @@ exports.assets = async ({ query }, res) => {
   try {
     assets = await opensea.getAssets(
       query.owner,
+      query.collection_uid,
       query.token_ids,
       query.contract_addresses,
-      query.collection_uid,
       query.cursor,
       query.include_orders,
       query.order_direction,

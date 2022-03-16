@@ -4,6 +4,7 @@ const router = express.Router()
 
 router.use('/docs', express.static('docs'))
 
+router.use('/auth', require('../api/auth'))
 router.use('/coins', require('../api/coins'))
 router.use('/nft', require('../api/nft'))
 router.use('/defi-protocols', require('../api/defi-protocols'))
