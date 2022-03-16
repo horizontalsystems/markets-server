@@ -31,6 +31,16 @@ class Opensea {
       })
   }
 
+  getCollectionStats(collectionUid) {
+    return axios
+      .get(`/collection/${collectionUid}/stats`)
+      .then(resp => resp.data.stats)
+      .catch(e => {
+        console.error(e)
+        return null
+      })
+  }
+
   getAssets(owner, tokenIds, contractAddresses, collectionUid, cursor, includeOrders = false, orderDirection = 'desc', limit = 20) {
     const params = {
       limit,
