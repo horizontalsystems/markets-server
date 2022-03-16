@@ -10,66 +10,53 @@ const normalizer = require('./opensea-normalizer')
 class Opensea {
 
   getCollections(assetOwner, offset = 0, limit = 20) {
-
-    const params = { limit, offset }
-
-    if (assetOwner) {
-      params.asset_owner = assetOwner
+    const params = {
+      limit,
+      offset,
+      ...assetOwner && { asset_owner: assetOwner }
     }
 
     return axios
       .get(`/collections?${querystring.stringify(params)}`)
-      .then(
-        resp => normalizer.normalizeCollections(resp.data.collections ? resp.data.collections : resp.data)
-      )
+      .then(({ data }) => normalizer.normalizeCollections(data.collections || data))
   }
 
   getCollection(collectionUid) {
     return axios
       .get(`/collection/${collectionUid}`)
-      .then(resp => normalizer.normalizeCollection(resp.data.collection ? resp.data.collection : resp.data))
+      .then(({ data }) => normalizer.normalizeCollection(data.collection || data))
       .catch(e => {
-        console.error(e.message)
+        console.error(e)
         return null
       })
   }
 
   getAssets(owner, tokenIds, contractAddresses, collectionUid, cursor, includeOrders = false, orderDirection = 'desc', limit = 20) {
-
-    const params = { limit, order_direction: orderDirection, include_orders: includeOrders }
-
-    if (owner) {
-      params.owner = owner
-    }
-
-    if (collectionUid) {
-      params.collection_slug = collectionUid
-    }
-
-    if (cursor) {
-      params.cursor = cursor
-    }
-
-    if (tokenIds) {
-      params.token_ids = tokenIds.split(',')
-    }
-
-    if (contractAddresses) {
-      params.asset_contract_addresses = contractAddresses.split(',')
+    const params = {
+      limit,
+      order_direction: orderDirection,
+      include_orders: includeOrders,
+      ...owner && { owner },
+      ...cursor && { cursor },
+      ...tokenIds && { token_ids: tokenIds.split(',') },
+      ...collectionUid && { collection_slug: collectionUid },
+      ...contractAddresses && { asset_contract_addresses: contractAddresses.split(',') }
     }
 
     return axios
       .get(`/assets?${querystring.stringify(params)}`)
-      .then(resp => normalizer.normalizeAssets(resp.data))
+      .then(({ data }) => normalizer.normalizeAssets(data))
   }
 
-  getAsset(assetContractAddress, tokenId, accountAddress, includeOrders = false) {
-
-    const params = `&include_orders=${includeOrders}${accountAddress ? `&account_address=${accountAddress}` : ''}`
+  getAsset(contractAddress, tokenId, accountAddress, includeOrders = false) {
+    const params = {
+      include_orders: includeOrders,
+      ...accountAddress && { account_address: accountAddress }
+    }
 
     return axios
-      .get(`/asset/${assetContractAddress}/${tokenId}?${querystring.stringify(params)}`)
-      .then(resp => normalizer.normalizeAsset(resp.data))
+      .get(`/asset/${contractAddress}/${tokenId}?${querystring.stringify(params)}`)
+      .then(({ data }) => normalizer.normalizeAsset(data))
   }
 
 }
