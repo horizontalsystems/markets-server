@@ -21,9 +21,9 @@ const Currency = require('./models/Currency')
 const CurrencyRate = require('./models/CurrencyRate')
 const GlobalMarket = require('./models/GlobalMarket')
 const CoinPrice = require('./models/CoinPrice')
+const NftCollection = require('./models/NftCollection')
 const NftAsset = require('./models/NftAsset')
 const NftMarket = require('./models/NftMarket')
-const NftCollection = require('./models/NftCollection')
 const config = require('./config')
 
 const sequelize = new Sequelize(

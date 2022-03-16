@@ -91,7 +91,7 @@ class NftMarketSyncer extends Syncer {
         floor_price: data.stats.floor_price,
         avg_price: data.stats.average_price,
         owners: data.stats.num_owners,
-        collection_id: collectionsData.map[data.slug],
+        collection_id: collectionsData.map[data.uid],
         date: dateTo
       }))
 
