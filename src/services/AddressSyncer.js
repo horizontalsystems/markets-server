@@ -66,7 +66,7 @@ class AddressSyncer extends Syncer {
         count: data.address_count,
         volume: data.volume,
         date: data.block_date.value,
-        platform_id: platforms.tokensMap[data.coin_address]
+        platform_id: platforms.map[data.coin_address]
       }))
 
       this.upsertAddressStats(result)
@@ -99,8 +99,8 @@ class AddressSyncer extends Syncer {
     try {
       const platforms = await this.getPlatforms(network === 'bsc' ? 'bep20' : network)
       const addressStats = []
-      const isoDateFrom = DateTime.fromFormat(dateFrom, 'yyyy-MM-dd HH:00:00Z').toString()
-      const isoDateTo = DateTime.fromFormat(dateTo, 'yyyy-MM-dd HH:00:00Z').toString()
+      const isoDateFrom = DateTime.fromFormat(dateFrom, 'yyyy-MM-dd HH:mm:00Z').toString()
+      const isoDateTo = DateTime.fromFormat(dateTo, 'yyyy-MM-dd HH:mm:00Z').toString()
       const chunks = this.getChunks(platforms.list, chunkSize)
 
       for (let i = 0; i < chunks.length; i += 1) {
@@ -131,7 +131,7 @@ class AddressSyncer extends Syncer {
           })
         })
 
-        sleep(3000) // wait to bypass API limits
+        sleep(4000) // wait to bypass API limits
       }
 
       this.upsertAddressStats(addressStats)
