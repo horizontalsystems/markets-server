@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const util = require('ethereumjs-util')
-const random = require('crypto').randomBytes
+const crypto = require('crypto')
 const opensea = require('../../providers/opensea')
 const AuthKey = require('../../db/models/AuthKey')
 const { utcDate } = require('../../utils')
@@ -12,7 +12,7 @@ function handleError(res, code, message) {
 
 exports.generateKey = async ({ query }, res) => {
   try {
-    const randomKey = random(10).toString('base64')
+    const randomKey = crypto.randomBytes(10).toString('base64')
     const expiresAt = utcDate({ minutes: 1 })
     await AuthKey.upsert({
       address: query.address,
