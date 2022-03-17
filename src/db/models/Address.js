@@ -50,8 +50,8 @@ class Address extends SequelizeModel {
     return result.count > 0
   }
 
-  static async getByCoinUid(uid, window, dateFrom) {
-    const platform = await Platform.findByCoinUID(uid)
+  static async getByCoinUid(uid, platformType, window, dateFrom) {
+    const [platform] = await Platform.findByCoinUID(uid, platformType)
     if (!platform) {
       return []
     }

@@ -7,7 +7,7 @@ burning AS (
     SUM (cast(B.amount0 AS BIGNUMERIC)) sum0,
     SUM (cast(B.amount1 AS BIGNUMERIC)) sum1,
     CASE @period
-      WHEN '30m' THEN TIMESTAMP_SECONDS(30*60 * DIV(UNIX_SECONDS(block_timestamp), 30*60))
+      WHEN '30m' THEN TIMESTAMP_SECONDS(30*60 * DIV(UNIX_SECONDS(B.block_timestamp), 30*60))
       WHEN '1h' THEN TIMESTAMP_TRUNC(B.block_timestamp, HOUR)
       WHEN '1d' THEN TIMESTAMP_TRUNC(B.block_timestamp, DAY)
     END as block_date
@@ -25,7 +25,7 @@ minting AS (
     SUM (cast(M.amount0 AS BIGNUMERIC)) sum0,
     SUM (cast(M.amount1 AS BIGNUMERIC)) sum1,
     CASE @period
-      WHEN '30m' THEN TIMESTAMP_SECONDS(30*60 * DIV(UNIX_SECONDS(block_timestamp), 30*60))
+      WHEN '30m' THEN TIMESTAMP_SECONDS(30*60 * DIV(UNIX_SECONDS(M.block_timestamp), 30*60))
       WHEN '1h' THEN TIMESTAMP_TRUNC(M.block_timestamp, HOUR)
       WHEN '1d' THEN TIMESTAMP_TRUNC(M.block_timestamp, DAY)
     END as block_date
@@ -43,7 +43,7 @@ swapping AS (
     SUM (cast(S.amount0 AS BIGNUMERIC)) sum0,
     SUM (cast(S.amount1 AS BIGNUMERIC)) sum1,
     CASE @period
-      WHEN '30m' THEN TIMESTAMP_SECONDS(30*60 * DIV(UNIX_SECONDS(block_timestamp), 30*60))
+      WHEN '30m' THEN TIMESTAMP_SECONDS(30*60 * DIV(UNIX_SECONDS(S.block_timestamp), 30*60))
       WHEN '1h' THEN TIMESTAMP_TRUNC(S.block_timestamp, HOUR)
       WHEN '1d' THEN TIMESTAMP_TRUNC(S.block_timestamp, DAY)
     END as block_date

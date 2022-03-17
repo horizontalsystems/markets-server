@@ -32,6 +32,8 @@ class BigQueryClient extends BigQuery {
   }
 
   getTransactionsStats(dateFrom, dateTo, tokens, period) {
+    console.log('Fetching transactions')
+
     return this.createQuery(transactionStatsSQL, {
       dateFrom,
       dateTo,
@@ -41,6 +43,8 @@ class BigQueryClient extends BigQuery {
   }
 
   getDexLiquidity(dateFrom, dateTo, period, tokens, queryType) {
+    console.log(`Fetching ${queryType} dex liquidity`)
+
     return this.createQuery(dexLiquidity[queryType], {
       period,
       date_from: dateFrom,
@@ -50,6 +54,8 @@ class BigQueryClient extends BigQuery {
   }
 
   getDexVolumes(dateFrom, dateTo, tokens, period, queryType) {
+    console.log(`Fetching ${queryType} dex volumes`)
+
     return this.createQuery(dexVolume[queryType], {
       dateFrom,
       dateTo,
@@ -67,6 +73,7 @@ class BigQueryClient extends BigQuery {
   }
 
   getAddressStats(tokens, dateFrom, dateTo, timePeriod) {
+    console.log('Fetching address stats')
     return this.createQuery(addressStatsSQL, {
       supported_tokens: tokens,
       period: timePeriod,

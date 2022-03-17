@@ -141,6 +141,8 @@ class Bitquery {
   }
 
   async getTransfers(dateFrom, platforms, network) {
+    console.log(`Fetching transfers for ${network}`)
+
     const chain = this.getChain(network)
     const query = {
       variables: {
@@ -167,6 +169,7 @@ class Bitquery {
   }
 
   async getDexVolumes(dateFrom, platforms, network, exchange, interval) {
+    console.log(`Fetching dex volumes for ${network}`)
     const chain = this.getChain(network)
 
     const query = {

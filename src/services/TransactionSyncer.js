@@ -53,7 +53,7 @@ class TransactionSyncer extends Syncer {
       }
     })
 
-    return this.bulkCreate(records)
+    return this.bulkCreate(records, 'ethereum,erc20')
   }
 
   async syncFromBitquery(dateParams, network, isHourly, chunkSize = 100) {
@@ -73,14 +73,14 @@ class TransactionSyncer extends Syncer {
       })
 
       if (isHourly && records.length) {
-        await this.adjustHourlyData(records, dateFrom, dateParams.dateFrom)
+        await this.adjustHourlyData(records, dateFrom, dateParams.dateFrom, network)
       } else {
-        await this.bulkCreate(records)
+        await this.bulkCreate(records, network)
       }
     }
   }
 
-  async adjustHourlyData(transfers, dateFrom, date) {
+  async adjustHourlyData(transfers, dateFrom, date, network) {
     const transactions = await Transaction.getSummedItems(dateFrom, transfers.map(item => item.platform_id))
     const transactionsMap = transactions.reduce((mapped, item) => ({
       ...mapped,
@@ -104,7 +104,7 @@ class TransactionSyncer extends Syncer {
       }
     })
 
-    return this.bulkCreate(records)
+    return this.bulkCreate(records, network)
   }
 
   async getPlatforms(types, withDecimals, withAddress = true) {
@@ -131,7 +131,7 @@ class TransactionSyncer extends Syncer {
     return { list, map }
   }
 
-  bulkCreate(records) {
+  bulkCreate(records, platform) {
     const items = records.filter(item => item.platform_id)
     if (!items.length) {
       return
@@ -139,7 +139,7 @@ class TransactionSyncer extends Syncer {
 
     return Transaction.bulkCreate(items, { ignoreDuplicates: true })
       .then(transactions => {
-        console.log('Inserted transactions', transactions.length)
+        console.log(`Inserted ${platform} transactions`, transactions.length)
       })
       .catch(e => {
         console.error('Error inserting transactions', e.message, e.stack)
