@@ -44,7 +44,8 @@ router.get('/collections', validateCollections, controller.collections)
  * @apiVersion 1.0.0
  * @apiGroup NFT
  *
- * @apiParam {String}  [collection_uid] UID (collection slug) of the collection to retrieve details for
+ * @apiParam {String}  [collection_uid]       UID (collection slug) of the collection to retrieve details for
+ * @apiParam {Boolean} [include_stats_chart=false] Return stats charts data
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -87,7 +88,15 @@ router.get('/collections', validateCollections, controller.collections)
  *      "num_reports": 0,
  *      "market_cap": 0,
  *      "floor_price": 0
- *    }
+ *    },
+ *    "stats_chart": [
+ *      "timestamp": 123123123,
+ *      "one_day_volume": 123,
+ *      "avеrage_price": 123,
+ *      "floor_price": 123,
+ *      "one_day_sales": 123
+ *    ]
+ *
  *  }
  *  @apiError (Bad Request 400)  ValidationError Some parameters or Collection UID/slug are not valid
  *  @apiError (Not Found 404)    NotFound        Collection does not exist

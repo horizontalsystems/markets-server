@@ -19,6 +19,13 @@ module.exports = {
     })
   }, options),
 
+  // GET /v1/nft/collection/:collection_uid
+  validateCollection: validate({
+    query: Joi.object({
+      include_stats_chart: Joi.boolean()
+    })
+  }, options),
+
   // GET /v1/nft/assets
   validateAssets: validate({
     query: Joi.object({

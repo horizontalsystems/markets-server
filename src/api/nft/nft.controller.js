@@ -3,6 +3,7 @@ const opensea = require('../../providers/opensea')
 const NftAsset = require('../../db/models/NftAsset')
 const NftCollection = require('../../db/models/NftCollection')
 const logger = require('../../config/logger')
+const NftMarket = require('../../db/models/NftMarket')
 
 exports.collections = async ({ query }, res) => {
   const { limit = 100, page = 1 } = query
@@ -22,7 +23,7 @@ exports.collections = async ({ query }, res) => {
   res.send(collections)
 }
 
-exports.collection = async ({ params }, res) => {
+exports.collection = async ({ params, query }, res) => {
   let collection = {}
   try {
     collection = await NftCollection.getCachedCollection(params.collection_uid)
@@ -34,6 +35,12 @@ exports.collection = async ({ params }, res) => {
         NftCollection.upsertCollections([collection])
       }
     }
+
+    if (query.include_stats_chart === 'true') {
+      const dateFrom = DateTime.now().minus({ days: 2 }).toSQL()
+      collection.stats_chart = await NftMarket.getStatsChart(collection.uid, dateFrom)
+    }
+
   } catch (e) {
     logger.error('Error fetching nft collection:', e)
   }
