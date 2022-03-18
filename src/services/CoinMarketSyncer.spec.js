@@ -5,9 +5,9 @@ const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
 const Syncer = require('./CoinMarketSyncer')
 
-describe('CoinPriceSyncer', () => {
+describe('CoinMarketSyncer', () => {
 
-  /** @type CoinPriceSyncer */
+  /** @type CoinMarketSyncer */
   let syncer
   let clock
 
@@ -28,7 +28,7 @@ describe('CoinPriceSyncer', () => {
 
     describe('when coins more than chunk size', () => {
       beforeEach(() => {
-        const coins = times(401, i => ({ uid: `name-${i}` }))
+        const coins = times(401, i => ({ coingecko_id: `long-coin-name-${i}` }))
         sinon.stub(Coin, 'findAll').returns(coins)
       })
 
@@ -41,7 +41,7 @@ describe('CoinPriceSyncer', () => {
 
     describe('when coins less than chunk size', () => {
       beforeEach(() => {
-        const coins = [{ uid: 'bitcoin' }]
+        const coins = [{ coingecko_id: 'bitcoin' }]
         sinon.stub(Coin, 'findAll').returns(coins)
       })
 
@@ -54,7 +54,7 @@ describe('CoinPriceSyncer', () => {
   })
 
   describe('#syncCoins', () => {
-    const coins = [{ uid: 'bitcoin' }, { uid: 'ethereum' }]
+    const coins = [{ coingecko_id: 'bitcoin' }, { coingecko_id: 'ethereum' }]
 
     beforeEach(() => {
       sinon.stub(syncer, 'updateCoins')
@@ -67,7 +67,7 @@ describe('CoinPriceSyncer', () => {
       })
 
       it('fetches & save coins', async () => {
-        await syncer.syncCoins(coins.map(coin => coin.uid))
+        await syncer.syncCoins(coins.map(coin => coin.coingecko_id))
 
         sinon.assert.calledOnceWithExactly(syncer.updateCoins, coins)
         sinon.assert.calledOnceWithExactly(utils.sleep, 1200)
@@ -85,7 +85,7 @@ describe('CoinPriceSyncer', () => {
       })
 
       it('fetches & sleeps for 1m', async () => {
-        await syncer.syncCoins(coins.map(coin => coin.uid))
+        await syncer.syncCoins(coins.map(coin => coin.coingecko_id))
         sinon.assert.calledOnceWithExactly(utils.sleep, 60000)
       })
     })
@@ -101,7 +101,7 @@ describe('CoinPriceSyncer', () => {
       })
 
       it('fetches & sleeps for 30sec', async () => {
-        await syncer.syncCoins(coins.map(coin => coin.uid))
+        await syncer.syncCoins(coins.map(coin => coin.coingecko_id))
         sinon.assert.calledOnceWithExactly(utils.sleep, 30000)
       })
     })

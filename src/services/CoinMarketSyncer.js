@@ -24,8 +24,8 @@ class CoinMarketSyncer {
   }
 
   async sync() {
-    const coins = await Coin.findAll({ attributes: ['uid'] })
-    const chunks = this.chunk(coins.map(item => item.uid))
+    const coins = await Coin.findAll({ attributes: ['coingecko_id'] })
+    const chunks = this.chunk(coins.map(item => item.coingecko_id))
 
     for (let i = 0; i < chunks.length; i += 1) {
       await this.syncCoins(chunks[i])
