@@ -243,4 +243,33 @@ router.get('/assets', validateAssets, controller.assets)
 
 router.get('/asset/:contract_address/:token_id', controller.asset)
 
+/**
+ * @api {get} /v1/nft/events Get NFT Events (Activities)
+ * @apiDescription Get NFT events
+ * @apiVersion 1.0.0
+ * @apiGroup NFT
+ *
+ * @apiParam {String} [event_type]      The event type to filter (sale, list, bid, bid_cancel, transfer, cancel)
+ * @apiParam {String} [collection_uid]       Limit responses to events from a collection
+ * @apiParam {String} [token_id]        Token ID for this item
+ * @apiParam {String} [asset_contract]  Asset contract address
+ * @apiParam {String} [account_address]  A user account's wallet address to filter for events on an account
+ * @apiParam {Number} [occured_before]     Only show events listed before this timestamp.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "cursor": {
+ *      "next": "LXBrPTI2ODcyNjk2OA==",
+ *      "previous": null
+ *    },
+ *    "events":
+ *    [
+ *    ]
+ *  }
+ *
+ *  @apiError (Bad Request 400)  ValidationError Some parameters are not valid
+ */
+router.get('/events', controller.events)
+
 module.exports = router

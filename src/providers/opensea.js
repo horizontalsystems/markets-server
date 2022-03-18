@@ -9,6 +9,44 @@ const normalizer = require('./opensea-normalizer')
 
 class Opensea {
 
+  getEvents(eventType, accountAddress, collectionUid, assetContract, tokenId, occuredBefore, cursor) {
+
+    let eventTypeValue
+    if (eventType) {
+      switch (eventType) {
+        case 'sale':
+          eventTypeValue = 'successful'
+          break
+        case 'list':
+          eventTypeValue = 'created'
+          break
+        case 'bid':
+          eventTypeValue = 'bid_entered'
+          break
+        case 'bid_cancel':
+          eventTypeValue = 'bid_withdrawn'
+          break
+        default:
+          eventTypeValue = eventType
+      }
+    }
+
+    const params = {
+      only_opensea: false,
+      ...eventType && { event_type: eventTypeValue },
+      ...accountAddress && { account_address: accountAddress },
+      ...collectionUid && { collection_slug: collectionUid },
+      ...tokenId && { token_id: tokenId },
+      ...assetContract && { asset_contract_address: assetContract },
+      ...occuredBefore && { occured_before: occuredBefore },
+      ...cursor && { cursor }
+    }
+
+    return axios
+      .get(`/events?${querystring.stringify(params)}`)
+      .then(({ data }) => normalizer.normalizeEvents(data))
+  }
+
   getCollections(assetOwner, offset = 0, limit = 20) {
     const params = {
       limit,

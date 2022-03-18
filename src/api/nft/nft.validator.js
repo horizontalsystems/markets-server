@@ -50,4 +50,16 @@ module.exports = {
     })
   }, options),
 
+  // GET /v1/nft/events
+  validateEvents: validate({
+    query: Joi.object({
+      event_type: Joi.string(),
+      account_address: Joi.string(),
+      token_id: Joi.string(),
+      asset_contract: Joi.string(),
+      collection_uid: Joi.string(),
+      occured_before: Joi.number(),
+      cursor: Joi.string()
+    })
+  }, options),
 }

@@ -110,3 +110,22 @@ exports.asset = async ({ params, query }, res) => {
 
   res.send(asset)
 }
+
+exports.events = async ({ query }, res) => {
+  let events = []
+
+  try {
+    events = await opensea.getEvents(
+      query.event_type,
+      query.account_address,
+      query.collection_uid,
+      query.asset_contract,
+      query.token_id,
+      query.occured_before,
+      query.cursor
+    )
+  } catch (e) {
+    logger.error('Error fetching nft assets:', e)
+  }
+  res.send(events)
+}

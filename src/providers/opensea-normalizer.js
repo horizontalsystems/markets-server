@@ -71,3 +71,110 @@ exports.normalizeAssets = ({ next, previous, assets }) => {
     assets: assets.map(asset => this.normalizeAsset(asset))
   }
 }
+
+exports.normalizeEvents = ({ next, previous, asset_events: events }) => {
+  return {
+    cursor: {
+      next,
+      previous
+    },
+    events: events.map(event => this.normalizeEvent(event))
+  }
+}
+
+// "approved_account": null,
+// "asset_bundle": null,
+// "auction_type": "min_price",
+// "bid_amount": null,
+// "collection_slug": "cryptopunks",
+// "contract_address": "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb",
+// "created_date": "2022-03-17T13:36:47.195285",
+// "custom_event_name": null,
+// "dev_fee_payment_event": null,
+// "dev_seller_fee_basis_points": null,
+// "duration": null,
+// "ending_price": "73950000000000000000",
+// "event_type": "created",
+// "from_account": null,
+// "id": 4201204175,
+// "is_private": null,
+// "owner_account": null,
+// "payment_token": {
+//     "symbol": "ETH",
+//     "address": "0x0000000000000000000000000000000000000000",
+//     "image_url": "https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg",
+//     "name": "Ether",
+//     "decimals": 18,
+//     "eth_price": "1.000000000000000",
+//     "usd_price": "2778.510000000000218000"
+// },
+// "quantity": "1",
+// "seller": null,
+// "starting_price": "73950000000000000000",
+// "to_account": null,
+// "total_price": null,
+// "transaction": {
+//     "block_hash": "0xfac61efd1619a09aae7be859df79108f9fd41ac502a1644805b34d34ffc29cac",
+//     "block_number": "14404332",
+//     "from_account": {
+//         "user": null,
+//         "profile_img_url": "https://storage.googleapis.com/opensea-static/opensea-profile/11.png",
+//         "address": "0x1919db36ca2fa2e15f9000fd9cdc2edcf863e685",
+//         "config": ""
+//     },
+//     "id": 302796091,
+//     "timestamp": "2022-03-17T13:36:31",
+//     "to_account": {
+//         "user": null,
+//         "profile_img_url": "https://storage.googleapis.com/opensea-static/opensea-profile/23.png",
+//         "address": "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb",
+//         "config": ""
+//     },
+//     "transaction_hash": "0x08a17686adf238947e2ac758ec15539b562b41684da6ea62c6a210fa5673dca1",
+//     "transaction_index": "57"
+// },
+// "winner_account": null,
+// "listing_time": null
+
+exports.normalizeEvent = event => {
+
+  let eventType
+  let eventAmount = 0
+
+  switch (event.event_type) {
+    case 'successful':
+      eventType = 'sale'
+      eventAmount = event.total_price
+      break
+    case 'created':
+      eventType = 'list'
+      eventAmount = event.ending_price
+      break
+    case 'offer_entered':
+    case 'bid_entered':
+      eventType = 'bid'
+      eventAmount = event.bid_amount
+      break
+    case 'bid_withdrawn':
+      eventType = 'bid_cancel'
+      eventAmount = event.bid_amount
+      break
+    case 'transfer':
+      eventType = 'transfer'
+      break
+    case 'cancel':
+      eventType = 'cancel'
+      break
+    default:
+      eventType = event.event_type
+  }
+
+  return {
+    asset: this.normalizeAsset(event.asset),
+    date: event.created_date,
+    type: eventType,
+    amount: eventAmount,
+    quantity: event.quantity,
+    transaction: event.transaction,
+  }
+}
