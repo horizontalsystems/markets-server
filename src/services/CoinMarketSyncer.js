@@ -23,21 +23,31 @@ class CoinMarketSyncer {
     }
   }
 
-  async sync() {
-    const coins = await Coin.findAll({ attributes: ['uid'] })
-    const chunks = this.chunk(coins.map(item => item.uid))
+  async sync(uid) {
+    const where = { ...(uid && { uid }) }
+    const coins = await Coin.findAll({ attributes: ['id', 'coingecko_id'], where })
+    const map = {}
+    const ids = []
+
+    for (let i = 0; i < coins.length; i += 1) {
+      const coin = coins[i]
+      map[coin.coingecko_id] = coin.id
+      ids.push(coin.coingecko_id)
+    }
+
+    const chunks = this.chunk(ids)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await this.syncCoins(chunks[i])
+      await this.syncCoins(chunks[i], map)
     }
   }
 
-  async syncCoins(coinUids) {
+  async syncCoins(coinUids, idsMap) {
     debug(`Syncing coins ${coinUids.length}`)
 
     try {
       const coins = await coingecko.getMarkets(coinUids)
-      await this.updateCoins(coins)
+      await this.updateCoins(coins, idsMap)
       await utils.sleep(1200)
     } catch ({ message, response = {} }) {
       if (message) {
@@ -56,15 +66,15 @@ class CoinMarketSyncer {
     }
   }
 
-  async updateCoins(coins) {
+  async updateCoins(coins, idsMap) {
     const dt = DateTime.now()
     const minutes = dt.get('minute')
-    const minutesRounded = dt.set({ minute: 10 * parseInt(minutes / 10), })
+    const minutesRounded = dt.set({ minute: 10 * parseInt(minutes / 10) })
 
     const values = coins
-      .filter(c => c.uid && c.price)
+      .filter(c => c.price && idsMap[c.coingecko_id])
       .map(item => [
-        item.uid,
+        idsMap[item.coingecko_id],
         item.price,
         JSON.stringify(item.price_change),
         JSON.stringify(item.market_data),

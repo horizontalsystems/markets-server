@@ -11,128 +11,81 @@ const logger = require('../config/logger')
 
 class CoinHolderSyncer extends Syncer {
   async start() {
-    await this.syncHistorical()
+    await this.syncAll()
     await this.syncLatest()
   }
 
-  async syncHistorical() {
-    await Promise.all([
-      this.syncHolders('ethereum'),
-      this.syncHolders('binance-smart-chain'),
-      this.syncFromSolscan()
-    ])
+  async syncAll() {
+    const types = ['erc20', 'bep20', 'binance-smart-chain', 'ethereum', 'solana']
+    const platforms = await Platform.getByTypes(types, false, false)
+    await this.syncHolders(platforms)
+  }
+
+  async sync(uids) {
+    const platforms = await Platform.findByCoinUID(uids)
+    await this.syncHolders(platforms)
   }
 
   async syncLatest() {
     this.cron('0 0 1 * *', this.syncMonthly) // once a month
   }
 
-  async syncMonthly() {
-    await Promise.all([
-      this.syncHolders('ethereum'),
-      this.syncHolders('binance-smart-chain'),
-      this.syncFromSolscan()
-    ])
+  syncMonthly() {
+    return this.syncAll()
   }
 
-  async syncHolders(chain) {
-    let provider
-    let platformTypes
+  async syncHolders(platforms) {
+    console.log(`Platforms to sync ${platforms.length}`)
 
-    switch (chain) {
-      case 'ethereum': {
-        provider = etherscan
-        platformTypes = [chain, 'erc20']
-        break;
+    const resolve = (request, mapper) => request.then(mapper)
+    const fetcher = ({ id, type, address }) => {
+      switch (type) {
+        case 'erc20':
+          return resolve(etherscan.getHolders(address), this.mapTokenHolders(id))
+        case 'ethereum':
+          return resolve(etherscan.getAccounts(), this.mapChainHolders(id))
+        case 'bep20':
+          return resolve(bscscan.getHolders(address), this.mapTokenHolders(id))
+        case 'binance-smart-chain':
+          return resolve(bscscan.getAccounts(), this.mapChainHolders(id))
+        case 'solana': {
+          const requests = [
+            solscan.getHolders(address),
+            solscan.getTokenInfo(address)
+          ]
+
+          return resolve(Promise.all(requests), this.mapSolanaHolders(id))
+        }
+        default:
+          return null
       }
-      case 'binance-smart-chain': {
-        provider = bscscan
-        platformTypes = [chain, 'bep20']
-        break;
-      }
-      default:
-        return
     }
 
-    const platforms = await this.getPlatforms(platformTypes)
-    console.log(`${chain} platforms ${platforms.list.length}`)
+    for (let i = 0; i < platforms.length; i += 1) {
+      const platform = platforms[i]
+      const request = fetcher(platform)
 
-    for (let i = 0; i < platforms.list.length; i += 1) {
-      const address = platforms.list[i]
-      const platform = platforms.map[address]
+      if (!request) {
+        continue
+      }
 
-      console.log(`Fetching major holders for ${chain} ${address} (${i})`)
+      console.log(`Fetching major holders for ${platform.type} ${platform.address} (${i})`)
 
-      await provider.getHolders(address)
-        .then(data => this.mapTokenHolders(data, platform))
-        .then(data => this.upsert(data, platform))
-        .catch(e => {
-          console.log('Error fetching holders', e.message)
-        })
-
-      await utils.sleep(1000)
-    }
-
-    await provider.getAccounts()
-      .then(data => this.mapChainHolders(data, platforms.map[chain]))
-      .then(data => this.upsert(data, platforms.map[chain]))
-      .catch(e => {
-        console.log('Error fetching accounts', e.message)
-      })
-  }
-
-  async syncFromSolscan() {
-    const platforms = await this.getPlatforms('solana')
-    console.log('Solana platforms', platforms.list.length)
-
-    for (let i = 0; i < platforms.list.length; i += 1) {
-      const address = platforms.list[i]
-      const platform = platforms.map[address]
-
-      console.log(`Fetching major holders from 'solscan' (${i}); ${address}`)
-
-      await Promise.all([
-        solscan.getHolders(address),
-        solscan.getTokenInfo(address)
-      ])
-        .then(data => this.mapSolanaHolders(data[0], platform, data[1]))
-        .then(data => this.upsert(data, platform))
-        .catch(err => {
-          if (err.message) {
-            console.log('Error fetching from solscan', err.message)
+      await request
+        .then(data => this.upsert(data, platform.id))
+        .catch(({ message, response }) => {
+          if (message) {
+            console.log(`Error fetching holders ${message}; Platform ${platform.type}`)
           }
 
-          if (err.response && err.response.status === 429) {
+          if (response && response.status === 429) {
             logger.error('Sleeping 15sec')
             return utils.sleep(15000)
           }
         })
 
-      await utils.sleep(500)
+      await utils.sleep(1000)
     }
-  }
-
-  async getPlatforms(types) {
-    const platforms = await Platform.getByTypes(types, false, false)
-    const list = []
-    const map = {}
-
-    platforms.forEach(({ address, id, type }) => {
-      map[address] = id
-      if (address) {
-        list.push(address)
-      }
-
-      if (type === 'ethereum') {
-        map.ethereum = id
-      }
-
-      if (type === 'binance-smart-chain') {
-        map['binance-smart-chain'] = id
-      }
-    })
-
-    return { list, map }
   }
 
   mapHoldersData(addressItem, quantityItem, percentageItem, platformId) {
@@ -164,56 +117,62 @@ class CoinHolderSyncer extends Syncer {
     }
   }
 
-  mapChainHolders(data, platformId) {
-    const $ = cheerio.load(data)
-    const items = $('table>tbody>tr')
+  mapChainHolders(platformId) {
+    return data => {
+      const $ = cheerio.load(data)
+      const items = $('table>tbody>tr')
 
-    return items.filter(i => i < 10).map((i, item) => {
-      return this.mapHoldersData(
-        $(item.children[1]),
-        $(item.children[3]),
-        $(item.children[4]),
-        platformId
-      )
-    }).toArray().filter(i => i)
+      return items.filter(i => i < 10).map((i, item) => {
+        return this.mapHoldersData(
+          $(item.children[1]),
+          $(item.children[3]),
+          $(item.children[4]),
+          platformId
+        )
+      }).toArray().filter(i => i)
+    }
   }
 
-  mapTokenHolders(data, platformId) {
-    const $ = cheerio.load(data)
-    const items = $('table>tbody>tr')
+  mapTokenHolders(platformId) {
+    return data => {
+      const $ = cheerio.load(data)
+      const items = $('table>tbody>tr')
 
-    return items.map((i, item) => {
-      return this.mapHoldersData(
-        $(item.children[1]),
-        $(item.children[2]),
-        $(item.children[3]),
-        platformId
-      )
-    }).toArray().filter(i => i)
+      return items.map((i, item) => {
+        return this.mapHoldersData(
+          $(item.children[1]),
+          $(item.children[2]),
+          $(item.children[3]),
+          platformId
+        )
+      }).toArray().filter(i => i)
+    }
   }
 
-  mapSolanaHolders(data, platformId, token) {
-    return data.map(holder => {
-      if (!token || !token.decimals || !token.supply) {
-        return null
-      }
+  mapSolanaHolders(platformId) {
+    return ([data, token]) => {
+      return data.map(holder => {
+        if (!token || !token.decimals || !token.supply) {
+          return null
+        }
 
-      const decimals = 10 ** token.decimals
-      const balance = holder.amount / decimals
-      const supply = token.supply / decimals
+        const decimals = 10 ** token.decimals
+        const balance = holder.amount / decimals
+        const supply = token.supply / decimals
 
-      return {
-        supply,
-        balance,
-        address: holder.address,
-        percentage: (balance * 100) / supply,
-        platform_id: platformId
-      }
-    }).filter(i => i)
+        return {
+          supply,
+          balance,
+          address: holder.address,
+          percentage: (balance * 100) / supply,
+          platform_id: platformId
+        }
+      }).filter(i => i)
+    }
   }
 
-  async upsert(holders, platform) {
-    if (!platform || !holders.length) {
+  async upsert(holders, platformId) {
+    if (!platformId || !holders.length) {
       return
     }
 
@@ -221,7 +180,7 @@ class CoinHolderSyncer extends Syncer {
       return
     }
 
-    await CoinHolder.deleteAll(platform)
+    await CoinHolder.deleteAll(platformId)
     await CoinHolder.bulkCreate(holders)
       .then(data => {
         console.log('Inserted coin holders', data.length)
