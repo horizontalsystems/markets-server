@@ -1,8 +1,8 @@
-const { nullOrString } = require('../../utils')
+const { nullOrString, valueInCurrency } = require('../../utils')
 
 module.exports = {
 
-  serialize: categories => {
+  serialize: (categories, currencyRate) => {
     return categories.map(category => {
       const marketCap = category.market_cap || {}
 
@@ -11,7 +11,7 @@ module.exports = {
         name: category.name,
         order: category.order,
         description: category.description || {},
-        market_cap: nullOrString(marketCap.amount),
+        market_cap: valueInCurrency(marketCap.amount, currencyRate),
         change_24h: nullOrString(marketCap.change_24h),
         change_1w: nullOrString(marketCap.change_1w),
         change_1m: nullOrString(marketCap.change_1m)

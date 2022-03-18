@@ -32,7 +32,7 @@ const router = express.Router()
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  */
-router.get('/', controller.index)
+router.get('/', setCurrencyRate, controller.index)
 
 /**
  * @api {get} /v1/categories/:uid/coins List coins
