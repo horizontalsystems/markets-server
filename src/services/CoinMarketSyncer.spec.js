@@ -54,7 +54,7 @@ describe('CoinMarketSyncer', () => {
   })
 
   describe('#syncCoins', () => {
-    const coins = [{ coingecko_id: 'bitcoin' }, { coingecko_id: 'ethereum' }]
+    const coins = [{ id: 1, coingecko_id: 'bitcoin' }, { id: 2, coingecko_id: 'ethereum' }]
 
     beforeEach(() => {
       sinon.stub(syncer, 'updateCoins')
@@ -67,9 +67,10 @@ describe('CoinMarketSyncer', () => {
       })
 
       it('fetches & save coins', async () => {
-        await syncer.syncCoins(coins.map(coin => coin.coingecko_id))
+        const idsMap = { bitcoin: 1, ethereum: 2 }
+        await syncer.syncCoins(coins.map(coin => coin.coingecko_id), idsMap)
 
-        sinon.assert.calledOnceWithExactly(syncer.updateCoins, coins)
+        sinon.assert.calledOnceWithExactly(syncer.updateCoins, coins, idsMap)
         sinon.assert.calledOnceWithExactly(utils.sleep, 1200)
       })
     })

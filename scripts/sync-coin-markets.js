@@ -13,7 +13,7 @@ async function start({ coins }) {
   const syncer = new CoinMarketSyncer()
 
   if (coins) {
-    await syncer.syncCoins(coins.split(','))
+    await syncer.sync(coins.split(','))
   } else {
     await syncer.start()
   }

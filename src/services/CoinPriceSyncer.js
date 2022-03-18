@@ -40,7 +40,7 @@ class CoinPriceSyncer extends Syncer {
 
   async syncHistory(uids) {
     const where = uids ? { uid: uids } : null
-    const coins = await Coin.findAll({ attributes: ['id', 'uid'], where })
+    const coins = await Coin.findAll({ attributes: ['id', 'uid', 'coingecko_id'], where })
 
     const syncParams1d = this.syncParamsHistorical('1d')
     const syncParams1h = this.syncParamsHistorical('1h')
@@ -48,7 +48,7 @@ class CoinPriceSyncer extends Syncer {
     for (let i = 0; i < coins.length; i += 1) {
       const coin = coins[i]
 
-      logger.info(`Syncing: ${coin.uid}. (${i + 1}/${coins.length})`)
+      logger.info(`Syncing: ${coin.uid}. Coingecko_id: ${coin.coingecko_id} (${i + 1}/${coins.length})`)
 
       await this.syncRange(syncParams1d.dateFrom, syncParams1d.dateTo, coin)
       await this.syncRange(syncParams1h.dateFrom, syncParams1h.dateTo, coin)
@@ -57,7 +57,7 @@ class CoinPriceSyncer extends Syncer {
 
   async syncRange(dateFrom, dateTo, coin) {
     try {
-      const data = await coingecko.getMarketsChart(coin.uid, dateFrom.toSeconds(), dateTo.toSeconds())
+      const data = await coingecko.getMarketsChart(coin.coingecko_id, dateFrom.toSeconds(), dateTo.toSeconds())
       await this.storeMarketData(data.prices, data.total_volumes, coin.id)
       await utils.sleep(1100)
     } catch ({ message, response = {} }) {

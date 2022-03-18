@@ -182,8 +182,8 @@ class Coin extends SequelizeModel {
         price_change = v.price_change::json,
         market_data = v.market_data::json,
         last_updated = v.last_updated::timestamptz
-      FROM (values :values) as v(uid, price, price_change, market_data, last_updated)
-      WHERE c.uid = v.uid
+      FROM (values :values) as v(id, price, price_change, market_data, last_updated)
+      WHERE c.id = v.id
     `
 
     return Coin.queryUpdate(query, { values })
