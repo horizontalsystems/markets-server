@@ -265,6 +265,12 @@ router.get('/asset/:contract_address/:token_id', controller.asset)
  *    },
  *    "events":
  *    [
+ *      "asset": { ... },
+ *      "date": "2022-03-18T04:04:54",
+ *      "type": "sale",
+ *      "amount": "73950000000000000000",
+ *      "quantity": "1",
+ *      "transaction": { ... }
  *    ]
  *  }
  *
