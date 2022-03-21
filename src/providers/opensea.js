@@ -1,4 +1,4 @@
-const querystring = require('querystring')
+const { stringify } = require('querystring')
 const axios = require('axios').create({
   baseURL: 'https://api.opensea.io/api/v1',
   timeout: 180000,
@@ -10,30 +10,24 @@ const normalizer = require('./opensea-normalizer')
 class Opensea {
 
   getEvents(eventType, accountAddress, collectionUid, assetContract, tokenId, occuredBefore, cursor) {
-
-    let eventTypeValue
-    if (eventType) {
+    const getEventType = () => {
       switch (eventType) {
         case 'sale':
-          eventTypeValue = 'successful'
-          break
+          return 'successful'
         case 'list':
-          eventTypeValue = 'created'
-          break
+          return 'created'
         case 'bid':
-          eventTypeValue = 'bid_entered'
-          break
+          return 'bid_entered'
         case 'bid_cancel':
-          eventTypeValue = 'bid_withdrawn'
-          break
+          return 'bid_withdrawn'
         default:
-          eventTypeValue = eventType
+          return eventType
       }
     }
 
     const params = {
       only_opensea: false,
-      ...eventType && { event_type: eventTypeValue },
+      ...eventType && { event_type: getEventType() },
       ...accountAddress && { account_address: accountAddress },
       ...collectionUid && { collection_slug: collectionUid },
       ...tokenId && { token_id: tokenId },
@@ -43,7 +37,7 @@ class Opensea {
     }
 
     return axios
-      .get(`/events?${querystring.stringify(params)}`)
+      .get(`/events?${stringify(params)}`)
       .then(({ data }) => normalizer.normalizeEvents(data))
   }
 
@@ -55,7 +49,7 @@ class Opensea {
     }
 
     return axios
-      .get(`/collections?${querystring.stringify(params)}`)
+      .get(`/collections?${stringify(params)}`)
       .then(({ data }) => normalizer.normalizeCollections(data.collections || data))
   }
 
@@ -92,7 +86,7 @@ class Opensea {
     }
 
     return axios
-      .get(`/assets?${querystring.stringify(params)}`)
+      .get(`/assets?${stringify(params)}`)
       .then(({ data }) => normalizer.normalizeAssets(data))
   }
 
@@ -103,7 +97,7 @@ class Opensea {
     }
 
     return axios
-      .get(`/asset/${contractAddress}/${tokenId}?${querystring.stringify(params)}`)
+      .get(`/asset/${contractAddress}/${tokenId}?${stringify(params)}`)
       .then(({ data }) => normalizer.normalizeAsset(data))
   }
 
