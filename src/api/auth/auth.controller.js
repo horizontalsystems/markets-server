@@ -50,7 +50,7 @@ exports.authenticate = async ({ body }, res) => {
       return handleError(res, 400, 'Not an NFT owner')
     }
 
-    const token = jwt.sign({ address }, process.env.SECRET, { expiresIn: '7d' })
+    const token = jwt.sign({ address }, process.env.SECRET)
     await authKey.destroy()
 
     res.send({ token })
