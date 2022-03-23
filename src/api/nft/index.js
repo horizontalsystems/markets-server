@@ -1,5 +1,6 @@
 const express = require('express')
 const controller = require('./nft.controller')
+const { validateCollections, validateAssets } = require('./nft.validator')
 
 const router = express.Router()
 
@@ -13,9 +14,10 @@ const router = express.Router()
  * @apiVersion 1.0.0
  * @apiGroup NFT
  *
- * @apiParam {String}                          asset_owner Currency code
- * @apiParam {Number{-2147483648-2147483648}}  offset For pagination. Number of contracts offset
- * @apiParam {NUmber{1-300}}                   limit For pagination. Maximum number of contracts to return
+ * @apiParam {String}                          [asset_owner] Asset owner address. If not specified all collections will be returned
+ * @apiParam {Number{-2147483648-2147483648}}  [offset]      (Deprecated and will we replaced by page parameter)
+ * @apiParam {Number{-2147483648-2147483648}}  [page=1]      For pagination. Number of contracts offset
+ * @apiParam {NUmber{1-300}}                   [limit=300]   For pagination. Maximum number of collections to return
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -33,8 +35,7 @@ const router = express.Router()
  *
  *  @apiError (Bad Request 400)  ValidationError Some parameters or Owner address are  not valid
  */
-
-router.get('/collections', controller.collections)
+router.get('/collections', validateCollections, controller.collections)
 
 /**
  * @api {get} /v1/nft/collection/:collection_uid Get NFT Collection details
@@ -42,7 +43,8 @@ router.get('/collections', controller.collections)
  * @apiVersion 1.0.0
  * @apiGroup NFT
  *
- * @apiParam {String}  collection_uid UID (collection slug) of the collection to retrieve details for
+ * @apiParam {String}  [collection_uid]       UID (collection slug) of the collection to retrieve details for
+ * @apiParam {Boolean} [include_stats_chart=false] Return stats charts data
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -85,12 +87,19 @@ router.get('/collections', controller.collections)
  *      "num_reports": 0,
  *      "market_cap": 0,
  *      "floor_price": 0
- *    }
+ *    },
+ *    "stats_chart": [
+ *      "timestamp": 123123123,
+ *      "one_day_volume": 123,
+ *      "avеrage_price": 123,
+ *      "floor_price": 123,
+ *      "one_day_sales": 123
+ *    ]
+ *
  *  }
  *  @apiError (Bad Request 400)  ValidationError Some parameters or Collection UID/slug are not valid
  *  @apiError (Not Found 404)    NotFound        Collection does not exist
  */
-
 router.get('/collection/:collection_uid', controller.collection)
 
 /**
@@ -99,7 +108,7 @@ router.get('/collection/:collection_uid', controller.collection)
  * @apiVersion 1.0.0
  * @apiGroup NFT
  *
- * @apiParam {String}  collection_uid UID (collection slug) of the collection to retrieve details for
+ * @apiParam {String}  [collection_uid] UID (collection slug) of the collection to retrieve details for
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -137,47 +146,56 @@ router.get('/collection/:collection_uid/stats', controller.collectionStats)
  * @apiVersion 1.0.0
  * @apiGroup NFT
  *
- * @apiParam {String}                          owner                     The address of the owner of the assets
- * @apiParam {String}                          token_ids                 Comma separated token_IDs to search
- * @apiParam {String}                          contract_addresses        Comma separated contract addresses to search
- * @apiParam {String}                          collection                Limit responses to members of a collection
- * @apiParam {String=asc,desc}                 order_direction           Can be asc for ascending or desc for descending
- * @apiParam {Number{-2147483648-2147483648}}  offset                    Offset
- * @apiParam {NUmber{1-50}}                    limit                     Limit. Defaults to 20, capped at 50.
+ * @apiParam {String}                          [owner]                     The address of the owner of the assets
+ * @apiParam {String}                          [token_ids]                 Comma separated token_IDs to search
+ * @apiParam {String}                          [contract_addresses]        Comma separated contract addresses to search
+ * @apiParam {String}                          [collection_uid]            Limit responses to members of a collection
+ * @apiParam {String}                          [collection]                Deprecated (replaced by collection_uid)
+ * @apiParam {String=asc,desc}                 [order_direction]           Can be asc for ascending or desc for descending
+ * @apiParam {Boolean}                         [include_orders=false]      A flag determining if order information should be included
+ * @apiParam {String}                          [cursor]                    A cursor pointing to the page to retrieve
+ * @apiParam {Number{-2147483648-2147483648}}  [offset]                    For pagination (Deprecated and will we replaced by cursor parameter)
+ * @apiParam {NUmber{1-50}}                    [limit]                     Limit. Defaults to 20, capped at 50.
  *
  * @apiSuccessExample {json} Success-Response:
- *  HTTP/1.1 200 OK
- * [
- *  {
- *     "token_id": "5550",
- *     "name": "Torao #5550",
- *     "description": "Karafuru is home to 5,555 generative arts",
- *     "contract" {
- *        "address": "0xd2f668a8461d6761115daf8aeb3cdf5f40c532c6",
- *        "type": "ERC721",
- *     }
- *     "symbol": "KARAFURU",
- *     "collection_uid": "karafuru",
- *     "attributes": [],
- *     "image_data": {
- *       "image_url": "https://",
- *       "image_preview_url": "https://"
- *     },
- *     "links": {
- *       "permalink": "https://opensea.io/assets/
- *     },
- *     "market_data": {
- *       "last_sale": {},
- *       "sell_orders": null
- *       "orders": {}
- *     }
- *   }
- * ]
+ * HTTP/1.1 200 OK
+ * {
+ *  "cursor": {
+ *    "next": "LXBrPTI2ODcyNjk2OA==",
+ *    "previous": null
+ *  },
+ *  "assets":
+ *  [
+ *    {
+ *      "token_id": "5550",
+ *      "name": "Torao #5550",
+ *      "description": "Karafuru is home to 5,555 generative arts",
+ *      "contract" {
+ *         "address": "0xd2f668a8461d6761115daf8aeb3cdf5f40c532c6",
+ *         "type": "ERC721",
+ *      }
+ *      "symbol": "KARAFURU",
+ *      "collection_uid": "karafuru",
+ *      "attributes": [],
+ *      "image_data": {
+ *        "image_url": "https://",
+ *        "image_preview_url": "https://"
+ *      },
+ *      "links": {
+ *        "permalink": "https://opensea.io/assets/
+ *      },
+ *      "market_data": {
+ *        "last_sale": {},
+ *        "sell_orders": null
+ *        "orders": {}
+ *      }
+ *    }
+ *  ]
+ * }
  *
  *  @apiError (Bad Request 400)  ValidationError Some parameters are not valid
  */
-
-router.get('/assets', controller.assets)
+router.get('/assets', validateAssets, controller.assets)
 
 /**
  * @api {get} /v1/nft/asset/:contract_address/:token_id Get NFT Asset details
@@ -185,9 +203,10 @@ router.get('/assets', controller.assets)
  * @apiVersion 1.0.0
  * @apiGroup NFT
  *
- * @apiParam {String}  contract_address  Address of the contract for this NFT
- * @apiParam {String}  token_id          Token ID for this item
- * @apiParam {String}  account_address   Address of an owner of the token
+ * @apiParam {String}  [contract_address]     Address of the contract for this NFT
+ * @apiParam {String}  [token_id]             Token ID for this item
+ * @apiParam {String}  [account_address]      Address of an owner of the token
+ * @apiParam {Boolean} [include_orders=false] A flag determining if order information should be included
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -218,7 +237,41 @@ router.get('/assets', controller.assets)
  *  @apiError (Bad Request 400)  ValidationError Some parameters or Asset address are not valid
  *  @apiError (Not Found 404)    NotFound        Asset does not exist
  */
-
 router.get('/asset/:contract_address/:token_id', controller.asset)
+
+/**
+ * @api {get} /v1/nft/events Get NFT Events (Activities)
+ * @apiDescription Get NFT events
+ * @apiVersion 1.0.0
+ * @apiGroup NFT
+ *
+ * @apiParam {String} [event_type]      The event type to filter (sale, list, bid, bid_cancel, transfer, cancel)
+ * @apiParam {String} [collection_uid]       Limit responses to events from a collection
+ * @apiParam {String} [token_id]        Token ID for this item
+ * @apiParam {String} [asset_contract]  Asset contract address
+ * @apiParam {String} [account_address]  A user account's wallet address to filter for events on an account
+ * @apiParam {Number} [occured_before]     Only show events listed before this timestamp.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "cursor": {
+ *      "next": "LXBrPTI2ODcyNjk2OA==",
+ *      "previous": null
+ *    },
+ *    "events":
+ *    [
+ *      "asset": { ... },
+ *      "date": "2022-03-18T04:04:54",
+ *      "type": "sale",
+ *      "amount": "73950000000000000000",
+ *      "quantity": "1",
+ *      "transaction": { ... }
+ *    ]
+ *  }
+ *
+ *  @apiError (Bad Request 400)  ValidationError Some parameters are not valid
+ */
+router.get('/events', controller.events)
 
 module.exports = router

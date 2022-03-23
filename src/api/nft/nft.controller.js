@@ -1,12 +1,20 @@
+const { DateTime } = require('luxon')
 const opensea = require('../../providers/opensea')
 const NftAsset = require('../../db/models/NftAsset')
 const NftCollection = require('../../db/models/NftCollection')
 const logger = require('../../config/logger')
 
 exports.collections = async ({ query }, res) => {
+  const { limit = 100, page = 1 } = query
+  const offset = query.offset ? query.offset : limit * (page - 1)
   let collections = []
+
   try {
-    collections = await opensea.getCollections(query.asset_owner, query.offset, query.limit)
+    if (query.asset_owner) {
+      collections = await opensea.getCollections(query.asset_owner, offset, limit)
+    } else {
+      collections = await NftCollection.getCollections(offset, limit)
+    }
   } catch (e) {
     logger.error('Error fetching nft collection:', e)
   }
@@ -21,8 +29,12 @@ exports.collection = async ({ params }, res) => {
 
     if (!collection) {
       collection = await opensea.getCollection(params.collection_uid)
-      NftCollection.upsertCollections([collection])
+
+      if (collection) {
+        NftCollection.upsertCollections([collection])
+      }
     }
+
   } catch (e) {
     logger.error('Error fetching nft collection:', e)
   }
@@ -31,32 +43,41 @@ exports.collection = async ({ params }, res) => {
 }
 
 exports.collectionStats = async ({ params }, res) => {
-  let collection = {}
+
   try {
-    collection = await NftCollection.getCachedCollection(params.collection_uid)
+    const collection = await NftCollection.getCachedCollection(params.collection_uid)
 
     if (!collection) {
-      collection = await opensea.getCollection(params.collection_uid)
-      NftCollection.upsertCollections([collection])
+      const collectionStats = await opensea.getCollectionStats(params.collection_uid)
+      if (collectionStats) {
+        NftCollection.update(
+          { stats: collectionStats, last_updated: DateTime.utc().toISO() },
+          { where: { uid: params.collection_uid } }
+        )
+      }
+      return res.send(collectionStats)
     }
+
+    return res.send(collection.stats)
   } catch (e) {
     logger.error('Error fetching nft collection:', e)
   }
-
-  res.send(collection.stats)
 }
 
 exports.assets = async ({ query }, res) => {
   let assets = []
+
   try {
     assets = await opensea.getAssets(
       query.owner,
+      query.collection_uid,
       query.token_ids,
       query.contract_addresses,
-      query.collection,
+      query.cursor,
+      query.include_orders,
       query.order_direction,
-      query.offset,
-      query.limit
+      query.limit,
+      query.offset
     )
   } catch (e) {
     logger.error('Error fetching nft assets:', e)
@@ -70,7 +91,12 @@ exports.asset = async ({ params, query }, res) => {
     asset = await NftAsset.getCachedAsset(params.contract_address, params.token_id)
 
     if (!asset) {
-      asset = await opensea.getAsset(params.contract_address, params.token_id, query.account_address)
+      asset = await opensea.getAsset(
+        params.contract_address,
+        params.token_id,
+        query.account_address,
+        query.include_orders
+      )
       NftAsset.upsertAssets([asset])
     }
   } catch (e) {
@@ -78,4 +104,23 @@ exports.asset = async ({ params, query }, res) => {
   }
 
   res.send(asset)
+}
+
+exports.events = async ({ query }, res) => {
+  let events = []
+
+  try {
+    events = await opensea.getEvents(
+      query.event_type,
+      query.account_address,
+      query.collection_uid,
+      query.asset_contract,
+      query.token_id,
+      query.occured_before,
+      query.cursor
+    )
+  } catch (e) {
+    logger.error('Error fetching nft assets:', e)
+  }
+  res.send(events)
 }
