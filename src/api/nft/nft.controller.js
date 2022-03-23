@@ -82,7 +82,8 @@ exports.assets = async ({ query }, res) => {
       query.cursor,
       query.include_orders,
       query.order_direction,
-      query.limit
+      query.limit,
+      query.offset
     )
   } catch (e) {
     logger.error('Error fetching nft assets:', e)

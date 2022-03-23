@@ -35,7 +35,6 @@ const router = express.Router()
  *
  *  @apiError (Bad Request 400)  ValidationError Some parameters or Owner address are  not valid
  */
-
 router.get('/collections', validateCollections, controller.collections)
 
 /**
@@ -101,7 +100,6 @@ router.get('/collections', validateCollections, controller.collections)
  *  @apiError (Bad Request 400)  ValidationError Some parameters or Collection UID/slug are not valid
  *  @apiError (Not Found 404)    NotFound        Collection does not exist
  */
-
 router.get('/collection/:collection_uid', controller.collection)
 
 /**
@@ -197,7 +195,6 @@ router.get('/collection/:collection_uid/stats', controller.collectionStats)
  *
  *  @apiError (Bad Request 400)  ValidationError Some parameters are not valid
  */
-
 router.get('/assets', validateAssets, controller.assets)
 
 /**
@@ -240,7 +237,6 @@ router.get('/assets', validateAssets, controller.assets)
  *  @apiError (Bad Request 400)  ValidationError Some parameters or Asset address are not valid
  *  @apiError (Not Found 404)    NotFound        Asset does not exist
  */
-
 router.get('/asset/:contract_address/:token_id', controller.asset)
 
 /**

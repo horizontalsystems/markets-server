@@ -73,13 +73,14 @@ class Opensea {
       })
   }
 
-  getAssets(owner, collectionUid, tokenIds, contractAddresses, cursor, includeOrders = false, orderDirection = 'desc', limit = 20) {
+  getAssets(owner, collectionUid, tokenIds, contractAddresses, cursor, includeOrders = false, orderDirection = 'desc', limit = 20, offset = 0) {
     const params = {
       limit,
       order_direction: orderDirection,
       include_orders: includeOrders,
       ...owner && { owner },
       ...cursor && { cursor },
+      ...offset && { offset },
       ...tokenIds && { token_ids: tokenIds.split(',') },
       ...collectionUid && { collection_slug: collectionUid },
       ...contractAddresses && { asset_contract_addresses: contractAddresses.split(',') }
@@ -87,7 +88,10 @@ class Opensea {
 
     return axios
       .get(`/assets?${stringify(params)}`)
-      .then(({ data }) => normalizer.normalizeAssets(data))
+      .then(({ data }) => {
+        const result = normalizer.normalizeAssets(data)
+        return offset ? result.assets : result
+      })
   }
 
   getAsset(contractAddress, tokenId, accountAddress, includeOrders = false) {

@@ -14,6 +14,7 @@ module.exports = {
         .max(1500),
       page: Joi.number()
         .min(1),
+      // @deprecated
       offset: Joi.number()
         .min(0),
     })
@@ -38,7 +39,10 @@ module.exports = {
       cursor: Joi.string(),
       limit: Joi.number()
         .min(1)
-        .max(1500)
+        .max(1500),
+      // @deprecated
+      offset: Joi.number()
+        .min(0),
     })
   }, options),
 
