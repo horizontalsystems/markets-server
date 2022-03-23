@@ -40,7 +40,6 @@ exports.collection = async ({ params, query }, res) => {
       const dateFrom = DateTime.now().minus({ days: 2 }).toSQL()
       collection.stats_chart = await NftMarket.getStatsChart(collection.uid, dateFrom)
     }
-
   } catch (e) {
     logger.error('Error fetching nft collection:', e)
   }
