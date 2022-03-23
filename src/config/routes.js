@@ -18,5 +18,6 @@ router.use('/token_info', require('../api/token_info'))
 router.use('/reports', require('../api/reports'))
 router.use('/global-markets', require('../api/global-markets'))
 router.use('/chain', require('../api/chain'))
+router.use('/status', require('../api/status'))
 
 module.exports = router

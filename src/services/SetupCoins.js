@@ -2,6 +2,7 @@ const TurndownService = require('turndown')
 const { difference, chunk } = require('lodash')
 const { sleep } = require('../utils')
 const Coin = require('../db/models/Coin')
+const UpdateState = require('../db/models/UpdateState')
 const Platform = require('../db/models/Platform')
 const Language = require('../db/models/Language')
 const coingecko = require('../providers/coingecko')
@@ -60,14 +61,14 @@ class SetupCoins {
       await this.syncCoinInfo(coins[i], languages, bep2tokens)
       await sleep(1100)
     }
+
+    if (coins.length) {
+      await UpdateState.reset('coins')
+    }
   }
 
   async forceSyncPlatforms(type) {
-    const platforms = await Platform.findAll({
-      where: {
-        type
-      }
-    })
+    const platforms = await Platform.findAll({ where: { type } })
 
     for (let i = 0; i < platforms.length; i += 1) {
       const platform = platforms[i]
@@ -86,14 +87,17 @@ class SetupCoins {
         case 'polygon-pos':
           getDecimals = web3Provider.getMRC20Decimals
           break
-        default:
+        case 'optimistic-ethereum':
           getDecimals = web3Provider.getERC20Decimals
           break
+        default:
+          continue
       }
 
       const decimals = await getDecimals(platform.address)
       console.log(`Fetched decimals (${decimals}) for ${platform.address} ${i + 1}; `)
       await platform.update({ decimals })
+      await UpdateState.reset('platforms')
     }
   }
 

@@ -8,7 +8,7 @@ const program = new Command()
   .option('-a --all', 'setup all coins')
   .option('-f --fetch', 'fetch news coins')
   .option('-c --coins <coins>', 'setup only given coins')
-  .option('-p --platform <platform>', 'force sync decimals for given plalform')
+  .option('-p --platform <platform>', 'force sync decimals for given platform type')
   .parse(process.argv)
 
 async function start({ all, fetch, coins, platform }) {

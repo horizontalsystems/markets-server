@@ -11,6 +11,7 @@ const Treasury = require('../db/models/Treasury')
 const Fund = require('../db/models/Fund')
 const FundsInvested = require('../db/models/FundsInvested')
 const Report = require('../db/models/Report')
+const UpdateState = require('../db/models/UpdateState')
 
 const router = express.Router()
 const action = {
@@ -50,9 +51,24 @@ const action = {
 
   createUpdateDelete: Model => {
     return ({
-      create: data => Model.create(data),
-      update: (id, values) => Model.update(values, { where: { id } }).then(() => values),
-      destroy: id => Model.destroy({ where: { id } })
+      create: async data => {
+        const record = await Model.create(data)
+        await UpdateState.reset(Model.tableName)
+
+        return record
+      },
+      update: async (id, values) => {
+        const record = await Model.update(values, { where: { id } }).then(() => values)
+        await UpdateState.reset(Model.tableName)
+
+        return record
+      },
+      destroy: async id => {
+        const destroy = await Model.destroy({ where: { id } })
+        await UpdateState.reset(Model.tableName)
+
+        return destroy
+      }
     })
   }
 }
@@ -126,6 +142,13 @@ router.use(
     getList: params => action.getList(params, Report, ['id', 'coin_id', 'title', 'author', 'url', 'date', 'body']),
     getOne: id => action.getOne(id, Report, ['id', 'coin_id', 'title', 'author', 'url', 'date', 'body']),
     ...action.createUpdateDelete(Report)
+  }),
+
+  crud('/update_states', {
+    search: (q, limit) => action.search(q, limit, UpdateState, ['id', 'name', 'date']),
+    getList: params => action.getList(params, UpdateState, ['id', 'name', 'date']),
+    getOne: id => action.getOne(id, UpdateState, ['id', 'name', 'date']),
+    ...action.createUpdateDelete(UpdateState)
   }),
 )
 
