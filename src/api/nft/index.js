@@ -266,8 +266,17 @@ router.get('/asset/:contract_address/:token_id', controller.asset)
  *      "type": "sale",
  *      "amount": "73950000000000000000",
  *      "quantity": "1",
- *      "transaction": { ... }
- *    ]
+ *      "transaction": { ... },
+ *      "markets_data": {
+ *        seller: null,
+ *        to_account: null,
+ *        from_account: null,
+ *        owner_account: null,
+ *        winner_account: null,
+ *        auction_type: "dutch"
+ *        payment_token: { ... },
+ *      }
+   *  ]
  *  }
  *
  *  @apiError (Bad Request 400)  ValidationError Some parameters are not valid
