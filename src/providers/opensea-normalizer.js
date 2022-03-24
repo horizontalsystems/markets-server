@@ -114,24 +114,6 @@ exports.normalizeEvents = ({ next, previous, asset_events: events }) => {
 // "to_account": null,
 // "total_price": null,
 // "transaction": {
-//     "block_hash": "0xfac61efd1619a09aae7be859df79108f9fd41ac502a1644805b34d34ffc29cac",
-//     "block_number": "14404332",
-//     "from_account": {
-//         "user": null,
-//         "profile_img_url": "https://storage.googleapis.com/opensea-static/opensea-profile/11.png",
-//         "address": "0x1919db36ca2fa2e15f9000fd9cdc2edcf863e685",
-//         "config": ""
-//     },
-//     "id": 302796091,
-//     "timestamp": "2022-03-17T13:36:31",
-//     "to_account": {
-//         "user": null,
-//         "profile_img_url": "https://storage.googleapis.com/opensea-static/opensea-profile/23.png",
-//         "address": "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb",
-//         "config": ""
-//     },
-//     "transaction_hash": "0x08a17686adf238947e2ac758ec15539b562b41684da6ea62c6a210fa5673dca1",
-//     "transaction_index": "57"
 // },
 // "winner_account": null,
 // "listing_time": null
@@ -176,5 +158,14 @@ exports.normalizeEvent = event => {
     amount: eventAmount,
     quantity: event.quantity,
     transaction: event.transaction,
+    markets_data: {
+      seller: event.seller,
+      to_account: event.to_account,
+      from_account: event.from_account,
+      owner_account: event.owner_account,
+      winner_account: event.winner_account,
+      payment_token: event.payment_token,
+      auction_type: event.auction_type
+    }
   }
 }
