@@ -59,7 +59,7 @@ class AddressSyncer extends Syncer {
 
   async syncStatsFromBigquery({ dateFrom, dateTo }, timePeriod) {
     try {
-      const platforms = await this.getPlatforms(['ethereum', 'erc20'], true, false)
+      const platforms = await this.getPlatforms(['bitcoin', 'ethereum', 'erc20'], true, false)
       const addressStats = await bigquery.getAddressStats(platforms.list, dateFrom, dateTo, timePeriod)
 
       const result = addressStats.map(data => ({
@@ -152,8 +152,8 @@ class AddressSyncer extends Syncer {
     const map = {}
 
     platforms.forEach(({ type, address, decimals, id }) => {
-      if (type === 'ethereum') {
-        map.ethereum = id
+      if (type === 'ethereum' || type === 'bitcoin') {
+        map[type] = id
       }
 
       if (address) {
