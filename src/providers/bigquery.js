@@ -4,6 +4,7 @@ const logger = require('../config/logger')
 
 const transactionStatsSQL = requireFile('providers/bigquery-sql/transaction_stats.sql')
 const addressStatsSQL = requireFile('providers/bigquery-sql/address_stats.sql')
+const addressStatsBtcSQL = requireFile('providers/bigquery-sql/address_stats_btc.sql')
 const coinHoldersSQL = requireFile('providers/bigquery-sql/coin_holders.sql')
 
 const dexVolume = {
@@ -72,14 +73,23 @@ class BigQueryClient extends BigQuery {
     })
   }
 
-  getAddressStats(tokens, dateFrom, dateTo, timePeriod) {
+  async getAddressStats(tokens, dateFrom, dateTo, timePeriod) {
     console.log('Fetching address stats')
-    return this.createQuery(addressStatsSQL, {
+    const addressStats = await this.createQuery(addressStatsSQL, {
       supported_tokens: tokens,
       period: timePeriod,
       date_from: dateFrom,
       date_to: dateTo,
     })
+
+    const addressStatsBtc = await this.createQuery(addressStatsBtcSQL, {
+      period: timePeriod,
+      date_partition: `${dateFrom.substring(0, 8)}01`,
+      date_from: dateFrom,
+      date_to: dateTo,
+    })
+
+    return [...addressStats, ...addressStatsBtc]
   }
 }
 
