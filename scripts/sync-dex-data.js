@@ -5,7 +5,6 @@ const AddressSyncer = require('../src/services/AddressSyncer')
 const TransactionSyncer = require('../src/services/TransactionSyncer')
 const DexVolumeSyncer = require('../src/services/DexVolumeSyncer')
 const DexLiquiditySyncer = require('../src/services/DexLiquiditySyncer')
-const CategoryMarketCapSyncer = require('../src/services/CategoryMarketCapSyncer')
 
 async function start() {
   await sequelize.sync()
@@ -13,10 +12,8 @@ async function start() {
   const transactionSyncer = new TransactionSyncer()
   const dexVolumeSyncer = new DexVolumeSyncer()
   const dexLiquiditySyncer = new DexLiquiditySyncer()
-  const categoryMarketCapSyncer = new CategoryMarketCapSyncer()
 
   try {
-    await categoryMarketCapSyncer.start()
     await addressSyncer.start()
     await transactionSyncer.start()
     await dexVolumeSyncer.start()
