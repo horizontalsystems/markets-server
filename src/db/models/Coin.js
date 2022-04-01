@@ -70,6 +70,16 @@ class Coin extends SequelizeModel {
         //    censorship_resistance: false,
         //  }
 
+        stats: DataTypes.JSONB,
+        //  {
+        //    volumeRank: '165',
+        //    volumeRatio: '0.067',
+        //    holdersRank: 228,
+        //    addressRank: 28,
+        //    tvlRank: 31,
+        //    tvlRatio: '7.10'
+        //  }
+
         is_defi: DataTypes.BOOLEAN,
         last_updated: DataTypes.DATE,
       },
@@ -183,6 +193,17 @@ class Coin extends SequelizeModel {
         market_data = v.market_data::json,
         last_updated = v.last_updated::timestamptz
       FROM (values :values) as v(id, price, price_change, market_data, last_updated)
+      WHERE c.id = v.id
+    `
+
+    return Coin.queryUpdate(query, { values })
+  }
+
+  static updateStats(values) {
+    const query = `
+      UPDATE coins AS c set
+        stats = v.stats::json
+      FROM (values :values) as v(id, stats)
       WHERE c.id = v.id
     `
 
