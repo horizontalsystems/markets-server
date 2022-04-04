@@ -5,6 +5,7 @@ const bscscan = require('../providers/bscscan')
 const solscan = require('../providers/solscan')
 const Platform = require('../db/models/Platform')
 const CoinHolder = require('../db/models/CoinHolder')
+const bigquery = require('../providers/bigquery')
 const Syncer = require('./Syncer')
 const utils = require('../utils')
 const logger = require('../config/logger')
@@ -16,7 +17,7 @@ class CoinHolderSyncer extends Syncer {
   }
 
   async syncAll() {
-    const types = ['erc20', 'bep20', 'binance-smart-chain', 'ethereum', 'solana']
+    const types = ['bitcoin', 'erc20', 'bep20', 'binance-smart-chain', 'ethereum', 'solana']
     const platforms = await Platform.getByTypes(types, false, false)
     await this.syncHolders(platforms)
   }
@@ -40,6 +41,8 @@ class CoinHolderSyncer extends Syncer {
     const resolve = (request, mapper) => request.then(mapper)
     const fetcher = ({ id, type, address }) => {
       switch (type) {
+        case 'bitcoin':
+          return resolve(bigquery.getTopCoinHolders(['bitcoin']), this.mapBigqueryHolders(id))
         case 'erc20':
           return resolve(etherscan.getHolders(address), this.mapTokenHolders(id))
         case 'ethereum':
@@ -85,6 +88,17 @@ class CoinHolderSyncer extends Syncer {
         })
 
       await utils.sleep(1000)
+    }
+  }
+
+  mapBigqueryHolders(platformId) {
+    return data => {
+      return data.map(item => ({
+        address: item.address,
+        balance: item.balance,
+        percentage: item.percentage || 0,
+        platform_id: platformId,
+      }))
     }
   }
 
