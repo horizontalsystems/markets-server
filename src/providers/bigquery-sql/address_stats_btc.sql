@@ -41,7 +41,7 @@ SELECT
 FROM addresses_entry
 WHERE
   -- partition_date = EXTRACT(DATE FROM DATETIME_TRUNC(@date_from, MONTH)) AND
-  partition_date = @date_partition AND
+  partition_date >= @date_partition AND
   block_timestamp >= @date_from AND
   block_timestamp < @date_to
 GROUP BY
