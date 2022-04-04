@@ -1,8 +1,7 @@
 module.exports = {
   up(query, Sequelize) {
     return query.addColumn('coins', 'stats', {
-      type: Sequelize.JSONB,
-      defaultValue: {}
+      type: Sequelize.JSONB
     })
   },
 
