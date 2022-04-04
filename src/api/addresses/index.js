@@ -44,12 +44,12 @@ router.get('/', validateAddresses, setDateInterval, controller.index)
 router.get('/holders', validateHolders, controller.holders)
 
 /**
- * @api {get} /v1/addresses/:address/coins List coin holders
+ * @api {get} /v1/addresses/:address/coins List coins for the account address
  * @apiDescription Get a list of coin holders
  * @apiVersion 1.0.0
  * @apiGroup Address
  *
- * @apiParam  {String=bitcoin,ethereum,...} address   Address
+ * @apiParam  {String=0x...} address   Account address
  * @apiParam  {String=ethereum,bsc,solana}  chain     Address's chain
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values

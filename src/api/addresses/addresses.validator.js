@@ -5,7 +5,7 @@ const options = {
 }
 
 module.exports = {
-  // GET /v1/addresses
+  // GET /v1/addresses/:accountAddress/coins
   validateAddressCoins: validate({
     params: Joi.object({
       address: Joi.string().required()
@@ -19,7 +19,7 @@ module.exports = {
   validateAddresses: validate({
     query: Joi.object({
       coin_uid: Joi.string().required(),
-      platform: Joi.string().valid('erc20', 'bep20', 'solana', 'ethereum'),
+      platform: Joi.string().valid('bitcoin', 'erc20', 'bep20', 'solana', 'ethereum'),
       interval: Joi.string().valid('1d', '1w', '2w', '1m', '3m', '6m', '1y'),
       currency: Joi.string()
     })
@@ -29,7 +29,7 @@ module.exports = {
   validateHolders: validate({
     query: Joi.object({
       coin_uid: Joi.string().required(),
-      platform: Joi.string().valid('erc20', 'bep20', 'solana', 'ethereum', 'binance-smart-chain'),
+      platform: Joi.string().valid('bitcoin', 'erc20', 'bep20', 'solana', 'ethereum', 'binance-smart-chain'),
       limit: Joi.number().min(1).max(20),
     })
   }, options),
