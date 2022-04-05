@@ -31,15 +31,16 @@ class Platform extends SequelizeModel {
     })
   }
 
-  static async findByCoinUID(uids, type = 'erc20') {
+  static async findByCoinUID(uids, type = '') {
     const query = (`
       SELECT P.*
         FROM platforms P, coins C
       WHERE C.uid in (:uids)
         AND C.id = P.coin_id
+        AND P.type LIKE :type
     `)
 
-    return Platform.query(query, { uids, type })
+    return Platform.query(query, { uids, type: `%${type}` })
   }
 
   static getByTypes(type, withDecimal, withAddress = true) {
@@ -78,7 +79,7 @@ class Platform extends SequelizeModel {
         V.value,
         V.address,
         C.price
-     FROM (values :values) as V(address, value) 
+     FROM (values :values) as V(address, value)
      JOIN platforms P on P.address = V.address
      JOIN coins C on C.id = P.coin_id
      WHERE type = :platform
