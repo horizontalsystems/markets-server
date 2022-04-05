@@ -20,38 +20,42 @@ class CoinRatingSyncer extends Syncer {
     const volumesRank = await this.getVolumesRank(dateFrom)
     const addressRank = await this.getAddressRank(dateFrom)
     const holdersRank = await this.getHoldersRank()
-    const tvlRank = await this.getTvlRank()
+    const defiTvlRank = await this.getTvlRank()
 
-    const coins = await Coin.query('select c.id from coins c, coin_categories g where c.id = g.coin_id')
+    const coins = await Coin.query('select id from coins')
     const coinMap = coins.reduce((res, coin) => ({ ...res, [coin.id]: {} }), {})
-    const mapRank = (items, type) => {
+
+    const mapRank = (items, type, ratings) => {
+      const percent = Object.entries(ratings)
+        .reduce((res, [rating, percentage]) => ({
+          ...res, [rating]: (items.length * percentage) / 100
+        }), {})
+
       items.forEach((item, i) => {
         const coin = coinMap[item.id] || {}
+        const rank = i + 1
 
-        switch (type) {
-          case 'tvlRank':
-            coin.tvlRank = i + 1
-            coin.tvlRatio = item.ratio
-            break
-          case 'volumesRank':
-            coin.volumeRank = item.rank
-            coin.volumeRatio = item.ratio
-            break
-          case 'revenueRank':
-          case 'addressRank':
-          case 'holdersRank':
-            coin[type] = i + 1
-            break
-          default:
+        coin[`${type}_rank`] = rank
+        coin[`${type}_percent`] = (rank / items.length) * 100
+        coin[`${type}_value`] = item[type]
+
+        if (rank <= percent.a) {
+          coin[`${type}_rating`] = 'a'
+        } else if (rank <= percent.b) {
+          coin[`${type}_rating`] = 'b'
+        } else if (rank <= percent.c) {
+          coin[`${type}_rating`] = 'c'
+        } else {
+          coin[`${type}_rating`] = 'd'
         }
       })
     }
 
-    mapRank(revenueRank, 'revenueRank')
-    mapRank(volumesRank, 'volumesRank')
-    mapRank(holdersRank, 'holdersRank')
-    mapRank(addressRank, 'addressRank')
-    mapRank(tvlRank, 'tvlRank')
+    mapRank(revenueRank, 'revenue', { a: 20, b: 30, c: 40, d: 100 })
+    mapRank(volumesRank, 'volumes', { a: 3.11, b: 7, c: 10, d: 100 })
+    mapRank(holdersRank, 'holders', { a: 2, b: 7, c: 10, d: 100 })
+    mapRank(addressRank, 'address', { a: 1.2, b: 3, c: 6, d: 100 })
+    mapRank(defiTvlRank, 'tvl', { a: 4, b: 8, c: 20, d: 100 })
 
     const records = Object.entries(coinMap)
       .map(([id, stats]) => {
@@ -61,8 +65,7 @@ class CoinRatingSyncer extends Syncer {
         ]
       })
 
-    console.log('Updates coin stats', records.length)
-
+    console.log('Updated coin stats', records.length)
     await Coin.updateStats(records)
   }
 
@@ -70,104 +73,69 @@ class CoinRatingSyncer extends Syncer {
     const revenue = await tokenTerminal.getProjects()
 
     return Coin.query(`
-      with coins as (
-        select
-          c.id,
-          c.coingecko_id
-        from coins c, coin_categories g
-        where c.id = g.coin_id
-      )
-      select
+      SELECT
         c.id,
         v.revenue
-      from (values :revenue) as v(id, revenue), coins c
-      where c.coingecko_id = v.id
-      order by v.revenue desc nulls last
+      FROM (values :revenue) as v(id, revenue), coins c
+      WHERE c.coingecko_id = v.id
+        AND v.revenue IS NOT NULL
+      ORDER BY v.revenue desc
     `, { revenue })
   }
 
   getVolumesRank(dateFrom) {
     return Coin.query(`
-      with coins as (
-        select
-          c.id,
-          nullif((c.market_data->'market_cap')::numeric, 0) as mcap
-        from coins c, coin_categories g
-        where c.id = g.coin_id
-      )
-      select
-        c.id,
-        p.volume_avg as volume,
-        p.volume_avg / c.mcap as ratio,
-        rank() over (order by p.volume_avg desc) as rank
-      from (
+      SELECT
+        p.coin_id as id,
+        p.avg as volumes
+      FROM (
         SELECT
           coin_id,
-          avg(volume) volume_avg
+          avg(volume) as avg
         FROM coin_prices
         WHERE date >= :dateFrom
         GROUP BY coin_id
       ) p
-      join coins c on c.id = p.coin_id
-      order by ratio desc nulls last
+      ORDER BY volumes desc
     `, { dateFrom })
   }
 
   getAddressRank(dateFrom) {
     return Coin.query(`
-      with coins as (
-        select
-          c.id
-        from coins c, coin_categories g
-        where c.id = g.coin_id
-      )
       SELECT
         C.id,
-        SUM(a.count) uniq_address
+        SUM(a.count) address
       FROM addresses a, platforms p, coins c
-      where a.date >= :dateFrom
-        and p.id = a.platform_id
-        and c.id = p.coin_id
-      GROUP by c.id
-      order by uniq_address desc
+      WHERE a.date >= :dateFrom
+        AND p.id = a.platform_id
+        AND c.id = p.coin_id
+      GROUP BY c.id
+      ORDER BY address desc
     `, { dateFrom })
   }
 
   getHoldersRank() {
     return Coin.query(`
-      with coins as (
-        select
-          c.id
-        from coins c, coin_categories g
-        where c.id = g.coin_id
-      )
-      select
+      SELECT
         c.id,
-        sum(h.percentage) as percentage
-      from coin_holders h, platforms p, coins c
-      where p.id = h.platform_id
-        and c.id = p.coin_id
-      group by c.id
-      order by percentage asc
+        sum(h.percentage) as holders
+      FROM coin_holders h, platforms p, coins c
+      WHERE p.id = h.platform_id
+        AND c.id = p.coin_id
+      GROUP BY c.id
+      ORDER BY holders asc
     `)
   }
 
   getTvlRank() {
     return Coin.query(`
-      with coins as (
-        select
-          c.id,
-          nullif((c.market_data->'market_cap')::numeric, 0) as mcap
-        from coins c, coin_categories g
-        where c.id = g.coin_id
-      )
-      select
+      SELECT
         c.id,
-        p.tvl_rank,
-        p.tvl / c.mcap as ratio
-      from defi_protocols p, coins c
-      where c.id = p.coin_id
-      order by ratio desc nulls last
+        p.tvl
+      FROM defi_protocols p, coins c
+      WHERE c.id = p.coin_id
+        AND p.tvl_rank IS NOT NULL
+      ORDER BY tvl_rank
     `)
   }
 }
