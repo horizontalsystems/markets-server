@@ -113,9 +113,9 @@ router.use(
   }),
 
   crud('/treasuries', {
-    search: (q, limit) => search(q, limit, Treasury, ['id', 'coin_id', 'treasury_entity_id']),
-    getList: params => getList(params, Treasury, ['id', 'coin_id', 'treasury_entity_id']),
-    getOne: id => getOne(id, Treasury, ['id', 'coin_id', 'treasury_entity_id']),
+    search: (q, limit) => search(q, limit, Treasury, ['id', 'coin_id', 'treasury_entity_id', 'amount']),
+    getList: params => getList(params, Treasury, ['id', 'coin_id', 'treasury_entity_id', 'amount']),
+    getOne: id => getOne(id, Treasury, ['id', 'coin_id', 'treasury_entity_id', 'amount']),
     ...createUpdateDelete(Treasury)
   }),
 
