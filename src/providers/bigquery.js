@@ -4,7 +4,7 @@ const logger = require('../config/logger')
 
 const transactionStatsSQL = requireFile('providers/bigquery-sql/transaction_stats.sql')
 const addressStatsSQL = requireFile('providers/bigquery-sql/address_stats.sql')
-const addressStatsBtcSQL = requireFile('providers/bigquery-sql/address_stats_btc.sql')
+const addressStatsBtcBasedSQL = requireFile('providers/bigquery-sql/address_stats_btc.sql')
 const coinHoldersBtcBasedSQL = requireFile('providers/bigquery-sql/coin_holders_btc.sql')
 
 const dexVolume = {
@@ -80,7 +80,7 @@ class BigQueryClient extends BigQuery {
       date_to: dateTo,
     })
 
-    const addressStatsBtc = await this.createQuery(addressStatsBtcSQL, {
+    const addressStatsBtc = await this.createQuery(addressStatsBtcBasedSQL, {
       period: timePeriod,
       date_partition: `${dateFrom.substring(0, 8)}01`,
       date_from: dateFrom,

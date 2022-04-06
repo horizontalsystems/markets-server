@@ -59,14 +59,18 @@ class AddressSyncer extends Syncer {
 
   async syncStatsFromBigquery({ dateFrom, dateTo }, timePeriod) {
     try {
-      const platforms = await this.getPlatforms(['bitcoin', 'ethereum', 'erc20'], true, false)
+      const platforms = await this.getPlatforms(
+        ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash', 'ethereum', 'erc20'],
+        true,
+        false
+      )
       const addressStats = await bigquery.getAddressStats(platforms.list, dateFrom, dateTo, timePeriod)
 
       const result = addressStats.map(data => ({
         count: data.address_count,
         volume: data.volume,
         date: data.block_date.value,
-        platform_id: platforms.map[data.coin_address]
+        platform_id: platforms.map[data.coin_address || data.platform]
       }))
 
       this.upsertAddressStats(result)
@@ -152,7 +156,8 @@ class AddressSyncer extends Syncer {
     const map = {}
 
     platforms.forEach(({ type, address, decimals, id }) => {
-      if (type === 'ethereum' || type === 'bitcoin') {
+      if (type === 'ethereum' || type === 'bitcoin' || type === 'bitcoin-cash'
+      || type === 'dash' || type === 'dogecoin' || type === 'litecoin' || type === 'zcash') {
         map[type] = id
       }
 
