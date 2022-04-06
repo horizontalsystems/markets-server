@@ -4,11 +4,15 @@ const axios = require('axios').create({
   headers: { Authorization: `Bearer ${process.env.TOKEN_TERMINAL_KEY}` }
 })
 
+const {
+  mapUID
+} = require('./normalizers/tokenterminal-normalizer')
+
 exports.getProjects = () => {
   return axios.get('/projects?interval=daily')
     .then(({ data }) => data.map(item => {
       return [
-        item.project_id,
+        mapUID(item.project_id),
         item.revenue_30d
       ]
     }))
