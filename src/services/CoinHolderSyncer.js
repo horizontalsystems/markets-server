@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 const cheerio = require('cheerio')
 const etherscan = require('../providers/etherscan')
+const blockchair = require('../providers/blockchair')
 const bscscan = require('../providers/bscscan')
 const solscan = require('../providers/solscan')
 const Platform = require('../db/models/Platform')
@@ -16,7 +17,9 @@ class CoinHolderSyncer extends Syncer {
   }
 
   async syncAll() {
-    const types = ['erc20', 'bep20', 'binance-smart-chain', 'ethereum', 'solana']
+    const types = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash',
+      'erc20', 'bep20', 'binance-smart-chain', 'ethereum', 'solana']
+
     const platforms = await Platform.getByTypes(types, false, false)
     await this.syncHolders(platforms)
   }
@@ -40,6 +43,13 @@ class CoinHolderSyncer extends Syncer {
     const resolve = (request, mapper) => request.then(mapper)
     const fetcher = ({ id, type, address }) => {
       switch (type) {
+        case 'bitcoin':
+        case 'bitcoin-cash':
+        case 'dash':
+        case 'dogecoin':
+        case 'litecoin':
+        case 'zcash':
+          return resolve(blockchair.getAddresses(type), this.mapBlockchairData(id, type))
         case 'erc20':
           return resolve(etherscan.getHolders(address), this.mapTokenHolders(id))
         case 'ethereum':
@@ -85,6 +95,27 @@ class CoinHolderSyncer extends Syncer {
         })
 
       await utils.sleep(1000)
+    }
+  }
+
+  mapBlockchairData(platformId, type) {
+    return data => {
+      let supply = 21000000
+
+      if (type === 'dash') {
+        supply = 18920000
+      } else if (type === 'litecoin') {
+        supply = 84000000
+      } else if (type === 'dogecoin') {
+        supply = 132670764299
+      }
+
+      return data.map(item => ({
+        balance: item.balance * 0.00000001,
+        address: item.address,
+        percentage: ((item.balance * 0.00000001) * 100) / supply,
+        platform_id: platformId
+      }))
     }
   }
 
