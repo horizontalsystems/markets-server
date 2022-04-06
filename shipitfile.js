@@ -2,7 +2,6 @@
 
 const deploy = require('shipit-deploy')
 const shared = require('shipit-shared')
-const { apps } = require('./process.json')
 
 /**
  * @param {Shipit} shipit
@@ -44,28 +43,6 @@ module.exports = shipit => {
   const remote = cmd => {
     shipit.remote(`cd ${shipit.config.deployTo}/current && ${cmd}`)
   }
-
-  apps.forEach(({ name: app }) => {
-    shipit.blTask(`${app}:start`, () => {
-      shipit.start(`${app}:restart`)
-    })
-
-    shipit.blTask(`${app}:stop`, () => {
-      remote(`pm2 stop process.json --only ${app}`)
-    })
-
-    shipit.blTask(`${app}:delete`, () => {
-      remote(`pm2 delete process.json --only ${app}`)
-    })
-
-    shipit.blTask(`${app}:restart`, () => {
-      remote(`pm2 startOrRestart process.json --env production --only ${app}`)
-    })
-
-    shipit.blTask(`${app}:logs`, () => {
-      remote(`pm2 logs ${app}`)
-    })
-  })
 
   shipit.on('deployed', () => shipit.start('npm:install'))
   shipit.on('rollback', () => shipit.start('npm:install'))
