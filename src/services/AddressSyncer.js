@@ -183,7 +183,7 @@ class AddressSyncer extends Syncer {
         console.log(JSON.stringify(address.dataValues))
       })
       .catch(err => {
-        console.error('Error inserting address stats', err.message)
+        console.error(err)
       })
   }
 
