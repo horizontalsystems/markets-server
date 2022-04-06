@@ -61,7 +61,7 @@ router.use(
   crud('/coins', {
     search: (q, limit) => action.search(q, limit, Coin, ['id', 'uid', 'name', 'code']),
     getList: params => action.getList(params, Coin, ['id', 'uid', 'name', 'code']),
-    getOne: id => action.getOne(id, Coin, ['id', 'uid', 'name', 'code', 'description', 'security', 'links']),
+    getOne: id => action.getOne(id, Coin, ['id', 'uid', 'name', 'code', 'description', 'security', 'links', 'coingecko_id', 'price']),
     ...action.createUpdateDelete(Coin)
   }),
 
@@ -101,9 +101,9 @@ router.use(
   }),
 
   crud('/treasuries', {
-    search: (q, limit) => action.search(q, limit, Treasury, ['id', 'coin_id', 'treasury_entity_id']),
-    getList: params => action.getList(params, Treasury, ['id', 'coin_id', 'treasury_entity_id']),
-    getOne: id => action.getOne(id, Treasury, ['id', 'coin_id', 'treasury_entity_id']),
+    search: (q, limit) => action.search(q, limit, Treasury, ['id', 'coin_id', 'treasury_entity_id', 'amount']),
+    getList: params => action.getList(params, Treasury, ['id', 'coin_id', 'treasury_entity_id', 'amount']),
+    getOne: id => action.getOne(id, Treasury, ['id', 'coin_id', 'treasury_entity_id', 'amount']),
     ...action.createUpdateDelete(Treasury)
   }),
 
