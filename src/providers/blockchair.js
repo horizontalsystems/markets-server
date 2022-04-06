@@ -1,6 +1,6 @@
 const axios = require('axios').create({
   baseURL: 'https://api.blockchair.com',
-  timeout: 180000 * 3
+  timeout: 180000
 })
 
 exports.getAddresses = (chain, limit = 10) => {
