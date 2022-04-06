@@ -5,7 +5,7 @@ const axios = require('axios').create({
   headers: { 'X-API-KEY': process.env.OPENSEA_KEY }
 })
 
-const normalizer = require('./opensea-normalizer')
+const normalizer = require('./normalizers/opensea-normalizer')
 
 class Opensea {
 

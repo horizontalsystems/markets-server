@@ -15,7 +15,7 @@ const {
   normalizeDefiMarket,
   normalizeDominance,
   normalizeMarketCapVolume
-} = require('./coingecko-normalizer')
+} = require('./normalizers/coingecko-normalizer')
 
 exports.getMarketDominance = function getMarketDominance() {
   const query = querystring.stringify({
