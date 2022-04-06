@@ -104,7 +104,7 @@ addresses_entry AS (
 )
 
 SELECT
-  CASE  '1d' -- @period
+  CASE @period
     WHEN '30m' THEN TIMESTAMP_SECONDS(30*60 * DIV(UNIX_SECONDS(block_timestamp), 30*60))
     WHEN '1h' THEN TIMESTAMP_TRUNC(block_timestamp, HOUR)
     WHEN '1d' THEN TIMESTAMP_TRUNC(block_timestamp, DAY)
