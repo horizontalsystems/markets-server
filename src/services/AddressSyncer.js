@@ -75,7 +75,7 @@ class AddressSyncer extends Syncer {
 
       this.upsertAddressStats(result)
     } catch (e) {
-      logger.error(`Error syncing address stats: ${e}`)
+      logger.debug('Error syncing address stats', e)
     }
   }
 
@@ -141,7 +141,7 @@ class AddressSyncer extends Syncer {
       this.upsertAddressStats(addressStats)
       logger.info(`Successfully synced adddress stats for date: ${dateTo}`)
     } catch (e) {
-      logger.error('Error syncing address stats:', e)
+      logger.debug('Error syncing address stats:', e)
     }
   }
 
