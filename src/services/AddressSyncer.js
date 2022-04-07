@@ -26,6 +26,14 @@ class AddressSyncer extends Syncer {
       await this.syncStatsFromBigquery(this.syncParamsHistorical('30m'), '30m')
     }
 
+    if (!await Address.existsForPlatforms(['bitcoin'])) {
+      await this.syncStatsFromBigquery(this.syncParamsHistorical('1d'), '1d', true)
+      await this.syncStatsFromBigquery(this.syncParamsHistorical('30m'), '30m', true)
+    }
+
+    await this.syncStatsFromBigquery(this.syncParamsHistorical('1d'), '1d')
+    await this.syncStatsFromBigquery(this.syncParamsHistorical('30m'), '30m')
+
     if (!await Address.existsForPlatforms(['bep20'])) {
       await this.syncHistoricalStatsFromBitquery(this.syncParamsHistorical('1d'), 'bsc')
     }
@@ -41,9 +49,11 @@ class AddressSyncer extends Syncer {
   }
 
   async syncDailyStats(dateParams) {
+
     await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
 
     await this.syncStatsFromBigquery(dateParams, '30m')
+    await this.syncStatsFromBigquery(dateParams, '30m', true)
     await this.syncStatsFromBitquery(dateParams, 'bsc', true)
     await this.syncStatsFromBitquery(dateParams, 'solana', true)
   }
@@ -57,23 +67,29 @@ class AddressSyncer extends Syncer {
     await Address.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncStatsFromBigquery({ dateFrom, dateTo }, timePeriod) {
+  async syncStatsFromBigquery({ dateFrom, dateTo }, timePeriod, syncBtcBaseCoins = false) {
     try {
-      const platforms = await this.getPlatforms(
-        ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash', 'ethereum', 'erc20'],
-        true,
-        false
-      )
-      const addressStats = await bigquery.getAddressStats(platforms.list, dateFrom, dateTo, timePeriod)
+      const types = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash', 'ethereum', 'erc20']
+      const platforms = await this.getPlatforms(types, true, false)
+      let addressStats = []
 
-      const result = addressStats.map(data => ({
-        count: data.address_count,
-        volume: data.volume,
-        date: data.block_date.value,
-        platform_id: platforms.map[data.coin_address || data.platform]
-      }))
+      if (syncBtcBaseCoins) {
+        addressStats = await bigquery.getAddressStatsBtcBased(dateFrom, dateTo, timePeriod)
+      } else {
+        addressStats = await bigquery.getAddressStats(platforms.list, dateFrom, dateTo, timePeriod)
+      }
 
-      await this.upsertAddressStats(result)
+      if (addressStats.length > 0) {
+        const result = addressStats.map(data => ({
+          count: data.address_count,
+          volume: data.volume,
+          date: data.block_date.value,
+          platform_id: platforms.map[data.coin_address || data.platform]
+        }))
+
+        await this.upsertAddressStats(result)
+      }
+
     } catch (e) {
       logger.debug('Error syncing address stats', e)
     }
