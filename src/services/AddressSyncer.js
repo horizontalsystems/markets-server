@@ -73,7 +73,7 @@ class AddressSyncer extends Syncer {
         platform_id: platforms.map[data.coin_address || data.platform]
       }))
 
-      this.upsertAddressStats(result)
+      await this.upsertAddressStats(result)
     } catch (e) {
       logger.debug('Error syncing address stats', e)
     }
@@ -138,7 +138,7 @@ class AddressSyncer extends Syncer {
         sleep(4000) // wait to bypass API limits
       }
 
-      this.upsertAddressStats(addressStats)
+      await this.upsertAddressStats(addressStats)
       logger.info(`Successfully synced adddress stats for date: ${dateTo}`)
     } catch (e) {
       logger.debug('Error syncing address stats:', e)
@@ -175,18 +175,21 @@ class AddressSyncer extends Syncer {
     return { list, map }
   }
 
-  upsertAddressStats(stats) {
-    Address.bulkCreate(stats, {
-      updateOnDuplicate: ['count', 'volume', 'date', 'platform_id']
-    })
-      .then(([address]) => {
-        console.log(JSON.stringify(address.dataValues))
-      })
-      .catch(err => {
-        console.error(err)
-      })
-  }
+  async upsertAddressStats(stats) {
+    const chunks = chunk(stats, 400000)
 
+    for (let i = 0; i < chunks.length; i += 1) {
+      await Address.bulkCreate(chunks[i], {
+        updateOnDuplicate: ['count', 'volume', 'date', 'platform_id']
+      })
+        .then(([address]) => {
+          console.log(JSON.stringify(address.dataValues))
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    }
+  }
 }
 
 module.exports = AddressSyncer
