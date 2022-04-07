@@ -79,16 +79,14 @@ class AddressSyncer extends Syncer {
         addressStats = await bigquery.getAddressStats(platforms.list, dateFrom, dateTo, timePeriod)
       }
 
-      if (addressStats.length > 0) {
-        const result = addressStats.map(data => ({
-          count: data.address_count,
-          volume: data.volume,
-          date: data.block_date.value,
-          platform_id: platforms.map[data.coin_address || data.platform]
-        }))
+      const result = addressStats.map(data => ({
+        count: data.address_count,
+        volume: data.volume,
+        date: data.block_date.value,
+        platform_id: platforms.map[data.coin_address || data.platform]
+      }))
 
-        await this.upsertAddressStats(result)
-      }
+      await this.upsertAddressStats(result)
 
     } catch (e) {
       logger.debug('Error syncing address stats', e)
@@ -192,6 +190,11 @@ class AddressSyncer extends Syncer {
   }
 
   async upsertAddressStats(stats) {
+
+    if (!stats.length) {
+      return
+    }
+
     const chunks = chunk(stats, 400000)
 
     for (let i = 0; i < chunks.length; i += 1) {
