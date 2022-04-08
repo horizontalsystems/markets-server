@@ -13,15 +13,25 @@ class TransactionSyncer extends Syncer {
   }
 
   async syncHistorical() {
-    if (await Transaction.exists()) {
-      return
+    if (!await Transaction.existsForPlatforms(['ethereum', 'erc20'])) {
+      await this.syncFromBigquery(this.syncParamsHistorical('1d'), '1d')
+      await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m')
     }
 
-    await this.syncFromBigquery(this.syncParamsHistorical('1d'), '1d')
-    await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m')
+    if (!await Transaction.existsForPlatforms(['bitcoin'])) {
+      await this.syncFromBigquery(this.syncParamsHistorical('1d'), '1d', true)
+      await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m', true)
+    }
 
-    await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'bsc', false, 30)
-    await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'solana', false, 30)
+    if (!await Transaction.existsForPlatforms(['bep20'])) {
+      await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'bsc', false, 30)
+    }
+
+    if (!await Transaction.existsForPlatforms(['solana'])) {
+      await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'solana', false, 30)
+    }
+
+    console.log('Completed syncing historical transactions stats !')
   }
 
   async syncLatest() {
@@ -31,8 +41,10 @@ class TransactionSyncer extends Syncer {
 
   async syncDailyStats(dateParams) {
     await this.syncFromBigquery(dateParams, '30m')
+    await this.syncFromBigquery(dateParams, '30m', true)
     await this.syncFromBitquery(dateParams, 'bsc', true)
     await this.syncFromBitquery(dateParams, 'solana', true)
+    console.log('Completed syncing daily transactions stats !')
   }
 
   async syncMonthlyStats({ dateFrom, dateTo }) {
@@ -40,20 +52,27 @@ class TransactionSyncer extends Syncer {
     await Transaction.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncFromBigquery({ dateFrom, dateTo }, datePeriod) {
-    const platforms = await this.getPlatforms(['ethereum', 'erc20'], true, false)
-    const transactions = await bigquery.getTransactionsStats(dateFrom, dateTo, platforms.list, datePeriod)
+  async syncFromBigquery({ dateFrom, dateTo }, datePeriod, syncBtcBaseCoins = false) {
+    const types = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash']
+    const platforms = await this.getPlatforms(types, true, false)
+    let transactions = []
+
+    if (syncBtcBaseCoins) {
+      transactions = await bigquery.getTransactionsStatsBtcBased(dateFrom, dateTo, datePeriod)
+    } else {
+      transactions = await bigquery.getTransactionsStats(dateFrom, dateTo, platforms.list, datePeriod)
+    }
 
     const records = transactions.map(transaction => {
       return {
         count: transaction.count,
         volume: transaction.volume,
         date: transaction.date.value,
-        platform_id: platforms.map[transaction.address]
+        platform_id: platforms.map[transaction.address || transaction.platform]
       }
     })
 
-    return this.bulkCreate(records, 'ethereum,erc20')
+    await this.bulkCreate(records, 'ethereum,erc20,btc')
   }
 
   async syncFromBitquery(dateParams, network, isHourly, chunkSize = 100) {
@@ -113,8 +132,9 @@ class TransactionSyncer extends Syncer {
     const map = {}
 
     platforms.forEach(({ type, address, decimals, id }) => {
-      if (type === 'ethereum') {
-        map.ethereum = id
+      if (type === 'ethereum' || type === 'bitcoin' || type === 'bitcoin-cash'
+      || type === 'dash' || type === 'dogecoin' || type === 'litecoin' || type === 'zcash') {
+        map[type] = id
       }
 
       if (address) {
@@ -131,19 +151,23 @@ class TransactionSyncer extends Syncer {
     return { list, map }
   }
 
-  bulkCreate(records, platform) {
+  async bulkCreate(records, platform) {
     const items = records.filter(item => item.platform_id)
     if (!items.length) {
       return
     }
 
-    return Transaction.bulkCreate(items, { ignoreDuplicates: true })
-      .then(transactions => {
-        console.log(`Inserted ${platform} transactions`, transactions.length)
-      })
-      .catch(e => {
-        console.error('Error inserting transactions', e.message, e.stack)
-      })
+    const chunks = chunk(items, 400000)
+
+    for (let i = 0; i < chunks.length; i += 1) {
+      await Transaction.bulkCreate(chunks[i], { ignoreDuplicates: true })
+        .then(transactions => {
+          console.log(`Inserted ${platform} transactions`, transactions.length)
+        })
+        .catch(e => {
+          console.error('Error inserting transactions', e.message, e.stack)
+        })
+    }
   }
 
 }

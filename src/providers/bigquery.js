@@ -3,6 +3,7 @@ const { requireFile } = require('../utils')
 const logger = require('../config/logger')
 
 const transactionStatsSQL = requireFile('providers/bigquery-sql/transaction_stats.sql')
+const transactionStatsBtcBasedSQL = requireFile('providers/bigquery-sql/transaction_stats_btc.sql')
 const addressStatsSQL = requireFile('providers/bigquery-sql/address_stats.sql')
 const addressStatsBtcBasedSQL = requireFile('providers/bigquery-sql/address_stats_btc.sql')
 const coinHoldersBtcBasedSQL = requireFile('providers/bigquery-sql/coin_holders_btc.sql')
@@ -40,6 +41,17 @@ class BigQueryClient extends BigQuery {
       dateTo,
       period,
       supported_tokens: tokens
+    })
+  }
+
+  getTransactionsStatsBtcBased(dateFrom, dateTo, timePeriod) {
+    console.log('Fetching transaction stats for BTC based coins ...')
+
+    return this.createQuery(transactionStatsBtcBasedSQL, {
+      period: timePeriod,
+      date_partition: `${dateFrom.substring(0, 8)}01`,
+      date_from: dateFrom,
+      date_to: dateTo,
     })
   }
 

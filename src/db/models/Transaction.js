@@ -40,6 +40,16 @@ class Transaction extends SequelizeModel {
     return !!await Transaction.findOne()
   }
 
+  static async existsForPlatforms(platforms) {
+    const query = `
+      SELECT COUNT(*)
+      FROM transactions t , platforms p
+      WHERE t.platform_id = p.id AND p.type IN (:platforms)
+    `
+    const [result] = await Transaction.query(query, { platforms })
+    return result.count > 0
+  }
+
   static async getByCoin(uid, platform, window, dateFrom) {
     const platforms = await Platform.findByCoinUID(uid, platform)
     if (!platforms.length) {
@@ -73,7 +83,7 @@ class Transaction extends SequelizeModel {
         sum(count) count,
         sum(volume) volume,
         platform_id
-      FROM transactions 
+      FROM transactions
       WHERE date >= :dateFrom
         AND platform_id IN (:platformIds)
       GROUP BY platform_id
@@ -90,7 +100,7 @@ class Transaction extends SequelizeModel {
       UPDATE transactions
       SET volume = total.volume,
           count = total.count
-      FROM (SELECT 
+      FROM (SELECT
             SUM(volume) as volume,  SUM(count) as count
             FROM transactions
             WHERE date > :dateFrom AND date <= :dateTo
