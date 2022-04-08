@@ -146,7 +146,7 @@ class AddressSyncer extends Syncer {
           })
         })
 
-        sleep(4000) // wait to bypass API limits
+        await sleep(4000) // wait to bypass API limits
       }
 
       await this.upsertAddressStats(addressStats)
