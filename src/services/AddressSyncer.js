@@ -7,7 +7,6 @@ const bigquery = require('../providers/bigquery')
 const Platform = require('../db/models/Platform')
 const Address = require('../db/models/Address')
 const Syncer = require('./Syncer')
-const logger = require('../config/logger')
 
 class AddressSyncer extends Syncer {
   constructor() {
@@ -46,7 +45,6 @@ class AddressSyncer extends Syncer {
   }
 
   async syncDailyStats(dateParams) {
-
     await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
 
     await this.syncStatsFromBigquery(dateParams, '30m')
@@ -68,30 +66,25 @@ class AddressSyncer extends Syncer {
     try {
       const types = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash', 'ethereum', 'erc20']
       const platforms = await this.getPlatforms(types, true, false)
-      let addressStats = []
 
-      if (syncBtcBaseCoins) {
-        addressStats = await bigquery.getAddressStatsBtcBased(dateFrom, dateTo, timePeriod)
-      } else {
-        addressStats = await bigquery.getAddressStats(platforms.list, dateFrom, dateTo, timePeriod)
-      }
+      const addressStats = syncBtcBaseCoins
+        ? await bigquery.getAddressStatsBtcBased(dateFrom, dateTo, timePeriod)
+        : await bigquery.getAddressStats(platforms.list, dateFrom, dateTo, timePeriod)
 
-      const result = addressStats.map(data => ({
+      const records = addressStats.map(data => ({
         count: data.address_count,
-        volume: data.volume,
         date: data.block_date.value,
         platform_id: platforms.map[data.coin_address || data.platform]
       }))
 
-      await this.upsertAddressStats(result)
-
+      await this.upsertAddressStats(records)
     } catch (e) {
-      logger.debug('Error syncing address stats', e)
+      console.log('Error syncing address stats', e)
     }
   }
 
   async syncHistoricalStatsFromBitquery(dateParams, network) {
-    logger.info(`Start syncing historical address stats for network: ${network}`)
+    console.log('Start syncing historical address stats for network', network)
 
     const dateFromStart = DateTime.fromSQL(dateParams.dateFrom)
     let dateTo = DateTime.utc()
@@ -99,7 +92,7 @@ class AddressSyncer extends Syncer {
     while (dateFromStart <= dateTo) {
       const dateFrom = dateTo.minus({ days: 1 })
 
-      logger.info(`Syncing historical address stats for ${dateFrom} -> ${dateTo}`)
+      console.log(`Syncing historical address stats for ${dateFrom} -> ${dateTo}`)
 
       await this.syncStatsFromBitquery({
         dateFrom: dateFrom.toFormat('yyyy-MM-dd 00:00:00Z'),
@@ -119,7 +112,7 @@ class AddressSyncer extends Syncer {
       const chunks = this.getChunks(platforms.list, chunkSize)
 
       for (let i = 0; i < chunks.length; i += 1) {
-        logger.info(`Fetching address stats for chunks: ${i}/${chunks[i].length}`)
+        console.log(`Fetching address stats for chunks: ${i + 1}/${chunks[i].length}`)
 
         const transfersSenders = await bitquery.getTransferSenders(isoDateFrom, isoDateTo, chunks[i], network)
         const transferReceivers = await bitquery.getTransferReceivers(isoDateFrom, isoDateTo, chunks[i], network)
@@ -140,7 +133,6 @@ class AddressSyncer extends Syncer {
         Object.keys(transfersMap).forEach(coinAddress => {
           addressStats.push({
             date: dateTo,
-            volume: 0,
             count: transfersMap[coinAddress].length,
             platform_id: platforms.map[coinAddress]
           })
@@ -150,9 +142,9 @@ class AddressSyncer extends Syncer {
       }
 
       await this.upsertAddressStats(addressStats)
-      logger.info(`Successfully synced adddress stats for date: ${dateTo}`)
+      console.log('Successfully synced address stats for date', dateTo)
     } catch (e) {
-      logger.debug('Error syncing address stats:', e)
+      console.log('Error syncing address stats', e)
     }
   }
 
@@ -162,13 +154,13 @@ class AddressSyncer extends Syncer {
   }
 
   async getPlatforms(types, withDecimals, withAddress = true) {
+    const chains = ['bitcoin', 'ethereum', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash']
     const platforms = await Platform.getByTypes(types, withDecimals, withAddress)
-    const list = []
     const map = {}
+    const list = []
 
     platforms.forEach(({ type, address, decimals, id }) => {
-      if (type === 'ethereum' || type === 'bitcoin' || type === 'bitcoin-cash'
-      || type === 'dash' || type === 'dogecoin' || type === 'litecoin' || type === 'zcash') {
+      if (chains.includes(type)) {
         map[type] = id
       }
 
@@ -186,8 +178,8 @@ class AddressSyncer extends Syncer {
     return { list, map }
   }
 
-  async upsertAddressStats(stats) {
-    const items = stats.filter(item => item.platform_id)
+  async upsertAddressStats(records) {
+    const items = records.filter(item => item.platform_id)
     if (!items.length) {
       return
     }
@@ -195,11 +187,9 @@ class AddressSyncer extends Syncer {
     const chunks = chunk(items, 400000)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await Address.bulkCreate(chunks[i], {
-        updateOnDuplicate: ['count', 'volume', 'date', 'platform_id']
-      })
-        .then(([address]) => {
-          console.log(JSON.stringify(address.dataValues))
+      await Address.bulkCreate(chunks[i], { updateOnDuplicate: ['count', 'date', 'platform_id'] })
+        .then((data) => {
+          console.log('Inserted address stats', data.length)
         })
         .catch(err => {
           console.error(err)

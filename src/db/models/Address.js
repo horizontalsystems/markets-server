@@ -10,10 +10,6 @@ class Address extends SequelizeModel {
           type: DataTypes.INTEGER,
           allowNull: false
         },
-        volume: {
-          type: DataTypes.DECIMAL,
-          allowNull: false
-        },
         date: {
           type: DataTypes.DATE,
           allowNull: false
@@ -59,8 +55,7 @@ class Address extends SequelizeModel {
     const query = `
       SELECT
         ${this.truncateDateWindow('date', window)} as date,
-        SUM(count) AS count,
-        SUM(volume) AS volume
+        SUM(count) AS count
       FROM addresses
       WHERE platform_id = :platform_id
         and date >= :dateFrom
@@ -74,10 +69,10 @@ class Address extends SequelizeModel {
   static updatePoints(dateFrom, dateTo) {
     const query = `
       UPDATE addresses
-      SET volume = total.volume, count = total.count
+      SET count = total.count
       FROM (
         SELECT
-          SUM(volume) as volume,  SUM(count) as count
+          SUM(count) as count
           FROM addresses
           WHERE date > :dateFrom AND date <= :dateTo
         ) AS total
