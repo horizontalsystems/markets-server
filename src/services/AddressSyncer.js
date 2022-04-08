@@ -31,9 +31,6 @@ class AddressSyncer extends Syncer {
       await this.syncStatsFromBigquery(this.syncParamsHistorical('30m'), '30m', true)
     }
 
-    await this.syncStatsFromBigquery(this.syncParamsHistorical('1d'), '1d')
-    await this.syncStatsFromBigquery(this.syncParamsHistorical('30m'), '30m')
-
     if (!await Address.existsForPlatforms(['bep20'])) {
       await this.syncHistoricalStatsFromBitquery(this.syncParamsHistorical('1d'), 'bsc')
     }
@@ -190,12 +187,12 @@ class AddressSyncer extends Syncer {
   }
 
   async upsertAddressStats(stats) {
-
-    if (!stats.length) {
+    const items = stats.filter(item => item.platform_id)
+    if (!items.length) {
       return
     }
 
-    const chunks = chunk(stats, 400000)
+    const chunks = chunk(items, 400000)
 
     for (let i = 0; i < chunks.length; i += 1) {
       await Address.bulkCreate(chunks[i], {
