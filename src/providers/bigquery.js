@@ -6,7 +6,6 @@ const transactionStatsSQL = requireFile('providers/bigquery-sql/transaction_stat
 const transactionStatsBtcBasedSQL = requireFile('providers/bigquery-sql/transaction_stats_btc.sql')
 const addressStatsSQL = requireFile('providers/bigquery-sql/address_stats.sql')
 const addressStatsBtcBasedSQL = requireFile('providers/bigquery-sql/address_stats_btc.sql')
-const coinHoldersBtcBasedSQL = requireFile('providers/bigquery-sql/coin_holders_btc.sql')
 
 const dexVolume = {
   sushi: requireFile('providers/bigquery-sql/sushi_volumes.sql'),
@@ -74,12 +73,6 @@ class BigQueryClient extends BigQuery {
       dateTo,
       period,
       supported_tokens: tokens
-    })
-  }
-
-  getTopBtcBasedCoinHolders(addressesPerCoin = 10) {
-    return this.createQuery(coinHoldersBtcBasedSQL, {
-      addresses_per_coin: addressesPerCoin
     })
   }
 
