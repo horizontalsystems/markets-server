@@ -90,7 +90,7 @@ class DefiProtocol extends SequelizeModel {
       return
     }
 
-    return DefiProtocol.query('UPDATE defi_protocols SET tvl_rank = null WHERE id NOT IN(:ids)', { ids })
+    return DefiProtocol.query('DELETE FROM defi_protocols WHERE id NOT IN(:ids)', { ids })
   }
 }
 
