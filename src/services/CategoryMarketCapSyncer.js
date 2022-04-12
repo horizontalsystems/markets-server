@@ -41,7 +41,7 @@ class CategoryMarketCapSyncer extends Syncer {
   async syncLatest() {
     this.cron('1h', this.syncDailyStats)
     this.cron('4h', this.syncWeeklyStats)
-    this.cron('24h', this.syncMonthlyStats)
+    this.cron('1d', this.syncMonthlyStats)
   }
 
   async syncDailyStats({ dateTo }) {
