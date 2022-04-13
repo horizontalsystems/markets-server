@@ -40,8 +40,8 @@ class Syncer {
         }
       case '1h':
         return {
-          dateFrom: utcDate({ minute: -30 }),
-          dateTo: utcDate()
+          dateFrom: utcDate({ hours: -1 }, 'yyyy-MM-dd HH:00:00Z'),
+          dateTo: utcDate({}, 'yyyy-MM-dd HH:00:00Z')
         }
       case '1d':
         return {
