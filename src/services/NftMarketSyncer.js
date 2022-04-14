@@ -6,6 +6,7 @@ const NftMarket = require('../db/models/NftMarket')
 const NftCollection = require('../db/models/NftCollection')
 const Syncer = require('./Syncer')
 const logger = require('../config/logger')
+const { sleep } = require('../utils')
 
 class NftMarketSyncer extends Syncer {
 
@@ -67,6 +68,8 @@ class NftMarketSyncer extends Syncer {
         if (collection) {
           collections.push(collection)
         }
+
+        await sleep(3000) // wait to bypass API limits
       }
 
       await this.upsertNftCollections(collections)
