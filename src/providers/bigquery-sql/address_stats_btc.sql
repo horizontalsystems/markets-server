@@ -65,7 +65,6 @@ zcash_outputs AS (
   outputs.addresses, outputs.type
 FROM `bigquery-public-data.crypto_zcash.transactions` AS transactions, transactions.outputs as outputs
 ),
-
 inputs AS (
   SELECT * FROM btc_inputs
   UNION ALL
@@ -100,7 +99,6 @@ addresses_entry AS (
    FROM outputs
 ),
 entry_30m AS(
-
  SELECT
     platform,
     '30m' as period,
@@ -111,7 +109,6 @@ entry_30m AS(
   GROUP BY platform, period, partition_date , block_date
 ),
 entry_4h AS(
-
   SELECT
     platform,
     '4h' as period,
@@ -132,7 +129,6 @@ entry_8h AS(
   GROUP BY platform, period, partition_date , block_date
 ),
 entry_1d AS(
-
   SELECT
     platform,
     '1d' as period,
@@ -147,7 +143,7 @@ entries AS (
   WHERE block_date >= TIMESTAMP(greatest(DATE_SUB(CURRENT_DATETIME(), INTERVAL 1 DAY), @date_from))
   UNION ALL
   SELECT * FROM entry_4h
-  WHERE block_date >= TIMESTAMP(greatest(DATE_SUB(CURRENT_DATETIME(), INTERVAL 15 DAY), @date_from))
+  WHERE block_date >= TIMESTAMP(greatest(DATE_SUB(CURRENT_DATETIME(), INTERVAL 8 DAY), @date_from))
   UNION ALL
   SELECT * FROM entry_8h
   WHERE block_date >= TIMESTAMP(greatest(DATE_SUB(CURRENT_DATETIME(), INTERVAL 15 DAY), @date_from))
