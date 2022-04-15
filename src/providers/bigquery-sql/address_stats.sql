@@ -50,7 +50,6 @@ addresses_entry AS (
   WHERE block_timestamp >= @date_from
 ),
 entry_30m AS(
-
  SELECT
     platform,
     '30m' as period,
@@ -60,7 +59,6 @@ entry_30m AS(
   GROUP BY platform, period, block_date
 ),
 entry_4h AS(
-
   SELECT
     platform,
     '4h' as period,
@@ -79,7 +77,6 @@ entry_8h AS(
   GROUP BY platform, period, block_date
 ),
 entry_1d AS(
-
   SELECT
     platform,
     '1d' as period,
@@ -93,7 +90,7 @@ entries AS (
   WHERE block_date >= TIMESTAMP(greatest(DATE_SUB(CURRENT_DATETIME(), INTERVAL 1 DAY), @date_from))
   UNION ALL
   SELECT * FROM entry_4h
-  WHERE block_date >= TIMESTAMP(greatest(DATE_SUB(CURRENT_DATETIME(), INTERVAL 15 DAY), @date_from))
+  WHERE block_date >= TIMESTAMP(greatest(DATE_SUB(CURRENT_DATETIME(), INTERVAL 8 DAY), @date_from))
   UNION ALL
   SELECT * FROM entry_8h
   WHERE block_date >= TIMESTAMP(greatest(DATE_SUB(CURRENT_DATETIME(), INTERVAL 15 DAY), @date_from))
