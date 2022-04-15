@@ -4,7 +4,7 @@ module.exports = {
   },
 
   down(query, Sequelize) {
-    return query.addColumn('addresses', 'volume', {
+    return query.addColumn('addresses', 'count', {
       type: Sequelize.DECIMAL,
       allowNull: false
     })
