@@ -7,6 +7,7 @@ const bigquery = require('../providers/bigquery')
 const Platform = require('../db/models/Platform')
 const Address = require('../db/models/Address')
 const Syncer = require('./Syncer')
+const { utcDate } = require('../utils')
 
 class AddressSyncer extends Syncer {
   constructor() {
@@ -21,22 +22,22 @@ class AddressSyncer extends Syncer {
 
   async syncHistorical() {
     if (!await Address.existsForPlatforms(['ethereum', 'erc20'])) {
-      await this.syncStatsFromBigquery(this.syncParamsHistorical('1d'), '1d')
-      await this.syncStatsFromBigquery(this.syncParamsHistorical('30m'), '30m')
+      await this.syncStatsFromBigquery(this.syncParamsHistorical('1d'))
     }
 
     if (!await Address.existsForPlatforms(['bitcoin'])) {
-      await this.syncStatsFromBigquery(this.syncParamsHistorical('1d'), '1d', true)
-      await this.syncStatsFromBigquery(this.syncParamsHistorical('30m'), '30m', true)
+      await this.syncStatsFromBigquery(this.syncParamsHistorical('1d'), true)
     }
 
-    if (!await Address.existsForPlatforms(['bep20'])) {
-      await this.syncHistoricalStatsFromBitquery(this.syncParamsHistorical('1d'), 'bsc')
-    }
+    // if (!await Address.existsForPlatforms(['bep20'])) {
+    //   await this.syncHistoricalStatsFromBitquery(this.syncParamsHistorical('1d'), 'bsc')
+    // }
 
-    if (!await Address.existsForPlatforms(['solana'])) {
-      await this.syncHistoricalStatsFromBitquery(this.syncParamsHistorical('1d'), 'solana')
-    }
+    // if (!await Address.existsForPlatforms(['solana'])) {
+    //   await this.syncHistoricalStatsFromBitquery(this.syncParamsHistorical('1d'), 'solana')
+    // }
+
+    console.log('Successfully synced historical address stats !!!')
   }
 
   async syncLatest() {
@@ -44,38 +45,56 @@ class AddressSyncer extends Syncer {
     this.cron('1d', this.syncMonthlyStats)
   }
 
-  async syncDailyStats(dateParams) {
-    await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
+  async syncDailyStats() {
+    const dateFrom = utcDate({}, 'yyyy-MM-dd')
 
-    await this.syncStatsFromBigquery(dateParams, '30m')
-    await this.syncStatsFromBigquery(dateParams, '30m', true)
-    await this.syncStatsFromBitquery(dateParams, 'bsc', true)
-    await this.syncStatsFromBitquery(dateParams, 'solana', true)
+    await this.syncStatsFromBigquery({ dateFrom })
+    await this.syncStatsFromBigquery({ dateFrom }, true)
+
+    // await this.syncStatsFromBitquery(dateParams, 'bsc', true)
+    // await this.syncStatsFromBitquery(dateParams, 'solana', true)
   }
 
-  async syncMonthlyStats(dateParams) {
-    await this.adjustPoints(dateParams.dateFrom, dateParams.dateTo)
+  async syncMonthlyStats() {
+    await this.adjustPoints()
   }
 
-  async adjustPoints(dateFrom, dateTo) {
-    await Address.updatePoints(dateFrom, dateTo)
-    await Address.deleteExpired(dateFrom, dateTo)
+  async adjustPoints() {
+    await Address.deleteExpired(utcDate({ days: -4 }), utcDate({ days: -1 }), ['30m'])
+    await Address.deleteExpired(utcDate({ days: -18 }), utcDate({ days: -14 }), ['4h', '8h'])
   }
 
-  async syncStatsFromBigquery({ dateFrom, dateTo }, timePeriod, syncBtcBaseCoins = false) {
+  async syncStatsFromBigquery({ dateFrom }, syncBtcBaseCoins = false) {
     try {
       const types = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash', 'ethereum', 'erc20']
       const platforms = await this.getPlatforms(types, true, false)
 
       const addressStats = syncBtcBaseCoins
-        ? await bigquery.getAddressStatsBtcBased(dateFrom, dateTo, timePeriod)
-        : await bigquery.getAddressStats(platforms.list, dateFrom, dateTo, timePeriod)
+        ? await bigquery.getAddressStatsBtcBased(dateFrom)
+        : await bigquery.getAddressStats(platforms.list, dateFrom)
 
-      const records = addressStats.map(data => ({
-        count: data.address_count,
-        date: data.block_date.value,
-        platform_id: platforms.map[data.coin_address || data.platform]
-      }))
+      const addressesMap = addressStats.reduce((map, i) => {
+        const date = DateTime.fromISO(i.block_date.value).toFormat('yyyy-MM-dd');
+
+        map[i.platform] = map[i.platform] || {}
+        map[i.platform][date] = map[i.platform][date] || {}
+        map[i.platform][date][i.period] = map[i.platform][date][i.period] || []
+
+        map[i.platform][date][i.period].push({
+          date: i.block_date.value,
+          count: i.address_count
+        })
+
+        return map
+      }, {})
+
+      const records = Object.keys(addressesMap).flatMap(platform => {
+        return Object.keys(addressesMap[platform]).map(date => ({
+          date,
+          platform_id: platforms.map[platform],
+          data: addressesMap[platform][date]
+        }))
+      })
 
       await this.upsertAddressStats(records)
     } catch (e) {
@@ -187,7 +206,7 @@ class AddressSyncer extends Syncer {
     const chunks = chunk(items, 400000)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await Address.bulkCreate(chunks[i], { updateOnDuplicate: ['count', 'date', 'platform_id'] })
+      await Address.bulkCreate(chunks[i], { updateOnDuplicate: ['data', 'date', 'platform_id'] })
         .then((data) => {
           console.log('Inserted address stats', data.length)
         })

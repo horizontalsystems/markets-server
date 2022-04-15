@@ -6,10 +6,17 @@ class Address extends SequelizeModel {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        count: {
-          type: DataTypes.INTEGER,
-          allowNull: false
-        },
+        data: DataTypes.JSONB,
+        // { "30m":[
+        //     {
+        //       "date": "2022-02-01",
+        //       "count": 10
+        //     },
+        //     {
+        //       "date": "2022-02-02",
+        //       "count": 20
+        //     }
+        // ]}
         date: {
           type: DataTypes.DATE,
           allowNull: false
@@ -51,41 +58,27 @@ class Address extends SequelizeModel {
     if (!platform) {
       return []
     }
-
     const query = `
-      SELECT
-        ${this.truncateDateWindow('date', window)} as date,
-        SUM(count) AS count
-      FROM addresses
-      WHERE platform_id = :platform_id
-        and date >= :dateFrom
-      GROUP by 1
-      ORDER BY date ASC
+      SELECT  items->'date' AS date,
+              items->'count' AS count
+      FROM addresses A,
+           jsonb_array_elements(data->'${window}') AS items
+      WHERE
+          A.platform_id = :platform_id AND
+          A.date >= :dateFrom
     `
 
     return Address.query(query, { dateFrom, platform_id: platform.id })
   }
 
-  static updatePoints(dateFrom, dateTo) {
-    const query = `
+  static deleteExpired(dateFrom, dateTo, periods) {
+    return Address.query(`
       UPDATE addresses
-      SET count = total.count
-      FROM (
-        SELECT
-          SUM(count) as count
-          FROM addresses
-          WHERE date > :dateFrom AND date <= :dateTo
-        ) AS total
-      WHERE date = :dateTo
-    `
-
-    return Address.query(query, { dateFrom, dateTo })
-  }
-
-  static deleteExpired(dateFrom, dateTo) {
-    return Address.query('DELETE FROM addresses WHERE date > :dateFrom AND date < :dateTo', {
+      SET data = data - ARRAY[:periods]
+      WHERE date >= :dateFrom AND date < :dateTo`, {
       dateFrom,
-      dateTo
+      dateTo,
+      periods
     })
   }
 
