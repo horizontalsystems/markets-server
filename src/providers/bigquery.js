@@ -76,24 +76,20 @@ class BigQueryClient extends BigQuery {
     })
   }
 
-  getAddressStats(tokens, dateFrom, dateTo, timePeriod) {
+  getAddressStats(tokens, dateFrom) {
     console.log('Fetching address stats for ETH, ERC20 tokens ...')
     return this.createQuery(addressStatsSQL, {
       supported_tokens: tokens,
-      period: timePeriod,
-      date_from: dateFrom,
-      date_to: dateTo,
+      date_from: dateFrom
     })
   }
 
-  getAddressStatsBtcBased(dateFrom, dateTo, timePeriod) {
+  getAddressStatsBtcBased(dateFrom) {
     console.log('Fetching address stats for BTC based coins ...')
 
     return this.createQuery(addressStatsBtcBasedSQL, {
-      period: timePeriod,
       date_partition: `${dateFrom.substring(0, 8)}01`,
-      date_from: dateFrom,
-      date_to: dateTo,
+      date_from: dateFrom
     })
   }
 
