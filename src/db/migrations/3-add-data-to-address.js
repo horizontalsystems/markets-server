@@ -3,7 +3,7 @@ module.exports = {
     const transaction = await query.sequelize.transaction()
 
     try {
-      query.removeColumn('addresses', 'count')
+      await query.removeColumn('addresses', 'count')
       await query.addColumn('addresses', 'data', {
         type: Sequelize.JSONB,
         defaultValue: {}
