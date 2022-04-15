@@ -53,7 +53,7 @@ class TransactionSyncer extends Syncer {
   }
 
   async syncFromBigquery({ dateFrom, dateTo }, datePeriod, syncBtcBaseCoins = false) {
-    const types = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash']
+    const types = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash', 'ethereum', 'erc20']
     const platforms = await this.getPlatforms(types, true, false)
     let transactions = []
 
