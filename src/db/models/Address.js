@@ -7,15 +7,31 @@ class Address extends SequelizeModel {
     return super.init(
       {
         data: DataTypes.JSONB,
-        // { "30m":[
-        //     {
-        //       "date": "2022-02-01",
-        //       "count": 10
-        //     },
-        //     {
-        //       "date": "2022-02-02",
-        //       "count": 20
-        //     }
+        // {
+        //    "30m":[
+        //       {
+        //         "date": "2022-02-01T00:30:00",
+        //         "count": 10
+        //       }
+        //     ],
+        //    "4h":[
+        //       {
+        //         "date": "2022-02-01T04:00:00",
+        //         "count": 10
+        //       }
+        //     ],
+        //    "8h":[
+        //       {
+        //         "date": "2022-02-01T08:00:00",
+        //         "count": 10
+        //       }
+        //     ],
+        //    "1d":[
+        //       {
+        //         "date": "2022-02-01",
+        //         "count": 10
+        //       }
+        //     ],
         // ]}
         date: {
           type: DataTypes.DATE,
@@ -53,7 +69,7 @@ class Address extends SequelizeModel {
     return result.count > 0
   }
 
-  static async getByCoinUid(uid, platformType, window, dateFrom) {
+  static async getByCoinUid(uid, platformType, period, dateFrom) {
     const [platform] = await Platform.findByCoinUID(uid, platformType)
     if (!platform) {
       return []
@@ -62,13 +78,13 @@ class Address extends SequelizeModel {
       SELECT  items->'date' AS date,
               items->'count' AS count
       FROM addresses A,
-           jsonb_array_elements(data->'${window}') AS items
+           jsonb_array_elements(data->:period) AS items
       WHERE
           A.platform_id = :platform_id AND
           A.date >= :dateFrom
     `
 
-    return Address.query(query, { dateFrom, platform_id: platform.id })
+    return Address.query(query, { dateFrom, platform_id: platform.id, period })
   }
 
   static deleteExpired(dateFrom, dateTo, periods) {
