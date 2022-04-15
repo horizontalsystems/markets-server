@@ -74,7 +74,7 @@ class AddressSyncer extends Syncer {
         : await bigquery.getAddressStats(platforms.list, dateFrom)
 
       const addressesMap = addressStats.reduce((map, i) => {
-        const date = DateTime.fromISO(i.block_date.value).toFormat('yyyy-MM-dd');
+        const date = DateTime.fromISO(i.block_date.value, { zone: 'utc' }).toFormat('yyyy-MM-dd');
 
         map[i.platform] = map[i.platform] || {}
         map[i.platform][date] = map[i.platform][date] || {}
