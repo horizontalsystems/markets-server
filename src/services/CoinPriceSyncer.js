@@ -27,6 +27,7 @@ class CoinPriceSyncer extends Syncer {
 
   syncLatest() {
     this.cron('30m', this.syncDailyStats)
+    this.cron('4h', this.syncDailyStats)
     this.cron('1d', this.syncMonthlyStats)
   }
 
@@ -117,7 +118,12 @@ class CoinPriceSyncer extends Syncer {
     switch (period) {
       case '30m':
         return {
-          dateFrom: utils.utcDate({ days: -30, minutes: -30 }),
+          dateFrom: utils.utcDate({ days: -7, minutes: -30 }),
+          dateTo: utils.utcDate({ days: -7 }),
+        }
+      case '4h':
+        return {
+          dateFrom: utils.utcDate({ days: -30, hours: -4 }),
           dateTo: utils.utcDate({ days: -30 }),
         }
       case '1d':
