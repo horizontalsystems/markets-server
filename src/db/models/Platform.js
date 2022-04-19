@@ -11,7 +11,8 @@ class Platform extends SequelizeModel {
         },
         symbol: DataTypes.STRING(100),
         address: DataTypes.STRING(100),
-        decimals: DataTypes.INTEGER
+        decimals: DataTypes.INTEGER,
+        circulating_supply: DataTypes.DECIMAL
       },
       {
         timestamps: false,
@@ -87,6 +88,43 @@ class Platform extends SequelizeModel {
     `
 
     return Platform.query(query, { values, platform })
+  }
+
+  static getMarketCap() {
+    const query = `
+      SELECT
+        p.id,
+        c.uid,
+        p.type,
+        p.address,
+        p.decimals,
+        c.market_data->'circulating_supply' csupply,
+        c.market_data->'market_cap' mcap,
+        m.coin_id as multi_chain_id
+      FROM platforms p
+      JOIN coins c on c.id = p.coin_id 
+      LEFT JOIN (
+        SELECT
+          coin_id
+        FROM platforms
+        GROUP BY coin_id
+        HAVING COUNT(*) > 1
+      ) m ON m.coin_id = p.coin_id
+      WHERE p.address is not null
+    `
+
+    return Platform.query(query)
+  }
+
+  static updateCSupplies(values) {
+    const query = `
+      UPDATE platforms AS p 
+        set circulating_supply = v.csupply
+      FROM (values :values) as v(id, csupply)
+      WHERE p.id = v.id::int
+    `
+
+    return Platform.queryUpdate(query, { values })
   }
 
 }

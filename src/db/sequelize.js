@@ -7,6 +7,8 @@ const Language = require('./models/Language')
 const Category = require('./models/Category')
 const CategoryMarketCap = require('./models/CategoryMarketCap')
 const Platform = require('./models/Platform')
+const PlatformStats = require('./models/PlatformStats')
+const PlatformStatsHistory = require('./models/PlatformStatsHistory')
 const Fund = require('./models/Fund')
 const FundsInvested = require('./models/FundsInvested')
 const Treasury = require('./models/Treasury')
@@ -45,6 +47,8 @@ const db = {
   CoinTvl: CoinTvl.init(sequelize, Sequelize),
   Language: Language.init(sequelize, Sequelize),
   Platform: Platform.init(sequelize, Sequelize),
+  PlatformStats: PlatformStats.init(sequelize, Sequelize),
+  PlatformStatsHistory: PlatformStatsHistory.init(sequelize, Sequelize),
   Fund: Fund.init(sequelize, Sequelize),
   FundsInvested: FundsInvested.init(sequelize, Sequelize),
   TreasuryEntity: TreasuryEntity.init(sequelize, Sequelize),
