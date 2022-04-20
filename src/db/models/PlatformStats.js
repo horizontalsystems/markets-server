@@ -11,7 +11,6 @@ class PlatformStats extends SequelizeModel {
           unique: true
         },
         market_cap: DataTypes.DECIMAL,
-        protocols: DataTypes.INTEGER,
         stats: DataTypes.JSONB
       },
       {
@@ -23,6 +22,35 @@ class PlatformStats extends SequelizeModel {
 
   static associate(models) {
     PlatformStats.hasMany(models.PlatformStatsHistory)
+  }
+
+  static async exists() {
+    return !!await PlatformStats.findOne()
+  }
+
+  static getList() {
+    return PlatformStats.query(`
+      SELECT
+        *,
+        RANK() OVER (order by market_cap desc) as rank
+      FROM platform_stats
+    `)
+  }
+
+  static getPlatforms(type) {
+    const query = `
+      SELECT
+        c.uid,
+        sum(least((p.circulating_supply * c.price), (c.market_data->>'market_cap')::numeric)) mcap
+      FROM platforms p, coins c
+      WHERE c.id = p.coin_id
+        AND p.circulating_supply is not null
+        AND p.address is not null
+        AND p.type = :type
+      GROUP BY c.uid
+      order by mcap desc
+    `
+    return PlatformStats.query(query, { type })
   }
 
   static getStats() {

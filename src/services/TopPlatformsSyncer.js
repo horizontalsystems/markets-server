@@ -95,6 +95,10 @@ class TopPlatformsSyncer extends Syncer {
   }
 
   async syncHistorical() {
+    if (await PlatformStats.exists()) {
+      return
+    }
+
     const platforms = await PlatformStats.getStats()
     const records = platforms.map(p => ({
       name: p.type,
@@ -110,8 +114,8 @@ class TopPlatformsSyncer extends Syncer {
   }
 
   async syncDailyStats({ dateFrom, dateTo }) {
-    const platformStats = await PlatformStats.getStats()
     const mapped = await this.mapMarketCaps()
+    const platformStats = await PlatformStats.getStats()
 
     const platformStatsUpdate = []
     const platformStatsHistory = []
@@ -119,6 +123,9 @@ class TopPlatformsSyncer extends Syncer {
     for (let i = 0; i < platformStats.length; i += 1) {
       const platform = platformStats[i]
       const prevMCap = mapped[platform.id] || {}
+      const prevMCap1d = prevMCap['1d'] || {}
+      const prevMCap1w = prevMCap['1w'] || {}
+      const prevMCap1m = prevMCap['1m'] || {}
 
       if (platform.id) {
         platformStatsHistory.push({
@@ -132,9 +139,13 @@ class TopPlatformsSyncer extends Syncer {
         name: platform.type,
         market_cap: platform.mcap,
         stats: {
-          change_1d: percentageBetweenNumber(prevMCap['1d'], platform.mcap),
-          change_1w: percentageBetweenNumber(prevMCap['1w'], platform.mcap),
-          change_1m: percentageBetweenNumber(prevMCap['1m'], platform.mcap),
+          rank_1d: prevMCap1d.rank,
+          rank_1w: prevMCap1w.rank,
+          rank_1m: prevMCap1m.rank,
+          protocols: platform.protocols,
+          change_1d: percentageBetweenNumber(prevMCap1d.mcap, platform.mcap),
+          change_1w: percentageBetweenNumber(prevMCap1w.mcap, platform.mcap),
+          change_1m: percentageBetweenNumber(prevMCap1m.mcap, platform.mcap),
         }
       })
     }
@@ -151,13 +162,17 @@ class TopPlatformsSyncer extends Syncer {
         const item = items[i]
         const map = mapped[item.platform_stats_id] || (mapped[item.platform_stats_id] = {})
 
-        map[key] = item.market_cap
+        map[key] = {
+          rank: item.ranked,
+          mcap: item.market_cap
+        }
       }
     }
 
-    const history1d = await PlatformStatsHistory.findAll({ where: { date: utcDate({ day: -1 }, 'yyyy-MM-dd') } })
-    const history1w = await PlatformStatsHistory.findAll({ where: { date: utcDate({ days: -7 }) } })
-    const history1m = await PlatformStatsHistory.findAll({ where: { date: utcDate({ days: -30 }) } })
+    const format = 'yyyy-MM-dd HH:00:00Z'
+    const history1d = await PlatformStatsHistory.getByDate(utcDate({ days: -1 }, format))
+    const history1w = await PlatformStatsHistory.getByDate(utcDate({ days: -7 }, format))
+    const history1m = await PlatformStatsHistory.getByDate(utcDate({ days: -30 }, format))
 
     mapBy(history1d, '1d')
     mapBy(history1w, '1w')
