@@ -30,7 +30,7 @@ class CoinHolderSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('0 0 1 * *', this.syncMonthly) // once a month
+    this.cron('0 0 */10 * *', this.syncMonthly) // every 10 days
   }
 
   syncMonthly() {
