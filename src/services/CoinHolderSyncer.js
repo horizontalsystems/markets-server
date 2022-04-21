@@ -17,10 +17,7 @@ class CoinHolderSyncer extends Syncer {
   }
 
   async syncAll() {
-    const types = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash',
-      'erc20', 'bep20', 'binance-smart-chain', 'ethereum', 'solana']
-
-    const platforms = await Platform.getByTypes(types, false, false)
+    const platforms = await Platform.getByTypes(null, false, false)
     await this.syncHolders(platforms)
   }
 
