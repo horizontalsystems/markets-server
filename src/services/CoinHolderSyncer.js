@@ -1,7 +1,9 @@
 /* eslint-disable no-param-reassign */
 const cheerio = require('cheerio')
-const etherscan = require('../providers/etherscan')
 const blockchair = require('../providers/blockchair')
+const etherscan = require('../providers/etherscan')
+const snowtrace = require('../providers/snowtrace')
+const ftmscan = require('../providers/ftmscan')
 const bscscan = require('../providers/bscscan')
 const solscan = require('../providers/solscan')
 const Platform = require('../db/models/Platform')
@@ -47,14 +49,22 @@ class CoinHolderSyncer extends Syncer {
         case 'litecoin':
         case 'zcash':
           return resolve(blockchair.getAddresses(type), this.mapBlockchairData(id, type))
-        case 'erc20':
-          return resolve(etherscan.getHolders(address), this.mapTokenHolders(id))
         case 'ethereum':
           return resolve(etherscan.getAccounts(), this.mapChainHolders(id))
-        case 'bep20':
-          return resolve(bscscan.getHolders(address), this.mapTokenHolders(id))
         case 'binance-smart-chain':
           return resolve(bscscan.getAccounts(), this.mapChainHolders(id))
+        case 'erc20':
+          return resolve(etherscan.getHolders(address), this.mapTokenHolders(id))
+        case 'bep20':
+          return resolve(bscscan.getHolders(address), this.mapTokenHolders(id))
+        case 'avalanche':
+          return address
+            ? resolve(snowtrace.getHolders(address), this.mapTokenHolders(id))
+            : resolve(snowtrace.getAccounts(), this.mapChainHolders(id))
+        case 'fantom':
+          return address
+            ? resolve(ftmscan.getHolders(address), this.mapTokenHolders(id))
+            : resolve(ftmscan.getAccounts(), this.mapChainHolders(id))
         case 'solana': {
           const requests = [
             solscan.getHolders(address),
