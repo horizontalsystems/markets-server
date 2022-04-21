@@ -90,7 +90,7 @@ class Platform extends SequelizeModel {
     return Platform.query(query, { values, platform })
   }
 
-  static getMarketCap() {
+  static getMarketCap(uids) {
     const query = `
       SELECT
         p.id,
@@ -102,7 +102,8 @@ class Platform extends SequelizeModel {
         c.market_data->'market_cap' mcap,
         m.coin_id as multi_chain_id
       FROM platforms p
-      JOIN coins c on c.id = p.coin_id 
+      JOIN coins c on c.id = p.coin_id
+          ${uids ? 'and c.uid in (:uids)' : ''} 
       LEFT JOIN (
         SELECT
           coin_id
@@ -113,7 +114,7 @@ class Platform extends SequelizeModel {
       WHERE p.address is not null
     `
 
-    return Platform.query(query)
+    return Platform.query(query, { uids })
   }
 
   static updateCSupplies(values) {

@@ -4,8 +4,7 @@ const PlatformStats = require('../db/models/PlatformStats')
 const PlatformStatsHistory = require('../db/models/PlatformStatsHistory')
 const bscscan = require('../providers/bscscan')
 const getCSupplies = require('../providers/csupply')
-const utils = require('../utils')
-const { utcDate, percentageBetweenNumber } = require('../utils')
+const { utcDate, percentageBetweenNumber, sleep } = require('../utils')
 
 class TopPlatformsSyncer extends Syncer {
   async start() {
@@ -13,9 +12,9 @@ class TopPlatformsSyncer extends Syncer {
     await this.syncLatest()
   }
 
-  async syncCirculatingSupply() {
+  async syncCirculatingSupply(uids) {
     const map = {}
-    const platforms = await Platform.getMarketCap()
+    const platforms = await Platform.getMarketCap(uids)
     const platformsBep20 = platforms.filter(p => p.type === 'bep20' && p.multi_chain_id && p.decimals)
     const supplies = await getCSupplies()
 
@@ -82,7 +81,7 @@ class TopPlatformsSyncer extends Syncer {
       if (supply) {
         map[platform.id] = supply / (10 ** platform.decimals)
       }
-      await utils.sleep(150)
+      await sleep(150)
     }
 
     await Platform.updateCSupplies(Object.entries(map))
