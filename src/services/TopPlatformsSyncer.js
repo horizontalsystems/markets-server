@@ -109,10 +109,11 @@ class TopPlatformsSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('1d', this.syncDailyStats)
+    this.cron('1h', this.syncDailyStats)
+    this.cron('1d', this.syncMonthlyStats)
   }
 
-  async syncDailyStats({ dateFrom, dateTo }) {
+  async syncDailyStats({ dateTo }) {
     const mapped = await this.mapMarketCaps()
     const platformStats = await PlatformStats.getStats()
 
@@ -151,6 +152,9 @@ class TopPlatformsSyncer extends Syncer {
 
     await this.upsertPlatformStats(platformStatsUpdate)
     await this.upsertPlatformStatsHistory(platformStatsHistory)
+  }
+
+  async syncMonthlyStats({ dateFrom, dateTo }) {
     await PlatformStatsHistory.deleteExpired(dateFrom, dateTo)
   }
 
