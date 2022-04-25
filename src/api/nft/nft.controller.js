@@ -37,7 +37,7 @@ exports.collection = async ({ params, query }, res) => {
     }
 
     if (query.include_stats_chart === 'true') {
-      const dateFrom = DateTime.now().minus({ days: 2 }).toSQL()
+      const dateFrom = DateTime.now().minus({ days: 1 }).toSQL()
       collection.stats_chart = await NftMarket.getStatsChart(collection.uid, dateFrom)
     }
   } catch (e) {
