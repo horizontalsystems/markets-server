@@ -16,4 +16,8 @@ exports.getProjects = () => {
         item.revenue_30d
       ]
     }))
+    .catch(e => {
+      console.log(e)
+      return []
+    })
 }

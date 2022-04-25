@@ -102,14 +102,20 @@ class CoinRatingSyncer extends Syncer {
 
   getAddressRank(dateFrom) {
     return Coin.query(`
+      with records as (
+        SELECT
+          c.id,
+          jsonb_array_elements(a.data->'1d')->'count' as address_count
+        FROM addresses a, platforms p, coins c
+        WHERE a.date >= :dateFrom
+          AND p.id = a.platform_id
+          AND c.id = p.coin_id
+      )
       SELECT
-        C.id,
-        SUM(a.count) address
-      FROM addresses a, platforms p, coins c
-      WHERE a.date >= :dateFrom
-        AND p.id = a.platform_id
-        AND c.id = p.coin_id
-      GROUP BY c.id
+        id,
+        sum(address_count::numeric) as address
+      FROM records
+      GROUP BY id
       ORDER BY address desc
     `, { dateFrom })
   }
