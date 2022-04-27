@@ -28,6 +28,8 @@ const NftAsset = require('./models/NftAsset')
 const NftMarket = require('./models/NftMarket')
 const AuthKey = require('./models/AuthKey')
 const UpdateState = require('./models/UpdateState')
+const EvmMethodLabel = require('./models/EvmMethodLabel')
+const AddressLabel = require('./models/AddressLabel')
 const config = require('./config')
 
 const sequelize = new Sequelize(
@@ -58,6 +60,7 @@ const db = {
   DexVolume: DexVolume.init(sequelize, Sequelize),
   DexLiquidity: DexLiquidity.init(sequelize, Sequelize),
   Address: Address.init(sequelize, Sequelize),
+  AddressLabel: AddressLabel.init(sequelize, Sequelize),
   CoinHolder: CoinHolder.init(sequelize, Sequelize),
   Currency: Currency.init(sequelize, Sequelize),
   CurrencyRate: CurrencyRate.init(sequelize, Sequelize),
@@ -67,6 +70,7 @@ const db = {
   NftAsset: NftAsset.init(sequelize, Sequelize),
   NftMarket: NftMarket.init(sequelize, Sequelize),
   AuthKey: AuthKey.init(sequelize, Sequelize),
+  EvmMethodLabel: EvmMethodLabel.init(sequelize, Sequelize),
   UpdateState: UpdateState.init(sequelize, Sequelize)
 }
 

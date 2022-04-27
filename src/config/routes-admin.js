@@ -11,6 +11,8 @@ const Treasury = require('../db/models/Treasury')
 const Fund = require('../db/models/Fund')
 const FundsInvested = require('../db/models/FundsInvested')
 const Report = require('../db/models/Report')
+const AddressLabel = require('../db/models/AddressLabel')
+const EvmMethodLabel = require('../db/models/EvmMethodLabel')
 const UpdateState = require('../db/models/UpdateState')
 
 const router = express.Router()
@@ -145,7 +147,21 @@ router.use(
     getList: params => getList(params, UpdateState, ['id', 'name', 'date']),
     getOne: id => getOne(id, UpdateState, ['id', 'name', 'date']),
     ...createUpdateDelete(UpdateState)
-  })
+  }),
+
+  crud('/address_labels', {
+    search: (q, limit) => search(q, limit, AddressLabel, ['id', 'address', 'label']),
+    getList: params => getList(params, AddressLabel, ['id', 'address', 'label']),
+    getOne: id => getOne(id, AddressLabel, ['id', 'address', 'label']),
+    ...createUpdateDelete(AddressLabel)
+  }),
+
+  crud('/evm_method_labels', {
+    search: (q, limit) => search(q, limit, EvmMethodLabel, ['id', 'methodId', 'label']),
+    getList: params => getList(params, EvmMethodLabel, ['id', 'methodId', 'label']),
+    getOne: id => getOne(id, EvmMethodLabel, ['id', 'methodId', 'label']),
+    ...createUpdateDelete(EvmMethodLabel)
+  }),
 )
 
 module.exports = router

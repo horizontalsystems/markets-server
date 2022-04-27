@@ -18,6 +18,7 @@ router.use('/languages', require('../api/languages'))
 router.use('/token_info', require('../api/token_info'))
 router.use('/reports', require('../api/reports'))
 router.use('/global-markets', require('../api/global-markets'))
+router.use('/evm-method-labels', require('../api/evm-method-labels'))
 router.use('/chain', require('../api/chain'))
 router.use('/status', require('../api/status'))
 

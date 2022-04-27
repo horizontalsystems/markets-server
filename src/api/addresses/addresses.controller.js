@@ -1,5 +1,6 @@
 const bitquery = require('../../providers/bitquery').bitqueryProxy
 const Address = require('../../db/models/Address')
+const AddressLabel = require('../../db/models/AddressLabel')
 const CoinHolder = require('../../db/models/CoinHolder')
 const serializer = require('./addresses.serializer')
 const Platforms = require('../../db/models/Platform')
@@ -37,6 +38,15 @@ exports.coins = async ({ params, query }, res, next) => {
       block_number: data.blockNumber,
       balances
     })
+  } catch (e) {
+    next(e)
+  }
+}
+
+exports.labels = async (req, res, next) => {
+  try {
+    const labels = await AddressLabel.findAll()
+    res.send(serializer.serializeLabels(labels))
   } catch (e) {
     next(e)
   }
