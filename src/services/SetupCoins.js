@@ -172,7 +172,7 @@ class SetupCoins {
           break
 
         case 'polygon-pos':
-          type = 'mrc20'
+          type = 'polygon-pos'
           address = platforms[platform]
           decimals = await web3Provider.getMRC20Decimals(address)
           break
