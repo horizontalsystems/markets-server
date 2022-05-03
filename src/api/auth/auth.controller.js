@@ -13,7 +13,7 @@ function handleError(res, code, message) {
 exports.generateKey = async ({ query }, res) => {
   try {
     const randomKey = crypto.randomBytes(10).toString('base64')
-    const expiresAt = utcDate({ minutes: 1 })
+    const expiresAt = utcDate({ minutes: 5 })
     await AuthKey.upsert({
       address: query.address,
       key: randomKey,

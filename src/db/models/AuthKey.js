@@ -33,7 +33,7 @@ class AuthKey extends Model {
       return null
     }
 
-    if (authKey.expires_at < new Date()) {
+    if (authKey.expires_at > new Date()) {
       return authKey
     }
 
