@@ -121,13 +121,8 @@ class SetupCoins {
   }
 
   async syncPlatforms(coin, platforms, bep2tokens) {
-    const upsert = async (type, decimals, address, symbol) => {
-      try {
-        const [record] = await Platform.upsert({ type, symbol, address, decimals, coin_id: coin.id })
-        console.log(JSON.stringify(record))
-      } catch (err) {
-        console.log(err)
-      }
+    const upsert = (type, decimals, address, symbol) => {
+      return this.upsertPlatform({ type, symbol, address, decimals, coin_id: coin.id })
     }
 
     switch (coin.uid) {
@@ -227,12 +222,20 @@ class SetupCoins {
     try {
       console.log('Fetching info for', coin.uid)
 
+      const mapDescriptions = descriptions => languages.reduce((result, { code }) => {
+        if (!descriptions[code]) {
+          return result
+        }
+
+        return { ...result, [code]: this.turndownService.turndown(descriptions[code]) }
+      }, {})
+
       const coinInfo = await coingecko.getCoinInfo(coin.uid)
       const cached = this.coinsCache[coin.uid] || {}
       const values = {
         links: coinInfo.links,
         is_defi: coinInfo.is_defi,
-        description: cached.description || this.mapDescriptions(coinInfo.description, languages),
+        description: cached.description || mapDescriptions(coinInfo.description, languages),
         genesis_date: cached.genesis_date || coin.genesis_date,
         security: cached.security || coin.security
       }
@@ -251,17 +254,14 @@ class SetupCoins {
     }
   }
 
-  mapDescriptions(descriptions, languages) {
-    return languages.reduce((result, { code }) => {
-      if (!descriptions[code]) {
-        return result
-      }
-
-      return {
-        ...result,
-        [code]: this.turndownService.turndown(descriptions[code])
-      }
-    }, {})
+  upsertPlatform(values) {
+    return Platform.upsert(values)
+      .then(([{ id, type, chain_uid: chain }]) => {
+        console.log(JSON.stringify({ type, chain, id }))
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 }
 
