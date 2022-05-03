@@ -9,6 +9,10 @@ class Platform extends SequelizeModel {
           type: DataTypes.STRING(100),
           allowNull: false
         },
+        chain_uid: {
+          type: DataTypes.STRING(50),
+          allowNull: false
+        },
         symbol: DataTypes.STRING(100),
         address: DataTypes.STRING(100),
         decimals: DataTypes.INTEGER,

@@ -121,6 +121,16 @@ exports.getCoinList = function getCoinList() {
     .then(resp => resp.data)
 }
 
+exports.getChainList = function getCoinList() {
+  return axios
+    .get('/asset_platforms')
+    .then(resp => resp.data)
+    .catch(e => {
+      console.log(e)
+      return []
+    })
+}
+
 exports.getCoinInfo = function getMarketInfo(id) {
   const query = querystring.stringify({
     tickers: false,

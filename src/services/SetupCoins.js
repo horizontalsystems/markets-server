@@ -1,7 +1,8 @@
 const TurndownService = require('turndown')
 const { difference, chunk } = require('lodash')
-const { sleep } = require('../utils')
+const { sleep, reduceMap } = require('../utils')
 const Coin = require('../db/models/Coin')
+const Chain = require('../db/models/Chain')
 const UpdateState = require('../db/models/UpdateState')
 const Platform = require('../db/models/Platform')
 const Language = require('../db/models/Language')
@@ -250,6 +251,77 @@ class SetupCoins {
       if (response.status === 429) {
         await sleep(60 * 1000)
         await this.syncCoinInfo(coin, languages, bep2tokens)
+      }
+    }
+  }
+
+  async setupChains() {
+    const chains = (await coingecko.getChainList())
+      .filter(i => i.id)
+      .map(item => {
+        return {
+          uid: item.id,
+          name: item.name
+        }
+      })
+
+    const allRecords = await Chain.bulkCreate(chains, { ignoreDuplicates: true })
+    const newRecords = allRecords.filter(record => record.id)
+
+    console.log(`Inserted ${newRecords.length} chains`)
+  }
+
+  async syncChains() {
+    const coins = await Coin.query('SELECT coingecko_id FROM coins WHERE coingecko_id IS NOT NULL')
+    const chains = reduceMap(await Chain.findAll(), 'uid')
+
+    console.log(`${coins.length} coins to synced chains`)
+
+    for (let i = 0; i < coins.length; i += 1) {
+      const coin = coins[i]
+
+      try {
+        console.log(`Syncing chains for ${coin.coingecko_id}; (${i})`)
+        await this.syncCoinChains(coin, chains)
+        await sleep(1100)
+      } catch ({ message, response = {} }) {
+        if (message) {
+          console.log(message)
+        }
+
+        if (response.status === 429) {
+          await sleep(60 * 1000)
+        }
+      }
+    }
+  }
+
+  async syncCoinChains(coin, chains) {
+    const coinInfo = await coingecko.getCoinInfo(coin.coingecko_id)
+    const platforms = Object.entries(coinInfo.platforms)
+
+    const mapChainType = platform => {
+      switch (platform) {
+        case 'ethereum':
+          return 'erc20'
+        case 'binance-smart-chain':
+          return 'bep20'
+        case 'binancecoin':
+          return 'bep2'
+        default:
+          return platform
+      }
+    }
+
+    for (let i = 0; i < platforms.length; i += 1) {
+      const [chain, address] = platforms[i]
+      if (chains[chain]) {
+        await this.upsertPlatform({
+          address,
+          type: mapChainType(chain),
+          coin_id: coin.id,
+          chain_uid: chain
+        })
       }
     }
   }

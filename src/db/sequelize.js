@@ -30,6 +30,7 @@ const AuthKey = require('./models/AuthKey')
 const UpdateState = require('./models/UpdateState')
 const EvmMethodLabel = require('./models/EvmMethodLabel')
 const AddressLabel = require('./models/AddressLabel')
+const Chain = require('./models/Chain')
 const config = require('./config')
 
 const sequelize = new Sequelize(
@@ -42,6 +43,7 @@ const sequelize = new Sequelize(
 // Models
 const db = {
   Coin: Coin.init(sequelize, Sequelize),
+  Chain: Chain.init(sequelize, Sequelize),
   DefiProtocol: DefiProtocol.init(sequelize, Sequelize),
   Category: Category.init(sequelize, Sequelize),
   CategoryMarketCap: CategoryMarketCap.init(sequelize, Sequelize),

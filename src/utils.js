@@ -52,3 +52,17 @@ exports.percentageBetweenNumber = (oldNumber, newNumber) => {
 
   return (1 - (oldNumber / newNumber)) * 100
 }
+
+exports.reduceMap = (items, keyField, valField) => {
+  return items.reduce((res, item) => {
+    const key = item[keyField]
+    if (!key) {
+      return res
+    }
+
+    return {
+      ...res,
+      [key]: valField ? item[valField] : key
+    }
+  }, {})
+}
