@@ -1,4 +1,6 @@
+const Sequelize = require('sequelize')
 const SequelizeModel = require('./SequelizeModel')
+const Chain = require('./Chain')
 
 class Platform extends SequelizeModel {
 
@@ -11,7 +13,12 @@ class Platform extends SequelizeModel {
         },
         chain_uid: {
           type: DataTypes.STRING(50),
-          allowNull: false
+          allowNull: false,
+          references: {
+            key: 'uid',
+            model: Chain,
+            deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
+          }
         },
         symbol: DataTypes.STRING(100),
         address: DataTypes.STRING(100),

@@ -1,20 +1,18 @@
-const PlatformStats = require('../../db/models/PlatformStats')
+const Chain = require('../../db/models/Chain')
 const serializer = require('./platforms.serializer')
-const PlatformStatsHistory = require('../../db/models/PlatformStatsHistory')
+const ChainMarketCap = require('../../db/models/ChainMarketCap')
 
 exports.index = async (req, res) => {
-  const stats = await PlatformStats.getList()
+  const stats = await Chain.getList()
   res.send(serializer.serialize(stats))
 }
 
 exports.protocols = async ({ params }, res) => {
-  const platform = serializer.mapChainToPlatform(params.chain)
-  const stats = await PlatformStats.getPlatforms(platform)
+  const stats = await Chain.getPlatforms(params.chain)
   res.send(serializer.serializePlatforms(stats))
 }
 
 exports.chart = async ({ params, dateFrom, dateInterval }, res) => {
-  const platform = serializer.mapChainToPlatform(params.chain)
-  const stats = await PlatformStatsHistory.getByPlatform(platform, dateFrom, dateInterval)
-  res.send(stats)
+  const stats = await ChainMarketCap.getByPlatform(params.chain, dateFrom, dateInterval)
+  res.send(serializer.serializeChart(stats))
 }

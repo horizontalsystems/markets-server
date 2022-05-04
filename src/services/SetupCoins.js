@@ -272,7 +272,7 @@ class SetupCoins {
   }
 
   async syncChains() {
-    const coins = await Coin.query('SELECT coingecko_id FROM coins WHERE coingecko_id IS NOT NULL')
+    const coins = await Coin.query('SELECT id, coingecko_id FROM coins WHERE coingecko_id IS NOT NULL')
     const chains = reduceMap(await Chain.findAll(), 'uid')
 
     console.log(`${coins.length} coins to synced chains`)
@@ -290,7 +290,7 @@ class SetupCoins {
         }
 
         if (response.status === 429) {
-          await sleep(60 * 1000)
+          await sleep(61 * 1000)
         }
       }
     }
@@ -321,13 +321,13 @@ class SetupCoins {
           type: mapChainType(chain),
           coin_id: coin.id,
           chain_uid: chain
-        })
+        }, { updateOnDuplicate: ['chain_uid'] })
       }
     }
   }
 
-  upsertPlatform(values) {
-    return Platform.upsert(values)
+  upsertPlatform(values, options = undefined) {
+    return Platform.bulkCreate([values], options)
       .then(([{ id, type, chain_uid: chain }]) => {
         console.log(JSON.stringify({ type, chain, id }))
       })

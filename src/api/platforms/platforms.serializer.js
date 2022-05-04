@@ -1,45 +1,24 @@
 const { nullOrString } = require('../../utils')
 
-const mapPlatformToChain = platform => {
-  switch (platform) {
-    case 'erc20':
-      return 'ethereum'
-    case 'bep20':
-      return 'binance-smart-chain'
-    default:
-      return platform
-  }
-}
-
-const mapChainToPlatform = platform => {
-  switch (platform) {
-    case 'ethereum':
-      return 'erc20'
-    case 'binance-smart-chain':
-      return 'bep20'
-    default:
-      return platform
-  }
-}
-
 module.exports = {
 
   serialize: items => {
-    return items.map(item => {
+    return items.map((item, index) => {
       const stats = item.stats || {}
 
       return {
-        name: mapPlatformToChain(item.name),
-        market_cap: nullOrString(item.market_cap),
-        rank: nullOrString(item.rank),
+        uid: item.uid,
+        name: item.name,
+        rank: index + 1,
+        protocols: parseInt(stats.protocols, 10),
+        market_cap: nullOrString(stats.market_cap),
         stats: {
           rank_1d: nullOrString(stats.rank_1d),
           rank_1w: nullOrString(stats.rank_1w),
           rank_1m: nullOrString(stats.rank_1m),
           change_1d: nullOrString(stats.change_1d),
           change_1m: nullOrString(stats.change_1m),
-          change_1w: nullOrString(stats.change_1w),
-          protocols: nullOrString(stats.protocols)
+          change_1w: nullOrString(stats.change_1w)
         },
       }
     })
@@ -54,7 +33,13 @@ module.exports = {
     })
   },
 
-  mapPlatformToChain,
-  mapChainToPlatform
+  serializeChart: items => {
+    return items.map(item => {
+      return {
+        date: item.date,
+        market_cap: nullOrString(item.market_cap)
+      }
+    })
+  },
 
 }

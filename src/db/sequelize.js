@@ -6,9 +6,9 @@ const DefiProtocol = require('./models/DefiProtocol')
 const Language = require('./models/Language')
 const Category = require('./models/Category')
 const CategoryMarketCap = require('./models/CategoryMarketCap')
+const Chain = require('./models/Chain')
+const ChainMarketCap = require('./models/ChainMarketCap')
 const Platform = require('./models/Platform')
-const PlatformStats = require('./models/PlatformStats')
-const PlatformStatsHistory = require('./models/PlatformStatsHistory')
 const Fund = require('./models/Fund')
 const FundsInvested = require('./models/FundsInvested')
 const Treasury = require('./models/Treasury')
@@ -30,7 +30,6 @@ const AuthKey = require('./models/AuthKey')
 const UpdateState = require('./models/UpdateState')
 const EvmMethodLabel = require('./models/EvmMethodLabel')
 const AddressLabel = require('./models/AddressLabel')
-const Chain = require('./models/Chain')
 const config = require('./config')
 
 const sequelize = new Sequelize(
@@ -44,6 +43,7 @@ const sequelize = new Sequelize(
 const db = {
   Coin: Coin.init(sequelize, Sequelize),
   Chain: Chain.init(sequelize, Sequelize),
+  ChainMarketCap: ChainMarketCap.init(sequelize, Sequelize),
   DefiProtocol: DefiProtocol.init(sequelize, Sequelize),
   Category: Category.init(sequelize, Sequelize),
   CategoryMarketCap: CategoryMarketCap.init(sequelize, Sequelize),
@@ -51,8 +51,6 @@ const db = {
   CoinTvl: CoinTvl.init(sequelize, Sequelize),
   Language: Language.init(sequelize, Sequelize),
   Platform: Platform.init(sequelize, Sequelize),
-  PlatformStats: PlatformStats.init(sequelize, Sequelize),
-  PlatformStatsHistory: PlatformStatsHistory.init(sequelize, Sequelize),
   Fund: Fund.init(sequelize, Sequelize),
   FundsInvested: FundsInvested.init(sequelize, Sequelize),
   TreasuryEntity: TreasuryEntity.init(sequelize, Sequelize),
