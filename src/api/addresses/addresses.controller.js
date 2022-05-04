@@ -36,7 +36,7 @@ exports.coins = async ({ params, query }, res, next) => {
     const balances = await Platforms.getBalances(values, query.chain)
     res.send({
       block_number: data.blockNumber,
-      balances
+      balances: serializer.serializeBalances(balances)
     })
   } catch (e) {
     next(e)

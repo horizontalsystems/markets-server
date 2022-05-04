@@ -1,4 +1,4 @@
-const { floatToString } = require('../../utils')
+const { floatToString, nullOrString } = require('../../utils')
 
 module.exports = {
   serializeCoinHolders: coinHolders => {
@@ -12,6 +12,14 @@ module.exports = {
     return {
       address: item.address,
       label: item.label
+    }
+  }),
+
+  serializeBalances: items => items.map(item => {
+    return {
+      value: nullOrString(item.value),
+      address: item.address,
+      price: nullOrString(item.price)
     }
   })
 }
