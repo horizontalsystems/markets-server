@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./platforms.controller')
-const { setDateInterval } = require('../middlewares')
+const { setDateInterval, setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
 
@@ -9,6 +9,8 @@ const router = express.Router()
  * @apiDescription Get a list of top platforms stats
  * @apiVersion 1.0.0
  * @apiGroup Platform
+ *
+ * @apiUse  Currencies
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -27,13 +29,15 @@ const router = express.Router()
  *    }
  *  }]
  */
-router.get('/', controller.index)
+router.get('/', setCurrencyRate, controller.index)
 
 /**
  * @api {get} /v1/top-platforms/list List Top Platforms
  * @apiDescription Get a list of top platforms
  * @apiVersion 1.0.0
  * @apiGroup Platform
+ *
+ * @apiUse  Currencies
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -42,7 +46,7 @@ router.get('/', controller.index)
  *    "market_cap": "44001975841"
  *  }]
  */
-router.get('/:chain/list', controller.protocols)
+router.get('/:chain/list', setCurrencyRate, controller.protocols)
 
 /**
  * @api {get} /v1/top-platforms/:chain/chart List market cap chart
@@ -52,6 +56,7 @@ router.get('/:chain/list', controller.protocols)
  *
  * @apiParam    {String}            chain       Chain
  * @apiParam    {String=1d,1w,1m}   [interval]  Date interval
+ * @apiUse  Currencies
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -61,7 +66,6 @@ router.get('/:chain/list', controller.protocols)
  *  }]
  *
  */
-
-router.get('/:chain/chart', setDateInterval, controller.chart)
+router.get('/:chain/chart', setCurrencyRate, setDateInterval, controller.chart)
 
 module.exports = router

@@ -1,8 +1,8 @@
-const { nullOrString } = require('../../utils')
+const { nullOrString, valueInCurrency } = require('../../utils')
 
 module.exports = {
 
-  serialize: items => {
+  serialize: (items, currencyRate) => {
     return items.map((item, index) => {
       const stats = item.stats || {}
 
@@ -11,7 +11,7 @@ module.exports = {
         name: item.name,
         rank: index + 1,
         protocols: parseInt(stats.protocols, 10),
-        market_cap: nullOrString(stats.market_cap),
+        market_cap: valueInCurrency(stats.market_cap, currencyRate),
         stats: {
           rank_1d: nullOrString(stats.rank_1d),
           rank_1w: nullOrString(stats.rank_1w),
@@ -24,20 +24,20 @@ module.exports = {
     })
   },
 
-  serializePlatforms: items => {
+  serializePlatforms: (items, currencyRate) => {
     return items.map(item => {
       return {
         uid: item.uid,
-        market_cap: nullOrString(item.mcap)
+        market_cap: valueInCurrency(item.mcap, currencyRate)
       }
     })
   },
 
-  serializeChart: items => {
+  serializeChart: (items, currencyRate) => {
     return items.map(item => {
       return {
         date: item.date,
-        market_cap: nullOrString(item.market_cap)
+        market_cap: valueInCurrency(item.market_cap, currencyRate)
       }
     })
   },
