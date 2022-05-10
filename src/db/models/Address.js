@@ -74,15 +74,15 @@ class Address extends SequelizeModel {
     if (!platform) {
       return []
     }
-    const query = `
-      SELECT  items->'date' AS date,
-              items->'count' AS count
-      FROM addresses A,
-           jsonb_array_elements(data->:period) AS items
-      WHERE
-          A.platform_id = :platform_id AND
-          A.date >= :dateFrom
-    `
+
+    const query = (`
+      SELECT
+        extract (epoch from (items->>'date')::timestamp)::int AS timestamp, 
+        items->'count' AS count
+      FROM addresses A, jsonb_array_elements(data->:period) AS items
+      WHERE A.platform_id = :platform_id
+        AND A.date >= :dateFrom
+    `)
 
     return Address.query(query, { dateFrom, platform_id: platform.id, period })
   }

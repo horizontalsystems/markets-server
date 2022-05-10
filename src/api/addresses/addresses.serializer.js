@@ -1,6 +1,13 @@
 const { floatToString, nullOrString } = require('../../utils')
 
 module.exports = {
+  serializeAddresses: data => {
+    return data.map(item => ({
+      timestamp: item.timestamp,
+      count: parseInt(item.count, 10)
+    }))
+  },
+
   serializeCoinHolders: coinHolders => {
     return coinHolders.map((item) => ({
       address: item.address,
