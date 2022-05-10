@@ -8,30 +8,16 @@ class Address extends SequelizeModel {
       {
         data: DataTypes.JSONB,
         // {
-        //    "30m":[
-        //       {
-        //         "date": "2022-02-01T00:30:00",
-        //         "count": 10
-        //       }
-        //     ],
-        //    "4h":[
-        //       {
-        //         "date": "2022-02-01T04:00:00",
-        //         "count": 10
-        //       }
-        //     ],
-        //    "8h":[
-        //       {
-        //         "date": "2022-02-01T08:00:00",
-        //         "count": 10
-        //       }
-        //     ],
-        //    "1d":[
-        //       {
-        //         "date": "2022-02-01",
-        //         "count": 10
-        //       }
-        //     ],
+        //   "30m":[{
+        //     "date": "2022-02-01T00:30:00",
+        //     "count": 10
+        //   }],
+        //   "4h":[{
+        //     "date": "2022-02-01T04:00:00",
+        //     "count": 10
+        //   }],
+        //   "8h":[{...}],
+        //   "1d":[{...}]
         // ]}
         date: {
           type: DataTypes.DATE,
@@ -61,10 +47,13 @@ class Address extends SequelizeModel {
 
   static async existsForPlatforms(platforms) {
     const query = `
-      SELECT COUNT(*)
-      FROM addresses a , platforms p
-      WHERE a.platform_id = p.id AND p.type IN (:platforms)
+      SELECT
+        COUNT(*)
+      FROM addresses a, platforms p
+      WHERE a.platform_id = p.id
+        AND p.type IN (:platforms)
     `
+
     const [result] = await Address.query(query, { platforms })
     return result.count > 0
   }
@@ -88,14 +77,14 @@ class Address extends SequelizeModel {
   }
 
   static deleteExpired(dateFrom, dateTo, periods) {
-    return Address.query(`
+    const query = `
       UPDATE addresses
-      SET data = data - ARRAY[:periods]
-      WHERE date >= :dateFrom AND date < :dateTo`, {
-      dateFrom,
-      dateTo,
-      periods
-    })
+        SET data = data - ARRAY[:periods]
+      WHERE date >= :dateFrom
+        AND date < :dateTo
+    `
+
+    return Address.query(query, { dateFrom, dateTo, periods })
   }
 
 }
