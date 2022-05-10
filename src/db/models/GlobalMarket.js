@@ -56,7 +56,7 @@ class GlobalMarket extends SequelizeModel {
   static getList(dateFrom, window) {
     const query = (`
       SELECT
-        EXTRACT(epoch FROM t2.time)::int AS date,
+        t2.time AS date,
         t1.market_cap,
         t1.defi_market_cap,
         t1.volume,
@@ -82,7 +82,7 @@ class GlobalMarket extends SequelizeModel {
     const field = chain ? 't1.chain_tvls->:chain' : 'tvl'
     const query = (`
       SELECT
-        EXTRACT(epoch FROM t2.time)::int AS date,
+        t2.time AS date,
         ${field} as tvl
       FROM global_markets t1
       JOIN (

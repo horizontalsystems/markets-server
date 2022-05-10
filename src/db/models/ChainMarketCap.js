@@ -55,7 +55,7 @@ class ChainMarketCap extends SequelizeModel {
   static getByPlatform(chain, dateFrom, window) {
     const query = `
       SELECT
-        EXTRACT(epoch FROM t2.time)::int AS date,
+        t2.time AS date,
         t1.market_cap
       FROM chain_market_caps t1
       JOIN (

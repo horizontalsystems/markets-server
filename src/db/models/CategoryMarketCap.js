@@ -38,7 +38,7 @@ class CategoryMarketCap extends SequelizeModel {
   static async getByCategory(uid, window, dateFrom) {
     const query = (`
       SELECT
-        EXTRACT(epoch FROM t2.time)::int AS date,
+        t2.time AS date,
         t1.market_cap
       FROM category_market_caps t1
       JOIN categories C on C.uid = :uid

@@ -66,7 +66,7 @@ class NftMarket extends SequelizeModel {
     const query = (`
       SELECT
         DISTINCT ON (nm.trunc)
-        EXTRACT(epoch from nm.trunc)::int as timestamp,
+        nm.trunc as timestamp,
         nm.volume24h as one_day_volume,
         nm.avg_price as average_price,
         nm.floor_price as floor_price,

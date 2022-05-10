@@ -60,7 +60,7 @@ class CoinPrice extends SequelizeModel {
     const query = `
       SELECT
         DISTINCT ON (cp.trunc)
-        EXTRACT(epoch from cp.trunc)::int as timestamp,
+        cp.trunc as timestamp,
         cp.price,
         cp.volume
       FROM (

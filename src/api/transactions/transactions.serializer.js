@@ -1,3 +1,5 @@
+const { nullOrString } = require('../../utils')
+
 exports.serializeTransactions = ({ transactions, platforms }) => {
   if (!transactions || !platforms) {
     return {
@@ -11,9 +13,9 @@ exports.serializeTransactions = ({ transactions, platforms }) => {
     ids.push(...item.platforms)
 
     return {
-      date: item.date,
-      count: item.count,
-      volume: item.volume
+      timestamp: item.date,
+      count: parseInt(item.count, 10),
+      volume: nullOrString(item.volume)
     }
   })
 
@@ -37,8 +39,8 @@ exports.serializeDexVolumes = ({ volumes, platforms }) => {
     ids.push(...item.platforms)
 
     return {
-      date: item.date,
-      volume: item.volume
+      timestamp: item.date,
+      volume: nullOrString(item.volume)
     }
   })
 
@@ -62,8 +64,8 @@ exports.serializeDexLiquidity = ({ liquidity, platforms }) => {
     ids.push(...item.platforms)
 
     return {
-      date: item.date,
-      volume: item.volume
+      timestamp: item.date,
+      volume: nullOrString(item.volume)
     }
   })
 
