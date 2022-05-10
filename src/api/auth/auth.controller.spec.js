@@ -2,7 +2,7 @@ const sinon = require('sinon')
 const crypto = require('crypto')
 const request = require('supertest')
 const AuthKey = require('../../db/models/AuthKey')
-const opensea = require('../../providers/opensea')
+const NftHolder = require('../../db/models/NftHolder')
 const app = require('../../config/express')
 
 describe('Auth API', async () => {
@@ -39,7 +39,7 @@ describe('Auth API', async () => {
 
   describe('GET /v1/auth/authenticate', () => {
     beforeEach(async () => {
-      sinon.stub(opensea, 'getAssets').returns({ assets: [{ id: 1 }] })
+      sinon.stub(NftHolder, 'findOne').returns({ address: account.address })
       sinon.stub(AuthKey, 'getValidKey').returns({
         key: 'YWJj',
         destroy: sinon.stub()

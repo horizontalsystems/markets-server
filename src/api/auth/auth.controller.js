@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken')
 const util = require('ethereumjs-util')
 const crypto = require('crypto')
-const opensea = require('../../providers/opensea')
 const AuthKey = require('../../db/models/AuthKey')
 const { utcDate } = require('../../utils')
+const NftHolder = require('../../db/models/NftHolder')
 
 function handleError(res, code, message) {
   res.status(code)
@@ -36,6 +36,11 @@ exports.authenticate = async ({ body }, res) => {
   }
 
   try {
+    const nft = await NftHolder.findOne({ where: { address } })
+    if (!nft) {
+      return handleError(res, 400, 'Not an NFT owner')
+    }
+
     const hash = util.hashPersonalMessage(Buffer.from(authKey.key))
     const sig = util.fromRpcSig(signature)
     const sigPubKey = util.ecrecover(hash, sig.v, sig.r, sig.s)
@@ -43,11 +48,6 @@ exports.authenticate = async ({ body }, res) => {
 
     if (address !== sigAddress) {
       return handleError(res, 400, 'Invalid signature')
-    }
-
-    const nft = await opensea.getAssets(address, 'sushinft')
-    if (!nft || !nft.assets || !nft.assets.length) {
-      return handleError(res, 400, 'Not an NFT owner')
     }
 
     const token = jwt.sign({ address }, process.env.SECRET)
