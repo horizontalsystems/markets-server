@@ -3,10 +3,13 @@ const cheerio = require('cheerio')
 const blockchair = require('../providers/blockchair')
 const etherscan = require('../providers/etherscan')
 const snowtrace = require('../providers/snowtrace')
+const bigquery = require('../providers/bigquery')
 const ftmscan = require('../providers/ftmscan')
 const bscscan = require('../providers/bscscan')
 const solscan = require('../providers/solscan')
 const Platform = require('../db/models/Platform')
+const NftAsset = require('../db/models/NftAsset')
+const NftHolder = require('../db/models/NftHolder')
 const CoinHolder = require('../db/models/CoinHolder')
 const Syncer = require('./Syncer')
 const utils = require('../utils')
@@ -28,12 +31,43 @@ class CoinHolderSyncer extends Syncer {
     await this.syncHolders(platforms)
   }
 
-  async syncLatest() {
-    this.cron('0 0 */10 * *', this.syncMonthly) // every 10 days
+  async syncNft(contract) {
+    const assets = await NftAsset.getByContract(contract)
+    await this.syncNftHolders(contract, assets)
   }
 
-  syncMonthly() {
-    return this.syncAll()
+  async syncLatest() {
+    this.cron('10d', this.syncAll)
+  }
+
+  async syncNftHolders(contract, assets) {
+    const assetsIds = utils.reduceMap(assets, 'token_id', 'id')
+    const holders = await bigquery.getNftHolders(contract, assets.map(i => ({ id: i.token_id })))
+
+    const records = holders.map(item => {
+      if (!assetsIds[item.id]) {
+        return null
+      }
+
+      return {
+        asset_id: assetsIds[item.id],
+        address: item.address,
+        balance: item.balance
+      }
+    }).filter(item => item)
+
+    if (!records.length) {
+      return
+    }
+
+    await NftHolder.deleteAll(records.map(i => i.asset_id))
+    await NftHolder.bulkCreate(records)
+      .then(data => {
+        console.log('Inserted NFT holders', data.length)
+      })
+      .catch(err => {
+        console.log('Error inserting NFT holders', err.message)
+      })
   }
 
   async syncHolders(platforms) {

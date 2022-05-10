@@ -97,6 +97,10 @@ class NftAsset extends SequelizeModel {
     const [asset] = await NftAsset.query(query, { contractAddress, tokenId })
     return asset
   }
+
+  static getByContract(contract) {
+    return NftAsset.query('SELECT * FROM nft_assets WHERE contract->>\'address\' = :contract', { contract })
+  }
 }
 
 module.exports = NftAsset
