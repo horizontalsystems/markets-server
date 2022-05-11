@@ -44,7 +44,7 @@ describe('TransactionSyncer', async () => {
 
     describe('when already transactions exists', () => {
       it('returns without syncing', async () => {
-        sinon.stub(Transaction, 'exists').returns(true)
+        sinon.stub(Transaction, 'existsForPlatforms').returns(true)
         await syncer.syncHistorical()
         sinon.assert.notCalled(syncer.syncFromBigquery)
       })

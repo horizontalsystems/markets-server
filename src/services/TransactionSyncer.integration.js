@@ -7,6 +7,7 @@ const Transaction = require('../db/models/Transaction')
 const TransactionSyncer = require('./TransactionSyncer')
 const Platform = require('../db/models/Platform')
 const Coin = require('../db/models/Coin')
+const Chain = require('../db/models/Chain')
 
 describe('TransactionSyncer', async () => {
   const date = DateTime.fromISO('2021-01-01T00:00:00Z')
@@ -24,6 +25,10 @@ describe('TransactionSyncer', async () => {
   beforeEach(async () => {
     clock = sinon.useFakeTimers(date.ts)
     await Coin.bulkCreate(coins)
+    await Chain.bulkCreate([
+      { uid: 'ethereum', name: 'Ethereum' },
+      { uid: 'binance-smart-chain', name: 'BSC' }
+    ])
   })
 
   afterEach(async () => {
@@ -39,6 +44,7 @@ describe('TransactionSyncer', async () => {
 
     beforeEach(() => {
       sinon.stub(bigquery, 'getTransactionsStats').returns([])
+      sinon.stub(bigquery, 'getTransactionsStatsBtcBased').returns([])
       sinon.stub(bitquery, 'getTransfers').returns([])
 
       param1d = syncer.syncParamsHistorical('1d')
@@ -48,8 +54,8 @@ describe('TransactionSyncer', async () => {
     describe('Ethereum and ERC20 tokens', () => {
       beforeEach(async () => {
         await Platform.bulkCreate([
-          { id: 1, type: 'ethereum', decimals: 18, coin_id: 1 },
-          { id: 2, type: 'erc20', decimals: 18, coin_id: 2, address: usdcErc20 }
+          { id: 1, type: 'ethereum', chain_uid: 'ethereum', decimals: 18, coin_id: 1 },
+          { id: 2, type: 'erc20', chain_uid: 'ethereum', decimals: 18, coin_id: 2, address: usdcErc20 }
         ])
 
         bigquery.getTransactionsStats
@@ -75,7 +81,7 @@ describe('TransactionSyncer', async () => {
     describe('BSC BEP20 tokens', () => {
       beforeEach(async () => {
         await Platform.bulkCreate([
-          { id: 3, type: 'bep20', decimals: 18, coin_id: 2, address: usdcBep20 },
+          { id: 3, type: 'bep20', decimals: 18, coin_id: 2, address: usdcBep20, chain_uid: 'binance-smart-chain' },
         ])
 
         bitquery.getTransfers
@@ -98,12 +104,13 @@ describe('TransactionSyncer', async () => {
 
     beforeEach(async () => {
       sinon.stub(bigquery, 'getTransactionsStats').returns([])
+      sinon.stub(bigquery, 'getTransactionsStatsBtcBased').returns([])
       sinon.stub(bitquery, 'getTransfers').returns([])
 
       param30m = syncer.syncParams('30m')
 
       await Platform.bulkCreate([
-        { id: 3, type: 'bep20', decimals: 18, coin_id: 2, address: usdcBep20 },
+        { id: 3, type: 'bep20', decimals: 18, coin_id: 2, address: usdcBep20, chain_uid: 'binance-smart-chain' },
       ])
 
       bitquery.getTransfers
