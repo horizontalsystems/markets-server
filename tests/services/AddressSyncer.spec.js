@@ -1,5 +1,5 @@
 const sinon = require('sinon')
-const AddressSyncer = require('./AddressSyncer')
+const AddressSyncer = require('../../src/services/AddressSyncer')
 
 describe('AddressSyncer', async () => {
 

@@ -2,9 +2,9 @@ const sinon = require('sinon')
 const { DateTime } = require('luxon')
 const { CronJob } = require('cron')
 const { expect } = require('chai')
-const { utcDate } = require('../utils')
+const { utcDate } = require('../../src/utils')
 
-const Syncer = require('./Syncer')
+const Syncer = require('../../src/services/Syncer')
 
 describe('Syncer', async () => {
   const date = DateTime.fromSQL('2021-01-01 00:00:00Z')

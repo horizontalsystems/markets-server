@@ -2,12 +2,12 @@ const nock = require('nock')
 const sinon = require('sinon')
 const { expect } = require('chai')
 const { DateTime } = require('luxon')
-const { utcDate } = require('../utils')
+const { utcDate } = require('../../src/utils')
 
-const GlobalMarketsSyncer = require('./GlobalMarketsSyncer')
-const GlobalMarket = require('../db/models/GlobalMarket')
-const coingecko = require('../providers/coingecko')
-const utils = require('../utils')
+const GlobalMarketsSyncer = require('../../src/services/GlobalMarketsSyncer')
+const GlobalMarket = require('../../src/db/models/GlobalMarket')
+const coingecko = require('../../src/providers/coingecko')
+const utils = require('../../src/utils')
 
 const defillamaURL = 'https://api.llama.fi'
 const coingeckoURL = 'https://www.coingecko.com'

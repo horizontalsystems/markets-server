@@ -1,9 +1,9 @@
 const { times } = require('lodash')
 const sinon = require('sinon')
-const utils = require('../utils')
-const coingecko = require('../providers/coingecko')
-const Coin = require('../db/models/Coin')
-const Syncer = require('./CoinMarketSyncer')
+const utils = require('../../src/utils')
+const coingecko = require('../../src/providers/coingecko')
+const Coin = require('../../src/db/models/Coin')
+const Syncer = require('../../src/services/CoinMarketSyncer')
 
 describe('CoinMarketSyncer', () => {
 

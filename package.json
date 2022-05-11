@@ -14,8 +14,8 @@
     "start": "nodemon ./src/app.js --watch ./src",
     "lint": "eslint ./src/ --ignore-path .gitignore",
     "lint:fix": "yarn lint --fix",
-    "test": "mocha './src/**/*.spec.js'",
-    "integration": "mocha 'src/**/*.integration.js' --file .mocha-integration-setup.js",
+    "test": "mocha 'tests/**/*.spec.js'",
+    "integration": "mocha 'tests/integration/*.js' --file tests/integration-setup.js",
     "test:watch": "nodemon --watch ./src --exec 'mocha src/**/*.spec.js'",
     "coverage": "nyc --reporter=html --reporter=text npm run test",
     "docs": "apidoc -i src -o docs"

@@ -1,5 +1,5 @@
 const sinon = require('sinon')
-const CurrencyRateSyncer = require('./CurrencyRateSyncer')
+const CurrencyRateSyncer = require('../../src/services/CurrencyRateSyncer')
 
 describe('CurrencyRateSyncer', async () => {
 

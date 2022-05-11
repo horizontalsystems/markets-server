@@ -5,7 +5,7 @@ require('dotenv').config({
 const { exec } = require('child_process')
 const { random, sum, range } = require('lodash')
 const { DateTime } = require('luxon')
-const { sequelize } = require('./src/db/sequelize')
+const { sequelize } = require('../src/db/sequelize')
 
 before(async () => {
   await factory.createDB()
@@ -62,7 +62,10 @@ const factory = {
       return item
     }
 
-    chains.forEach(chain => chainTvls[chain] = { tvl: factory.data(5, mapper) })
+    chains.forEach(chain => {
+      chainTvls[chain] = { tvl: factory.data(5, mapper) }
+    })
+
     return factory.defillamaProtocol(name, chainTvls, { tvl: totalTvls })
   },
 
@@ -84,11 +87,12 @@ const factory = {
       exec('npx sequelize-cli db:create')
       resolve()
     } catch (e) {
+      console.error(e)
     }
   }),
 
   async truncate(...coins) {
-    for (let i = 0; i < coins.length; i++) {
+    for (let i = 0; i < coins.length; i += 1) {
       const Coin = coins[i]
       await Coin.destroy({ truncate: true, cascade: true })
     }

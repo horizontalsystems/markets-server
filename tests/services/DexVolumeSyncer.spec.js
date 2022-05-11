@@ -1,8 +1,8 @@
 const sinon = require('sinon')
 const { DateTime } = require('luxon')
 
-const DexVolume = require('../db/models/DexVolume')
-const DexVolumeSyncer = require('./DexVolumeSyncer')
+const DexVolume = require('../../src/db/models/DexVolume')
+const DexVolumeSyncer = require('../../src/services/DexVolumeSyncer')
 
 describe('DexVolumeSyncer', async () => {
   const date = DateTime.fromISO('2021-01-01T08:10:00Z')

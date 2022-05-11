@@ -3,8 +3,8 @@ const sinon = require('sinon')
 const nock = require('nock')
 const { expect } = require('chai')
 const { DateTime } = require('luxon')
-const SetupCoins = require('./SetupCoins')
-const Coin = require('../db/models/Coin')
+const SetupCoins = require('../../src/services/SetupCoins')
+const Coin = require('../../src/db/models/Coin')
 
 const coingeckoAPI = 'https://api.coingecko.com/api/v3'
 

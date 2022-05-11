@@ -1,8 +1,8 @@
 const sinon = require('sinon')
 const request = require('supertest')
-const Coin = require('../../db/models/Coin')
-const app = require('../../config/express')
-const CurrencyRate = require('../../db/models/CurrencyRate')
+const Coin = require('../../src/db/models/Coin')
+const app = require('../../src/config/express')
+const CurrencyRate = require('../../src/db/models/CurrencyRate')
 
 describe('Coins API', async () => {
 

@@ -1,9 +1,9 @@
 const sinon = require('sinon')
 const crypto = require('crypto')
 const request = require('supertest')
-const AuthKey = require('../../db/models/AuthKey')
-const NftHolder = require('../../db/models/NftHolder')
-const app = require('../../config/express')
+const AuthKey = require('../../src/db/models/AuthKey')
+const NftHolder = require('../../src/db/models/NftHolder')
+const app = require('../../src/config/express')
 
 describe('Auth API', async () => {
   const message = 'abc'

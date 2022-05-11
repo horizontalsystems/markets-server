@@ -3,10 +3,10 @@ const sinon = require('sinon')
 const { expect } = require('chai')
 const { DateTime } = require('luxon')
 
-const utils = require('../utils')
-const DefiProtocolSyncer = require('./DefiProtocolSyncer')
-const DefiProtocol = require('../db/models/DefiProtocol')
-const DefiProtocolTvl = require('../db/models/DefiProtocolTvl')
+const utils = require('../../src/utils')
+const DefiProtocolSyncer = require('../../src/services/DefiProtocolSyncer')
+const DefiProtocol = require('../../src/db/models/DefiProtocol')
+const DefiProtocolTvl = require('../../src/db/models/DefiProtocolTvl')
 
 const defillama = 'https://api.llama.fi'
 

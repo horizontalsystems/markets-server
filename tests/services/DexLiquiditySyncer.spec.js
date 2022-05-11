@@ -1,8 +1,8 @@
 const sinon = require('sinon')
 const { DateTime } = require('luxon')
 
-const DexLiquidity = require('../db/models/DexLiquidity')
-const DexLiquiditySyncer = require('./DexLiquiditySyncer')
+const DexLiquidity = require('../../src/db/models/DexLiquidity')
+const DexLiquiditySyncer = require('../../src/services/DexLiquiditySyncer')
 
 describe('DexLiquiditySyncer', async () => {
   const date = DateTime.fromISO('2021-01-01T08:10:00Z')
