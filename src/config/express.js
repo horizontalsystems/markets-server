@@ -25,7 +25,9 @@ app.use(compress())
 app.use(methodOverride())
 
 // secure apps by setting various HTTP headers
-app.use(helmet())
+if (process.env.NODE_ENV === 'production') {
+  app.use(helmet())
+}
 
 // enable CORS - Cross Origin Resource Sharing
 app.use(cors())

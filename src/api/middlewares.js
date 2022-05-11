@@ -75,5 +75,9 @@ exports.error500 = (err, req, res, next) => {
     res.status(500)
   }
 
-  res.json(err)
+  if (process.env.NODE_ENV === 'development') {
+    res.json(err)
+  } else {
+    res.json({ message: 'Interval Server error' })
+  }
 }
