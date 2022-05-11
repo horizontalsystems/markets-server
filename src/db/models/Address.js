@@ -58,22 +58,33 @@ class Address extends SequelizeModel {
     return result.count > 0
   }
 
-  static async getByCoinUid(uid, platformType, period, dateFrom) {
-    const [platform] = await Platform.findByCoinUID(uid, platformType)
-    if (!platform) {
-      return []
+  static async getByCoinUid(uid, platform, period, dateFrom) {
+    const platforms = await Platform.findByCoinUID(uid, platform)
+    if (!platforms.length) {
+      return {}
     }
 
     const query = (`
       SELECT
-        extract (epoch from (items->>'date')::timestamp)::int AS timestamp, 
-        items->'count' AS count
+        EXTRACT (epoch from (items->>'date')::timestamp)::int AS timestamp,
+        ARRAY_AGG (distinct platform_id) as platforms,
+        SUM ((items->>'count')::int) AS count
       FROM addresses A, jsonb_array_elements(data->:period) AS items
-      WHERE A.platform_id = :platform_id
+      WHERE A.platform_id in (:platforms)
         AND A.date >= :dateFrom
+      GROUP BY 1
     `)
 
-    return Address.query(query, { dateFrom, platform_id: platform.id, period })
+    const addresses = await Address.query(query, {
+      period,
+      dateFrom,
+      platforms: platforms.map(item => item.id)
+    })
+
+    return {
+      addresses,
+      platforms
+    }
   }
 
   static deleteExpired(dateFrom, dateTo, periods) {
