@@ -7,7 +7,7 @@ const Platforms = require('../../db/models/Platform')
 
 exports.index = async ({ query, dateInterval, dateFrom }, res, next) => {
   try {
-    const addresses = await Address.getByCoinUid(query.coin_uid, query.platform || 'erc20', dateInterval, dateFrom)
+    const addresses = await Address.getByCoinUid(query.coin_uid, query.platform, dateInterval, dateFrom)
     res.send(serializer.serializeAddresses(addresses))
   } catch (e) {
     next(e)
