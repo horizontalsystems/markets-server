@@ -1,24 +1,25 @@
 require('dotenv/config')
 
 const { Command } = require('commander')
-const CoinPriceSyncer = require('../src/services/CoinPriceSyncer')
 const sequelize = require('../src/db/sequelize')
+const CoinPriceSyncer = require('../src/services/CoinPriceSyncer')
 
 const program = new Command()
-  .option('-c --coins <coins>', 'sync historical price for only given setup')
+  .option('-c --coins <coins>', 'sync market data for given coin')
+  .option('-h --history <history>', 'sync historical price for given coin')
   .parse(process.argv)
 
-async function start({ coins }) {
+async function start({ coins, history }) {
   await sequelize.sync()
   const syncer = new CoinPriceSyncer()
 
   if (coins) {
-    await syncer.syncHistorical(coins.split(','))
+    await syncer.sync(coins.split(','))
+  } else if (history) {
+    await syncer.syncHistory(history.split(','))
   } else {
     await syncer.start()
   }
-
-  return syncer
 }
 
 module.exports = start(program.opts())

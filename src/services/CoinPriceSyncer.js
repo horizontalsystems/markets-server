@@ -1,154 +1,129 @@
+const { parseInt } = require('lodash')
 const { DateTime } = require('luxon')
-const logger = require('../config/logger')
-const coingecko = require('../providers/coingecko')
 const utils = require('../utils')
+const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
 const CoinPrice = require('../db/models/CoinPrice')
-const Syncer = require('./Syncer')
+const CoinPriceHistorySyncer = require('./CoinPriceHistorySyncer')
 
-class CoinPriceSyncer extends Syncer {
+const debug = msg => {
+  console.log(new Date(), msg)
+}
+
+class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
   async start() {
-    await this.syncHistorical()
-    await this.syncLatest()
-  }
+    this.adjustHistoryGaps()
 
-  async syncHistorical(uids) {
-    if (uids) {
-      return this.syncHistory(uids)
+    const running = true
+    while (running) {
+      try {
+        await this.sync()
+      } catch (e) {
+        debug(e)
+        process.exit(1)
+      }
     }
-
-    if (await CoinPrice.exists()) {
-      return
-    }
-
-    await this.syncHistory()
   }
 
-  syncLatest() {
-    this.cron('30m', this.syncDailyStats)
-    this.cron('4h', this.syncDailyStats)
-    this.cron('1d', this.syncMonthlyStats)
-  }
-
-  syncDailyStats({ dateFrom, dateTo }) {
-    return CoinPrice.deleteExpired(dateFrom, dateTo)
-  }
-
-  syncMonthlyStats({ dateFrom, dateTo }) {
-    return CoinPrice.deleteExpired(dateFrom, dateTo)
-  }
-
-  async syncHistory(uids) {
-    const where = uids ? { uid: uids } : null
-    const coins = await Coin.findAll({ attributes: ['id', 'uid', 'coingecko_id'], where })
-
-    const syncParams1d = this.syncParamsHistorical('1d')
-    const syncParams1h = this.syncParamsHistorical('1h')
+  async sync(uid) {
+    const where = { ...(uid && { uid }) }
+    const coins = await Coin.findAll({ attributes: ['id', 'coingecko_id'], where })
+    const map = {}
+    const ids = []
 
     for (let i = 0; i < coins.length; i += 1) {
       const coin = coins[i]
+      map[coin.coingecko_id] = coin.id
+      ids.push(coin.coingecko_id)
+    }
 
-      logger.info(`Syncing: ${coin.uid}. Coingecko_id: ${coin.coingecko_id} (${i + 1}/${coins.length})`)
+    const chunks = this.chunk(ids)
 
-      await this.syncRange(syncParams1d.dateFrom, syncParams1d.dateTo, coin)
-      await this.syncRange(syncParams1h.dateFrom, syncParams1h.dateTo, coin)
+    for (let i = 0; i < chunks.length; i += 1) {
+      await this.syncCoins(chunks[i], map)
     }
   }
 
-  async syncRange(dateFrom, dateTo, coin) {
+  async syncCoins(coinUids, idsMap) {
+    debug(`Syncing coins ${coinUids.length}`)
+
     try {
-      const data = await coingecko.getMarketsChart(coin.coingecko_id, dateFrom.toSeconds(), dateTo.toSeconds())
-      await this.storeMarketData(data.prices, data.total_volumes, coin.id)
-      await utils.sleep(1100)
+      const coins = await coingecko.getMarkets(coinUids)
+      await this.updateCoins(coins, idsMap)
+      await utils.sleep(1200)
     } catch ({ message, response = {} }) {
       if (message) {
-        logger.error(`Error fetching prices chart ${message}`)
+        console.error(message)
       }
 
       if (response.status === 429) {
-        logger.error(`Sleeping 60s (coin-price-syncer); Status ${response.status}`)
+        debug(`Sleeping 1min; Status ${response.status}`)
         await utils.sleep(60000)
       }
 
       if (response.status >= 502 && response.status <= 504) {
-        logger.error(`Sleeping 30s (coin-price-syncer); Status ${response.status}`)
+        debug(`Sleeping 30s; Status ${response.status}`)
         await utils.sleep(30000)
       }
     }
   }
 
-  storeMarketData(prices, totalVolumes, coinId) {
-    const records = []
+  async updateCoins(coins, idsMap) {
+    const dt = DateTime.now()
+    const minutes = dt.get('minute')
+    const minutesRounded = dt.set({ minute: 10 * parseInt(minutes / 10) })
 
-    for (let marketsIndex = 0; marketsIndex < prices.length; marketsIndex += 1) {
-      const timestamp = prices[marketsIndex][0]
-      const date = DateTime.fromMillis(timestamp).toFormat('yyyy-MM-dd HH:00:00Z')
+    const values = coins
+      .filter(c => c.price && idsMap[c.coingecko_id])
+      .map(item => [
+        idsMap[item.coingecko_id],
+        item.price,
+        JSON.stringify(item.price_change),
+        JSON.stringify(item.market_data),
+        item.last_updated,
+        minutesRounded.toFormat('yyyy-MM-dd HH:mm')
+      ])
 
-      records.push({
-        date,
-        coin_id: coinId,
-        price: prices[marketsIndex][1],
-        volume: totalVolumes[marketsIndex][1]
-      })
-    }
-
-    this.upsertCoinPrices(records)
-  }
-
-  syncParamsHistorical(period) {
-    const now = DateTime.utc()
-    switch (period) {
-      case '1h':
-        return {
-          dateFrom: now.plus({ days: -30 }),
-          dateTo: now
-        }
-      case '1d':
-        return {
-          dateFrom: now.plus({ month: -24 }),
-          dateTo: now
-        }
-      default:
-        return {}
-    }
-  }
-
-  syncParams(period) {
-    switch (period) {
-      case '30m':
-        return {
-          dateFrom: utils.utcDate({ days: -7, minutes: -30 }),
-          dateTo: utils.utcDate({ days: -7 }),
-        }
-      case '4h':
-        return {
-          dateFrom: utils.utcDate({ days: -30, hours: -4 }),
-          dateTo: utils.utcDate({ days: -30 }),
-        }
-      case '1d':
-        return {
-          dateFrom: utils.utcDate({ days: -31 }, 'yyyy-MM-dd'),
-          dateTo: utils.utcDate({ days: -30 }, 'yyyy-MM-dd')
-        }
-      default:
-        return {}
-    }
-  }
-
-  upsertCoinPrices(prices) {
-    if (!prices.length) {
+    if (!values.length) {
       return
     }
 
-    CoinPrice.bulkCreate(prices, { ignoreDuplicates: true })
-      .then(records => {
-        console.log(`Successfully inserted "${records.length}" coin prices`)
-      })
-      .catch(err => {
-        console.log(`Error inserting coin prices ${err.message}`)
-      })
+    try {
+      await Coin.updateCoins(values)
+      await CoinPrice.insertMarkets(values)
+      debug(`Synced coins ${values.length}`)
+    } catch (e) {
+      debug(e)
+    }
   }
+
+  chunk(array) {
+    const chunk = []
+    const chunkSize = 6000 // to fit header buffers
+
+    let size = 0
+    let index = 0
+
+    for (let i = 0; i < array.length; i += 1) {
+      const item = array[i]
+
+      if (size > chunkSize) {
+        size = 0
+        index += 1
+      }
+
+      if (!chunk[index]) {
+        chunk[index] = []
+      }
+
+      chunk[index].push(item)
+      size += item.length
+    }
+
+    return chunk
+  }
+
 }
 
 module.exports = CoinPriceSyncer
