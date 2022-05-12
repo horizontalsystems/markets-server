@@ -133,6 +133,9 @@ exports.normalizeEvent = event => {
       eventAmount = event.ending_price
       break
     case 'offer_entered':
+      eventType = 'offer'
+      eventAmount = event.bid_amount
+      break
     case 'bid_entered':
       eventType = 'bid'
       eventAmount = event.bid_amount

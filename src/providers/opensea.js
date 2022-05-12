@@ -16,10 +16,14 @@ class Opensea {
           return 'successful'
         case 'list':
           return 'created'
+        case 'offer':
+          return 'offer_entered'
         case 'bid':
           return 'bid_entered'
         case 'bid_cancel':
           return 'bid_withdrawn'
+        case 'transfer':
+          return 'transfer'
         default:
           return eventType
       }
