@@ -52,6 +52,7 @@ exports.normalizeCoin = coin => {
     coingecko_id: coin.id,
     genesis_date: coin.genesis_date,
     platforms: coin.platforms,
+    tickers: coin.tickers,
 
     links: {
       website: coin.links.homepage[0],

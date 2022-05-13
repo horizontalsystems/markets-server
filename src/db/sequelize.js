@@ -1,6 +1,9 @@
 const Sequelize = require('sequelize')
 const Coin = require('./models/Coin')
 const CoinCategories = require('./models/CoinCategories')
+const CoinHolder = require('./models/CoinHolder')
+const CoinPrice = require('./models/CoinPrice')
+const CoinMarket = require('./models/CoinMarket')
 const Exchange = require('./models/Exchange')
 const DefiProtocol = require('./models/DefiProtocol')
 const DefiProtocolTvl = require('./models/DefiProtocolTvl')
@@ -19,11 +22,9 @@ const Transaction = require('./models/Transaction')
 const DexVolume = require('./models/DexVolume')
 const DexLiquidity = require('./models/DexLiquidity')
 const Address = require('./models/Address')
-const CoinHolder = require('./models/CoinHolder')
 const Currency = require('./models/Currency')
 const CurrencyRate = require('./models/CurrencyRate')
 const GlobalMarket = require('./models/GlobalMarket')
-const CoinPrice = require('./models/CoinPrice')
 const NftCollection = require('./models/NftCollection')
 const NftAsset = require('./models/NftAsset')
 const NftMarket = require('./models/NftMarket')
@@ -43,15 +44,18 @@ const sequelize = new Sequelize(
 
 // Models
 const db = {
+  Category: Category.init(sequelize, Sequelize),
+  CategoryMarketCap: CategoryMarketCap.init(sequelize, Sequelize),
   Coin: Coin.init(sequelize, Sequelize),
+  CoinCategories: CoinCategories.init(sequelize, Sequelize),
+  CoinHolder: CoinHolder.init(sequelize, Sequelize),
+  CoinMarket: CoinMarket.init(sequelize, Sequelize),
+  CoinPrice: CoinPrice.init(sequelize, Sequelize),
   Chain: Chain.init(sequelize, Sequelize),
   Exchange: Exchange.init(sequelize, Sequelize),
   ChainMarketCap: ChainMarketCap.init(sequelize, Sequelize),
   DefiProtocol: DefiProtocol.init(sequelize, Sequelize),
   DefiProtocolTvl: DefiProtocolTvl.init(sequelize, Sequelize),
-  Category: Category.init(sequelize, Sequelize),
-  CategoryMarketCap: CategoryMarketCap.init(sequelize, Sequelize),
-  CoinCategories: CoinCategories.init(sequelize, Sequelize),
   Language: Language.init(sequelize, Sequelize),
   Platform: Platform.init(sequelize, Sequelize),
   Fund: Fund.init(sequelize, Sequelize),
@@ -64,11 +68,9 @@ const db = {
   DexLiquidity: DexLiquidity.init(sequelize, Sequelize),
   Address: Address.init(sequelize, Sequelize),
   AddressLabel: AddressLabel.init(sequelize, Sequelize),
-  CoinHolder: CoinHolder.init(sequelize, Sequelize),
   Currency: Currency.init(sequelize, Sequelize),
   CurrencyRate: CurrencyRate.init(sequelize, Sequelize),
   GlobalMarket: GlobalMarket.init(sequelize, Sequelize),
-  CoinPrice: CoinPrice.init(sequelize, Sequelize),
   NftCollection: NftCollection.init(sequelize, Sequelize),
   NftAsset: NftAsset.init(sequelize, Sequelize),
   NftMarket: NftMarket.init(sequelize, Sequelize),

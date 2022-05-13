@@ -131,12 +131,14 @@ exports.getChainList = function getCoinList() {
     })
 }
 
-exports.getCoinInfo = function getMarketInfo(id) {
+exports.getCoinInfo = function getMarketInfo(id, options = {}) {
   const query = querystring.stringify({
     tickers: false,
     market_data: true,
-    community_data: true,
-    developer_data: true
+    community_data: false,
+    developer_data: false,
+    localization: false,
+    ...options
   })
 
   return axios
