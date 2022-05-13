@@ -245,7 +245,7 @@ router.get('/asset/:contract_address/:token_id', controller.asset)
  * @apiVersion 1.0.0
  * @apiGroup NFT
  *
- * @apiParam {String} [event_type]      The event type to filter (sale, list, bid, bid_cancel, transfer, cancel)
+ * @apiParam {String} [event_type]      The event type to filter (sale, list, offer, bid, transfer) (do not include param to ignore filter)
  * @apiParam {String} [collection_uid]       Limit responses to events from a collection
  * @apiParam {String} [token_id]        Token ID for this item
  * @apiParam {String} [asset_contract]  Asset contract address
@@ -263,7 +263,7 @@ router.get('/asset/:contract_address/:token_id', controller.asset)
  *    [
  *      "asset": { ... },
  *      "date": "2022-03-18T04:04:54",
- *      "type": "sale",
+ *      "type": "sale"  -- (Possible values: sale, list, offer, bid, bid_cancel, transfer, cancel and others)",
  *      "amount": "73950000000000000000",
  *      "quantity": "1",
  *      "transaction": { ... },
