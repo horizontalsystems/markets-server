@@ -27,7 +27,10 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
   }
 
   async sync(uid) {
-    const where = { ...(uid && { uid }) }
+    const where = {
+      ...{ uid } && uid,
+      coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
+    }
     const coins = await Coin.findAll({ attributes: ['id', 'coingecko_id'], where })
     const map = {}
     const ids = []
