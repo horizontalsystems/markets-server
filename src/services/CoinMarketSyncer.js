@@ -50,6 +50,13 @@ class CoinMarketSyncer extends Syncer {
         console.log(`Sleeping 30s; Status ${response.status}`)
         await utils.sleep(30000)
       }
+
+      if (response.status === 404) {
+        await Coin.update(
+          { coingecko_id: null },
+          { where: { id: coin.id } }
+        )
+      }
     }
   }
 
