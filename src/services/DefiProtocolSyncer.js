@@ -159,11 +159,11 @@ class DefiProtocolSyncer extends Syncer {
           change_1h: protocol.change_1h,
           change_1d: protocol.change_1d,
           change_1w: protocol.change_7d,
-          change_2w: utils.percentageBetweenNumber(prevTvl['2w'], protocol.tvl),
-          change_1m: utils.percentageBetweenNumber(prevTvl['1m'], protocol.tvl),
-          change_3m: utils.percentageBetweenNumber(prevTvl['3m'], protocol.tvl),
-          change_6m: utils.percentageBetweenNumber(prevTvl['6m'], protocol.tvl),
-          change_1y: utils.percentageBetweenNumber(prevTvl['1y'], protocol.tvl)
+          change_2w: utils.percentageChange(prevTvl['2w'], protocol.tvl),
+          change_1m: utils.percentageChange(prevTvl['1m'], protocol.tvl),
+          change_3m: utils.percentageChange(prevTvl['3m'], protocol.tvl),
+          change_6m: utils.percentageChange(prevTvl['6m'], protocol.tvl),
+          change_1y: utils.percentageChange(prevTvl['1y'], protocol.tvl)
         },
         chain_tvls: protocol.chainTvls,
         chains: protocol.chains

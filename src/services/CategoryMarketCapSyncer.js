@@ -1,7 +1,7 @@
 const Syncer = require('./Syncer')
 const Category = require('../db/models/Category')
 const CategoryMarketCap = require('../db/models/CategoryMarketCap')
-const { utcDate, percentageBetweenNumber } = require('../utils')
+const { utcDate, percentageChange } = require('../utils')
 
 class CategoryMarketCapSyncer extends Syncer {
   async start() {
@@ -64,9 +64,9 @@ class CategoryMarketCapSyncer extends Syncer {
 
       const marketCap = {
         amount: marketCapAmount,
-        change_24h: percentageBetweenNumber(prevMCap['24h'], marketCapAmount),
-        change_1w: percentageBetweenNumber(prevMCap['1w'], marketCapAmount),
-        change_1m: percentageBetweenNumber(prevMCap['1m'], marketCapAmount),
+        change_24h: percentageChange(prevMCap['24h'], marketCapAmount),
+        change_1w: percentageChange(prevMCap['1w'], marketCapAmount),
+        change_1m: percentageChange(prevMCap['1m'], marketCapAmount),
       }
 
       categoryUpdates.push([

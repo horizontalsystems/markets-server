@@ -171,9 +171,9 @@ describe('DefiProtocolSyncer', () => {
         expect(defiProtocols).to.have.length(2)
 
         expect(defiProtocols[0].tvl_change.change_1m).to
-          .equal(utils.percentageBetweenNumber(200.99, protocol1List.tvl))
+          .equal(utils.percentageChange(200.99, protocol1List.tvl))
         expect(defiProtocols[1].tvl_change.change_1m).to
-          .equal(utils.percentageBetweenNumber(100.99, protocol2List.tvl))
+          .equal(utils.percentageChange(100.99, protocol2List.tvl))
       })
     })
   })

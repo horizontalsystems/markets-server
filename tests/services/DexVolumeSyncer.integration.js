@@ -32,7 +32,7 @@ describe('DexVolumeSyncer', async () => {
     sinon.restore()
     clock.restore()
 
-    await factory.truncate(DexVolume, Platform, Coin)
+    await factory.truncate(DexVolume, Platform, Coin, Chain)
   })
 
   describe('#syncHistorical', () => {

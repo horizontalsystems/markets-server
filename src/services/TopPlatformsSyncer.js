@@ -4,7 +4,7 @@ const Chain = require('../db/models/Chain')
 const ChainMarketCap = require('../db/models/ChainMarketCap')
 const bscscan = require('../providers/bscscan')
 const getCSupplies = require('../providers/csupply')
-const { utcDate, percentageBetweenNumber, sleep } = require('../utils')
+const { utcDate, percentageChange, sleep } = require('../utils')
 
 class TopPlatformsSyncer extends Syncer {
   async start() {
@@ -147,9 +147,9 @@ class TopPlatformsSyncer extends Syncer {
           rank_1d: prevMCap1d.rank,
           rank_1w: prevMCap1w.rank,
           rank_1m: prevMCap1m.rank,
-          change_1d: percentageBetweenNumber(prevMCap1d.mcap, data.mcap),
-          change_1w: percentageBetweenNumber(prevMCap1w.mcap, data.mcap),
-          change_1m: percentageBetweenNumber(prevMCap1m.mcap, data.mcap)
+          change_1d: percentageChange(prevMCap1d.mcap, data.mcap),
+          change_1w: percentageChange(prevMCap1w.mcap, data.mcap),
+          change_1m: percentageChange(prevMCap1m.mcap, data.mcap)
         })
       ])
     }

@@ -24,18 +24,18 @@ describe('TransactionSyncer', async () => {
   let clock
   beforeEach(async () => {
     clock = sinon.useFakeTimers(date.ts)
-    await Coin.bulkCreate(coins)
+    await Coin.bulkCreate(coins, { ignoreDuplicates: true })
     await Chain.bulkCreate([
       { uid: 'ethereum', name: 'Ethereum' },
       { uid: 'binance-smart-chain', name: 'BSC' }
-    ])
+    ], { ignoreDuplicates: true })
   })
 
   afterEach(async () => {
     sinon.restore()
     clock.restore()
 
-    await factory.truncate(Transaction, Coin, Platform)
+    await factory.truncate(Transaction, Coin, Platform, Chain)
   })
 
   describe('#syncHistorical', () => {
