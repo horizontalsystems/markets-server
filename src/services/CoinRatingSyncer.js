@@ -122,10 +122,16 @@ class CoinRatingSyncer extends Syncer {
 
   getHoldersRank() {
     return Coin.query(`
+      with top_coins as (
+        SELECT id
+        FROM coins
+        ORDER BY market_data->'market_cap' desc nulls last
+        LIMIT 1000
+      )
       SELECT
         c.id,
         sum(h.percentage) as holders
-      FROM coin_holders h, platforms p, coins c
+      FROM coin_holders h, platforms p, top_coins c
       WHERE p.id = h.platform_id
         AND c.id = p.coin_id
       GROUP BY c.id
