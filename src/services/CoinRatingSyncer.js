@@ -86,17 +86,17 @@ class CoinRatingSyncer extends Syncer {
   getVolumesRank(dateFrom) {
     return Coin.query(`
       SELECT
-        p.coin_id as id,
-        p.avg as volumes
-      FROM (
+        c.id,
+        SUM(m.volume_usd) AS volumes
+      FROM coins c
+      JOIN (
         SELECT
-          coin_id,
-          avg(volume) as avg
-        FROM coin_prices
-        WHERE date >= :dateFrom
-        GROUP BY coin_id
-      ) p
-      ORDER BY volumes desc
+          m.*
+        FROM coin_markets m, exchanges e
+        WHERE e.uid = m.market_uid
+      ) m ON c.id = m.coin_id
+      GROUP BY c.id
+      ORDER BY volumes DESC
     `, { dateFrom })
   }
 
