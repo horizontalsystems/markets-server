@@ -48,120 +48,48 @@ function getOne(id, Model, attributes) {
   return Model.findOne({ attributes, where: { id } })
 }
 
-function createUpdateDelete(Model) {
-  return {
-    create: async data => {
-      const record = await Model.create(data)
-      await UpdateState.reset(Model.tableName)
+const createUpdateDelete = Model => ({
+  create: async data => {
+    const record = await Model.create(data)
+    await UpdateState.reset(Model.tableName)
 
-      return record
-    },
-    update: async (id, values) => {
-      const record = await Model.update(values, { where: { id } }).then(() => values)
-      await UpdateState.reset(Model.tableName)
+    return record
+  },
+  update: async (id, values) => {
+    const record = await Model.update(values, { where: { id } }).then(() => values)
+    await UpdateState.reset(Model.tableName)
 
-      return record
-    },
-    destroy: async id => {
-      const destroy = await Model.destroy({ where: { id } })
-      await UpdateState.reset(Model.tableName)
+    return record
+  },
+  destroy: async id => {
+    const destroy = await Model.destroy({ where: { id } })
+    await UpdateState.reset(Model.tableName)
 
-      return destroy
-    }
+    return destroy
   }
-}
+})
+
+const opts = (Model, attrs, attrsOne = []) => ({
+  search: (q, limit) => search(q, limit, Model, attrs),
+  getList: p => getList(p, Model, attrs),
+  getOne: id => getOne(id, Model, [...attrs, ...attrsOne]),
+  ...createUpdateDelete(Model)
+})
 
 router.use(
-  crud('/coins', {
-    search: (q, limit) => search(q, limit, Coin, ['id', 'uid', 'name', 'code']),
-    getList: params => getList(params, Coin, ['id', 'uid', 'name', 'code']),
-    getOne: id => getOne(id, Coin, ['id', 'uid', 'name', 'code', 'description', 'security', 'links', 'coingecko_id', 'price']),
-    ...createUpdateDelete(Coin)
-  }),
-
-  crud('/languages', {
-    search: (q, limit) => search(q, limit, Language, ['id', 'code', 'name']),
-    getList: params => getList(params, Language, ['id', 'code', 'name']),
-    getOne: id => getOne(id, Language, ['id', 'code', 'name']),
-    ...createUpdateDelete(Language)
-  }),
-
-  crud('/platforms', {
-    search: (q, limit) => search(q, limit, Platform, ['id', 'coin_id', 'type', 'symbol', 'address', 'decimals']),
-    getList: params => getList(params, Platform, ['id', 'coin_id', 'type', 'symbol', 'address', 'decimals']),
-    getOne: id => getOne(id, Platform, ['id', 'coin_id', 'type', 'symbol', 'address', 'decimals']),
-    ...createUpdateDelete(Platform)
-  }),
-
-  crud('/categories', {
-    search: (q, limit) => search(q, limit, Category, ['id', 'uid', 'name', 'order', 'description', 'enabled']),
-    getList: params => getList(params, Category, ['id', 'uid', 'name', 'order', 'description', 'enabled']),
-    getOne: id => getOne(id, Category, ['id', 'uid', 'name', 'order', 'description', 'enabled']),
-    ...createUpdateDelete(Category)
-  }),
-
-  crud('/coin_categories', {
-    search: (q, limit) => search(q, limit, CoinCategories, ['id', 'coin_id', 'category_id']),
-    getList: params => getList(params, CoinCategories, ['id', 'coin_id', 'category_id']),
-    getOne: id => getOne(id, CoinCategories, ['id', 'coin_id', 'category_id']),
-    ...createUpdateDelete(CoinCategories)
-  }),
-
-  crud('/treasury_entities', {
-    search: (q, limit) => search(q, limit, TreasuryEntity, ['id', 'uid', 'name', 'country', 'type']),
-    getList: params => getList(params, TreasuryEntity, ['id', 'uid', 'name', 'country', 'type']),
-    getOne: id => getOne(id, TreasuryEntity, ['id', 'uid', 'name', 'country', 'type']),
-    ...createUpdateDelete(TreasuryEntity)
-  }),
-
-  crud('/treasuries', {
-    search: (q, limit) => search(q, limit, Treasury, ['id', 'coin_id', 'treasury_entity_id', 'amount']),
-    getList: params => getList(params, Treasury, ['id', 'coin_id', 'treasury_entity_id', 'amount']),
-    getOne: id => getOne(id, Treasury, ['id', 'coin_id', 'treasury_entity_id', 'amount']),
-    ...createUpdateDelete(Treasury)
-  }),
-
-  crud('/funds', {
-    search: (q, limit) => search(q, limit, Fund, ['id', 'name', 'uid', 'website', 'is_individual']),
-    getList: params => getList(params, Fund, ['id', 'name', 'uid', 'website', 'is_individual']),
-    getOne: id => getOne(id, Fund, ['id', 'name', 'uid', 'website', 'is_individual']),
-    ...createUpdateDelete(Fund)
-  }),
-
-  crud('/funds_invested', {
-    search: (q, limit) => search(q, limit, FundsInvested, ['id', 'coin_id', 'funds', 'amount', 'round', 'date']),
-    getList: params => getList(params, FundsInvested, ['id', 'coin_id', 'funds', 'amount', 'round', 'date']),
-    getOne: id => getOne(id, FundsInvested, ['id', 'coin_id', 'funds', 'amount', 'round', 'date']),
-    ...createUpdateDelete(FundsInvested)
-  }),
-
-  crud('/reports', {
-    search: (q, limit) => search(q, limit, Report, ['id', 'coin_id', 'title', 'author', 'url', 'date', 'body']),
-    getList: params => getList(params, Report, ['id', 'coin_id', 'title', 'author', 'url', 'date', 'body']),
-    getOne: id => getOne(id, Report, ['id', 'coin_id', 'title', 'author', 'url', 'date', 'body']),
-    ...createUpdateDelete(Report)
-  }),
-
-  crud('/update_states', {
-    search: (q, limit) => search(q, limit, UpdateState, ['id', 'name', 'date']),
-    getList: params => getList(params, UpdateState, ['id', 'name', 'date']),
-    getOne: id => getOne(id, UpdateState, ['id', 'name', 'date']),
-    ...createUpdateDelete(UpdateState)
-  }),
-
-  crud('/address_labels', {
-    search: (q, limit) => search(q, limit, AddressLabel, ['id', 'address', 'label']),
-    getList: params => getList(params, AddressLabel, ['id', 'address', 'label']),
-    getOne: id => getOne(id, AddressLabel, ['id', 'address', 'label']),
-    ...createUpdateDelete(AddressLabel)
-  }),
-
-  crud('/evm_method_labels', {
-    search: (q, limit) => search(q, limit, EvmMethodLabel, ['id', 'methodId', 'label']),
-    getList: params => getList(params, EvmMethodLabel, ['id', 'methodId', 'label']),
-    getOne: id => getOne(id, EvmMethodLabel, ['id', 'methodId', 'label']),
-    ...createUpdateDelete(EvmMethodLabel)
-  }),
+  crud('/coins', opts(Coin, ['id', 'uid', 'name', 'code'], ['description', 'security', 'links', 'coingecko_id', 'price'])),
+  crud('/languages', opts(Language, ['id', 'code', 'name'])),
+  crud('/platforms', opts(Platform, ['id', 'coin_id', 'type', 'symbol', 'address', 'decimals'])),
+  crud('/categories', opts(Category, ['id', 'uid', 'name', 'order', 'description', 'enabled'])),
+  crud('/coin_categories', opts(CoinCategories, ['id', 'coin_id', 'category_id'])),
+  crud('/treasury_entities', opts(TreasuryEntity, ['id', 'uid', 'name', 'country', 'type'])),
+  crud('/treasuries', opts(Treasury, ['id', 'coin_id', 'treasury_entity_id', 'amount'])),
+  crud('/funds', opts(Fund, ['id', 'name', 'uid', 'website', 'is_individual'])),
+  crud('/funds_invested', opts(FundsInvested, ['id', 'coin_id', 'funds', 'amount', 'round', 'date'])),
+  crud('/reports', opts(Report, ['id', 'coin_id', 'title', 'author', 'url', 'date', 'body'])),
+  crud('/address_labels', opts(AddressLabel, ['id', 'address', 'label'])),
+  crud('/evm_method_labels', opts(EvmMethodLabel, ['id', 'methodId', 'label'])),
+  crud('/update_states', opts(UpdateState, ['id', 'name', 'date']))
 )
 
 module.exports = router
