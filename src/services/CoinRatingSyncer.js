@@ -110,6 +110,7 @@ class CoinRatingSyncer extends Syncer {
         WHERE a.date >= :dateFrom
           AND p.id = a.platform_id
           AND c.id = p.coin_id
+          AND (c.market_data->>'market_cap')::numeric > 500000
       )
       SELECT
         id,
