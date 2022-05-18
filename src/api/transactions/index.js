@@ -39,7 +39,7 @@ const router = express.Router()
 router.get('/', requireAuth, validateTransactions, setDateInterval, controller.index)
 
 /**
- * @api {get} /v1/dex-volumes List dex-volumes
+ * @api {get} /v1/transactions/dex-volumes List dex-volumes
  * @apiDescription Get a list of dex-volumes stats
  * @apiVersion 1.0.1
  * @apiGroup Transaction
@@ -66,7 +66,7 @@ router.get('/', requireAuth, validateTransactions, setDateInterval, controller.i
 router.get('/dex-volumes', requireAuth, validateDexVolumes, setDateInterval, controller.dexVolume)
 
 /**
- * @api {get} /v1/dex-liquidity List dex-liquidity
+ * @api {get} /v1/transactions/dex-liquidity List dex-liquidity
  * @apiDescription Get a list of dex-liquidity stats
  * @apiVersion 1.0.1
  * @apiGroup Transaction
