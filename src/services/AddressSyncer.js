@@ -1,8 +1,7 @@
 /* eslint-disable no-param-reassign */
 const { chunk } = require('lodash')
 const { DateTime } = require('luxon')
-const { sleep } = require('../utils')
-const { bitquery } = require('../providers/bitquery')
+const { dune } = require('../providers/dune')
 const bigquery = require('../providers/bigquery')
 const Platform = require('../db/models/Platform')
 const Address = require('../db/models/Address')
@@ -22,19 +21,19 @@ class AddressSyncer extends Syncer {
 
   async syncHistorical() {
     if (!await Address.existsForPlatforms(['ethereum', 'erc20'])) {
-      await this.syncStatsFromBigquery(this.syncParamsHistorical('1d'))
+      await this.syncStats('ethereum', this.syncParamsHistorical('1d'))
     }
 
     if (!await Address.existsForPlatforms(['bitcoin'])) {
-      await this.syncStatsFromBigquery(this.syncParamsHistorical('1d'), true)
+      await this.syncStats('bitcoin', this.syncParamsHistorical('1d'))
     }
 
-    // if (!await Address.existsForPlatforms(['bep20'])) {
-    //   await this.syncHistoricalStatsFromBitquery(this.syncParamsHistorical('1d'), 'bsc')
-    // }
+    if (!await Address.existsForPlatforms(['bep20'])) {
+      await this.syncStats('bsc', this.syncParamsHistorical('30m'), true)
+    }
 
     // if (!await Address.existsForPlatforms(['solana'])) {
-    //   await this.syncHistoricalStatsFromBitquery(this.syncParamsHistorical('1d'), 'solana')
+    //   await this.syncStats('solana', this.syncParamsHistorical('1d'), true)
     // }
 
     console.log('Successfully synced historical address stats !!!')
@@ -48,11 +47,9 @@ class AddressSyncer extends Syncer {
   async syncDailyStats() {
     const dateFrom = utcDate({}, 'yyyy-MM-dd')
 
-    await this.syncStatsFromBigquery({ dateFrom })
-    await this.syncStatsFromBigquery({ dateFrom }, true)
-
-    // await this.syncStatsFromBitquery(dateParams, 'bsc', true)
-    // await this.syncStatsFromBitquery(dateParams, 'solana', true)
+    await this.syncStats('ethereum', { dateFrom })
+    await this.syncStats('bitcoin', { dateFrom })
+    // await this.syncStats('bsc', { dateFrom })
   }
 
   async syncMonthlyStats() {
@@ -64,24 +61,29 @@ class AddressSyncer extends Syncer {
     await Address.deleteExpired(utcDate({ days: -18 }), utcDate({ days: -14 }), ['4h', '8h'])
   }
 
-  async syncStatsFromBigquery({ dateFrom }, syncBtcBaseCoins = false) {
+  async syncStats(chain, { dateFrom }) {
     try {
-      const types = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash', 'ethereum', 'erc20']
-      const platforms = await this.getPlatforms(types, true, false)
+      let addressStats = []
+      const platforms = await this.getPlatforms(chain, true, false)
 
-      const addressStats = syncBtcBaseCoins
-        ? await bigquery.getAddressStatsBtcBased(dateFrom)
-        : await bigquery.getAddressStats(platforms.list, dateFrom)
+      if (chain === 'ethereum') {
+        addressStats = await bigquery.getAddressStats(platforms.list, dateFrom)
+      } else if (chain === 'bitcoin') {
+        addressStats = await bigquery.getAddressStatsBtcBased(dateFrom)
+      } else if (chain === 'bsc') {
+        addressStats = await dune.getAddressStats(dateFrom)
+      }
 
       const addressesMap = addressStats.reduce((map, i) => {
-        const date = DateTime.fromISO(i.block_date.value, { zone: 'utc' }).toFormat('yyyy-MM-dd');
+        const isoBlockDate = i.block_date.value ? i.block_date.value : i.block_date
+        const date = DateTime.fromISO(isoBlockDate, { zone: 'utc' }).toFormat('yyyy-MM-dd');
 
         map[i.platform] = map[i.platform] || {}
         map[i.platform][date] = map[i.platform][date] || {}
         map[i.platform][date][i.period] = map[i.platform][date][i.period] || []
 
         map[i.platform][date][i.period].push({
-          date: i.block_date.value,
+          date: isoBlockDate,
           count: i.address_count
         })
 
@@ -102,78 +104,14 @@ class AddressSyncer extends Syncer {
     }
   }
 
-  async syncHistoricalStatsFromBitquery(dateParams, network) {
-    console.log('Start syncing historical address stats for network', network)
-
-    const dateFromStart = DateTime.fromSQL(dateParams.dateFrom)
-    let dateTo = DateTime.utc()
-
-    while (dateFromStart <= dateTo) {
-      const dateFrom = dateTo.minus({ days: 1 })
-
-      console.log(`Syncing historical address stats for ${dateFrom} -> ${dateTo}`)
-
-      await this.syncStatsFromBitquery({
-        dateFrom: dateFrom.toFormat('yyyy-MM-dd 00:00:00Z'),
-        dateTo: dateTo.toFormat('yyyy-MM-dd 00:00:00Z')
-      }, network, 50)
-
-      dateTo = dateFrom
-    }
-  }
-
-  async syncStatsFromBitquery({ dateFrom, dateTo }, network, chunkSize = 20) {
-    try {
-      const platforms = await this.getPlatforms(network === 'bsc' ? 'bep20' : network)
-      const addressStats = []
-      const isoDateFrom = DateTime.fromFormat(dateFrom, 'yyyy-MM-dd HH:mm:00Z').toString()
-      const isoDateTo = DateTime.fromFormat(dateTo, 'yyyy-MM-dd HH:mm:00Z').toString()
-      const chunks = this.getChunks(platforms.list, chunkSize)
-
-      for (let i = 0; i < chunks.length; i += 1) {
-        console.log(`Fetching address stats for chunks: ${i + 1}/${chunks[i].length}`)
-
-        const transfersSenders = await bitquery.getTransferSenders(isoDateFrom, isoDateTo, chunks[i], network)
-        const transferReceivers = await bitquery.getTransferReceivers(isoDateFrom, isoDateTo, chunks[i], network)
-
-        const transfers = [...transfersSenders, ...transferReceivers]
-        const transfersMap = transfers.reduce((map, { account, currency }) => {
-          const mapElement = map[currency.address]
-
-          if (!mapElement) {
-            map[currency.address] = [account.address]
-          } else if (!mapElement.find(t => t === account.address)) {
-            map[currency.address] = [...[account.address], ...mapElement]
-          }
-
-          return map
-        }, {})
-
-        Object.keys(transfersMap).forEach(coinAddress => {
-          addressStats.push({
-            date: dateTo,
-            count: transfersMap[coinAddress].length,
-            platform_id: platforms.map[coinAddress]
-          })
-        })
-
-        await sleep(4000) // wait to bypass API limits
-      }
-
-      await this.upsertAddressStats(addressStats)
-      console.log('Successfully synced address stats for date', dateTo)
-    } catch (e) {
-      console.log('Error syncing address stats', e)
-    }
-  }
-
-  getChunks(platforms, chunkSize) {
-    const newList = platforms.filter(item => item.address !== this.BUSDT_ADDRESS)
-    return [...[[{ address: this.BUSDT_ADDRESS }]], ...chunk(newList, chunkSize)]
-  }
-
-  async getPlatforms(types, withDecimals, withAddress = true) {
+  async getPlatforms(chain, withDecimals, withAddress = true) {
     const chains = ['bitcoin', 'ethereum', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash']
+    let types = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash', 'ethereum', 'erc20']
+
+    if (chain === 'bsc') {
+      types = ['bep20']
+    }
+
     const platforms = await Platform.getByTypes(types, withDecimals, withAddress)
     const map = {}
     const list = []
