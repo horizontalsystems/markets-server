@@ -128,14 +128,30 @@ class CoinRatingSyncer extends Syncer {
         FROM coins
         ORDER BY market_data->'market_cap' desc nulls last
         LIMIT 1000
+      ),
+      top_holders as (
+        SELECT
+          p.coin_id,
+          SUM(h.percentage) as holders,
+          ROW_NUMBER() OVER(
+            PARTITION BY p.coin_id
+            ORDER BY case
+              WHEN p.type = 'erc20' then 1
+              WHEN p.type = 'bep20' then 2
+              ELSE 3
+            END ASC
+          ) AS row_num
+        FROM coin_holders h, coins c, platforms p
+        WHERE p.id = h.platform_id
+          AND c.id = p.coin_id
+        GROUP BY p.type, p.coin_id
       )
       SELECT
         c.id,
-        sum(h.percentage) as holders
-      FROM coin_holders h, platforms p, top_coins c
-      WHERE p.id = h.platform_id
-        AND c.id = p.coin_id
-      GROUP BY c.id
+        h.holders
+      FROM top_holders h, top_coins c
+      WHERE c.id = h.coin_id
+        AND h.row_num = 1
       ORDER BY holders asc
     `)
   }
