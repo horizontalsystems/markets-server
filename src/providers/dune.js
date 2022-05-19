@@ -4,8 +4,6 @@ const { wrapper } = require('axios-cookiejar-support')
 const { CookieJar } = require('tough-cookie')
 const utils = require('../utils')
 
-require('dotenv/config')
-
 class DuneAnalytics {
 
   constructor(username, password) {
