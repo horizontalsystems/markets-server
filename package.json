@@ -28,6 +28,7 @@
     "@google-cloud/bigquery": "^5.10.0",
     "apidoc": "^0.50.3",
     "axios": "^0.24.0",
+    "axios-cookiejar-support": "^4.0.1",
     "cheerio": "^1.0.0-rc.10",
     "commander": "^8.3.0",
     "compression": "^1.7.4",
@@ -52,6 +53,7 @@
     "pg": "^8.7.1",
     "pm2": "^5.1.2",
     "sequelize": "^6.12.4",
+    "tough-cookie": "^4.0.0",
     "turndown": "^7.1.1",
     "web3": "^1.6.1",
     "winston": "^3.3.3"
