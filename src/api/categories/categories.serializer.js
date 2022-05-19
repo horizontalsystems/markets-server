@@ -17,6 +17,15 @@ module.exports = {
         change_1m: nullOrString(marketCap.change_1m)
       }
     })
+  },
+
+  serializeMarketCap: (data, currencyRate) => {
+    return data.map(item => {
+      return {
+        timestamp: item.timestamp,
+        market_cap: valueInCurrency(item.market_cap, currencyRate)
+      }
+    })
   }
 
 }

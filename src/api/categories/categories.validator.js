@@ -11,7 +11,8 @@ module.exports = {
       uid: Joi.string().required()
     }),
     query: Joi.object({
-      interval: Joi.string().valid('1d', '1w', '1m')
+      interval: Joi.string().valid('1d', '1w', '1m'),
+      currency: Joi.string()
     })
   }, options),
 }

@@ -38,19 +38,19 @@ class CategoryMarketCap extends SequelizeModel {
   static async getByCategory(uid, window, dateFrom) {
     const query = (`
       SELECT
-        t2.time AS date,
+        t2.timestamp,
         t1.market_cap
       FROM category_market_caps t1
       JOIN categories C on C.uid = :uid
       JOIN (
         SELECT
-          ${this.truncateDateWindow('date', window)} as time,
+          ${this.truncateDateWindow('date', window)} as timestamp,
           max(id) as max_id,
           max(date) as max_date,
           category_id
          FROM category_market_caps
         WHERE date >= :dateFrom
-        GROUP by time, category_id
+        GROUP by timestamp, category_id
       ) t2 ON (t1.id = t2.max_id AND t1.date = t2.max_date AND t2.category_id = C.id)
       ORDER BY date
     `)

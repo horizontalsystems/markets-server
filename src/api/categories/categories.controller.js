@@ -20,7 +20,7 @@ exports.coins = async ({ params, currencyRate }, res) => {
   res.send(coinsSerializer.serializeList(coins, coinFields, currencyRate))
 }
 
-exports.marketCap = async ({ params, dateFrom, dateInterval }, res) => {
+exports.marketCap = async ({ params, dateFrom, dateInterval, currencyRate }, res) => {
   const data = await CategoryMarketCap.getByCategory(params.uid, dateInterval, dateFrom)
-  res.send(data)
+  res.send(serializer.serializeMarketCap(data, currencyRate))
 }

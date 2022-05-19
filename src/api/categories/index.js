@@ -65,9 +65,10 @@ router.get('/:uid/coins', setCurrencyRate, controller.coins)
  *
  * @apiParam    {String}            uid         Category's uid
  * @apiParam    {String=1d,1w,1m}   [interval]  Date interval
+ * @apiUse      Currencies
  *
  */
 
-router.get('/:uid/market_cap', validateMarketCap, setDateInterval, controller.marketCap)
+router.get('/:uid/market_cap', validateMarketCap, setCurrencyRate, setDateInterval, controller.marketCap)
 
 module.exports = router
