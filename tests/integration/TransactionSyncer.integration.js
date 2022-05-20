@@ -149,4 +149,49 @@ describe('TransactionSyncer', async () => {
     })
   })
 
+  describe('#syncMonthlyStats', () => {
+    let param1d
+
+    beforeEach(async () => {
+      sinon.stub(bigquery, 'getTransactionsStatsBtcBased').returns([])
+      sinon.stub(bigquery, 'getTransactionsStats').returns([])
+      sinon.stub(bitquery, 'getTransfers').returns([])
+
+      param1d = syncer.syncParams('1d')
+
+      await Platform.bulkCreate([
+        { id: 3, type: 'bep20', decimals: 18, coin_id: 2, address: usdcBep20, chain_uid: 'binance-smart-chain' }
+      ])
+    })
+
+    describe('adjusts volumes', () => {
+      const transactions = [
+        { count: 10, volume: 100, date: '2020-12-01 00:00:00+0', platform_id: 3 },
+        { count: 10, volume: 100, date: '2020-12-01 01:00:00+0', platform_id: 3 },
+        { count: 10, volume: 100, date: '2020-12-01 02:00:00+0', platform_id: 3 },
+        { count: 10, volume: 100, date: '2020-12-01 03:00:00+0', platform_id: 3 },
+        { count: 10, volume: 100, date: '2020-12-02 00:00:00+0', platform_id: 3 }
+      ]
+
+      beforeEach(async () => {
+        await Transaction.bulkCreate(transactions)
+      })
+
+      it('sums count/volumes', async () => {
+        expect(await Transaction.count()).to.equal(5)
+        await syncer.syncMonthlyStats(param1d)
+
+        const txs = await Transaction.findAll({ order: ['date'] })
+        expect(txs).to.have.length(2)
+        expect(txs[0].dataValues).to.deep.equal({
+          id: 1,
+          count: 40,
+          volume: '400',
+          date: new Date(param1d.dateFrom),
+          platform_id: 3
+        })
+      })
+    })
+  })
+
 })

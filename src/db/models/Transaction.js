@@ -96,19 +96,25 @@ class Transaction extends SequelizeModel {
   }
 
   static updatePoints(dateFrom, dateTo) {
-    return Transaction.query(`
-      UPDATE transactions
-      SET volume = total.volume,
-          count = total.count
-      FROM (SELECT
-            SUM(volume) as volume,  SUM(count) as count
-            FROM transactions
-            WHERE date > :dateFrom AND date <= :dateTo
-           ) AS total
-      WHERE date = :dateTo`, {
-      dateFrom,
-      dateTo
-    })
+    const query = `
+      UPDATE transactions as t SET
+        count = total.count,
+        volume = total.volume
+      FROM (
+        SELECT
+          platform_id,
+          SUM(volume) as volume,
+          SUM(count) as count
+        FROM transactions
+        WHERE date >= :dateFrom
+          AND date < :dateTo
+        GROUP BY platform_id
+      ) AS total
+      WHERE t.date = :dateFrom
+        AND t.platform_id = total.platform_id
+    `
+
+    return Transaction.queryUpdate(query, { dateFrom, dateTo })
   }
 
   static deleteExpired(dateFrom, dateTo) {
