@@ -198,6 +198,10 @@ class DuneAnalytics {
     return this.getQueryResults(756108, params)
   }
 
+  async getTopNftCollections(limit = 100) {
+    const params = [{ key: 'top', type: 'number', value: `${limit}` }]
+    return this.getQueryResults(785004, params)
+  }
 }
 
 exports.dune = new DuneAnalytics(process.env.DUNE_USERNAME, process.env.DUNE_PASSWORD)

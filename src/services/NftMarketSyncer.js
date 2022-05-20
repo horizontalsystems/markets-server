@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const { utcDate } = require('../utils')
-const defillama = require('../providers/defillama')
 const opensea = require('../providers/opensea')
+const { dune } = require('../providers/dune')
 const NftMarket = require('../db/models/NftMarket')
 const NftCollection = require('../db/models/NftCollection')
 const Syncer = require('./Syncer')
@@ -21,6 +21,7 @@ class NftMarketSyncer extends Syncer {
 
   async syncLatest() {
     this.cron('30m', this.syncDailyStats)
+    this.cron('2h', this.fetchTopNftCollections)
     this.cron('1d', this.syncMonthlyStats)
   }
 
@@ -38,33 +39,32 @@ class NftMarketSyncer extends Syncer {
 
   async syncMarkets(dateTo) {
     try {
-      const nftMarkets = await this.fetchNftMarkets()
-      const nftCollections = await this.syncCollections(nftMarkets)
+      if (!this.topNftCollections) {
+        await this.fetchTopNftCollections()
+      }
+      const nftCollections = await this.syncCollections()
       await this.syncNftMarkets(nftCollections, dateTo)
     } catch (e) {
       console.error(e)
     }
   }
 
-  async fetchNftMarkets() {
-    let nftMarkets = []
+  async fetchTopNftCollections() {
     try {
-      nftMarkets = await defillama.getNftCollections()
-      logger.info(`Fetched new nftMarkets: ${nftMarkets.length}`)
+      this.topNftCollections = await dune.getTopNftCollections()
+      logger.info(`Fetched new Top NFT collections: ${this.topNftCollections.length}`)
     } catch (e) {
-      logger.error(`Error syncing NFT markets: ${e.message}`)
+      logger.error(`Error fetching Top Nft collections: ${e.message}`)
     }
-
-    return nftMarkets
   }
 
-  async syncCollections(nftMarkets) {
+  async syncCollections() {
     const collections = []
     try {
 
-      for (let i = 0; i < nftMarkets.length; i += 1) {
-        logger.info(`Getting: ${nftMarkets[i].slug}`)
-        const collection = await opensea.getCollection(nftMarkets[i].slug)
+      for (let i = 0; i < this.topNftCollections.length; i += 1) {
+        logger.info(`Getting: ${this.topNftCollections[i].collection_uid}`)
+        const collection = await opensea.getCollection(this.topNftCollections[i].collection_uid)
         if (collection) {
           collections.push(collection)
         }

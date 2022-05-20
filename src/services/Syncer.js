@@ -20,6 +20,8 @@ class Syncer {
         return '0 */30 * * * *'
       case '1h':
         return '0 * * * *'
+      case '2h':
+        return '0 */2 * * *'
       case '4h':
         return '0 */4 * * *'
       case '1d':
