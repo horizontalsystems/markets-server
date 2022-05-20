@@ -204,4 +204,4 @@ class DuneAnalytics {
   }
 }
 
-exports.dune = new DuneAnalytics(process.env.DUNE_USERNAME, process.env.DUNE_PASSWORD)
+module.exports = new DuneAnalytics(process.env.DUNE_USERNAME, process.env.DUNE_PASSWORD)

@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const { chunk } = require('lodash')
 const { DateTime } = require('luxon')
-const { dune } = require('../providers/dune')
+const dune = require('../providers/dune')
 const bigquery = require('../providers/bigquery')
 const Platform = require('../db/models/Platform')
 const Address = require('../db/models/Address')

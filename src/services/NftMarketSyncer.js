@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const { utcDate } = require('../utils')
 const opensea = require('../providers/opensea')
-const { dune } = require('../providers/dune')
+const dune = require('../providers/dune')
 const NftMarket = require('../db/models/NftMarket')
 const NftCollection = require('../db/models/NftCollection')
 const Syncer = require('./Syncer')
