@@ -69,7 +69,7 @@ class NftMarketSyncer extends Syncer {
           collections.push(collection)
         }
 
-        await sleep(3000) // wait to bypass API limits
+        await sleep(4500) // wait to bypass API limits
       }
 
       await this.upsertNftCollections(collections)
