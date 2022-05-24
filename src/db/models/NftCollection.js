@@ -110,6 +110,30 @@ class NftCollection extends SequelizeModel {
     return NftCollection.findAll({ where })
   }
 
+  static async getTopMovers() {
+    const [stats] = await NftCollection.query(`
+      with collections as (select uid, name, stats, image_data from nft_collections ),
+      one as (select * from collections order by stats->'one_day_volume' desc limit 5),
+      seven as (select * from collections order by stats->'seven_day_volume' desc limit 5),
+      thirty as (select * from collections order by stats->'thirty_day_volume' desc limit 5)
+      select jsonb_build_object(
+        'one_day', (select json_agg(one.*) from one),
+        'seven_day', (select json_agg(seven.*) from seven),
+        'thirty_day', (select json_agg(thirty.*) from thirty)
+      ) as data
+    `)
+
+    if (!stats) {
+      return {
+        one_day: [],
+        seven_day: [],
+        thirty_day: []
+      }
+    }
+
+    return stats.data
+  }
+
 }
 
 module.exports = NftCollection

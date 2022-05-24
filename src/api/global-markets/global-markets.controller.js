@@ -1,6 +1,10 @@
-const { capitalizeFirstLetter } = require('../../utils')
-const { serializeList, serializeTvls } = require('./global-markets.serializer')
+const { capitalizeFirstLetter, utcDate } = require('../../utils')
+const { serializeList, serializeTvls, serializeOverview } = require('./global-markets.serializer')
+
+const Chain = require('../../db/models/Chain')
+const Category = require('../../db/models/Category')
 const GlobalMarket = require('../../db/models/GlobalMarket')
+const NftCollection = require('../../db/models/NftCollection')
 
 exports.index = async (req, res) => {
   const markets = await GlobalMarket.getList(req.dateFrom, req.dateInterval)
@@ -9,9 +13,24 @@ exports.index = async (req, res) => {
   res.json(serializeList(markets, req.currencyRate))
 }
 
-exports.tvls = async (req, res) => {
-  const tvls = await GlobalMarket.getTvls(capitalizeFirstLetter(req.query.chain), req.dateFrom, req.dateInterval)
+exports.overview = async (req, res, next) => {
+  try {
+    const dateFrom = utcDate({ hours: -24 })
+    const nft = await NftCollection.getTopMovers()
+    const global = await GlobalMarket.getList(dateFrom, '30m')
+    const categories = await Category.getTopMovers()
+    const platforms = await Chain.getList(5)
+
+    res.status(200)
+    res.json(serializeOverview({ global, categories, nft, platforms }, req.currencyRate))
+  } catch (e) {
+    next(e)
+  }
+}
+
+exports.tvls = async ({ query, dateFrom, dateInterval, currencyRate }, res) => {
+  const tvls = await GlobalMarket.getTvls(capitalizeFirstLetter(query.chain), dateFrom, dateInterval)
 
   res.status(200)
-  res.json(serializeTvls(tvls, req.currencyRate))
+  res.json(serializeTvls(tvls, currencyRate))
 }

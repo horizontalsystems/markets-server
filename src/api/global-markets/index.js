@@ -28,6 +28,23 @@ const router = express.Router()
 router.get('/', validateGlobalMarkets, setCurrencyRate, setDateInterval, controller.index)
 
 /**
+ * @api {get} /v1/markets/overview Get markets overview
+ * @apiDescription Get markets overview
+ * @apiVersion 1.0.0
+ * @apiGroup GlobalMarket
+ *
+ * @apiUse      Currencies
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "global": [],
+ *    "sectors": []
+ *  }
+ */
+router.get('/overview', setDateInterval, setCurrencyRate, controller.overview)
+
+/**
  * @api {get} /v1/global-markets/tvls List chain tvls
  * @apiDescription Get a list of chain tvls
  * @apiVersion 1.0.0

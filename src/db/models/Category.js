@@ -80,6 +80,18 @@ class Category extends SequelizeModel {
     return Category.queryUpdate(query, { values })
   }
 
+  static getTopMovers() {
+    return Category.query(`
+      SELECT
+        uid,
+        name,
+        market_cap
+      FROM categories
+      ORDER BY market_cap->'change_24h' DESC
+      LIMIT 4
+    `)
+  }
+
 }
 
 module.exports = Category

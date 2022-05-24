@@ -1,6 +1,9 @@
 const { valueInCurrency } = require('../../utils')
+const { serialize: serializePlatforms } = require('../platforms/platforms.serializer')
+const { serialize: serializeCategories } = require('../categories/categories.serializer')
+const { serialize: serializeNft } = require('../nft/nft.serializer')
 
-exports.serializeList = (coins, currencyRate) => {
+const serializeList = (coins, currencyRate) => {
   return coins.map(item => {
     return {
       date: item.date,
@@ -13,7 +16,7 @@ exports.serializeList = (coins, currencyRate) => {
   })
 }
 
-exports.serializeTvls = (tvls, currencyRate) => {
+const serializeTvls = (tvls, currencyRate) => {
   return tvls.map(item => {
     return {
       date: item.date,
@@ -21,3 +24,16 @@ exports.serializeTvls = (tvls, currencyRate) => {
     }
   })
 }
+
+const serializeOverview = ({ global, categories, nft, platforms }, currencyRate) => {
+  return {
+    global: serializeList(global, currencyRate),
+    sectors: serializeCategories(categories, currencyRate),
+    platforms: serializePlatforms(platforms, currencyRate),
+    nft: serializeNft(nft)
+  }
+}
+
+exports.serializeList = serializeList
+exports.serializeTvls = serializeTvls
+exports.serializeOverview = serializeOverview

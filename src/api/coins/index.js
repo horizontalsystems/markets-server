@@ -38,6 +38,27 @@ const router = express.Router()
 router.get('/', validateCoins, setCurrencyRate, controller.index)
 
 /**
+ * @api {get} /v1/coins/top-movers Get top gainers/movers
+ * @apiDescription Get top gainers/movers
+ * @apiVersion 1.0.0
+ * @apiGroup Coin
+ *
+ * @apiUse      Currencies
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "gainers_100": [],
+ *    "losers_100": [],
+ *    ...
+ *  }
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ * @apiError (Not Found 404)    NotFound          Coin does not exist
+ */
+router.get('/top-movers', setCurrencyRate, controller.movers)
+
+/**
  * @api {get} /v1/coins/:uid Get coin
  * @apiDescription Get coin information
  * @apiVersion 1.0.0

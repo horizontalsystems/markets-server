@@ -58,6 +58,15 @@ exports.details = async (req, res) => {
   }
 }
 
+exports.movers = async (req, res, next) => {
+  try {
+    const movers = await Coin.getTopMovers()
+    res.send(serializer.serializeMovers(movers, req.currencyRate))
+  } catch (e) {
+    next(e)
+  }
+}
+
 exports.twitter = async ({ params }, res) => {
   const [coin] = await Coin.query('SELECT links->\'twitter\' as twitter FROM coins WHERE uid = :uid', {
     uid: params.uid

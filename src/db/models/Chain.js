@@ -34,8 +34,8 @@ class Chain extends SequelizeModel {
     )
   }
 
-  static getList() {
-    return Chain.query(`
+  static getList(limit = 'all') {
+    const query = `
       with list as (
         select uid, name, stats, (stats->>'market_cap')::numeric as mcap
         from chains
@@ -44,7 +44,10 @@ class Chain extends SequelizeModel {
       FROM list
       WHERE mcap > 0
       ORDER BY mcap DESC
-    `)
+      LIMIT :limit
+    `
+
+    return Chain.query(query, { limit })
   }
 
   static getPlatforms(chain) {
