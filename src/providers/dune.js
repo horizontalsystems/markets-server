@@ -183,7 +183,6 @@ class DuneAnalytics {
   async getQueryResults(queryId, params) {
 
     await this.fetchAuthToken()
-    let totalSeconds = 0
     if (this.authToken) {
       const jobId = await this.executeQuery(this.authToken, queryId, params)
 
@@ -196,12 +195,9 @@ class DuneAnalytics {
             return response.get_result_by_job_id.map(i => i.data)
           }
           const seconds = 5 + parseInt(lc / 3, 10)
-          totalSeconds += seconds
-          console.log(`Wait ${lc}, ${seconds} seconds`)
           await utils.sleep(seconds * 1000)
         }
       }
-      console.log(`Total ${totalSeconds} seconds`)
     }
 
     return []
