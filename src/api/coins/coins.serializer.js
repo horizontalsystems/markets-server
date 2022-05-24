@@ -88,7 +88,21 @@ exports.serializeList = (coins, fields, currencyRate) => {
 
 exports.serializeShow = (coin, language, currencyRate) => {
   const market = coin.market_data || {}
+  const categories = coin.Categories || []
   const description = coin.description || {}
+
+  const categoryUids = []
+  const categoryMap = []
+  for (let i = 0; i < categories.length; i += 1) {
+    const category = categories[i]
+
+    categoryUids.push(category.uid)
+    categoryMap.push({
+      uid: category.uid,
+      name: category.name,
+      description: category.description
+    })
+  }
 
   return {
     uid: coin.uid,
@@ -108,7 +122,8 @@ exports.serializeShow = (coin, language, currencyRate) => {
       total_value_locked: valueInCurrency(market.total_value_locked, currencyRate)
     },
     performance: coin.performance,
-    category_uids: coin.Categories.map(category => category.uid),
+    categories: categoryMap,
+    category_uids: categoryUids, // @deprecated
     platforms: mapPlatforms(coin.Platforms)
   }
 }

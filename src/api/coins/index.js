@@ -81,6 +81,7 @@ router.get('/top-movers', setCurrencyRate, controller.movers)
  *    "performance: {},
  *    "platforms: {},
  *    "category_uids: []
+ *    "categories: [{}]
  *  }
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
