@@ -135,11 +135,8 @@ exports.serializeTwitter = coin => ({
 exports.serializeMovers = (data, currencyRate) => {
   const mapper = items => items.map(item => ({
     uid: item.uid,
-    code: item.code,
-    name: item.name,
     price: valueInCurrency(item.price, currencyRate),
-    change_24: nullOrString(item.change_24),
-    rank: item.mcap_rank
+    price_change_24: nullOrString(item.price_change_24)
   }))
 
   return {

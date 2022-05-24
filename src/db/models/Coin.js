@@ -187,26 +187,28 @@ class Coin extends SequelizeModel {
 
   static async getTopMovers() {
     const [movers] = await Coin.query(`
-      with coins as (
+      with top_coins as (
         SELECT
-          uid, name, code, price, price_change->'24h' change_24, market_data->'market_cap_rank' mcap_rank
+          uid,
+          price,
+          price_change->'24h' price_change_24
         FROM coins
         ORDER BY market_data->'market_cap' desc nulls last
         LIMIT 300
       ),
-      gainers_100 as (SELECT * FROM (select * FROM coins LIMIT 100) t1 ORDER BY change_24 desc nulls last),
-      losers_100  as (SELECT * FROM (select * FROM coins LIMIT 100) t1 ORDER BY change_24 asc nulls last),
-      gainers_200 as (SELECT * FROM (select * FROM coins LIMIT 200) t1 ORDER BY change_24 desc nulls last),
-      losers_200  as (SELECT * FROM (select * FROM coins LIMIT 200) t1 ORDER BY change_24 asc nulls last),
-      gainers_300 as (SELECT * FROM (select * FROM coins LIMIT 300) t1 ORDER BY change_24 desc nulls last),
-      losers_300  as (SELECT * FROM (select * FROM coins LIMIT 300) t1 ORDER BY change_24 asc nulls last)
+      gainers_100 as (SELECT * FROM (select * FROM top_coins LIMIT 100) t1 ORDER BY price_change_24 desc nulls last LIMIT 5),
+      losers_100  as (SELECT * FROM (select * FROM top_coins LIMIT 100) t2 ORDER BY price_change_24 asc  nulls last LIMIT 5),
+      gainers_200 as (SELECT * FROM (select * FROM top_coins LIMIT 200) t3 ORDER BY price_change_24 desc nulls last LIMIT 5),
+      losers_200  as (SELECT * FROM (select * FROM top_coins LIMIT 200) t4 ORDER BY price_change_24 asc  nulls last LIMIT 5),
+      gainers_300 as (SELECT * FROM (select * FROM top_coins LIMIT 300) t5 ORDER BY price_change_24 desc nulls last LIMIT 5),
+      losers_300  as (SELECT * FROM (select * FROM top_coins LIMIT 300) t6 ORDER BY price_change_24 asc  nulls last LIMIT 5)
       SELECT jsonb_build_object(
         'gainers_100', (select json_agg(gainers_100.*) from gainers_100),
-        'losers_100', (select json_agg(losers_100.*) from losers_100),
+        'losers_100',  (select json_agg(losers_100.* ) from losers_100),
         'gainers_200', (select json_agg(gainers_200.*) from gainers_200),
-        'losers_200', (select json_agg(losers_200.*) from losers_200),
+        'losers_200',  (select json_agg(losers_200.* ) from losers_200),
         'gainers_300', (select json_agg(gainers_300.*) from gainers_300),
-        'losers_300', (select json_agg(losers_300.*) from losers_300)
+        'losers_300',  (select json_agg(losers_300.* ) from losers_300)
       ) as data
     `)
 
