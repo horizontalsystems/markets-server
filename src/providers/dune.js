@@ -1,4 +1,3 @@
-/* eslint-disable prefer-destructuring */
 const axios = require('axios')
 const { wrapper } = require('axios-cookiejar-support')
 const { CookieJar } = require('tough-cookie')
@@ -50,12 +49,15 @@ class DuneAnalytics {
       })
 
       const cookieItems = authResp.request._headers.cookie.split(';')
-      cookieItems.some(items => {
-        const cookie = items.split('=')
-        this.authRefreshKey = cookie[1]
-        return cookie[0] === 'auth-refresh'
-      })
-      console.log(`Auth-Refresh-Token: ${this.authRefreshKey}`)
+      for (let i = 0; i < cookieItems.length; i += 1) {
+        const [key, value] = cookieItems[i].split('=')
+        if (key.trim() === 'auth-refresh') {
+          this.authRefreshToken = value
+          break
+        }
+      }
+
+      // console.log(`Auth-Refresh-Token: ${this.authRefreshToken}`)
     } catch (e) {
       console.log(e.message)
     }
@@ -63,23 +65,26 @@ class DuneAnalytics {
 
   async fetchAuthToken() {
     try {
-      if (!this.authRefreshKey) {
+      console.log('Fetching auth token ... ')
+
+      if (!this.authRefreshToken) {
         await this.fetchAuthRefreshToken()
       }
 
-      if (this.authRefreshKey) {
-        const response = await this.axiosBase.post('/api/auth/session')
-        return response.data.token
+      if (this.authRefreshToken) {
+        const { data } = await this.axiosBase.post('/api/auth/session')
+        this.authToken = data.token
+        return
       }
     } catch (e) {
       console.log(e.message)
     }
 
-    return null
+    this.authToken = null
   }
 
   async executeQuery(authToken, queryId, params) {
-    console.log('Executing query ... ')
+    console.log(`Executing query: ${queryId}`)
 
     const queryData = {
       operationName: 'ExecuteQuery',
@@ -151,46 +156,62 @@ class DuneAnalytics {
       `
     }
 
-    return this.axiosGraph
+    const response = await this.axiosGraph
       .post('', queryData, {
         headers: {
           Authorization: `Bearer ${authToken}`
         }
       })
-      .then(({ data }) => {
-        if (data.errors) {
-          console.log(JSON.stringify(data.errors))
-          return { query_results: [] }
-        }
-
-        return data.data
-      })
       .catch(e => {
         console.log(e)
         return { query_results: [] }
       })
+
+    if (response.data.errors) {
+      console.log(JSON.stringify(response.data.errors))
+
+      if (this.parseError(response.data.errors).error === 'invalid-jwt') {
+        await this.fetchAuthToken()
+      }
+      return { query_results: [] }
+    }
+
+    return response.data.data
+
   }
 
   async getQueryResults(queryId, params) {
 
-    const authToken = await this.fetchAuthToken()
-
-    if (authToken) {
-      const jobId = await this.executeQuery(authToken, queryId, params)
+    await this.fetchAuthToken()
+    let totalSeconds = 0
+    if (this.authToken) {
+      const jobId = await this.executeQuery(this.authToken, queryId, params)
 
       if (jobId) {
         let response = []
-        for (let lc = 0; lc <= 40; lc += 1) {
-          response = await this.getQueryResultByJobId(authToken, jobId)
+        for (let lc = 0; lc <= 70; lc += 1) {
+          response = await this.getQueryResultByJobId(this.authToken, jobId)
+
           if (response.query_results.length > 0) {
             return response.get_result_by_job_id.map(i => i.data)
           }
-          await utils.sleep(8000)
+          const seconds = 5 + parseInt(lc / 3, 10)
+          totalSeconds += seconds
+          console.log(`Wait ${lc}, ${seconds} seconds`)
+          await utils.sleep(seconds * 1000)
         }
       }
+      console.log(`Total ${totalSeconds} seconds`)
     }
 
     return []
+  }
+
+  parseError(errors) {
+    return {
+      error: errors[0].extensions.code,
+      message: errors[0].message
+    }
   }
 
   async getAddressStats(dateFrom) {
