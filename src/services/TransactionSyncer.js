@@ -154,7 +154,7 @@ class TransactionSyncer extends Syncer {
       return
     }
 
-    const chunks = chunk(items, 400000)
+    const chunks = chunk(items, 300000)
 
     for (let i = 0; i < chunks.length; i += 1) {
       await Transaction.bulkCreate(chunks[i], { ignoreDuplicates: true })
