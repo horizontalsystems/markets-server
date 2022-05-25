@@ -59,7 +59,7 @@ class Syncer {
     switch (period) {
       case '30m':
         return {
-          dateFrom: utcDate({ days: -30 }),
+          dateFrom: utcDate({ days: -30 }, 'yyyy-MM-dd'),
           dateTo: utcDate(toDuration)
         }
       case '1d':
