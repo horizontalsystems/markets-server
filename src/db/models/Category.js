@@ -87,7 +87,7 @@ class Category extends SequelizeModel {
         name,
         market_cap
       FROM categories
-      ORDER BY market_cap->'change_24h' DESC
+      ORDER BY market_cap->'change_24h' DESC nulls last
       LIMIT 4
     `)
   }
