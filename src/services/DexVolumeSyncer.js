@@ -17,7 +17,7 @@ class DexVolumeSyncer extends Syncer {
       return
     }
 
-    await this.syncFromBigquery(this.syncParamsHistorical('1d'), '1d')
+    await this.syncFromBigquery(this.syncParamsHistorical('1d', { days: -30 }), '1d')
     await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m')
 
     await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'bsc', 'day', 30)

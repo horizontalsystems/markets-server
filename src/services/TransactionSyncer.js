@@ -14,12 +14,12 @@ class TransactionSyncer extends Syncer {
 
   async syncHistorical() {
     if (!await Transaction.existsForPlatforms(['ethereum', 'erc20'])) {
-      await this.syncFromBigquery(this.syncParamsHistorical('1d'), '1d')
+      await this.syncFromBigquery(this.syncParamsHistorical('1d', { days: -30 }), '1d')
       await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m')
     }
 
     if (!await Transaction.existsForPlatforms(['bitcoin'])) {
-      await this.syncFromBigquery(this.syncParamsHistorical('1d'), '1d', true)
+      await this.syncFromBigquery(this.syncParamsHistorical('1d', { days: -30 }), '1d', true)
       await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m', true)
     }
 
@@ -31,7 +31,7 @@ class TransactionSyncer extends Syncer {
       await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'solana', false, 30)
     }
 
-    console.log('Completed syncing historical transactions stats !')
+    console.log('Completed syncing historical transactions stats')
   }
 
   async syncLatest() {
@@ -44,7 +44,8 @@ class TransactionSyncer extends Syncer {
     await this.syncFromBigquery(dateParams, '30m', true)
     await this.syncFromBitquery(dateParams, 'bsc', true)
     await this.syncFromBitquery(dateParams, 'solana', true)
-    console.log('Completed syncing daily transactions stats !')
+
+    console.log('Completed syncing daily transactions stats')
   }
 
   async syncMonthlyStats({ dateFrom, dateTo }) {
@@ -55,13 +56,9 @@ class TransactionSyncer extends Syncer {
   async syncFromBigquery({ dateFrom, dateTo }, datePeriod, syncBtcBaseCoins = false) {
     const types = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash', 'ethereum', 'erc20']
     const platforms = await this.getPlatforms(types, true, false)
-    let transactions = []
-
-    if (syncBtcBaseCoins) {
-      transactions = await bigquery.getTransactionsStatsBtcBased(dateFrom, dateTo, datePeriod)
-    } else {
-      transactions = await bigquery.getTransactionsStats(dateFrom, dateTo, platforms.list, datePeriod)
-    }
+    const transactions = syncBtcBaseCoins
+      ? await bigquery.getTransactionsStatsBtcBased(dateFrom, dateTo, datePeriod)
+      : await bigquery.getTransactionsStats(dateFrom, dateTo, platforms.list, datePeriod)
 
     const records = transactions.map(transaction => {
       return {

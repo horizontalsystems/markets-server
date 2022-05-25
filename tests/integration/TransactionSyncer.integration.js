@@ -47,7 +47,7 @@ describe('TransactionSyncer', async () => {
       sinon.stub(bigquery, 'getTransactionsStatsBtcBased').returns([])
       sinon.stub(bitquery, 'getTransfers').returns([])
 
-      param1d = syncer.syncParamsHistorical('1d')
+      param1d = syncer.syncParamsHistorical('1d', { days: -30 })
       param30m = syncer.syncParamsHistorical('30m')
     })
 

@@ -55,17 +55,17 @@ class Syncer {
     }
   }
 
-  syncParamsHistorical(period) {
+  syncParamsHistorical(period, toDuration) {
     switch (period) {
       case '30m':
         return {
           dateFrom: utcDate({ days: -30 }),
-          dateTo: utcDate()
+          dateTo: utcDate(toDuration)
         }
       case '1d':
         return {
           dateFrom: utcDate({ month: -12 }, 'yyyy-MM-dd'),
-          dateTo: utcDate({}, 'yyyy-MM-dd')
+          dateTo: utcDate(toDuration, 'yyyy-MM-dd')
         }
       default:
         return {}
