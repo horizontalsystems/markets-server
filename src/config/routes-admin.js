@@ -2,6 +2,7 @@ const express = require('express')
 const { Op } = require('sequelize')
 const { crud } = require('express-crud-router')
 const Coin = require('../db/models/Coin')
+const Chain = require('../db/models/Chain')
 const Language = require('../db/models/Language')
 const Platform = require('../db/models/Platform')
 const Category = require('../db/models/Category')
@@ -79,8 +80,9 @@ const opts = (Model, attrs, attrsOne = []) => ({
 
 router.use(
   crud('/coins', opts(Coin, ['id', 'uid', 'name', 'code'], ['description', 'security', 'links', 'coingecko_id', 'price'])),
+  crud('/chains', opts(Chain, ['id', 'uid', 'name'])),
   crud('/languages', opts(Language, ['id', 'code', 'name'])),
-  crud('/platforms', opts(Platform, ['id', 'coin_id', 'type', 'symbol', 'address', 'decimals'])),
+  crud('/platforms', opts(Platform, ['id', 'coin_id', 'chain_uid', 'type', 'symbol', 'address', 'decimals'])),
   crud('/categories', opts(Category, ['id', 'uid', 'name', 'order', 'description', 'enabled'])),
   crud('/coin_categories', opts(CoinCategories, ['id', 'coin_id', 'category_id'])),
   crud('/treasury_entities', opts(TreasuryEntity, ['id', 'uid', 'name', 'country', 'type'])),
