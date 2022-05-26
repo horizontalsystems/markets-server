@@ -85,7 +85,8 @@ class Category extends SequelizeModel {
       SELECT
         uid,
         name,
-        market_cap
+        market_cap,
+        description
       FROM categories
       ORDER BY market_cap->'change_24h' DESC nulls last
       LIMIT 4
