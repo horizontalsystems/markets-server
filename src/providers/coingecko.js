@@ -1,10 +1,16 @@
 const querystring = require('querystring')
-const axios = require('axios').create({
-  baseURL: 'https://api.coingecko.com/api/v3',
-  timeout: 180000
+const createAxios = require('axios').create
+
+const apiKey = process.env.COINGECKO_KEY
+const axios = createAxios({
+  baseURL: `https://${apiKey ? 'pro-' : ''}api.coingecko.com/api/v3`,
+  timeout: 180000,
+  params: {
+    ...(apiKey && { x_cg_pro_api_key: apiKey })
+  }
 })
 
-const axiosNonAPI = require('axios').create({
+const axiosNonAPI = createAxios({
   baseURL: 'https://www.coingecko.com',
   timeout: 180000
 })
