@@ -77,16 +77,19 @@ class TopPlatformsSyncer extends Syncer {
 
     for (let i = 0; i < platformsBep20.length; i += 1) {
       const platform = platformsBep20[i]
-      const supply = await bscscan.getCSupply(platform.address)
-      if (supply) {
-        map[platform.id] = supply / (10 ** platform.decimals)
+      const supplyStr = await bscscan.getCSupply(platform.address)
+      if (supplyStr) {
+        const supply = supplyStr / (10 ** platform.decimals)
+        if (supply) {
+          map[platform.id] = supply
+        }
       }
       await sleep(150)
     }
 
     await Platform.updateCSupplies(Object.entries(map))
       .then(() => {
-        console.log('Updates platforms circulating supplies')
+        console.log('Updated platforms circulating supplies')
       })
       .catch(e => {
         console.log(e)
