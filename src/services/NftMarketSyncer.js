@@ -30,10 +30,6 @@ class NftMarketSyncer extends Syncer {
   }
 
   async syncMonthlyStats({ dateFrom, dateTo }) {
-    await this.adjustPoints(dateFrom, dateTo)
-  }
-
-  async adjustPoints({ dateFrom, dateTo }) {
     await NftMarket.deleteExpired(dateFrom, dateTo)
   }
 
