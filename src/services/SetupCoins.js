@@ -23,7 +23,7 @@ class SetupCoins {
       })
   }
 
-  async fetchCoins(minVolume) {
+  async fetchCoins(minVolume, minMCap) {
     const allCoins = await coingecko.getCoinList()
     const oldCoins = await Coin.findAll()
     const newCoins = difference(allCoins.map(coin => coin.id), oldCoins.map(coin => coin.uid))
@@ -43,7 +43,7 @@ class SetupCoins {
         return false
       }
 
-      return coin.market_data.total_volume >= minVolume
+      return coin.market_data.total_volume >= minVolume && coin.market_data.market_cap >= minMCap
     })
 
     console.log(`Coins with market data ${coins.length}; ${filtered.length} coins with volume >= ${minVolume}`)
@@ -55,11 +55,12 @@ class SetupCoins {
     const bep2tokens = await binanceDex.getBep2Tokens()
     const coinIds = ids || (await coingecko.getCoinList()).map(coin => coin.id)
     const coins = await this.syncCoins(coinIds, !ids)
+    const chains = reduceMap(await Chain.findAll(), 'uid')
 
     console.log(`Synced new coins ${coins.length}`)
 
     for (let i = 0; i < coins.length; i += 1) {
-      await this.syncCoinInfo(coins[i], languages, bep2tokens)
+      await this.syncCoinInfo(coins[i], languages, bep2tokens, chains)
       await sleep(1100)
     }
 
@@ -121,9 +122,9 @@ class SetupCoins {
     return newRecords.concat(await this.syncCoins(coinIds, returnOnlyNew))
   }
 
-  async syncPlatforms(coin, platforms, bep2tokens) {
-    const upsert = (type, decimals, address, symbol) => {
-      return this.upsertPlatform({ type, symbol, address, decimals, coin_id: coin.id })
+  async syncPlatforms(coin, platforms, bep2tokens, chains) {
+    const upsert = (chainUid, type, decimals, address, symbol) => {
+      return this.upsertPlatform({ type, symbol, address, decimals, coin_id: coin.id, chain_uid: chainUid })
     }
 
     switch (coin.uid) {
@@ -132,17 +133,17 @@ class SetupCoins {
       case 'litecoin':
       case 'dash':
       case 'zcash':
-        return upsert(coin.uid, 8)
+        return upsert(coin.uid, coin.uid, 8)
       case 'ethereum':
-        await upsert('ethereum', 18)
-        await upsert('ethereum-optimism', 18)
-        await upsert('ethereum-arbitrum-one', 18)
+        await upsert(coin.uid, 'ethereum', 'ethereum', 18)
+        await upsert(coin.uid, 'ethereum-optimism', 'ethereum-optimism', 18)
+        await upsert(coin.uid, 'ethereum-arbitrum-one', 'ethereum-arbitrum-one', 18)
         return
       case 'matic-network':
-        return upsert('polygon', 18)
+        return upsert('ethereum', 'polygon', 18)
       case 'binancecoin':
-        await upsert('binance-smart-chain', 18)
-        await upsert('bep2', 18, null, 'BNB')
+        await upsert('binance-smart-chain', 'binance-smart-chain', 18)
+        await upsert('binancecoin', 'bep2', 18, null, 'BNB')
         return
       default:
         break
@@ -215,11 +216,15 @@ class SetupCoins {
           break
       }
 
-      await upsert(type, decimals, address, symbol)
+      if (!chains[platform]) {
+        await Chain.create({ uid: platform, name: platform })
+      }
+
+      await upsert(platform, type, decimals, address, symbol)
     }
   }
 
-  async syncCoinInfo(coin, languages, bep2tokens) {
+  async syncCoinInfo(coin, languages, bep2tokens, chains) {
     try {
       console.log('Fetching info for', coin.uid)
 
@@ -242,7 +247,7 @@ class SetupCoins {
       }
 
       await coin.update(values)
-      await this.syncPlatforms(coin, coinInfo.platforms, bep2tokens)
+      await this.syncPlatforms(coin, coinInfo.platforms, bep2tokens, chains)
     } catch ({ message, response = {} }) {
       if (message) {
         console.error(message)

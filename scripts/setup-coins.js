@@ -19,7 +19,7 @@ async function start({ all, fetch, coins, platform, chains, chainsSync }) {
 
   try {
     if (fetch) {
-      await setupCoins.fetchCoins(200000)
+      await setupCoins.fetchCoins(200000, 10000000)
     } else if (coins) {
       await setupCoins.setupCoins(coins.split(','))
     } else if (platform) {
