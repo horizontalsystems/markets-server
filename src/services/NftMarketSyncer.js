@@ -16,7 +16,7 @@ class NftMarketSyncer extends Syncer {
   }
 
   async syncHistorical() {
-    this.syncMarkets(utcDate({}, 'yyyy-MM-dd HH:mm:00Z'))
+    await this.syncMarkets(utcDate({}, 'yyyy-MM-dd HH:mm:00Z'))
   }
 
   async syncLatest() {
