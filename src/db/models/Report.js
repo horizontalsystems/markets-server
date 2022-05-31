@@ -45,6 +45,7 @@ class Report extends SequelizeModel {
       SELECT R.*
       FROM reports R
       JOIN coins C on C.id = R.coin_id AND C.uid = :uid
+      ORDER BY date DESC
     `
 
     return Report.query(query, { uid })
