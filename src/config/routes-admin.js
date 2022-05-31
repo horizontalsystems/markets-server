@@ -92,7 +92,7 @@ router.use(
   crud('/reports', opts(Report, ['id', 'coin_id', 'title', 'author', 'url', 'date', 'body'])),
   crud('/address_labels', opts(AddressLabel, ['id', 'address', 'label'])),
   crud('/exchanges', opts(Exchange, ['id', 'uid', 'name'])),
-  crud('/evm_method_labels', opts(EvmMethodLabel, ['id', 'methodId', 'label'])),
+  crud('/evm_method_labels', opts(EvmMethodLabel, ['id', 'method_id', 'label'])),
   crud('/update_states', opts(UpdateState, ['id', 'name', 'date']))
 )
 

@@ -5,7 +5,7 @@ class EvmMethodLabel extends Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        methodId: {
+        method_id: {
           type: DataTypes.STRING,
           allowNull: false,
           unique: true
