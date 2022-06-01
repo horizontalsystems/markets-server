@@ -19,7 +19,7 @@ class CoinRatingSyncer extends Syncer {
     const revenueRank = await this.getRevenueRank()
     const volumesRank = await this.getVolumesRank(dateFrom)
     const addressRank = await this.getAddressRank(dateFrom)
-    const holdersRank = await this.getHoldersRank()
+    // const holdersRank = await this.getHoldersRank()
     const defiTvlRank = await this.getTvlRank()
 
     const coins = await Coin.query('select id from coins')
@@ -53,7 +53,7 @@ class CoinRatingSyncer extends Syncer {
 
     mapRank(revenueRank, 'revenue', { a: 20, b: 30, c: 40, d: 100 })
     mapRank(volumesRank, 'volumes', { a: 3.11, b: 7, c: 10, d: 100 })
-    mapRank(holdersRank, 'holders', { a: 2, b: 7, c: 10, d: 100 })
+    // mapRank(holdersRank, 'holders', { a: 2, b: 7, c: 10, d: 100 })
     mapRank(addressRank, 'address', { a: 1.2, b: 3, c: 6, d: 100 })
     mapRank(defiTvlRank, 'tvl', { a: 4, b: 8, c: 20, d: 100 })
 
