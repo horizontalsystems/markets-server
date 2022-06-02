@@ -118,6 +118,29 @@ class CategoryMarketCapSyncer extends Syncer {
         console.error('Error inserting category market caps', err.message)
       })
   }
+
+  syncParams(period) {
+    switch (period) {
+      case '30m':
+        return {
+          dateFrom: utcDate({ days: -1, minutes: -30 }),
+          dateTo: utcDate({ days: -1 }),
+        }
+      case '4h':
+        return {
+          dateFrom: utcDate({ days: -7, hours: -4 }),
+          dateTo: utcDate({ days: -7 }),
+        }
+      case '1d':
+        return {
+          dateFrom: utcDate({ days: -31 }, 'yyyy-MM-dd'),
+          dateTo: utcDate({ days: -30 }, 'yyyy-MM-dd')
+        }
+      default:
+        return {}
+    }
+  }
+
 }
 
 module.exports = CategoryMarketCapSyncer
