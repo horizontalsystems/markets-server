@@ -100,13 +100,13 @@ class CoinPriceHistorySyncer extends Syncer {
     switch (period) {
       case '30m':
         return {
-          dateFrom: utils.utcDate({ days: -7, minutes: -30 }),
-          dateTo: utils.utcDate({ days: -7 }),
+          dateFrom: utils.utcDate({ days: -1, minutes: -30 }),
+          dateTo: utils.utcDate({ days: -1 }),
         }
       case '4h':
         return {
-          dateFrom: utils.utcDate({ days: -30, hours: -4 }),
-          dateTo: utils.utcDate({ days: -30 }),
+          dateFrom: utils.utcDate({ days: -7, hours: -4 }),
+          dateTo: utils.utcDate({ days: -7 }),
         }
       case '1d':
         return {

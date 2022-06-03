@@ -21,10 +21,10 @@ describe('CoinPriceSyncer', async () => {
         syncer.adjustHistoryGaps()
       })
 
-      it('deletes expired data since 7d+30m', () => {
+      it('deletes expired 10-minutes data since 1d+30m', () => {
         sinon.assert.notCalled(CoinPrice.deleteExpired)
         clock.tick(30 * 60 * 1000)
-        sinon.assert.calledWith(CoinPrice.deleteExpired, '2021-01-24 01:00:00+0', '2021-01-24 01:30:00+0')
+        sinon.assert.calledWith(CoinPrice.deleteExpired, '2021-01-30 01:00:00+0', '2021-01-30 01:30:00+0')
       })
     })
 
@@ -36,13 +36,13 @@ describe('CoinPriceSyncer', async () => {
         syncer.adjustHistoryGaps()
       })
 
-      it('deletes expired data since 7d+30m', () => {
+      it('deletes expired 30-minutes data since 7d+4h', () => {
         sinon.assert.notCalled(CoinPrice.deleteExpired)
         clock.tick(30 * 60 * 1000)
 
         sinon.assert.calledTwice(CoinPrice.deleteExpired)
-        sinon.assert.calledWith(CoinPrice.deleteExpired.firstCall, '2021-01-24 03:30:00+0', '2021-01-24 04:00:00+0')
-        sinon.assert.calledWith(CoinPrice.deleteExpired.secondCall, '2021-01-01 00:00:00+0', '2021-01-01 04:00:00+0')
+        sinon.assert.calledWith(CoinPrice.deleteExpired.firstCall, '2021-01-30 03:30:00+0', '2021-01-30 04:00:00+0')
+        sinon.assert.calledWith(CoinPrice.deleteExpired.secondCall, '2021-01-24 00:00:00+0', '2021-01-24 04:00:00+0')
       })
     })
 
@@ -54,13 +54,13 @@ describe('CoinPriceSyncer', async () => {
         syncer.adjustHistoryGaps()
       })
 
-      it('deletes expired data since 7d+30m', () => {
+      it('deletes expired 4-hours data since 30d+1d', () => {
         sinon.assert.notCalled(CoinPrice.deleteExpired)
         clock.tick(30 * 60 * 1000)
 
         sinon.assert.calledThrice(CoinPrice.deleteExpired)
-        sinon.assert.calledWith(CoinPrice.deleteExpired.firstCall, '2021-01-24 23:30:00+0', '2021-01-25 00:00:00+0')
-        sinon.assert.calledWith(CoinPrice.deleteExpired.secondCall, '2021-01-01 20:00:00+0', '2021-01-02 00:00:00+0')
+        sinon.assert.calledWith(CoinPrice.deleteExpired.firstCall, '2021-01-30 23:30:00+0', '2021-01-31 00:00:00+0')
+        sinon.assert.calledWith(CoinPrice.deleteExpired.secondCall, '2021-01-24 20:00:00+0', '2021-01-25 00:00:00+0')
         sinon.assert.calledWith(CoinPrice.deleteExpired.thirdCall, '2021-01-01', '2021-01-02')
       })
     })
