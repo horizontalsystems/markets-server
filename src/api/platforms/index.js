@@ -32,7 +32,7 @@ const router = express.Router()
 router.get('/', setCurrencyRate, controller.index)
 
 /**
- * @api {get} /v1/top-platforms/list List Top Platforms
+ * @api {get} /v1/top-platforms/:chain/list List Top Platforms
  * @apiDescription Get a list of top platforms
  * @apiVersion 1.0.0
  * @apiGroup Platform
