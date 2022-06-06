@@ -1,5 +1,5 @@
 const express = require('express')
-const controller = require('./platforms.controller')
+const controller = require('./top-chains.controller')
 const { setDateInterval, setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()

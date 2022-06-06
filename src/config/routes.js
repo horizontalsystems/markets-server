@@ -6,7 +6,7 @@ router.use('/docs', express.static('docs'))
 
 router.use('/auth', require('../api/auth'))
 router.use('/coins', require('../api/coins'))
-router.use('/top-platforms', require('../api/platforms'))
+router.use('/top-platforms', require('../api/top-chains'))
 router.use('/nft', require('../api/nft'))
 router.use('/defi-protocols', require('../api/defi-protocols'))
 router.use('/addresses', require('../api/addresses'))
