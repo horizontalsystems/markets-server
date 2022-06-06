@@ -33,7 +33,16 @@ exports.index = async ({ query, currencyRate }, res) => {
 
   const coins = await Coin.findAll(options)
 
-  res.send(serializer.serializeList(coins, fields, currencyRate))
+  res.send(serializer.serializeCoins(coins, fields, currencyRate))
+}
+
+exports.list = async ({ currencyRate }, res, next) => {
+  try {
+    const coins = await Coin.getList()
+    res.send(serializer.serializeList(coins, currencyRate))
+  } catch (e) {
+    next(e)
+  }
 }
 
 exports.show = async ({ params, query, currencyRate }, res) => {

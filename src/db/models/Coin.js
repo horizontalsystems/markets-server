@@ -97,6 +97,19 @@ class Coin extends SequelizeModel {
     Coin.hasMany(models.FundsInvested)
   }
 
+  static getList() {
+    return Coin.query(`
+      SELECT
+        uid,
+        name,
+        code,
+        coingecko_id,
+        market_data->'market_cap_rank' as market_cap_rank
+      FROM coins
+      ORDER BY id
+    `)
+  }
+
   static getPrices(uids) {
     const query = `
       SELECT

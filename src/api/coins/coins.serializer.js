@@ -67,7 +67,7 @@ function mapCoinAttribute(coin, field, currencyRate) {
   }
 }
 
-exports.serializeList = (coins, fields, currencyRate) => {
+exports.serializeCoins = (coins, fields, currencyRate) => {
   if (!fields.length) {
     return []
   }
@@ -84,6 +84,16 @@ exports.serializeList = (coins, fields, currencyRate) => {
 
     return coin
   })
+}
+
+exports.serializeList = coins => {
+  return coins.map(coin => ({
+    uid: coin.uid,
+    name: coin.name,
+    code: coin.code,
+    coingecko_id: coin.coingecko_id,
+    market_cap_rank: coin.market_cap_rank
+  }))
 }
 
 exports.serializeShow = (coin, language, currencyRate) => {
