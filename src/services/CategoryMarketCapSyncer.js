@@ -121,10 +121,10 @@ class CategoryMarketCapSyncer extends Syncer {
 
   syncParams(period) {
     switch (period) {
-      case '30m':
+      case '1h':
         return {
-          dateFrom: utcDate({ days: -1, minutes: -30 }),
-          dateTo: utcDate({ days: -1 }),
+          dateFrom: utcDate({ hours: -1 }, 'yyyy-MM-dd HH:00:00Z'),
+          dateTo: utcDate({}, 'yyyy-MM-dd HH:00:00Z')
         }
       case '4h':
         return {
