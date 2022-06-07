@@ -16,6 +16,10 @@ class SequelizeModel extends Sequelize.Model {
     return Sequelize.literal(value)
   }
 
+  static get Op() {
+    return Sequelize.Op
+  }
+
   static truncateDateWindow(field, window = '1h') {
     const dateTruncate = () => {
       switch (window) {

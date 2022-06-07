@@ -1,6 +1,6 @@
 const TurndownService = require('turndown')
-const { difference, chunk } = require('lodash')
-const { sleep, reduceMap } = require('../utils')
+const { chunk, difference } = require('lodash')
+const { sleep } = require('../utils')
 const Coin = require('../db/models/Coin')
 const Chain = require('../db/models/Chain')
 const UpdateState = require('../db/models/UpdateState')
@@ -55,12 +55,11 @@ class SetupCoins {
     const bep2tokens = await binanceDex.getBep2Tokens()
     const coinIds = ids || (await coingecko.getCoinList()).map(coin => coin.id)
     const coins = await this.syncCoins(coinIds, !ids)
-    const chains = reduceMap(await Chain.findAll(), 'uid')
 
     console.log(`Synced new coins ${coins.length}`)
 
     for (let i = 0; i < coins.length; i += 1) {
-      await this.syncCoinInfo(coins[i], languages, bep2tokens, chains)
+      await this.syncCoinInfo(coins[i], languages, bep2tokens)
       await sleep(1100)
     }
 
@@ -122,9 +121,10 @@ class SetupCoins {
     return newRecords.concat(await this.syncCoins(coinIds, returnOnlyNew))
   }
 
-  async syncPlatforms(coin, platforms, bep2tokens, chains) {
-    const upsert = (chainUid, type, decimals, address, symbol) => {
-      return this.upsertPlatform({ type, symbol, address, decimals, coin_id: coin.id, chain_uid: chainUid })
+  async syncPlatforms(coin, platforms, bep2tokens) {
+    const upsertPlatform = async (chain, type, decimals, address, symbol) => {
+      await this.upsertChain(chain, chain === coin.uid ? coin.name : chain)
+      await this.upsertPlatform({ type, decimals, address, symbol, coin_id: coin.id, chain_uid: chain })
     }
 
     switch (coin.uid) {
@@ -133,66 +133,53 @@ class SetupCoins {
       case 'litecoin':
       case 'dash':
       case 'zcash':
-        return upsert(coin.uid, coin.uid, 8)
+        return upsertPlatform(coin.uid, 'native', 8)
       case 'ethereum':
-        await upsert(coin.uid, 'ethereum', 'ethereum', 18)
-        await upsert(coin.uid, 'ethereum-optimism', 'ethereum-optimism', 18)
-        await upsert(coin.uid, 'ethereum-arbitrum-one', 'ethereum-arbitrum-one', 18)
+        await upsertPlatform('ethereum', 'native', 18)
+        await upsertPlatform('arbitrum-one', 'native', 18)
+        await upsertPlatform('optimistic-ethereum', 'native', 18)
         return
-      case 'matic-network':
-        return upsert('ethereum', 'polygon', 18)
       case 'binancecoin':
-        await upsert('binance-smart-chain', 'binance-smart-chain', 18)
-        await upsert('binancecoin', 'bep2', 18, null, 'BNB')
+        await upsertPlatform('binance-smart-chain', 'native', 18)
+        await upsertPlatform('binancecoin', 'native', 18, null, 'BNB')
         return
       default:
         break
     }
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const platform in platforms) {
-      if (!platform) {
-        continue
-      }
+    for (let i = 0; i < platforms.length; i += 1) {
+      let [platform, address] = platforms[i] // eslint-disable-line
 
-      let type = platform
-      let symbol
       let decimals
-      let address
+      let symbol
+      let type = platform
 
       switch (platform) {
         case 'ethereum':
           type = 'erc20'
-          address = platforms[platform]
           decimals = await web3Provider.getERC20Decimals(address)
           break
 
         case 'binance-smart-chain':
           type = 'bep20'
-          address = platforms[platform]
           decimals = await web3Provider.getBEP20Decimals(address)
           break
 
         case 'polygon-pos':
-          type = 'polygon-pos'
-          address = platforms[platform]
           decimals = await web3Provider.getMRC20Decimals(address)
           break
 
         case 'optimistic-ethereum':
-          type = 'optimistic-ethereum'
-          address = platforms[platform]
           decimals = await web3Provider.getOptimismDecimals(address)
           break
 
         case 'arbitrum-one':
-          type = 'arbitrum-one'
-          address = platforms[platform]
           decimals = await web3Provider.getArbitrumOneDecimals(address)
           break
 
         case 'binancecoin': {
           type = 'bep2'
+          address = null
           const token = bep2tokens[coin.code.toUpperCase()]
           if (token) {
             decimals = token.contract_decimals
@@ -202,7 +189,6 @@ class SetupCoins {
         }
 
         case 'solana': {
-          address = platforms[platform]
           const meta = await solscan.getMeta(address)
           if (meta) {
             decimals = meta.decimals
@@ -210,21 +196,18 @@ class SetupCoins {
           }
           break
         }
-
         default:
-          address = platforms[platform]
-          break
       }
 
-      if (!chains[platform]) {
-        await Chain.create({ uid: platform, name: platform })
+      if (!platform) {
+        await upsertPlatform(coin.uid, 'native', decimals, address)
+      } else {
+        await upsertPlatform(platform, type, decimals, address, symbol)
       }
-
-      await upsert(platform, type, decimals, address, symbol)
     }
   }
 
-  async syncCoinInfo(coin, languages, bep2tokens, chains) {
+  async syncCoinInfo(coin, languages, bep2tokens) {
     try {
       console.log('Fetching info for', coin.uid)
 
@@ -247,38 +230,21 @@ class SetupCoins {
       }
 
       await coin.update(values)
-      await this.syncPlatforms(coin, coinInfo.platforms, bep2tokens, chains)
-    } catch ({ message, response = {} }) {
-      if (message) {
-        console.error(message)
-      }
-
-      if (response.status === 429) {
-        await sleep(60 * 1000)
-        await this.syncCoinInfo(coin, languages, bep2tokens)
-      }
+      await this.syncPlatforms(coin, Object.entries(coinInfo.platforms), bep2tokens)
+    } catch (err) {
+      await this.handleError(err)
     }
   }
 
-  async setupChains() {
-    const chains = (await coingecko.getChainList())
-      .filter(i => i.id)
-      .map(item => {
-        return {
-          uid: item.id,
-          name: item.name
-        }
-      })
-
-    const allRecords = await Chain.bulkCreate(chains, { ignoreDuplicates: true })
-    const newRecords = allRecords.filter(record => record.id)
-
-    console.log(`Inserted ${newRecords.length} chains`)
-  }
-
-  async syncChains() {
-    const coins = await Coin.query('SELECT id, coingecko_id FROM coins WHERE coingecko_id IS NOT NULL')
-    const chains = reduceMap(await Chain.findAll(), 'uid')
+  async syncChains(uid) {
+    const bep2tokens = await binanceDex.getBep2Tokens()
+    const coins = await Coin.findAll({
+      attributes: ['id', 'uid', 'code', 'name', 'coingecko_id'],
+      where: {
+        ...(uid && { uid }),
+        coingecko_id: { [Coin.Op.ne]: null }
+      }
+    })
 
     console.log(`${coins.length} coins to synced chains`)
 
@@ -287,58 +253,44 @@ class SetupCoins {
 
       try {
         console.log(`Syncing chains for ${coin.coingecko_id}; (${i})`)
-        await this.syncCoinChains(coin, chains)
+        const coinInfo = await coingecko.getCoinInfo(coin.coingecko_id)
+        await this.syncPlatforms(coin, Object.entries(coinInfo.platforms), bep2tokens)
         await sleep(1100)
-      } catch ({ message, response = {} }) {
-        if (message) {
-          console.log(message)
-        }
-
-        if (response.status === 429) {
-          await sleep(61 * 1000)
-        }
+      } catch (err) {
+        await this.handleError(err)
       }
     }
   }
 
-  async syncCoinChains(coin, chains) {
-    const coinInfo = await coingecko.getCoinInfo(coin.coingecko_id)
-    const platforms = Object.entries(coinInfo.platforms)
-
-    const mapChainType = platform => {
-      switch (platform) {
-        case 'ethereum':
-          return 'erc20'
-        case 'binance-smart-chain':
-          return 'bep20'
-        case 'binancecoin':
-          return 'bep2'
-        default:
-          return platform
-      }
-    }
-
-    for (let i = 0; i < platforms.length; i += 1) {
-      const [chain, address] = platforms[i]
-      if (chains[chain]) {
-        await this.upsertPlatform({
-          address,
-          type: mapChainType(chain),
-          coin_id: coin.id,
-          chain_uid: chain
-        }, { updateOnDuplicate: ['chain_uid'] })
-      }
-    }
-  }
-
-  upsertPlatform(values, options = undefined) {
-    return Platform.bulkCreate([values], options)
+  upsertPlatform(values) {
+    return Platform.bulkCreate([values])
       .then(([{ id, type, chain_uid: chain }]) => {
         console.log(JSON.stringify({ type, chain, id }))
       })
       .catch(err => {
-        console.log(err)
+        console.log('Error inserting platform', err.message)
       })
+  }
+
+  upsertChain(uid, name) {
+    return Chain.findOrCreate({ where: { uid }, defaults: { name } })
+      .catch(err => console.log('Error inserting chain', err))
+  }
+
+  async handleError({ message, response = {} }) {
+    if (message) {
+      console.log(message)
+    }
+
+    if (response.status === 429) {
+      console.error(`Sleeping 60s (setup-coins); Status ${response.status}`)
+      await sleep(60000)
+    }
+
+    if (response.status >= 502 && response.status <= 504) {
+      console.error(`Sleeping 30s (setup-coins); Status ${response.status}`)
+      await sleep(30000)
+    }
   }
 }
 
