@@ -1,0 +1,23 @@
+const express = require('express')
+const controller = require('./platforms.controller')
+
+const router = express.Router()
+
+/**
+ * @api {get} /v1/platforms Platforms
+ * @apiDescription Get platforms
+ * @apiVersion 1.0.0
+ * @apiGroup Platform
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {[
+ *    "type": "native",
+ *    "coin_uid": "bitcoin",
+ *    "chain_uid": "bitcoin",
+ *    "decimals": 8
+ *  ]}
+ */
+router.get('/list', controller.list)
+
+module.exports = router

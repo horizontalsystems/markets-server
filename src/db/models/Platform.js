@@ -43,7 +43,17 @@ class Platform extends SequelizeModel {
     })
   }
 
-  static async findByCoinUID(uids, type = '') {
+  static getListCoins() {
+    return Platform.query(`
+      select
+        p.*,
+        c.uid as coin_uid
+      from platforms p, coins c
+      where c.id = p.coin_id
+    `)
+  }
+
+  static findByCoinUID(uids, type = '') {
     const query = (`
       SELECT P.*
         FROM platforms P, coins C
