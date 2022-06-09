@@ -15,7 +15,7 @@ class TopPlatformsSyncer extends Syncer {
   async syncCirculatingSupply(uids) {
     const map = {}
     const platforms = await Platform.getMarketCap(uids)
-    const platformsBep20 = platforms.filter(p => p.type === 'bep20' && p.multi_chain_id && p.decimals)
+    const platformsBep20 = platforms.filter(p => p.chain_uid === 'binance-smart-chain' && p.multi_chain_id && p.decimals)
     const supplies = await getCSupplies()
 
     const setCSupply = platform => {
@@ -23,8 +23,8 @@ class TopPlatformsSyncer extends Syncer {
         case 'tether':
         case 'usd-coin': {
           const supply = supplies[platform.uid] || {}
-          if (supply[platform.type]) {
-            map[platform.id] = supply[platform.type]
+          if (supply[platform.uid]) {
+            map[platform.id] = supply[platform.uid]
           }
           break
         }
@@ -43,19 +43,19 @@ class TopPlatformsSyncer extends Syncer {
         case 'multichain':
         case 'anyswap':
         case 'matic-network': {
-          if (platform.type === 'erc20') {
+          if (platform.type === 'eip20') {
             map[platform.id] = platform.csupply
           }
           break
         }
         case 'binance-usd':
         case 'krown':
-          if (platform.type === 'bep20') {
+          if (platform.type === 'eip20') {
             map[platform.id] = platform.csupply
           }
           break
         default:
-          if (['bep20', 'erc20'].includes(platform.type)) {
+          if (platform.type === 'eip20') {
             map[platform.id] = platform.csupply
           }
       }

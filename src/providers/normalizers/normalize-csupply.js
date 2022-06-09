@@ -9,7 +9,7 @@ exports.normalizeUsdt = ({ data } = {}) => {
     algo: usdt.totaltokens_algo,
     eos: usdt.totaltokens_eos,
     solana: usdt.totaltokens_sol,
-    erc20: usdt.totaltokens_eth,
+    ethereum: usdt.totaltokens_eth,
     liq: usdt.totaltokens_liq,
     slp: usdt.totaltokens_slp,
     tron: usdt.totaltokens_tron,
@@ -27,7 +27,7 @@ exports.normalizeUsdc = ({ data } = []) => {
   const normalizeKey = key => {
     switch (key) {
       case 'eth':
-        return 'erc20'
+        return 'ethereum'
       case 'sol':
         return 'solana'
       case 'trx':

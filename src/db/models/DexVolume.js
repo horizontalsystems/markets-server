@@ -40,8 +40,8 @@ class DexVolume extends SequelizeModel {
     return !!await DexVolume.findOne()
   }
 
-  static async getByCoin(uid, platform, window, dateFrom) {
-    const platforms = await Platform.findByCoinUID(uid, platform)
+  static async getByCoin(uid, chain, window, dateFrom) {
+    const platforms = await Platform.findByCoinUID(uid, chain)
     if (!platforms.length) {
       return {}
     }

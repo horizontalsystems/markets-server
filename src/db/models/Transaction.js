@@ -40,18 +40,19 @@ class Transaction extends SequelizeModel {
     return !!await Transaction.findOne()
   }
 
-  static async existsForPlatforms(platforms) {
+  static async existsForPlatforms(chain) {
     const query = `
       SELECT COUNT(*)
       FROM transactions t , platforms p
-      WHERE t.platform_id = p.id AND p.type IN (:platforms)
+      WHERE t.platform_id = p.id
+        AND p.chain_uid = :chain
     `
-    const [result] = await Transaction.query(query, { platforms })
+    const [result] = await Transaction.query(query, { chain })
     return result.count > 0
   }
 
-  static async getByCoin(uid, platform, window, dateFrom) {
-    const platforms = await Platform.findByCoinUID(uid, platform)
+  static async getByCoin(uid, chain, window, dateFrom) {
+    const platforms = await Platform.findByCoinUID(uid, chain)
     if (!platforms.length) {
       return {}
     }

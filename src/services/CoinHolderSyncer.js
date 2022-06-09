@@ -22,7 +22,7 @@ class CoinHolderSyncer extends Syncer {
   }
 
   async syncAll() {
-    const platforms = await Platform.getByTypes(null, false, false)
+    const platforms = await Platform.getByChain(null, false, false)
     await this.syncHolders(platforms)
   }
 
@@ -74,23 +74,23 @@ class CoinHolderSyncer extends Syncer {
     console.log(`Platforms to sync ${platforms.length}`)
 
     const resolve = (request, mapper) => request.then(mapper)
-    const fetcher = ({ id, type, address }) => {
-      switch (type) {
+    const fetcher = ({ chain_uid: chain, id, type, address }) => {
+      switch (chain) {
         case 'bitcoin':
         case 'bitcoin-cash':
         case 'dash':
         case 'dogecoin':
         case 'litecoin':
         case 'zcash':
-          return resolve(blockchair.getAddresses(type), this.mapBlockchairData(id, type))
+          return resolve(blockchair.getAddresses(chain), this.mapBlockchairData(id, chain))
         case 'ethereum':
-          return resolve(etherscan.getAccounts(), this.mapChainHolders(id))
+          return type === 'native'
+            ? resolve(etherscan.getAccounts(), this.mapChainHolders(id))
+            : resolve(etherscan.getHolders(address), this.mapTokenHolders(id))
         case 'binance-smart-chain':
-          return resolve(bscscan.getAccounts(), this.mapChainHolders(id))
-        case 'erc20':
-          return resolve(etherscan.getHolders(address), this.mapTokenHolders(id))
-        case 'bep20':
-          return resolve(bscscan.getHolders(address), this.mapTokenHolders(id))
+          return type === 'native'
+            ? resolve(bscscan.getAccounts(), this.mapChainHolders(id))
+            : resolve(bscscan.getHolders(address), this.mapTokenHolders(id))
         case 'avalanche':
           return address
             ? resolve(snowtrace.getHolders(address), this.mapTokenHolders(id))
@@ -139,15 +139,15 @@ class CoinHolderSyncer extends Syncer {
     }
   }
 
-  mapBlockchairData(platformId, type) {
+  mapBlockchairData(platformId, chain) {
     return data => {
       let supply = 21000000
 
-      if (type === 'dash') {
+      if (chain === 'dash') {
         supply = 18920000
-      } else if (type === 'litecoin') {
+      } else if (chain === 'litecoin') {
         supply = 84000000
-      } else if (type === 'dogecoin') {
+      } else if (chain === 'dogecoin') {
         supply = 132670764299
       }
 

@@ -121,7 +121,7 @@ describe('TransactionSyncer', async () => {
       dateTo: '2021-12-17 01:00:00+0'
     }
     const platforms = [
-      { id: 1, address: 'abc', type: 'bep20' }
+      { id: 1, address: 'abc', type: 'eip20' }
     ]
 
     const transfers = [
@@ -133,7 +133,7 @@ describe('TransactionSyncer', async () => {
     ]
 
     beforeEach(() => {
-      sinon.stub(Platform, 'getByTypes').returns(platforms)
+      sinon.stub(Platform, 'getByChain').returns(platforms)
       sinon.stub(bitquery, 'getTransfers').returns(transfers)
       sinon.stub(Transaction, 'getSummedItems').returns(transactions)
       sinon.stub(Transaction, 'bulkCreate')

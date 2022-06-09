@@ -20,20 +20,20 @@ class AddressSyncer extends Syncer {
   }
 
   async syncHistorical() {
-    if (!await Address.existsForPlatforms(['ethereum', 'erc20'])) {
+    if (!await Address.existsForPlatforms('ethereum')) {
       await this.syncStats('ethereum', this.syncParamsHistorical('1d'))
     }
 
-    if (!await Address.existsForPlatforms(['bitcoin'])) {
+    if (!await Address.existsForPlatforms('bitcoin')) {
       await this.syncStats('bitcoin', this.syncParamsHistorical('1d'))
     }
 
-    if (!await Address.existsForPlatforms(['bep20'])) {
-      await this.syncStats('bsc', this.syncParamsHistorical('30m'), true)
+    if (!await Address.existsForPlatforms('binance-smart-chain')) {
+      await this.syncStats('binance-smart-chain', this.syncParamsHistorical('30m'))
     }
 
-    // if (!await Address.existsForPlatforms(['solana'])) {
-    //   await this.syncStats('solana', this.syncParamsHistorical('1d'), true)
+    // if (!await Address.existsForPlatforms('solana')) {
+    //   await this.syncStats('solana', this.syncParamsHistorical('1d'))
     // }
 
     console.log('Successfully synced historical address stats !!!')
@@ -49,7 +49,7 @@ class AddressSyncer extends Syncer {
 
     await this.syncStats('ethereum', { dateFrom })
     await this.syncStats('bitcoin', { dateFrom })
-    // await this.syncStats('bsc', { dateFrom })
+    // await this.syncStats('binance-smart-chain', { dateFrom })
   }
 
   async syncMonthlyStats() {
@@ -64,13 +64,16 @@ class AddressSyncer extends Syncer {
   async syncStats(chain, { dateFrom }) {
     try {
       let addressStats = []
-      const platforms = await this.getPlatforms(chain, true, false)
+      let platforms = {}
 
       if (chain === 'ethereum') {
+        platforms = await this.getPlatforms(chain, true, false)
         addressStats = await bigquery.getAddressStats(platforms.list, dateFrom)
       } else if (chain === 'bitcoin') {
+        platforms = await this.getPlatforms(['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash'], true, false)
         addressStats = await bigquery.getAddressStatsBtcBased(dateFrom)
-      } else if (chain === 'bsc') {
+      } else if (chain === 'binance-smart-chain') {
+        platforms = await this.getPlatforms(chain, true, false)
         addressStats = await dune.getAddressStats(dateFrom)
       }
 
@@ -104,21 +107,14 @@ class AddressSyncer extends Syncer {
     }
   }
 
-  async getPlatforms(chain, withDecimals, withAddress = true) {
-    const chains = ['bitcoin', 'ethereum', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash']
-    let types = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash', 'ethereum', 'erc20']
-
-    if (chain === 'bsc') {
-      types = ['bep20']
-    }
-
-    const platforms = await Platform.getByTypes(types, withDecimals, withAddress)
+  async getPlatforms(chains, withDecimals, withAddress = true) {
+    const platforms = await Platform.getByChain(chains, withDecimals, withAddress)
     const map = {}
     const list = []
 
-    platforms.forEach(({ type, address, decimals, id }) => {
-      if (chains.includes(type)) {
-        map[type] = id
+    platforms.forEach(({ id, type, chain_uid: chain, address, decimals }) => {
+      if (type === 'native') {
+        map[chain] = id
       }
 
       if (address) {

@@ -13,7 +13,8 @@ class Bitquery {
 
   getChain(network) {
     switch (network) {
-      case 'bsc':
+      case 'bsc': // @deprecated
+      case 'binance-smart-chain':
         return 'ethereum(network: bsc)'
       case 'matic':
         return 'ethereum(network: matic)'

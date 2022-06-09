@@ -1,7 +1,5 @@
 const Web3 = require('web3')
 const erc20Abi = require('./abi/erc20-abi.json')
-const mrc20Abi = require('./abi/mrc20-abi.json')
-const bep20Abi = require('./abi/bep20-abi.json')
 
 class Web3Provider {
 
@@ -31,20 +29,23 @@ class Web3Provider {
 const ethereum = new Web3Provider('https://mainnet.infura.io/v3/d13bc12e6f5a4d3bad8d80291c74c1d3', erc20Abi)
 const optimism = new Web3Provider('https://mainnet.optimism.io', erc20Abi)
 const arbitrumOne = new Web3Provider('https://arb1.arbitrum.io/rpc', erc20Abi)
-const polygon = new Web3Provider('https://polygon-rpc.com', mrc20Abi)
-const binance = new Web3Provider('https://bsc-dataseed1.binance.org:443', bep20Abi)
+const polygon = new Web3Provider('https://polygon-rpc.com', erc20Abi)
+const binance = new Web3Provider('https://bsc-dataseed1.binance.org:443', erc20Abi)
 
-exports.getTokenInfo = async (contractAddress, type) => {
+exports.getTokenInfo = async (contractAddress, chain) => {
   let provider
 
-  switch (type) {
+  switch (chain) {
     case 'bep20':
+    case 'binance-smart-chain':
       provider = binance
       break
     case 'mrc20':
+    case 'polygon-pos':
       provider = polygon
       break
     case 'optimism':
+    case 'optimistic-ethereum':
       provider = optimism
       break
     case 'arbitrum-one':

@@ -148,7 +148,7 @@ class SetupCoins {
     }
 
     for (let i = 0; i < platforms.length; i += 1) {
-      let [platform, address] = platforms[i] // eslint-disable-line
+      const [platform, address] = platforms[i]
 
       let decimals
       let symbol
@@ -156,12 +156,12 @@ class SetupCoins {
 
       switch (platform) {
         case 'ethereum':
-          type = 'erc20'
+          type = 'eip20'
           decimals = await web3Provider.getERC20Decimals(address)
           break
 
         case 'binance-smart-chain':
-          type = 'bep20'
+          type = 'eip20'
           decimals = await web3Provider.getBEP20Decimals(address)
           break
 
@@ -170,16 +170,17 @@ class SetupCoins {
           break
 
         case 'optimistic-ethereum':
+          type = 'eip20'
           decimals = await web3Provider.getOptimismDecimals(address)
           break
 
         case 'arbitrum-one':
+          type = 'eip20'
           decimals = await web3Provider.getArbitrumOneDecimals(address)
           break
 
         case 'binancecoin': {
           type = 'bep2'
-          address = null
           const token = bep2tokens[coin.code.toUpperCase()]
           if (token) {
             decimals = token.contract_decimals
@@ -199,10 +200,10 @@ class SetupCoins {
         default:
       }
 
-      if (!platform) {
-        await upsertPlatform(coin.uid, 'native', decimals, address)
-      } else {
+      if (platform) {
         await upsertPlatform(platform, type, decimals, address, symbol)
+      } else if (!address) {
+        await upsertPlatform(coin.uid, 'native', decimals, address)
       }
     }
   }
@@ -255,7 +256,7 @@ class SetupCoins {
         console.log(`Syncing chains for ${coin.coingecko_id}; (${i})`)
         const coinInfo = await coingecko.getCoinInfo(coin.coingecko_id)
         await this.syncPlatforms(coin, Object.entries(coinInfo.platforms), bep2tokens)
-        await sleep(1100)
+        await sleep(100)
       } catch (err) {
         await this.handleError(err)
       }
@@ -263,18 +264,18 @@ class SetupCoins {
   }
 
   upsertPlatform(values) {
-    return Platform.bulkCreate([values])
+    return Platform.bulkCreate([values], { updateOnDuplicate: ['chain_uid', 'type'] })
       .then(([{ id, type, chain_uid: chain }]) => {
         console.log(JSON.stringify({ type, chain, id }))
       })
       .catch(err => {
-        console.log('Error inserting platform', err.message)
+        console.log('Error inserting platform', err.message, err.parent.message)
       })
   }
 
   upsertChain(uid, name) {
     return Chain.findOrCreate({ where: { uid }, defaults: { name } })
-      .catch(err => console.log('Error inserting chain', err))
+      .catch(err => console.log('Error inserting chain', err.message, err.parent.message))
   }
 
   async handleError({ message, response = {} }) {

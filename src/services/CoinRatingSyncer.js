@@ -130,8 +130,8 @@ class CoinRatingSyncer extends Syncer {
           ROW_NUMBER() OVER(
             PARTITION BY p.coin_id
             ORDER BY case
-              WHEN p.type = 'erc20' then 1
-              WHEN p.type = 'bep20' then 2
+              WHEN p.chain_uid = 'ethereum' then 1
+              WHEN p.chain_uid = 'binance-smart-chain' then 2
               ELSE 3
             END ASC
           ) AS row_num
