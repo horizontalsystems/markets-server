@@ -1,5 +1,30 @@
 const { nullOrString, valueInCurrency } = require('../../utils')
 
+function mapOldTypes(type, chain) {
+  switch (chain) {
+    case 'bitcoin':
+    case 'bitcoin-cash':
+    case 'litecoin':
+    case 'dash':
+    case 'zcash':
+      return chain
+    case 'ethereum':
+      return type === 'eip20' ? 'erc20' : chain
+    case 'binance-smart-chain':
+      return type === 'eip20' ? 'erc20' : chain
+    case 'binancecoin':
+      return 'bep2'
+    case 'ethereum-optimistic':
+      return 'optimistic-ethereum'
+    case 'ethereum-arbitrum-one':
+      return 'arbitrum-one'
+    case 'polygon-pos':
+      return 'polygon'
+    default:
+      return type
+  }
+}
+
 function mapPlatforms(platforms, legacy) {
   const legacyPlatforms = ['erc20', 'bep20', 'bep2', 'bitcoin', 'bitcoin-cash', 'litecoin', 'dash', 'zcash', 'ethereum', 'binance-smart-chain']
 
@@ -13,7 +38,7 @@ function mapPlatforms(platforms, legacy) {
 
     return {
       decimals,
-      type: platform.type,
+      type: mapOldTypes(platform.type, platform.chain),
       address: platform.address,
       symbol: platform.symbol
     }
