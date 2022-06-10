@@ -11,15 +11,15 @@ function mapOldTypes(type, chain) {
     case 'ethereum':
       return type === 'eip20' ? 'erc20' : chain
     case 'binance-smart-chain':
-      return type === 'eip20' ? 'erc20' : chain
+      return type === 'eip20' ? 'bep20' : chain
     case 'binancecoin':
       return 'bep2'
-    case 'ethereum-optimistic':
-      return 'optimistic-ethereum'
-    case 'ethereum-arbitrum-one':
-      return 'arbitrum-one'
+    case 'optimistic-ethereum':
+      return type === 'eip20' ? 'optimistic-ethereum' : 'ethereum-optimism'
+    case 'arbitrum-one':
+      return type === 'eip20' ? 'arbitrum-one' : 'ethereum-arbitrum-one'
     case 'polygon-pos':
-      return 'polygon'
+      return type === 'eip20' ? 'polygon-pos' : 'polygon'
     default:
       return type
   }
@@ -31,14 +31,16 @@ function mapPlatforms(platforms, legacy) {
   return platforms.map(platform => {
     let { decimals } = platform
 
+    const type = mapOldTypes(platform.type, platform.chain_uid)
+
     // @deprecated
-    if (legacy && !legacyPlatforms.includes(platform.type)) {
+    if (legacy && !legacyPlatforms.includes(type)) {
       decimals = null
     }
 
     return {
+      type,
       decimals,
-      type: mapOldTypes(platform.type, platform.chain_uid),
       address: platform.address,
       symbol: platform.symbol
     }
