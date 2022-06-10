@@ -166,7 +166,11 @@ class SetupCoins {
           break
 
         case 'polygon-pos':
+          type = 'eip20'
           decimals = await web3Provider.getMRC20Decimals(address)
+          if (coin.uid === 'matic-network') {
+            await upsertPlatform('polygon-pos', 'native', 18)
+          }
           break
 
         case 'optimistic-ethereum':
