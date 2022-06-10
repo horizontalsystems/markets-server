@@ -10,10 +10,11 @@ const program = new Command()
   .option('-f --fetch', 'fetch news coins')
   .option('-c --coins <coins>', 'setup only given coins')
   .option('-p --platform <platform>', 'force sync decimals for given platform type')
+  .option('-p --platformType <platformType>', 'force sync decimals for given platform type')
   .option('--chains [coins]', 'sync with chains')
   .parse(process.argv)
 
-async function start({ all, fetch, coins, platform, chains }) {
+async function start({ all, fetch, coins, platform, platformType, chains }) {
   await sequelize.sync()
   const setupCoins = new SetupCoins()
 
@@ -23,7 +24,9 @@ async function start({ all, fetch, coins, platform, chains }) {
     } else if (coins) {
       await setupCoins.setupCoins(coins.split(','))
     } else if (platform) {
-      await setupCoins.forceSyncPlatforms(platform)
+      await setupCoins.forceSyncDecimals({ address: platform.split(',') })
+    } else if (platformType) {
+      await setupCoins.forceSyncDecimals({ platformType })
     } else if (all) {
       await setupCoins.setupCoins()
     } else if (chains) {

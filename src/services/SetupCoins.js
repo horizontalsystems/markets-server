@@ -68,15 +68,20 @@ class SetupCoins {
     }
   }
 
-  async forceSyncPlatforms(type) {
-    const platforms = await Platform.findAll({ where: { type } })
+  async forceSyncDecimals({ platformType, address }) {
+    const where = {
+      ...(address && { address }),
+      ...(platformType && { type: platformType })
+    }
+    const platforms = await Platform.findAll({ where })
 
     for (let i = 0; i < platforms.length; i += 1) {
       const platform = platforms[i]
 
       let getDecimals
-      switch (platform.type) {
+      switch (platform.chain_uid) {
         case 'optimism':
+        case 'optimistic-ethereum':
           getDecimals = web3Provider.getOptimismDecimals
           break
         case 'arbitrum-one':
@@ -88,7 +93,7 @@ class SetupCoins {
         case 'polygon-pos':
           getDecimals = web3Provider.getMRC20Decimals
           break
-        case 'optimistic-ethereum':
+        case 'ethereum':
           getDecimals = web3Provider.getERC20Decimals
           break
         default:
