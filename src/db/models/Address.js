@@ -51,7 +51,7 @@ class Address extends SequelizeModel {
         COUNT(*)
       FROM addresses a, platforms p
       WHERE a.platform_id = p.id
-        AND p.coin_uid = :chain
+        AND p.chain_uid = :chain
     `
 
     const [result] = await Address.query(query, { chain })
