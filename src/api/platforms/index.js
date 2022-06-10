@@ -14,7 +14,7 @@ const router = express.Router()
  *  {[
  *    "type": "native",
  *    "coin_uid": "bitcoin",
- *    "chain_uid": "bitcoin",
+ *    "blockchain_uid": "bitcoin",
  *    "decimals": 8
  *  ]}
  */

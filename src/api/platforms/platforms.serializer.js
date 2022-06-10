@@ -3,7 +3,7 @@ exports.serialize = platforms => {
     const platform = {
       type: item.type,
       coin_uid: item.coin_uid,
-      chain_uid: item.chain_uid
+      blockchain_uid: item.chain_uid
     }
 
     if (item.address) {
