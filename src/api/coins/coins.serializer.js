@@ -38,7 +38,7 @@ function mapPlatforms(platforms, legacy) {
 
     return {
       decimals,
-      type: mapOldTypes(platform.type, platform.chain),
+      type: mapOldTypes(platform.type, platform.chain_uid),
       address: platform.address,
       symbol: platform.symbol
     }
