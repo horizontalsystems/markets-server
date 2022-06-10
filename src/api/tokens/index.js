@@ -4,10 +4,10 @@ const controller = require('./platforms.controller')
 const router = express.Router()
 
 /**
- * @api {get} /v1/platforms Platforms
+ * @api {get} /v1/tokens Tokens
  * @apiDescription Get platforms
  * @apiVersion 1.0.0
- * @apiGroup Platform
+ * @apiGroup Token
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
