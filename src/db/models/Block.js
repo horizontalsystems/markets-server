@@ -28,7 +28,6 @@ class Block extends SequelizeModel {
   }
 
   static getBlockHashes(chain, number) {
-    console.log(chain, number)
     return Block.findAll({
       where: {
         chain,
