@@ -21,6 +21,7 @@ router.use('/markets', require('../api/global-markets'))
 router.use('/global-markets', require('../api/global-markets'))
 router.use('/evm-method-labels', require('../api/evm-method-labels'))
 router.use('/chain', require('../api/chain'))
+router.use('/blockchains', require('../api/chain'))
 router.use('/status', require('../api/status'))
 
 module.exports = router
