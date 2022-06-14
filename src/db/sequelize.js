@@ -33,6 +33,7 @@ const AuthKey = require('./models/AuthKey')
 const UpdateState = require('./models/UpdateState')
 const EvmMethodLabel = require('./models/EvmMethodLabel')
 const AddressLabel = require('./models/AddressLabel')
+const Block = require('./models/Block')
 const config = require('./config')
 
 const sequelize = new Sequelize(
@@ -77,6 +78,7 @@ const db = {
   NftHolder: NftHolder.init(sequelize, Sequelize),
   AuthKey: AuthKey.init(sequelize, Sequelize),
   EvmMethodLabel: EvmMethodLabel.init(sequelize, Sequelize),
+  Block: Block.init(sequelize, Sequelize),
   UpdateState: UpdateState.init(sequelize, Sequelize)
 }
 

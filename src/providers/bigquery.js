@@ -7,6 +7,7 @@ const transactionStatsBtcBasedSQL = requireFile('providers/bigquery-sql/transact
 const addressStatsSQL = requireFile('providers/bigquery-sql/address_stats.sql')
 const nftHolders = requireFile('providers/bigquery-sql/nft_1155_holders.sql')
 const addressStatsBtcBasedSQL = requireFile('providers/bigquery-sql/address_stats_btc.sql')
+const blocks = requireFile('providers/bigquery-sql/blocks.sql')
 
 const dexVolume = {
   sushi: requireFile('providers/bigquery-sql/sushi_volumes.sql'),
@@ -92,6 +93,11 @@ class BigQueryClient extends BigQuery {
       date_partition: `${dateFrom.substring(0, 8)}01`,
       date_from: dateFrom
     })
+  }
+
+  getBlocks(dateFrom, dateTo) {
+    console.log('Fetching block hashes for bitcoin & bitcoin cash', dateFrom, dateTo)
+    return this.createQuery(blocks, { date_from: dateFrom, date_to: dateTo })
   }
 
   getNftHolders(contract, tokens) {
