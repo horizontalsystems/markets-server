@@ -5,7 +5,7 @@ const bitquery = require('../../providers/bitquery').bitqueryProxy
 
 exports.list = async (req, res) => {
   const chains = await Chain.findAll({
-    attributes: ['uid', 'name']
+    attributes: ['uid', 'name', 'url']
   })
 
   res.send(serializer.serialize(chains))

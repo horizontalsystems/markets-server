@@ -80,7 +80,7 @@ const opts = (Model, attrs, attrsOne = []) => ({
 
 router.use(
   crud('/coins', opts(Coin, ['id', 'uid', 'name', 'code'], ['description', 'security', 'links', 'coingecko_id', 'price'])),
-  crud('/chains', opts(Chain, ['id', 'uid', 'name'])),
+  crud('/chains', opts(Chain, ['id', 'uid', 'name', 'url'])),
   crud('/languages', opts(Language, ['id', 'code', 'name'])),
   crud('/platforms', opts(Platform, ['id', 'coin_id', 'chain_uid', 'type', 'symbol', 'address', 'decimals'])),
   crud('/categories', opts(Category, ['id', 'uid', 'name', 'order', 'description', 'enabled'])),

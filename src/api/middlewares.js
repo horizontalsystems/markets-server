@@ -69,6 +69,8 @@ exports.error404 = (req, res) => {
 }
 
 exports.error500 = (err, req, res, next) => {
+  console.log(err)
+
   if (err instanceof ValidationError) {
     res.status(err.statusCode)
   } else {
