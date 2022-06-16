@@ -14,6 +14,7 @@ class Chain extends SequelizeModel {
           type: DataTypes.STRING,
           allowNull: false
         },
+        url: DataTypes.STRING,
         stats: DataTypes.JSONB,
         //  {
         //    market_cap: 99,
