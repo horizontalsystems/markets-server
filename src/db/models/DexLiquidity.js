@@ -40,8 +40,8 @@ class DexLiquidity extends SequelizeModel {
     return !!await DexLiquidity.findOne()
   }
 
-  static async getByCoin(uid, platform, window, dateFrom) {
-    const platforms = await Platform.findByCoinUID(uid, platform)
+  static async getByCoin(uid, chain, window, dateFrom) {
+    const platforms = await Platform.findByCoinUID(uid, chain)
     if (!platforms.length) {
       return {}
     }
@@ -76,15 +76,15 @@ class DexLiquidity extends SequelizeModel {
       LEFT JOIN (
         SELECT platform_id, volume, date
         FROM dex_liquidities
-        WHERE date < '${date}' 
-          AND exchange = '${exchange}'
+        WHERE date < :date 
+          AND exchange = :exchange
       ) L ON L.platform_id = P.id
-      WHERE P.type = 'erc20'
+      WHERE P.chain_uid = 'ethereum'
         AND P.decimals is NOT NULL
         AND P.address IS NOT NULL
         AND L.volume > 0
       ORDER BY P.id, L.date DESC
-    `)
+    `, { date, exchange })
   }
 
   static deleteExpired(dateFrom, dateTo) {

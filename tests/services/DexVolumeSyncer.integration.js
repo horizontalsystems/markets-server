@@ -48,8 +48,8 @@ describe('DexVolumeSyncer', async () => {
     describe('Ethereum and ERC20 tokens', () => {
       beforeEach(async () => {
         await Platform.bulkCreate([
-          { id: 1, type: 'ethereum', decimals: 18, coin_id: 1, chain_uid: 'ethereum' },
-          { id: 2, type: 'erc20', decimals: 18, coin_id: 2, address: usdcErc20, chain_uid: 'ethereum' }
+          { id: 1, type: 'native', decimals: 18, coin_id: 1, chain_uid: 'ethereum' },
+          { id: 2, type: 'eip20', decimals: 18, coin_id: 2, address: usdcErc20, chain_uid: 'ethereum' }
         ])
 
         bigquery.getDexVolumes.returns([
@@ -67,7 +67,7 @@ describe('DexVolumeSyncer', async () => {
     describe('BinanceSmartChain and BEP20 tokens', () => {
       beforeEach(async () => {
         await Platform.bulkCreate([
-          { id: 3, type: 'bep20', decimals: 18, coin_id: 2, address: usdcBep20, chain_uid: 'ethereum' }
+          { id: 3, type: 'eip20', decimals: 18, coin_id: 2, address: usdcBep20, chain_uid: 'ethereum' }
         ])
 
         bitquery.getDexVolumes.returns([

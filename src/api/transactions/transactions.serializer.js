@@ -21,7 +21,7 @@ exports.serializeTransactions = ({ transactions, platforms }) => {
 
   const platformNames = [...new Set(ids)]
     .flatMap(id => platforms.find(platform => platform.id === id))
-    .map(item => item.type)
+    .map(item => item.chain_uid)
 
   return { platforms: platformNames, transactions: items }
 }
@@ -46,7 +46,7 @@ exports.serializeDexVolumes = ({ volumes, platforms }) => {
 
   const platformNames = [...new Set(ids)]
     .flatMap(id => platforms.find(platform => platform.id === id))
-    .map(item => item.type)
+    .map(item => item.chain_uid)
 
   return { platforms: platformNames, volumes: items }
 }
@@ -71,7 +71,7 @@ exports.serializeDexLiquidity = ({ liquidity, platforms }) => {
 
   const platformNames = [...new Set(ids)]
     .flatMap(id => platforms.find(platform => platform.id === id))
-    .map(item => item.type)
+    .map(item => item.chain_uid)
 
   return { platforms: platformNames, liquidity: items }
 }

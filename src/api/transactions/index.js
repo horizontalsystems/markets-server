@@ -16,9 +16,9 @@ const router = express.Router()
  * @apiVersion 1.0.1
  * @apiGroup Transaction
  *
- * @apiParam    {String}                        coin_uid    Coin's uid
- * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}   [interval]  Date interval
- * @apiParam    {String=erc20,bep20,solana}     [platform]  Platforms
+ * @apiParam    {String}                                      coin_uid    Coin's uid
+ * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}                 [interval]  Date interval
+ * @apiParam    {String=ethereum,binance-smart-chain,solana}  [platform]  Platforms
  *
  * @apiSuccess  {String}    date       date
  * @apiSuccess  {String}    count      count
@@ -27,7 +27,7 @@ const router = express.Router()
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
  *  [{
- *    platforms: ['erc20'],
+ *    platforms: ['ethereum'],
  *    transactions: [{
  *      "date": "2021-10-04T00:00:00.000Z",
  *      "count": "1679",
@@ -44,9 +44,9 @@ router.get('/', requireAuth, validateTransactions, setDateInterval, controller.i
  * @apiVersion 1.0.1
  * @apiGroup Transaction
  *
- * @apiParam    {String}                        coin_uid    Coin's uid
- * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}   [interval]  Date interval
- * @apiParam    {String=erc20,bep20,solana}     [platform]  Platforms
+ * @apiParam    {String}                                      coin_uid    Coin's uid
+ * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}                 [interval]  Date interval
+ * @apiParam    {String=ethereum,binance-smart-chain,solana}  [platform]  Platforms
  *
  * @apiSuccess  {String}    date       date
  * @apiSuccess  {Date}      volume     volume
@@ -54,7 +54,7 @@ router.get('/', requireAuth, validateTransactions, setDateInterval, controller.i
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
  *  [{
- *    platforms: ['erc20'],
+ *    platforms: ['ethereum'],
  *    volumes: [{
  *      "date": "2021-10-04T00:00:00.000Z",
  *      "count": "1679",
@@ -71,9 +71,9 @@ router.get('/dex-volumes', requireAuth, validateDexVolumes, setDateInterval, con
  * @apiVersion 1.0.1
  * @apiGroup Transaction
  *
- * @apiParam    {String}                        coin_uid    Coin's uid
- * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}   [interval]  Date interval
- * @apiParam    {String=erc20,bep20}            [platform]  Platforms
+ * @apiParam    {String}                              coin_uid    Coin's uid
+ * @apiParam    {String=1d,1w,2w,1m,3m,6m,1y}         [interval]  Date interval
+ * @apiParam    {String=ethereum,binance-smart-chain} [platform]  Platforms
  *
  * @apiSuccess  {String}    date       date
  * @apiSuccess  {Date}      volume     volume
@@ -81,7 +81,7 @@ router.get('/dex-volumes', requireAuth, validateDexVolumes, setDateInterval, con
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
  *  [{
- *    platforms: ['erc20'],
+ *    platforms: ['ethereum'],
  *    liquidity: [{
  *      "date": "2021-10-04T00:00:00.000Z",
  *      "volume": "534523487983"

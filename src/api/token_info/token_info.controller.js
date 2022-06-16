@@ -2,29 +2,12 @@ const web3 = require('../../providers/web3')
 const binanceDex = require('../../providers/binance-dex')
 
 exports.info = async (req, res, next) => {
-  const { address, symbol } = req.query
+  const { address, symbol, chain } = req.query
   const { type } = req.params
 
-  let info
-
-  switch (type) {
-    case 'optimism':
-    case 'arbitrum-one':
-    case 'mrc20':
-    case 'erc20':
-    case 'bep20': {
-      info = await web3.getTokenInfo(address, type)
-      break
-    }
-
-    case 'bep2': {
-      info = await binanceDex.getTokenInfo(symbol.toUpperCase())
-      break
-    }
-
-    default:
-      return next()
-  }
+  const info = type === 'bep2'
+    ? await binanceDex.getTokenInfo(symbol.toUpperCase())
+    : await web3.getTokenInfo(address, chain)
 
   if (info) {
     return res.send(info)

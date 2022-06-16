@@ -1,19 +1,46 @@
 const { nullOrString, valueInCurrency } = require('../../utils')
 
+function mapOldTypes(type, chain) {
+  switch (chain) {
+    case 'bitcoin':
+    case 'bitcoin-cash':
+    case 'litecoin':
+    case 'dash':
+    case 'zcash':
+      return chain
+    case 'ethereum':
+      return type === 'eip20' ? 'erc20' : chain
+    case 'binance-smart-chain':
+      return type === 'eip20' ? 'bep20' : chain
+    case 'binancecoin':
+      return 'bep2'
+    case 'optimistic-ethereum':
+      return type === 'eip20' ? 'optimistic-ethereum' : 'ethereum-optimism'
+    case 'arbitrum-one':
+      return type === 'eip20' ? 'arbitrum-one' : 'ethereum-arbitrum-one'
+    case 'polygon-pos':
+      return type === 'eip20' ? 'polygon-pos' : 'polygon'
+    default:
+      return type
+  }
+}
+
 function mapPlatforms(platforms, legacy) {
   const legacyPlatforms = ['erc20', 'bep20', 'bep2', 'bitcoin', 'bitcoin-cash', 'litecoin', 'dash', 'zcash', 'ethereum', 'binance-smart-chain']
 
   return platforms.map(platform => {
     let { decimals } = platform
 
+    const type = mapOldTypes(platform.type, platform.chain_uid)
+
     // @deprecated
-    if (legacy && !legacyPlatforms.includes(platform.type)) {
+    if (legacy && !legacyPlatforms.includes(type)) {
       decimals = null
     }
 
     return {
+      type,
       decimals,
-      type: platform.type,
       address: platform.address,
       symbol: platform.symbol
     }
@@ -67,7 +94,7 @@ function mapCoinAttribute(coin, field, currencyRate) {
   }
 }
 
-exports.serializeList = (coins, fields, currencyRate) => {
+exports.serializeCoins = (coins, fields, currencyRate) => {
   if (!fields.length) {
     return []
   }
@@ -84,6 +111,16 @@ exports.serializeList = (coins, fields, currencyRate) => {
 
     return coin
   })
+}
+
+exports.serializeList = coins => {
+  return coins.map(coin => ({
+    uid: coin.uid,
+    name: coin.name,
+    code: coin.code,
+    coingecko_id: coin.coingecko_id,
+    market_cap_rank: coin.market_cap_rank
+  }))
 }
 
 exports.serializeShow = (coin, language, currencyRate) => {

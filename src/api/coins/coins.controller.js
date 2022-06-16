@@ -33,7 +33,16 @@ exports.index = async ({ query, currencyRate }, res) => {
 
   const coins = await Coin.findAll(options)
 
-  res.send(serializer.serializeList(coins, fields, currencyRate))
+  res.send(serializer.serializeCoins(coins, fields, currencyRate))
+}
+
+exports.list = async ({ currencyRate }, res, next) => {
+  try {
+    const coins = await Coin.getList()
+    res.send(serializer.serializeList(coins, currencyRate))
+  } catch (e) {
+    next(e)
+  }
 }
 
 exports.show = async ({ params, query, currencyRate }, res) => {
@@ -86,6 +95,10 @@ exports.price_chart = async ({ params, query, currencyRate }, res) => {
 }
 
 exports.price_history = async ({ params, query, currencyRate }, res) => {
-  const historicalPrice = await CoinMarket.getHistoricalPrice(params.uid, parseInt(query.timestamp, 10))
-  res.send(serializer.serializePriceHistory(historicalPrice, currencyRate))
+  const price = await CoinMarket.getHistoricalPrice(params.uid, parseInt(query.timestamp, 10))
+  if (price) {
+    res.send(serializer.serializePriceHistory(price, currencyRate))
+  } else {
+    res.status(404)
+  }
 }

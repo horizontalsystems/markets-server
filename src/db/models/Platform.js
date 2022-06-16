@@ -31,7 +31,7 @@ class Platform extends SequelizeModel {
         sequelize,
         indexes: [{
           unique: true,
-          fields: ['coin_id', 'type']
+          fields: ['coin_id', 'chain_uid', 'type']
         }]
       }
     )
@@ -43,23 +43,33 @@ class Platform extends SequelizeModel {
     })
   }
 
-  static async findByCoinUID(uids, type = '') {
+  static getListCoins() {
+    return Platform.query(`
+      select
+        p.*,
+        c.uid as coin_uid
+      from platforms p, coins c
+      where c.id = p.coin_id
+    `)
+  }
+
+  static findByCoinUID(uids, chain = '') {
     const query = (`
       SELECT P.*
         FROM platforms P, coins C
       WHERE C.uid in (:uids)
         AND C.id = P.coin_id
-        AND P.type LIKE :type
+        AND P.chain_uid LIKE :chain
     `)
 
-    return Platform.query(query, { uids, type: `%${type}` })
+    return Platform.query(query, { uids, chain: `%${chain}` })
   }
 
-  static getByTypes(type, withDecimal, withAddress = true) {
+  static getByChain(chain, withDecimal, withAddress = true) {
     const where = {}
 
-    if (type) {
-      where.type = type
+    if (chain) {
+      where.chain_uid = chain
     }
 
     if (withDecimal) {
@@ -78,18 +88,6 @@ class Platform extends SequelizeModel {
       return []
     }
 
-    let platform
-    switch (chain) {
-      case 'bsc':
-        platform = 'bep20'
-        break
-      case 'matic':
-        platform = 'polygon-pos'
-        break
-      default:
-        platform = 'erc20'
-    }
-
     const query = `
       SELECT
         V.value,
@@ -98,11 +96,11 @@ class Platform extends SequelizeModel {
      FROM (values :values) as V(address, value)
      JOIN platforms P on P.address = V.address
      JOIN coins C on C.id = P.coin_id
-     WHERE type = :platform
+     WHERE chain_uid = :chain
      ORDER BY C.code
     `
 
-    return Platform.query(query, { values, platform })
+    return Platform.query(query, { values, chain })
   }
 
   static getMarketCap(uids) {
@@ -111,14 +109,14 @@ class Platform extends SequelizeModel {
         p.id,
         c.uid,
         p.type,
+        p.chain_uid,
         p.address,
         p.decimals,
         c.market_data->'circulating_supply' csupply,
         c.market_data->'market_cap' mcap,
         m.coin_id as multi_chain_id
       FROM platforms p
-      JOIN coins c on c.id = p.coin_id
-          ${uids ? 'and c.uid in (:uids)' : ''} 
+      JOIN coins c on c.id = p.coin_id ${uids ? 'and c.uid in (:uids)' : ''} 
       LEFT JOIN (
         SELECT
           coin_id

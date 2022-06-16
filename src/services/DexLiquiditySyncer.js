@@ -56,7 +56,7 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncFromStreamingfast(dateFrom, chunkSize = 100) {
-    const platforms = this.mapPlatforms(await Platform.getByTypes('bep20'))
+    const platforms = this.mapPlatforms(await Platform.getByChain('binance-smart-chain'))
     const chunks = chunk(platforms.list, chunkSize)
 
     for (let i = 0; i < chunks.length; i += 1) {
@@ -75,7 +75,7 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncStatsHistorical(dateParams) {
-    const platforms = this.mapPlatforms(await Platform.getByTypes('erc20', true))
+    const platforms = this.mapPlatforms(await Platform.getByChain('ethereum', true))
     const chunkSize = platforms.list.length
 
     await this.fetchFromBigquery(dateParams, '1d', 'uniswap_v2', 'uniswap_v2', platforms, chunkSize)

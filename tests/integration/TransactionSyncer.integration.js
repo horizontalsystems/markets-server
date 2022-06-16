@@ -54,8 +54,8 @@ describe('TransactionSyncer', async () => {
     describe('Ethereum and ERC20 tokens', () => {
       beforeEach(async () => {
         await Platform.bulkCreate([
-          { id: 1, type: 'ethereum', chain_uid: 'ethereum', decimals: 18, coin_id: 1 },
-          { id: 2, type: 'erc20', chain_uid: 'ethereum', decimals: 18, coin_id: 2, address: usdcErc20 }
+          { id: 1, type: 'native', chain_uid: 'ethereum', decimals: 18, coin_id: 1 },
+          { id: 2, type: 'eip20', chain_uid: 'ethereum', decimals: 18, coin_id: 2, address: usdcErc20 }
         ])
 
         bigquery.getTransactionsStats
@@ -81,11 +81,11 @@ describe('TransactionSyncer', async () => {
     describe('BSC BEP20 tokens', () => {
       beforeEach(async () => {
         await Platform.bulkCreate([
-          { id: 3, type: 'bep20', decimals: 18, coin_id: 2, address: usdcBep20, chain_uid: 'binance-smart-chain' },
+          { id: 3, type: 'eip20', decimals: 18, coin_id: 2, address: usdcBep20, chain_uid: 'binance-smart-chain' },
         ])
 
         bitquery.getTransfers
-          .withArgs(param1d.dateFrom.slice(0, 10), [{ address: usdcBep20 }], 'bsc')
+          .withArgs(param1d.dateFrom.slice(0, 10), [{ address: usdcBep20 }], 'binance-smart-chain')
           .returns([
             { count: 50, amount: 500, currency: { address: usdcBep20 }, date: { startOfInterval: param30m.dateFrom } }
           ])
@@ -110,11 +110,11 @@ describe('TransactionSyncer', async () => {
       param30m = syncer.syncParams('30m')
 
       await Platform.bulkCreate([
-        { id: 3, type: 'bep20', decimals: 18, coin_id: 2, address: usdcBep20, chain_uid: 'binance-smart-chain' },
+        { id: 3, type: 'eip20', decimals: 18, coin_id: 2, address: usdcBep20, chain_uid: 'binance-smart-chain' },
       ])
 
       bitquery.getTransfers
-        .withArgs(param30m.dateFrom.slice(0, 10), [{ address: usdcBep20 }], 'bsc')
+        .withArgs(param30m.dateFrom.slice(0, 10), [{ address: usdcBep20 }], 'binance-smart-chain')
         .returns([
           { count: 60, amount: 600, currency: { address: usdcBep20 }, date: { startOfInterval: param30m.dateFrom } }
         ])
@@ -160,7 +160,7 @@ describe('TransactionSyncer', async () => {
       param1d = syncer.syncParams('1d')
 
       await Platform.bulkCreate([
-        { id: 3, type: 'bep20', decimals: 18, coin_id: 2, address: usdcBep20, chain_uid: 'binance-smart-chain' }
+        { id: 3, type: 'eip20', decimals: 18, coin_id: 2, address: usdcBep20, chain_uid: 'binance-smart-chain' }
       ])
     })
 

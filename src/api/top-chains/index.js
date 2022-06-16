@@ -1,5 +1,5 @@
 const express = require('express')
-const controller = require('./platforms.controller')
+const controller = require('./top-chains.controller')
 const { setDateInterval, setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
@@ -32,7 +32,7 @@ const router = express.Router()
 router.get('/', setCurrencyRate, controller.index)
 
 /**
- * @api {get} /v1/top-platforms/list List Top Platforms
+ * @api {get} /v1/top-platforms/:chain/list List Top Platforms
  * @apiDescription Get a list of top platforms
  * @apiVersion 1.0.0
  * @apiGroup Platform

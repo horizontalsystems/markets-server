@@ -1,5 +1,5 @@
 const Chain = require('../../db/models/Chain')
-const serializer = require('./platforms.serializer')
+const serializer = require('./top-chains.serializer')
 const ChainMarketCap = require('../../db/models/ChainMarketCap')
 
 exports.index = async ({ currencyRate }, res) => {

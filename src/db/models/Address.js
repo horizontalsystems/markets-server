@@ -45,16 +45,16 @@ class Address extends SequelizeModel {
     return !!await Address.findOne()
   }
 
-  static async existsForPlatforms(platforms) {
+  static async existsForPlatforms(chain) {
     const query = `
       SELECT
         COUNT(*)
       FROM addresses a, platforms p
       WHERE a.platform_id = p.id
-        AND p.type IN (:platforms)
+        AND p.chain_uid = :chain
     `
 
-    const [result] = await Address.query(query, { platforms })
+    const [result] = await Address.query(query, { chain })
     return result.count > 0
   }
 

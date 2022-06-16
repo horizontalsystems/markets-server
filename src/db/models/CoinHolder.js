@@ -32,17 +32,17 @@ class CoinHolder extends SequelizeModel {
     })
   }
 
-  static async getList(uid, platform = 'erc20') {
+  static async getList(uid, chain = 'ethereum') {
     const query = (`
       SELECT H.*
         FROM coin_holders H
         JOIN platforms P on P.id = H.platform_id
         JOIN coins C on C.id = P.coin_id
        WHERE C.uid = :uid
-         AND P.type = :platform;
+         AND P.chain_uid = :chain
     `)
 
-    return CoinHolder.query(query, { platform, uid })
+    return CoinHolder.query(query, { chain, uid })
   }
 
   static async exists() {

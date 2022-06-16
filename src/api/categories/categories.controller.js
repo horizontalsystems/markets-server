@@ -17,7 +17,7 @@ exports.coins = async ({ params, currencyRate }, res) => {
     'total_volume'
   ]
 
-  res.send(coinsSerializer.serializeList(coins, coinFields, currencyRate))
+  res.send(coinsSerializer.serializeCoins(coins, coinFields, currencyRate))
 }
 
 exports.marketCap = async ({ params, dateFrom, dateInterval, currencyRate }, res) => {

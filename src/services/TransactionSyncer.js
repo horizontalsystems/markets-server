@@ -13,21 +13,21 @@ class TransactionSyncer extends Syncer {
   }
 
   async syncHistorical() {
-    if (!await Transaction.existsForPlatforms(['ethereum', 'erc20'])) {
+    if (!await Transaction.existsForPlatforms('ethereum')) {
       await this.syncFromBigquery(this.syncParamsHistorical('1d', { days: -30 }), '1d')
       await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m')
     }
 
-    if (!await Transaction.existsForPlatforms(['bitcoin'])) {
+    if (!await Transaction.existsForPlatforms('bitcoin')) {
       await this.syncFromBigquery(this.syncParamsHistorical('1d', { days: -30 }), '1d', true)
       await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m', true)
     }
 
-    if (!await Transaction.existsForPlatforms(['bep20'])) {
-      await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'bsc', false, 30)
+    if (!await Transaction.existsForPlatforms('binance-smart-chain')) {
+      await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'binance-smart-chain', false, 30)
     }
 
-    if (!await Transaction.existsForPlatforms(['solana'])) {
+    if (!await Transaction.existsForPlatforms('solana')) {
       await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'solana', false, 30)
     }
 
@@ -42,7 +42,7 @@ class TransactionSyncer extends Syncer {
   async syncDailyStats(dateParams) {
     await this.syncFromBigquery(dateParams, '30m')
     await this.syncFromBigquery(dateParams, '30m', true)
-    await this.syncFromBitquery(dateParams, 'bsc', true)
+    await this.syncFromBitquery(dateParams, 'binance-smart-chain', true)
     await this.syncFromBitquery(dateParams, 'solana', true)
 
     console.log('Completed syncing daily transactions stats')
@@ -54,8 +54,8 @@ class TransactionSyncer extends Syncer {
   }
 
   async syncFromBigquery({ dateFrom, dateTo }, datePeriod, syncBtcBaseCoins = false) {
-    const types = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash', 'ethereum', 'erc20']
-    const platforms = await this.getPlatforms(types, true, false)
+    const chains = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash', 'ethereum']
+    const platforms = await this.getPlatforms(chains, true, false)
     const transactions = syncBtcBaseCoins
       ? await bigquery.getTransactionsStatsBtcBased(dateFrom, dateTo, datePeriod)
       : await bigquery.getTransactionsStats(dateFrom, dateTo, platforms.list, datePeriod)
@@ -72,13 +72,13 @@ class TransactionSyncer extends Syncer {
     await this.bulkCreate(records, 'ethereum,erc20,btc')
   }
 
-  async syncFromBitquery(dateParams, network, isHourly, chunkSize = 100) {
-    const platforms = await this.getPlatforms(network === 'bsc' ? 'bep20' : network)
+  async syncFromBitquery(dateParams, chain, isHourly, chunkSize = 100) {
+    const platforms = await this.getPlatforms(chain)
     const chunks = chunk(platforms.list, chunkSize)
     const dateFrom = dateParams.dateFrom.slice(0, 10)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      const transfers = await bitquery.getTransfers(dateFrom, chunks[i], network)
+      const transfers = await bitquery.getTransfers(dateFrom, chunks[i], chain)
       const records = transfers.map(transfer => {
         return {
           count: transfer.count,
@@ -89,9 +89,9 @@ class TransactionSyncer extends Syncer {
       })
 
       if (isHourly && records.length) {
-        await this.adjustHourlyData(records, dateFrom, dateParams.dateFrom, network)
+        await this.adjustHourlyData(records, dateFrom, dateParams.dateFrom, chain)
       } else {
-        await this.bulkCreate(records, network)
+        await this.bulkCreate(records, chain)
       }
     }
   }
@@ -123,15 +123,14 @@ class TransactionSyncer extends Syncer {
     return this.bulkCreate(records, network)
   }
 
-  async getPlatforms(types, withDecimals, withAddress = true) {
-    const platforms = await Platform.getByTypes(types, withDecimals, withAddress)
+  async getPlatforms(chains, withDecimals, withAddress = true) {
+    const platforms = await Platform.getByChain(chains, withDecimals, withAddress)
     const list = []
     const map = {}
 
-    platforms.forEach(({ type, address, decimals, id }) => {
-      if (type === 'ethereum' || type === 'bitcoin' || type === 'bitcoin-cash'
-      || type === 'dash' || type === 'dogecoin' || type === 'litecoin' || type === 'zcash') {
-        map[type] = id
+    platforms.forEach(({ id, type, chain_uid: chain, address, decimals }) => {
+      if (type === 'native') {
+        map[chain] = id
       }
 
       if (address) {
@@ -148,7 +147,7 @@ class TransactionSyncer extends Syncer {
     return { list, map }
   }
 
-  async bulkCreate(records, platform) {
+  async bulkCreate(records, chain) {
     const items = records.filter(item => item.platform_id)
     if (!items.length) {
       return
@@ -159,7 +158,7 @@ class TransactionSyncer extends Syncer {
     for (let i = 0; i < chunks.length; i += 1) {
       await Transaction.bulkCreate(chunks[i], { ignoreDuplicates: true })
         .then(transactions => {
-          console.log(`Inserted ${platform} transactions`, transactions.length)
+          console.log(`Inserted ${chain} transactions`, transactions.length)
         })
         .catch(e => {
           console.error('Error inserting transactions', e.message, e.stack)

@@ -20,7 +20,7 @@ class DexVolumeSyncer extends Syncer {
     await this.syncFromBigquery(this.syncParamsHistorical('1d', { days: -30 }), '1d')
     await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m')
 
-    await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'bsc', 'day', 30)
+    await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'binance-smart-chain', 'day', 30)
   }
 
   async syncLatest() {
@@ -34,7 +34,7 @@ class DexVolumeSyncer extends Syncer {
   }
 
   async syncDailyStatsBitquery(dateParams) {
-    await this.syncFromBitquery(dateParams, 'bsc', 'hour', 100)
+    await this.syncFromBitquery(dateParams, 'binance-smart-chain', 'hour', 100)
   }
 
   async syncMonthlyStats({ dateFrom, dateTo }) {
@@ -60,24 +60,22 @@ class DexVolumeSyncer extends Syncer {
     await this.bulkCreate(mapVolumes(volumesSushi, 'sushi'))
   }
 
-  async syncFromBitquery({ dateFrom }, network, interval, chunkSize = 100) {
-    let type
+  async syncFromBitquery({ dateFrom }, chain, interval, chunkSize = 100) {
     let exchange
 
-    switch (network) {
-      case 'bsc':
-        type = 'bep20'
+    switch (chain) {
+      case 'binance-smart-chain':
         exchange = ['Pancake', 'Pancake v2']
         break
       default:
         return
     }
 
-    const platforms = await this.getPlatforms(type)
+    const platforms = await this.getPlatforms(chain)
     const chunks = chunk(platforms.list, chunkSize)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      const dexVolume = await bitquery.getDexVolumes(dateFrom.slice(0, 10), chunks[i], network, exchange, interval)
+      const dexVolume = await bitquery.getDexVolumes(dateFrom.slice(0, 10), chunks[i], chain, exchange, interval)
       const records = dexVolume.map(item => {
         return {
           volume: item.tradeAmount,
@@ -91,8 +89,8 @@ class DexVolumeSyncer extends Syncer {
     }
   }
 
-  async getPlatforms(type, withDecimals) {
-    const platforms = (await Platform.getByTypes(type))
+  async getPlatforms(chain, withDecimals) {
+    const platforms = await Platform.getByChain(chain)
     const list = []
     const map = {}
 

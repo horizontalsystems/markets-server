@@ -1,6 +1,15 @@
+const Chain = require('../../db/models/Chain')
 const Block = require('../../db/models/Block')
-const serializer = require('./chain.serializer')
+const serializer = require('./blockchains.serializer')
 const bitquery = require('../../providers/bitquery').bitqueryProxy
+
+exports.list = async (req, res) => {
+  const chains = await Chain.findAll({
+    attributes: ['uid', 'name']
+  })
+
+  res.send(serializer.serialize(chains))
+}
 
 exports.blockNumber = async ({ params }, res, next) => {
   try {
