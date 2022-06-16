@@ -9,9 +9,9 @@ const router = express.Router()
  * @apiVersion 1.0.0
  * @apiGroup Token
  *
- * @apiParam  {String=eip20,bep2}                               platform  Coin's platform
- * @apiParam  {String=ethereum,binance-smart-chain,binancecoin} chain     Coin's platform
- * @apiParam  {String}                                          address   Coin's contract address
+ * @apiParam  {String=eip20,bep2}                               platform    Coin's platform
+ * @apiParam  {String=ethereum,binance-smart-chain,binancecoin} blockchain  Coin's platform
+ * @apiParam  {String}                                          address     Coin's contract address
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK

@@ -24,7 +24,7 @@ function getBep2Tokens() {
     })
 }
 
-exports.getTokenInfo = async symbol => {
+exports.getBep20Info = async symbol => {
   if (isEmpty(cache)) {
     cache = await getBep2Tokens().then(res => mapBy(res.data, 'symbol'))
   }

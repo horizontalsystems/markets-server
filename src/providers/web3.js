@@ -32,10 +32,14 @@ const arbitrumOne = new Web3Provider('https://arb1.arbitrum.io/rpc', erc20Abi)
 const polygon = new Web3Provider('https://polygon-rpc.com', erc20Abi)
 const binance = new Web3Provider('https://bsc-dataseed1.binance.org:443', erc20Abi)
 
-exports.getTokenInfo = async (contractAddress, chain) => {
+exports.getEip20Info = async (contractAddress, chainOrType) => {
   let provider
 
-  switch (chain) {
+  switch (chainOrType) {
+    case 'erc20':
+    case 'ethereum':
+      provider = ethereum
+      break
     case 'bep20':
     case 'binance-smart-chain':
       provider = binance
@@ -52,7 +56,7 @@ exports.getTokenInfo = async (contractAddress, chain) => {
       provider = arbitrumOne
       break
     default:
-      provider = ethereum
+      return null
   }
 
   try {
