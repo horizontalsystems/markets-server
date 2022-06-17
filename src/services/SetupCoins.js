@@ -127,9 +127,9 @@ class SetupCoins {
   }
 
   async syncPlatforms(coin, platforms, bep2tokens) {
-    const upsertPlatform = async (chain, type, decimals, address, symbol) => {
+    const upsertPlatform = async (chain, oldType, values) => {
       await this.upsertChain(chain, chain === coin.uid ? coin.name : chain)
-      await this.upsertPlatform({ type, decimals, address, symbol, coin_id: coin.id, chain_uid: chain })
+      await this.upsertPlatform({ ...values, coin_id: coin.id, chain_uid: chain }, oldType)
     }
 
     switch (coin.uid) {
@@ -138,16 +138,19 @@ class SetupCoins {
       case 'litecoin':
       case 'dash':
       case 'zcash':
-        return upsertPlatform(coin.uid, 'native', 8)
+        return upsertPlatform(coin.uid, coin.uid, { type: 'native', decimals: 8 })
       case 'ethereum':
-        await upsertPlatform('ethereum', 'native', 18)
-        await upsertPlatform('arbitrum-one', 'native', 18)
-        await upsertPlatform('optimistic-ethereum', 'native', 18)
+        await upsertPlatform('ethereum', 'ethereum', { type: 'native', decimals: 18 })
+        await upsertPlatform('arbitrum-one', 'arbitrum-one', { type: 'native', decimals: 18 })
+        await upsertPlatform('optimistic-ethereum', 'optimistic-ethereum', { type: 'native', decimals: 18 })
         return
       case 'binancecoin':
-        await upsertPlatform('binance-smart-chain', 'native', 18)
-        await upsertPlatform('binancecoin', 'native', 18, null, 'BNB')
+        await upsertPlatform('binance-smart-chain', 'binance-smart-chain', { type: 'native', decimals: 18 })
+        await upsertPlatform('binancecoin', 'binancecoin', { type: 'native', decimals: 18, symbol: 'BNB' })
         return
+      case 'matic-network':
+        await upsertPlatform('polygon-pos', 'polygon-pos', { type: 'native', decimals: 18 })
+        break
       default:
         break
     }
@@ -155,41 +158,45 @@ class SetupCoins {
     for (let i = 0; i < platforms.length; i += 1) {
       const [platform, address] = platforms[i]
 
+      let oldType = platform
+      let newType = platform
       let decimals
+      let resolver
       let symbol
-      let type = platform
+      let mapper = data => {
+        decimals = data
+      }
 
       switch (platform) {
         case 'ethereum':
-          type = 'eip20'
-          decimals = await web3Provider.getERC20Decimals(address)
+          newType = 'eip20'
+          oldType = 'erc20'
+          resolver = web3Provider.getERC20Decimals
           break
 
         case 'binance-smart-chain':
-          type = 'eip20'
-          decimals = await web3Provider.getBEP20Decimals(address)
+          newType = 'eip20'
+          oldType = 'bep20'
+          resolver = web3Provider.getBEP20Decimals
           break
 
         case 'polygon-pos':
-          type = 'eip20'
-          decimals = await web3Provider.getMRC20Decimals(address)
-          if (coin.uid === 'matic-network') {
-            await upsertPlatform('polygon-pos', 'native', 18)
-          }
+          newType = 'eip20'
+          resolver = web3Provider.getMRC20Decimals
           break
 
         case 'optimistic-ethereum':
-          type = 'eip20'
-          decimals = await web3Provider.getOptimismDecimals(address)
+          newType = 'eip20'
+          resolver = web3Provider.getOptimismDecimals
           break
 
         case 'arbitrum-one':
-          type = 'eip20'
-          decimals = await web3Provider.getArbitrumOneDecimals(address)
+          newType = 'eip20'
+          resolver = web3Provider.getArbitrumOneDecimals
           break
 
         case 'binancecoin': {
-          type = 'bep2'
+          newType = 'bep2'
           const token = bep2tokens[coin.code.toUpperCase()]
           if (token) {
             decimals = token.contract_decimals
@@ -199,20 +206,31 @@ class SetupCoins {
         }
 
         case 'solana': {
-          const meta = await solscan.getMeta(address)
-          if (meta) {
-            decimals = meta.decimals
-            symbol = meta.symbol
+          resolver = solscan.getMeta
+          mapper = data => {
+            decimals = data.decimals
+            symbol = data.symbol
           }
           break
         }
         default:
       }
 
+      const platformOld = await Platform.findOne({
+        where: {
+          coin_id: coin.id,
+          type: oldType
+        }
+      })
+
+      if (resolver && !platformOld) {
+        await resolver(address).then(data => mapper(data))
+      }
+
       if (platform) {
-        await upsertPlatform(platform, type, decimals, address, symbol)
+        await upsertPlatform(platform, oldType, { type: newType, decimals, address, symbol })
       } else if (!address) {
-        await upsertPlatform(coin.uid, 'native', decimals, address)
+        await upsertPlatform(coin.uid, oldType, { type: 'native', decimals, address })
       }
     }
   }
@@ -272,19 +290,36 @@ class SetupCoins {
     }
   }
 
-  upsertPlatform(values) {
-    return Platform.bulkCreate([values], { updateOnDuplicate: ['chain_uid', 'type'] })
+  async upsertPlatform(values, oldType) {
+    const platform = await Platform.findOne({
+      where: {
+        coin_id: values.coin_id,
+        type: oldType
+      }
+    })
+
+    if (platform) {
+      return platform.update(values)
+        .then(() => {
+          console.log('Platform updated', JSON.stringify(values))
+        })
+        .catch(err => {
+          console.log('Error updating platform', err.message)
+        })
+    }
+
+    return Platform.bulkCreate([values], { ignoreDuplicates: true })
       .then(([{ id, type, chain_uid: chain }]) => {
         console.log(JSON.stringify({ type, chain, id }))
       })
       .catch(err => {
-        console.log('Error inserting platform', err.message, err.parent.message)
+        console.log('Error inserting platform', err)
       })
   }
 
   upsertChain(uid, name) {
     return Chain.findOrCreate({ where: { uid }, defaults: { name } })
-      .catch(err => console.log('Error inserting chain', err.message, err.parent.message))
+      .catch(err => console.log('Error inserting chain', err.message, (err.parent || {}).message))
   }
 
   async handleError({ message, response = {} }) {
