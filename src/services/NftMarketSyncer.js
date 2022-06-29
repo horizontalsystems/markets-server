@@ -126,7 +126,7 @@ class NftMarketSyncer extends Syncer {
 
   upsertNftCollections(collections) {
     NftCollection.bulkCreate(collections, {
-      updateOnDuplicate: ['stats']
+      updateOnDuplicate: ['stats', 'last_updated']
     })
       .catch(err => {
         console.error('Error inserting NFT collections', err.message)
