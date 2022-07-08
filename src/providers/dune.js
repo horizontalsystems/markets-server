@@ -219,6 +219,12 @@ class DuneAnalytics {
     const params = [{ key: 'top', type: 'number', value: `${limit}` }]
     return this.getQueryResults(785004, params)
   }
+
+  async getDexLiquidity(dateFrom) {
+    const params = [{ key: 'date_from', type: 'text', value: dateFrom }]
+    return this.getQueryResults(918643, params)
+  }
+
 }
 
 module.exports = new DuneAnalytics(process.env.DUNE_USERNAME, process.env.DUNE_PASSWORD)
