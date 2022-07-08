@@ -31,10 +31,10 @@ describe('DexLiquiditySyncer', async () => {
     })
   })
 
-  describe('#syncHistorical', () => {
+  describe.only('#syncHistorical', () => {
     beforeEach(() => {
-      sinon.stub(syncer, 'syncStatsHistorical')
-      sinon.stub(syncer, 'syncFromBigquery')
+      sinon.stub(syncer, 'syncHistorical')
+      sinon.stub(syncer, 'syncFromDune')
       sinon.stub(syncer, 'syncFromStreamingfast')
     })
 
@@ -42,30 +42,21 @@ describe('DexLiquiditySyncer', async () => {
       it('returns without syncing', async () => {
         sinon.stub(DexLiquidity, 'exists').returns(true)
         await syncer.syncHistorical()
-        sinon.assert.notCalled(syncer.syncFromBigquery)
+        sinon.assert.notCalled(syncer.syncFromDune)
+        sinon.assert.notCalled(syncer.syncFromStreamingfast)
       })
     })
 
     describe('when no liquidity exists', () => {
       beforeEach(() => {
-        sinon.stub(DexLiquidity, 'exists').returns(false)
       })
 
       it.skip('fetches historical, weekly and daily stats in order', async () => {
+        sinon.stub(DexLiquidity, 'exists').returns(false)
         await syncer.syncHistorical()
 
-        sinon.assert.calledWith(syncer.syncStatsHistorical, {
-          dateFrom: '2020-01-01',
-          dateTo: '2020-12-02'
-        })
-
-        sinon.assert.calledThrice(syncer.syncFromBigquery)
-        sinon.assert.calledOnce(syncer.syncFromStreamingfast)
-        sinon.assert.callOrder(
-          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-02', dateTo: '2020-12-25' }),
-          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-25 00:00:00+0', dateTo: '2020-12-31 08:00:00+0' }),
-          syncer.syncFromBigquery.withArgs({ dateFrom: '2020-12-31 08:00:00+0', dateTo: '2021-01-01 08:00:00+0' }),
-        )
+        // sinon.assert.calledOnce(syncer.syncFromDune)
+        sinon.assert.calledOnce(syncer.syncFromStreamingfast).withArgs('2021-01-01T08:10:00Z')
       })
     })
   })
