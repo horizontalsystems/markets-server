@@ -33,6 +33,11 @@ exports.normalizeCollections = collections => {
 }
 
 exports.normalizeAsset = asset => {
+
+  if (!asset) {
+    return null
+  }
+
   const updatedDate = DateTime.now().toISO()
   return {
     token_id: asset.token_id,
