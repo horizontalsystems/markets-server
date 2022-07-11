@@ -114,6 +114,11 @@ exports.asset = async ({ params, query }, res) => {
 exports.events = async ({ query }, res) => {
   let events = []
 
+  if (query.token_id && !query.asset_contract) {
+    res.status(400)
+    res.send({ error: 'asset_contract field is required when using token_id filter' })
+  }
+
   try {
     events = await opensea.getEvents(
       query.event_type,

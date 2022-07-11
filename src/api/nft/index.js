@@ -245,12 +245,12 @@ router.get('/asset/:contract_address/:token_id', controller.asset)
  * @apiVersion 1.0.0
  * @apiGroup NFT
  *
- * @apiParam {String} [event_type]      The event type to filter (sale, list, offer, bid, transfer) (do not include param to ignore filter)
- * @apiParam {String} [collection_uid]       Limit responses to events from a collection
- * @apiParam {String} [token_id]        Token ID for this item
- * @apiParam {String} [asset_contract]  Asset contract address
+ * @apiParam {String} [event_type]       The event type to filter (sale, list, offer, bid, transfer) (do not include param to ignore filter)
+ * @apiParam {String} [collection_uid]   Limit responses to events from a collection
+ * @apiParam {String} [token_id]         Token ID for this item (When using token_id filter asset_contract is required)
+ * @apiParam {String} [asset_contract]   Asset contract address
  * @apiParam {String} [account_address]  A user account's wallet address to filter for events on an account
- * @apiParam {Number} [occured_before]     Only show events listed before this timestamp.
+ * @apiParam {Number} [occured_before]   Only show events listed before this timestamp.
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
