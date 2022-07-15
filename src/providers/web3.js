@@ -31,6 +31,7 @@ const optimism = new Web3Provider('https://mainnet.optimism.io', erc20Abi)
 const arbitrumOne = new Web3Provider('https://arb1.arbitrum.io/rpc', erc20Abi)
 const polygon = new Web3Provider('https://polygon-rpc.com', erc20Abi)
 const binance = new Web3Provider('https://bsc-dataseed1.binance.org:443', erc20Abi)
+const avalanche = new Web3Provider('https://rpc.ankr.com/avalanche', erc20Abi)
 
 exports.getEip20Info = async (contractAddress, chainOrType) => {
   let provider
@@ -54,6 +55,9 @@ exports.getEip20Info = async (contractAddress, chainOrType) => {
       break
     case 'arbitrum-one':
       provider = arbitrumOne
+      break
+    case 'avalanche':
+      provider = avalanche
       break
     default:
       return null
