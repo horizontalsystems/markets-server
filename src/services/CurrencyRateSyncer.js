@@ -86,9 +86,9 @@ class CurrencyRateSyncer extends Syncer {
     for (let index = 0; index < currencies.codes.length; index += 1) {
       const marketsChart = await coingecko.getMarketsChart(
         sourceCoin,
-        currencies.codes[index],
         dateParams.dateFrom.toMillis() / 1000,
-        dateParams.dateTo.toMillis() / 1000
+        dateParams.dateTo.toMillis() / 1000,
+        currencies.codes[index]
       )
 
       marketsChart.prices.forEach(([timestamp, value]) => {

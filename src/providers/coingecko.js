@@ -76,9 +76,9 @@ exports.getGlobalDefiMarkets = function getGlobalDefiMarkets() {
     .then(resp => resp.data.data)
 }
 
-exports.getMarketsChart = function getMarketsChart(coinId, timestampFrom, timestampTo) {
+exports.getMarketsChart = function getMarketsChart(coinId, timestampFrom, timestampTo, currencyCode = 'usd') {
   const query = querystring.stringify({
-    vs_currency: 'usd',
+    vs_currency: currencyCode,
     from: timestampFrom,
     to: timestampTo
   })
