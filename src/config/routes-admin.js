@@ -50,26 +50,41 @@ function getOne(id, Model, attributes) {
   return Model.findOne({ attributes, where: { id } })
 }
 
-const createUpdateDelete = Model => ({
-  create: async data => {
-    const record = await Model.create(data)
-    await UpdateState.reset(Model.tableName)
-
-    return record
-  },
-  update: async (id, values) => {
-    const record = await Model.update(values, { where: { id } }).then(() => values)
-    await UpdateState.reset(Model.tableName)
-
-    return record
-  },
-  destroy: async id => {
-    const destroy = await Model.destroy({ where: { id } })
-    await UpdateState.reset(Model.tableName)
-
-    return destroy
+const createUpdateDelete = Model => {
+  const updateNew = () => { // will be removed after table rename
+    switch (Model.tableName) {
+      case 'chains':
+        return UpdateState.reset('blockchains')
+      case 'platforms':
+        return UpdateState.reset('tokens')
+      default:
+    }
   }
-})
+
+  return {
+    create: async data => {
+      const record = await Model.create(data)
+      await UpdateState.reset(Model.tableName)
+      await updateNew()
+
+      return record
+    },
+    update: async (id, values) => {
+      const record = await Model.update(values, { where: { id } }).then(() => values)
+      await UpdateState.reset(Model.tableName)
+      await updateNew()
+
+      return record
+    },
+    destroy: async id => {
+      const destroy = await Model.destroy({ where: { id } })
+      await UpdateState.reset(Model.tableName)
+      await updateNew()
+
+      return destroy
+    }
+  }
+}
 
 const opts = (Model, attrs, attrsOne = []) => ({
   search: (q, limit) => search(q, limit, Model, attrs),
