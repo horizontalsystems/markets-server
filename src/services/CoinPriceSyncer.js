@@ -32,16 +32,18 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
       coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
     }
     const coins = await Coin.findAll({ attributes: ['id', 'coingecko_id'], where })
+    const uids = new Set()
     const map = {}
-    const ids = []
 
     for (let i = 0; i < coins.length; i += 1) {
       const coin = coins[i]
-      map[coin.coingecko_id] = coin.id
-      ids.push(coin.coingecko_id)
+      const ids = map[coin.coingecko_id] || (map[coin.coingecko_id] = [])
+
+      uids.add(coin.coingecko_id)
+      ids.push(coin.id)
     }
 
-    const chunks = this.chunk(ids)
+    const chunks = this.chunk(Array.from(uids))
 
     for (let i = 0; i < chunks.length; i += 1) {
       await this.syncCoins(chunks[i], map)
@@ -80,18 +82,22 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
   async updateCoins(coins, idsMap) {
     const dt = DateTime.now()
     const minutes = dt.get('minute')
-    const minutesRounded = dt.set({ minute: 10 * parseInt(minutes / 10) })
+    const minutesRounded = dt
+      .set({ minute: 10 * parseInt(minutes / 10) })
+      .toFormat('yyyy-MM-dd HH:mm')
+
+    const mapData = (id, item) => [
+      id,
+      item.price,
+      JSON.stringify(item.price_change),
+      JSON.stringify(item.market_data),
+      item.last_updated,
+      minutesRounded
+    ]
 
     const values = coins
       .filter(c => c.price && idsMap[c.coingecko_id])
-      .map(item => [
-        idsMap[item.coingecko_id],
-        item.price,
-        JSON.stringify(item.price_change),
-        JSON.stringify(item.market_data),
-        item.last_updated,
-        minutesRounded.toFormat('yyyy-MM-dd HH:mm')
-      ])
+      .flatMap(c => idsMap[c.coingecko_id].map(id => mapData(id, c)))
 
     if (!values.length) {
       return
