@@ -5,6 +5,11 @@ class CoinPrice extends SequelizeModel {
   static init(sequelize, DataTypes) {
     return super.init(
       {
+        id: {
+          type: DataTypes.BIGINT,
+          autoIncrement: true,
+          primaryKey: true
+        },
         date: {
           type: DataTypes.DATE,
           allowNull: false
