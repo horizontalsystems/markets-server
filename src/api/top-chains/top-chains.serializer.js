@@ -25,13 +25,13 @@ module.exports = {
   },
 
   serializePlatforms: (items, currencyRate) => {
-    return items.map(item => {
+    return items.map((item, index) => {
       return {
         uid: item.uid,
         price: valueInCurrency(item.price, currencyRate),
         price_change_24h: nullOrString(item.price_change_24h),
         market_cap: valueInCurrency(item.mcap, currencyRate),
-        market_cap_rank: item.market_cap_rank,
+        market_cap_rank: index + 1,
         total_volume: valueInCurrency(item.total_volume, currencyRate)
       }
     })
