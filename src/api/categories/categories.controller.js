@@ -14,6 +14,7 @@ exports.coins = async ({ params, currencyRate }, res) => {
     'price',
     'price_change_24h',
     'market_cap',
+    'market_cap_rank',
     'total_volume'
   ]
 

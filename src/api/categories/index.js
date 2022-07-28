@@ -49,6 +49,7 @@ router.get('/', setCurrencyRate, controller.index)
  *    "uid": "bitcoin",
  *    "price": "100000",
  *    "market_cap": "11334574361987",
+ *    "market_cap_rank": 1,
  *    "total_volume": "439960308849"
  *  }]
  *
