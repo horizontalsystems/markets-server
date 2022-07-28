@@ -204,7 +204,8 @@ class Coin extends SequelizeModel {
         SELECT
           uid,
           price,
-          price_change->'24h' price_change_24h
+          price_change->'24h' price_change_24h,
+          market_data->'market_cap_rank' as market_cap_rank
         FROM coins
         ORDER BY market_data->'market_cap' desc nulls last
         LIMIT 300

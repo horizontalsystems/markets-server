@@ -188,7 +188,8 @@ exports.serializeMovers = (data, currencyRate) => {
   const mapper = items => items.map(item => ({
     uid: item.uid,
     price: valueInCurrency(item.price, currencyRate),
-    price_change_24h: nullOrString(item.price_change_24h)
+    price_change_24h: nullOrString(item.price_change_24h),
+    market_cap_rank: item.market_cap_rank
   }))
 
   return {
