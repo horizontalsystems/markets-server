@@ -43,7 +43,11 @@ router.get('/', setCurrencyRate, controller.index)
  *  HTTP/1.1 200 OK
  *  [{
  *    "uid": "usd-coin",
- *    "market_cap": "44001975841"
+ *    "price": "1.004",
+ *    "price_change_24h": "-0.07",
+ *    "market_cap": "45765651521",
+ *    "market_cap_rank": 4,
+ *    "total_volume": "5923465567"
  *  }]
  */
 router.get('/:chain/list', setCurrencyRate, controller.protocols)

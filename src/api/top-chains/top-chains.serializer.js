@@ -28,7 +28,11 @@ module.exports = {
     return items.map(item => {
       return {
         uid: item.uid,
-        market_cap: valueInCurrency(item.mcap, currencyRate)
+        price: valueInCurrency(item.price, currencyRate),
+        price_change_24h: nullOrString(item.price_change_24h),
+        market_cap: valueInCurrency(item.mcap, currencyRate),
+        market_cap_rank: item.market_cap_rank,
+        total_volume: valueInCurrency(item.total_volume, currencyRate)
       }
     })
   },

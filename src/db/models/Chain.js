@@ -55,14 +55,19 @@ class Chain extends SequelizeModel {
     const query = `
       SELECT
         c.uid,
+        c.price,
+        c.price,
+        c.price_change->'24h' price_change_24h,
+        c.market_data->'total_volume' total_volume,
+        c.market_data->'market_cap_rank' market_cap_rank,
         sum(least((p.circulating_supply * c.price), (c.market_data->>'market_cap')::numeric)) mcap
       FROM platforms p, coins c
       WHERE c.id = p.coin_id
         AND p.circulating_supply is not null
         AND p.address is not null
         AND p.chain_uid = :chain
-      GROUP BY c.uid
-      order by mcap desc
+      GROUP BY uid, price, price_change_24h, total_volume, market_cap_rank
+      ORDER BY mcap desc
     `
     return Chain.query(query, { chain })
   }
