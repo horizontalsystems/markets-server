@@ -31,7 +31,7 @@ describe('DexLiquiditySyncer', async () => {
     })
   })
 
-  describe.only('#syncHistorical', () => {
+  describe('#syncHistorical', () => {
     beforeEach(() => {
       sinon.stub(syncer, 'syncHistorical')
       sinon.stub(syncer, 'syncFromDune')
