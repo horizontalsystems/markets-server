@@ -20,6 +20,8 @@ class Streamingfast {
       }`
     }
 
+    console.log('Fetching Liquidity from pancakeswap/exchange-v2')
+
     return axios.post('/subgraphs/name/pancakeswap/exchange-v2', query)
       .then(({ data }) => data)
       .then(({ data }) => {

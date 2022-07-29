@@ -41,7 +41,7 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncFromStreamingfast(dateFrom, chunkSize = 100) {
-    const platforms = this.mapPlatforms(await Platform.getByChain('binance-smart-chain'))
+    const platforms = await this.getPlatforms(['binance-smart-chain'])
     const chunks = chunk(platforms.list, chunkSize)
 
     for (let i = 0; i < chunks.length; i += 1) {
@@ -55,13 +55,12 @@ class DexLiquiditySyncer extends Syncer {
         }
       })
 
-      await this.bulkCreate(records)
+      await this.upsertData(records)
     }
   }
 
   async syncFromDune(dateFrom) {
-
-    const platforms = await this.getPlatforms(['ethereum', 'binance-smart-chain'], false)
+    const platforms = await this.getPlatforms(['ethereum'])
     const data = await dune.getDexLiquidity(dateFrom)
 
     const records = data.map(item => {
@@ -76,24 +75,19 @@ class DexLiquiditySyncer extends Syncer {
     await this.upsertData(records)
   }
 
-  async getPlatforms(chains, withDecimals, withAddress = true) {
-    const platforms = await Platform.getByChain(chains, withDecimals, withAddress)
+  async getPlatforms(chains) {
+    const platforms = await Platform.getByChain(chains, false, true)
     const map = {}
     const list = []
 
-    platforms.forEach(({ id, type, chain_uid: chain, address, decimals }) => {
+    platforms.forEach(({ id, type, chain_uid: chain, address }) => {
       if (type === 'native') {
         map[chain] = id
       }
 
       if (address) {
         map[address] = id
-
-        if (!withDecimals) {
-          list.push({ address })
-        } else if (decimals) {
-          list.push({ address, decimals })
-        }
+        list.push({ address })
       }
     })
 
