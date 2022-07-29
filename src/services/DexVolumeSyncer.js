@@ -52,12 +52,16 @@ class DexVolumeSyncer extends Syncer {
       }
     })
 
-    const volumesV2 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.list, datePeriod, 'uniswap_v2')
-    await this.bulkCreate(mapVolumes(volumesV2, 'uniswap_v2'))
-    const volumesV3 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.list, datePeriod, 'uniswap_v3')
-    await this.bulkCreate(mapVolumes(volumesV3, 'uniswap_v3'))
-    const volumesSushi = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.list, datePeriod, 'sushi')
-    await this.bulkCreate(mapVolumes(volumesSushi, 'sushi'))
+    try {
+      const volumesV2 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.list, datePeriod, 'uniswap_v2')
+      await this.bulkCreate(mapVolumes(volumesV2, 'uniswap_v2'))
+      const volumesV3 = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.list, datePeriod, 'uniswap_v3')
+      await this.bulkCreate(mapVolumes(volumesV3, 'uniswap_v3'))
+      const volumesSushi = await bigquery.getDexVolumes(dateFrom, dateTo, platforms.list, datePeriod, 'sushi')
+      await this.bulkCreate(mapVolumes(volumesSushi, 'sushi'))
+    } catch (e) {
+      console.log('Error fetching dex volumes', e.message, { dateFrom, dateTo, datePeriod, tokens: platforms.list.length })
+    }
   }
 
   async syncFromBitquery({ dateFrom }, chain, interval, chunkSize = 100) {
