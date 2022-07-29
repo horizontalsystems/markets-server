@@ -63,8 +63,8 @@ class GlobalMarketsSyncer extends Syncer {
       }
 
       await GlobalMarket.upsert(record)
-        .then(([data]) => {
-          console.log(JSON.stringify(data))
+        .then(() => {
+          console.log(`Inserted GlobalMarket data; Data ${record.date}; Tvl ${record.tvl}`)
         })
         .catch(console.error)
     } catch (e) {
