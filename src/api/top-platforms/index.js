@@ -65,7 +65,7 @@ router.get('/:chain/list', setCurrencyRate, controller.protocols)
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
  *  [{
- *    "date": 1650434400,
+ *    "timestamp": 1650434400,
  *    "market_cap": "336612366001"
  *  }]
  *

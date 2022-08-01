@@ -1,5 +1,5 @@
 const { valueInCurrency } = require('../../utils')
-const { serialize: serializePlatforms } = require('../top-chains/top-chains.serializer')
+const { serialize: serializePlatforms } = require('../top-platforms/top-chains.serializer')
 const { serialize: serializeCategories } = require('../categories/categories.serializer')
 const { serialize: serializeNft } = require('../nft/nft.serializer')
 

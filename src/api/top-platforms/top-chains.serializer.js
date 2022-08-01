@@ -40,7 +40,7 @@ module.exports = {
   serializeChart: (items, currencyRate) => {
     return items.map(item => {
       return {
-        date: item.date,
+        timestamp: item.timestamp,
         market_cap: valueInCurrency(item.market_cap, currencyRate)
       }
     })

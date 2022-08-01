@@ -10,7 +10,7 @@ router.use('/chain', require('../api/blockchains')) // @deprecated
 router.use('/blockchains', require('../api/blockchains'))
 router.use('/tokens', require('../api/tokens'))
 router.use('/token_info', require('../api/token_info'))
-router.use('/top-platforms', require('../api/top-chains'))
+router.use('/top-platforms', require('../api/top-platforms'))
 router.use('/nft', require('../api/nft'))
 router.use('/defi-protocols', require('../api/defi-protocols'))
 router.use('/addresses', require('../api/addresses'))
