@@ -18,9 +18,7 @@ exports.holders = async ({ query }, res) => {
   const holders = await CoinHolder.getList(query.coin_uid, query.platform)
 
   if (!holders || !holders.length) {
-    res.status(404).send({
-      error: 'Coin not found'
-    })
+    res.send([])
   } else {
     res.send(serializer.serializeCoinHolders(holders))
   }
