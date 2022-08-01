@@ -1,5 +1,4 @@
 const defillama = require('../providers/defillama')
-const logger = require('../config/logger')
 const Syncer = require('./Syncer')
 const DefiProtocol = require('../db/models/DefiProtocol')
 const DefiProtocolTvl = require('../db/models/DefiProtocolTvl')
@@ -114,7 +113,7 @@ class DefiProtocolSyncer extends Syncer {
         continue
       }
 
-      logger.info(`Syncing tvl for slug: ${protocol.slug}; gecko_id: ${protocol.gecko_id}`)
+      console.log(`Syncing tvl for slug: ${protocol.slug}; gecko_id: ${protocol.gecko_id}`)
 
       tvls.push({
         defi_protocol_id: defiCoinId,
@@ -131,11 +130,11 @@ class DefiProtocolSyncer extends Syncer {
     const coins = await Coin.findAll({
       attributes: ['id', 'coingecko_id'],
       where: {
-        uid: protocols.map(item => item.gecko_id).filter(id => id)
+        coingecko_id: protocols.map(item => item.gecko_id).filter(id => id)
       }
     })
 
-    const ids = coins.reduce((memo, coin) => ({ ...memo, [coin.coingecko_id]: coin.id }), {})
+    const ids = utils.reduceMap(coins, 'coingecko_id', 'id')
     const recordIds = []
 
     for (let i = 0; i < protocols.length; i += 1) {
@@ -143,14 +142,9 @@ class DefiProtocolSyncer extends Syncer {
       const coinId = ids[protocol.gecko_id]
       const prevTvl = prevTvlMap[protocol.slug] || {}
 
-      if (coinId && !protocol.gecko_id) {
-        continue
-      }
-
       const values = {
         name: protocol.name,
         logo: protocol.logo,
-        coin_id: coinId,
         defillama_id: protocol.slug,
         coingecko_id: protocol.gecko_id,
         tvl: protocol.tvl,
@@ -169,21 +163,37 @@ class DefiProtocolSyncer extends Syncer {
         chains: protocol.chains
       }
 
-      logger.info(`Upserting DefiProtocol; Defillama: ${protocol.slug}; Coingecko: ${protocol.gecko_id}`)
-      const [record] = await DefiProtocol.upsert(values)
+      if (coinId) {
+        values.coin_id = coinId
+      }
+
+      const record = await this.upsertProtocol(values)
       recordIds.push(record.id)
     }
 
     await DefiProtocol.resetRank(recordIds.filter(i => i))
   }
 
+  async upsertProtocol(values) {
+    let record = await DefiProtocol.findOne({ where: { defillama_id: values.defillama_id } })
+    if (record) {
+      console.log(`Updating DefiProtocol; Defillama: ${values.defillama_id}; Coingecko: ${values.coingecko_id}`)
+      await record.update(values)
+    } else {
+      console.log(`Creating DefiProtocol; Defillama: ${values.defillama_id}; Coingecko: ${values.coingecko_id}`)
+      record = await DefiProtocol.create(values, { ignoreDuplicates: true })
+    }
+
+    return record
+  }
+
   async fetchProtocols() {
     let protocols = []
     try {
       protocols = await defillama.getProtocols()
-      logger.info(`Fetched new protocols ${protocols.length}`)
+      console.log(`Fetched new protocols ${protocols.length}`)
     } catch (e) {
-      logger.error(`Error syncing protocols ${e.message}`)
+      console.log(`Error syncing protocols ${e.message}`)
     }
 
     return protocols
