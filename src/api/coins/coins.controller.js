@@ -28,6 +28,7 @@ exports.index = async ({ query, currencyRate }, res) => {
     options.where.is_defi = true
   }
   if (query.order_by_rank === 'true') {
+    options.where.coingecko_id = Coin.literal('coingecko_id IS NOT NULL')
     options.order = [Coin.literal('market_data->\'market_cap\' DESC')]
   }
 
