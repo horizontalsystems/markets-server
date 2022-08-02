@@ -120,7 +120,7 @@ class CoinHolderSyncer extends Syncer {
         continue
       }
 
-      console.log(`Fetching major holders for ${platform.type} ${platform.address} (${i})`)
+      console.log(`Fetching major holders for ${platform.type} ${platform.address} (${i + 1})`)
 
       await request
         .then(data => this.upsert(data, platform.id))

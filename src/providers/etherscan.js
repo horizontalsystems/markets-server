@@ -1,5 +1,5 @@
 const axios = require('axios').create({
-  baseURL: 'https://etherscan.io',
+  baseURL: process.env.ETHERSCAN_API || 'https://etherscan.io',
   timeout: 180000
 })
 
