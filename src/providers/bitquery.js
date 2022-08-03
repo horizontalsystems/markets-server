@@ -18,6 +18,8 @@ class Bitquery {
         return 'ethereum(network: bsc)'
       case 'polygon-pos':
         return 'ethereum(network: matic)'
+      case 'avalanche':
+        return 'ethereum(network: avalanche)'
       default:
         return `${network}(network: ${network})`
     }

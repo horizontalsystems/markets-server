@@ -12,7 +12,7 @@ module.exports = {
     }),
     query: Joi.object({
       chain: Joi.string().valid('ethereum', 'binance-smart-chain', 'polygon-pos'), // @deprecated
-      blockchain: Joi.string().valid('ethereum', 'binance-smart-chain', 'polygon-pos')
+      blockchain: Joi.string().valid('ethereum', 'binance-smart-chain', 'polygon-pos', 'avalanche')
     })
   }, options),
 
