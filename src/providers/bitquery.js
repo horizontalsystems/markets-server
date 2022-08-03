@@ -16,7 +16,7 @@ class Bitquery {
       case 'bsc': // @deprecated
       case 'binance-smart-chain':
         return 'ethereum(network: bsc)'
-      case 'matic':
+      case 'polygon-pos':
         return 'ethereum(network: matic)'
       default:
         return `${network}(network: ${network})`
