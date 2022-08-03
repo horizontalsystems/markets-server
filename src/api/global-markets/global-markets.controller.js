@@ -29,7 +29,7 @@ exports.overview = async (req, res, next) => {
 }
 
 exports.tvls = async ({ query, dateFrom, dateInterval, currencyRate }, res) => {
-  const tvls = await GlobalMarket.getTvls(capitalizeFirstLetter(query.chain), dateFrom, dateInterval)
+  const tvls = await GlobalMarket.getTvls(capitalizeFirstLetter(query.blockchain || query.chain), dateFrom, dateInterval)
 
   res.status(200)
   res.json(serializeTvls(tvls, currencyRate))

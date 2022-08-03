@@ -25,7 +25,7 @@ exports.holders = async ({ query }, res) => {
 }
 
 exports.coins = async ({ params, query }, res, next) => {
-  const data = await bitquery.getAddressCoins(params.address, query.chain)
+  const data = await bitquery.getAddressCoins(params.address, query.blockchain || query.chain)
   const values = data.balances
     .filter(item => item.value > 0 && item.currency.tokenType === 'ERC20')
     .map(item => [
@@ -34,7 +34,7 @@ exports.coins = async ({ params, query }, res, next) => {
     ])
 
   try {
-    const balances = await Platforms.getBalances(values, query.chain)
+    const balances = await Platforms.getBalances(values, query.blockchain || query.chain)
     res.send({
       block_number: data.blockNumber,
       balances: serializer.serializeBalances(balances)

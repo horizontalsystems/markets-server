@@ -79,7 +79,7 @@ class GlobalMarket extends SequelizeModel {
   }
 
   static getTvls(chain, dateFrom, window) {
-    const field = chain ? 't1.chain_tvls->:chain' : 'tvl'
+    const field = chain ? `t1.chain_tvls->'${chain}'` : 'tvl'
     const query = (`
       SELECT
         t2.time AS date,
