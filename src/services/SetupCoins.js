@@ -25,8 +25,8 @@ class SetupCoins {
 
   async fetchCoins(minVolume, minMCap) {
     const allCoins = await coingecko.getCoinList()
-    const oldCoins = await Coin.findAll()
-    const newCoins = difference(allCoins.map(coin => coin.id), oldCoins.map(coin => coin.uid))
+    const oldCoins = await Coin.findAll({ attributes: ['coingecko_id'] })
+    const newCoins = difference(allCoins.map(coin => coin.id), oldCoins.map(coin => coin.coingecko_id))
 
     console.log('Fetched new coins', newCoins.length)
 
