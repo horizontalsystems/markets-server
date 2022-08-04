@@ -69,14 +69,13 @@ class Address extends SequelizeModel {
         EXTRACT (epoch from (items->>'date')::timestamp)::int AS timestamp,
         ARRAY_AGG (distinct platform_id) as platforms,
         SUM ((items->>'count')::int) AS count
-      FROM addresses A, jsonb_array_elements(data->:period) AS items
+      FROM addresses A, jsonb_array_elements(data->'${period}') AS items
       WHERE A.platform_id in (:platforms)
         AND A.date >= :dateFrom
       GROUP BY 1
     `)
 
     const addresses = await Address.query(query, {
-      period,
       dateFrom,
       platforms: platforms.map(item => item.id)
     })
