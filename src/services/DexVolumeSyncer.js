@@ -42,7 +42,7 @@ class DexVolumeSyncer extends Syncer {
   }
 
   async syncFromBigquery({ dateFrom, dateTo }, datePeriod) {
-    const platforms = await this.getPlatforms('erc20', true)
+    const platforms = await this.getPlatforms('ethereum', true)
     const mapVolumes = (items, exchange) => items.map(item => {
       return {
         exchange,
