@@ -95,9 +95,9 @@ class NftCollection extends SequelizeModel {
 
   static async getCollections(offset = 0, limit = 100) {
     const query = (`
-      SELECT uid, name, image_data, stats, last_updated
+      SELECT uid, name, image_data, stats
       FROM nft_collections
-      ORDER BY DATE_TRUNC('hour', last_updated) DESC, (stats ->> 'total_volume')::float DESC
+      ORDER BY (stats ->> 'total_volume')::float DESC
       OFFSET :offset
       LIMIT :limit
     `)
@@ -112,10 +112,10 @@ class NftCollection extends SequelizeModel {
 
   static async getTopMovers() {
     const [stats] = await NftCollection.query(`
-      with collections as (select uid, name, stats, image_data, DATE_TRUNC('hour', last_updated) as update_date from nft_collections ),
-      one as (select * from collections order by update_date DESC, stats->'one_day_volume' desc limit 5),
-      seven as (select * from collections order by update_date DESC, stats->'seven_day_volume' desc limit 5),
-      thirty as (select * from collections order by update_date DESC, stats->'thirty_day_volume' desc limit 5)
+      with collections as (select uid, name, stats, image_data from nft_collections ),
+      one as (select * from collections order by stats->'one_day_volume' desc limit 5),
+      seven as (select * from collections order by stats->'seven_day_volume' desc limit 5),
+      thirty as (select * from collections order by stats->'thirty_day_volume' desc limit 5)
       select jsonb_build_object(
         'one_day', (select json_agg(one.*) from one),
         'seven_day', (select json_agg(seven.*) from seven),
