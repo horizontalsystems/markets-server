@@ -305,7 +305,7 @@ class SetupCoins {
           console.log('Platform updated', JSON.stringify(values))
         })
         .catch(err => {
-          console.log('Error updating platform', err.message)
+          console.log('Error updating platform', err.message, (err.parent || {}).message)
         })
     }
 
