@@ -59,8 +59,8 @@ router.get('/labels', controller.labels)
  * @apiVersion 1.0.0
  * @apiGroup Address
  *
- * @apiParam  {String=0x...}                                address   Account address
- * @apiParam  {String=ethereum,binance-smart-chain,solana}  chain     Address's chain
+ * @apiParam  {String=0x...}                                    address   Account address
+ * @apiParam  {String=ethereum,binance-smart-chain,polygon-pos} chain     Address's chain
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  */

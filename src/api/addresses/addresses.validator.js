@@ -11,7 +11,7 @@ module.exports = {
       address: Joi.string().required()
     }),
     query: Joi.object({
-      chain: Joi.string().valid('ethereum', 'binance-smart-chain', 'polygon-pos'), // @deprecated
+      chain: Joi.string().valid('ethereum', 'binance-smart-chain', 'matic', 'bsc'), // @deprecated
       blockchain: Joi.string().valid('ethereum', 'binance-smart-chain', 'polygon-pos', 'avalanche')
     })
   }, options),
