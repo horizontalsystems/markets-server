@@ -286,6 +286,7 @@ class SetupCoins {
         await sleep(1200)
       } catch (err) {
         await this.handleError(err)
+        await sleep(1200)
       }
     }
   }
