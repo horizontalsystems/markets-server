@@ -283,7 +283,7 @@ class SetupCoins {
         console.log(`Syncing chains for ${coin.coingecko_id}; (${i})`)
         const coinInfo = await coingecko.getCoinInfo(coin.coingecko_id)
         await this.syncPlatforms(coin, Object.entries(coinInfo.platforms), bep2tokens)
-        await sleep(1100)
+        await sleep(1200)
       } catch (err) {
         await this.handleError(err)
       }
