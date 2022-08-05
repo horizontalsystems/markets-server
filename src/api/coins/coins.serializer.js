@@ -1,6 +1,10 @@
 const { nullOrString, valueInCurrency } = require('../../utils')
 
 function mapOldTypes(type, chain) {
+  if (type === 'erc20' || type === 'bep20' || type === 'bep2') {
+    return type
+  }
+
   switch (chain) {
     case 'bitcoin':
     case 'bitcoin-cash':
