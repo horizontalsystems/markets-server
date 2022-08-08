@@ -8,10 +8,11 @@ const Platform = require('../src/db/models/Platform')
 const program = new Command()
   .option('--chain <chain>', 'sync holders for given chain')
   .option('-c --coins <coins>', 'sync holders for given coins')
+  .option('-a --address <address>', 'sync holders for given addresses')
   .option('-n --nft <nft>', 'sync specific nft')
   .parse(process.argv)
 
-async function start({ chain, coins, nft }) {
+async function start({ chain, coins, address, nft }) {
   await sequelize.sync()
   const coinHolderSyncer = new CoinHolderSyncer()
 
@@ -19,6 +20,13 @@ async function start({ chain, coins, nft }) {
     await coinHolderSyncer.sync(await Platform.getByChain(chain, false, false))
   } else if (coins) {
     await coinHolderSyncer.sync(await Platform.findByCoinUID(coins.split(',')))
+  } else if (address) {
+    const platforms = await Platform.findAll({
+      where: {
+        address: address.split(',')
+      }
+    })
+    await coinHolderSyncer.sync(platforms)
   } else if (nft) {
     await coinHolderSyncer.syncNft(nft)
   } else {
