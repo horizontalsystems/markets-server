@@ -26,8 +26,7 @@ class CoinHolderSyncer extends Syncer {
     await this.syncHolders(platforms)
   }
 
-  async sync(uids) {
-    const platforms = await Platform.findByCoinUID(uids)
+  async sync(platforms) {
     await this.syncHolders(platforms)
   }
 
