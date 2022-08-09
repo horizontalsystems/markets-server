@@ -65,16 +65,14 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
       if (response.status === 429) {
         debug(`Sleeping 1min; Status ${response.status}`)
         await utils.sleep(60000)
-      }
-
-      if (response.status >= 502 && response.status <= 504) {
+      } else if (response.status >= 502 && response.status <= 504) {
         debug(`Sleeping 30s; Status ${response.status}`)
         await utils.sleep(30000)
-      }
-
-      if (response.status >= 400 && response.status <= 403) {
+      } else if (response.status >= 400 && response.status <= 403) {
         debug(`Sleeping 30s; Status ${response.status}`)
         await utils.sleep(30000)
+      } else {
+        await utils.sleep(50000)
       }
     }
   }
