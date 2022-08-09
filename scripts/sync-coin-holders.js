@@ -21,12 +21,11 @@ async function start({ chain, coins, address, nft }) {
   } else if (coins) {
     await coinHolderSyncer.sync(await Platform.findByCoinUID(coins.split(',')))
   } else if (address) {
-    const platforms = await Platform.findAll({
+    await coinHolderSyncer.sync(await Platform.findAll({
       where: {
         address: address.split(',')
       }
-    })
-    await coinHolderSyncer.sync(platforms)
+    }))
   } else if (nft) {
     await coinHolderSyncer.syncNft(nft)
   } else {
