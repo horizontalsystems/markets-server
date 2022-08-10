@@ -22,29 +22,8 @@ class CoinCirculatingSupplySyncer extends Syncer {
           }
           break
         }
-        case 'wrapped-bitcoin':
-        case 'weth':
-        case 'chainlink':
-        case 'uniswap':
-        case 'sushi':
-        case 'dai':
-        case 'frax':
-        case 'true-usd':
-        case 'yearn-finance':
-        case 'aave':
-        case '1inch':
-        case 'compound-governance-token':
-        case 'multichain':
-        case 'anyswap':
-        case 'matic-network': {
-          if (platform.type === 'eip20') {
-            map[platform.id] = platform.csupply
-          }
-          break
-        }
-        case 'binance-usd':
-        case 'krown':
-          if (platform.type === 'eip20') {
+        case 'stepn':
+          if (platform.type === 'solana') {
             map[platform.id] = platform.csupply
           }
           break
