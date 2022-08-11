@@ -93,6 +93,9 @@ class SetupCoins {
         case 'polygon-pos':
           getDecimals = web3Provider.getMRC20Decimals
           break
+        case 'avalanche':
+          getDecimals = web3Provider.getAvalancheDecimals
+          break
         case 'ethereum':
           getDecimals = web3Provider.getERC20Decimals
           break
@@ -103,8 +106,10 @@ class SetupCoins {
       const decimals = await getDecimals(platform.address)
       console.log(`Fetched decimals (${decimals}) for ${platform.address} ${i + 1}; `)
       await platform.update({ decimals })
-      await UpdateState.reset('platforms')
     }
+
+    await UpdateState.reset('platforms')
+    await UpdateState.reset('tokens')
   }
 
   async syncCoins(coinIds, returnOnlyNew) {
@@ -151,6 +156,10 @@ class SetupCoins {
       case 'matic-network':
         await upsertPlatform('polygon-pos', 'polygon-pos', { type: 'native', decimals: 18 })
         break
+      case 'avalanche':
+      case 'avalanche-2':
+        await upsertPlatform('avalanche', 'avalanche', { type: 'native', decimals: 18 })
+        break
       default:
         break
     }
@@ -193,6 +202,11 @@ class SetupCoins {
         case 'arbitrum-one':
           newType = 'eip20'
           resolver = web3Provider.getArbitrumOneDecimals
+          break
+
+        case 'avalanche':
+          newType = 'eip20'
+          resolver = web3Provider.getAvalancheDecimals
           break
 
         case 'binancecoin': {

@@ -119,6 +119,15 @@ exports.getMRC20Decimals = async (contractAddress) => {
   }
 }
 
+exports.getAvalancheDecimals = async (contractAddress) => {
+  try {
+    return await avalanche.getDecimals(contractAddress)
+  } catch (e) {
+    console.log(e)
+    return null
+  }
+}
+
 exports.getBEP20Decimals = async (contractAddress) => {
   try {
     return await binance.getDecimals(contractAddress)
