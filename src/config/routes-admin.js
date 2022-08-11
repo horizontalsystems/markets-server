@@ -1,6 +1,7 @@
 const express = require('express')
 const { Op } = require('sequelize')
 const { crud } = require('express-crud-router')
+const axios = require('axios')
 const Coin = require('../db/models/Coin')
 const Chain = require('../db/models/Chain')
 const Language = require('../db/models/Language')
@@ -18,6 +19,17 @@ const EvmMethodLabel = require('../db/models/EvmMethodLabel')
 const UpdateState = require('../db/models/UpdateState')
 
 const router = express.Router()
+
+function purgeCache() {
+  axios({
+    url: 'https://api-dev.blocksdecoded.com/v1/coins/list',
+    method: 'PURGE'
+  }).then(() => {
+    console.log('Successfully purged cache !!!')
+  }).catch((error) => {
+    console.log(`Failed purging cache error :${error}`)
+  })
+}
 
 async function search(q, limit, Model, attributes) {
   const filter = []
@@ -66,6 +78,7 @@ const createUpdateDelete = Model => {
       const record = await Model.create(data)
       await UpdateState.reset(Model.tableName)
       await updateNew()
+      await purgeCache()
 
       return record
     },
@@ -73,6 +86,7 @@ const createUpdateDelete = Model => {
       const record = await Model.update(values, { where: { id } }).then(() => values)
       await UpdateState.reset(Model.tableName)
       await updateNew()
+      await purgeCache()
 
       return record
     },
@@ -80,6 +94,7 @@ const createUpdateDelete = Model => {
       const destroy = await Model.destroy({ where: { id } })
       await UpdateState.reset(Model.tableName)
       await updateNew()
+      await purgeCache()
 
       return destroy
     }
