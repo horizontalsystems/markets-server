@@ -22,7 +22,7 @@ const router = express.Router()
 
 function purgeCache() {
   axios({
-    url: 'https://api-dev.blocksdecoded.com/v1/coins/list',
+    url: process.env.NGINX_CACHE_PURGE_URL,
     method: 'PURGE'
   }).then(() => {
     console.log('Successfully purged cache !!!')
