@@ -9,12 +9,13 @@ const program = new Command()
   .option('-a --all', 'setup all coins')
   .option('-f --fetch', 'fetch news coins')
   .option('-c --coins <coins>', 'setup only given coins')
-  .option('-p --platform <platform>', 'force sync decimals for given platform type')
-  .option('-p --platformType <platformType>', 'force sync decimals for given platform type')
+  .option('--address-decimals <address>', 'force sync decimals for given address')
+  .option('--chain-decimals <chain>', 'force sync decimals for given chain')
+  .option('--token-type-decimals <type>', 'force sync decimals for given token type')
   .option('--chains [coins]', 'sync with chains')
   .parse(process.argv)
 
-async function start({ all, fetch, coins, platform, platformType, chains }) {
+async function start({ all, fetch, coins, tokenTypeDecimals, addressDecimals, chainDecimals, chains }) {
   await sequelize.sync()
   const setupCoins = new SetupCoins()
 
@@ -23,10 +24,12 @@ async function start({ all, fetch, coins, platform, platformType, chains }) {
       await setupCoins.fetchCoins(200000, 10000000)
     } else if (coins) {
       await setupCoins.setupCoins(coins.split(','))
-    } else if (platform) {
-      await setupCoins.forceSyncDecimals({ address: platform.split(',') })
-    } else if (platformType) {
-      await setupCoins.forceSyncDecimals({ platformType })
+    } else if (addressDecimals) {
+      await setupCoins.forceSyncDecimals({ address: addressDecimals.split(',') })
+    } else if (chainDecimals) {
+      await setupCoins.forceSyncDecimals({ chain: chainDecimals })
+    } else if (tokenTypeDecimals) {
+      await setupCoins.forceSyncDecimals({ type: tokenTypeDecimals })
     } else if (all) {
       await setupCoins.setupCoins()
     } else if (chains) {

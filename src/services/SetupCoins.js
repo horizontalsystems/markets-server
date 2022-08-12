@@ -68,10 +68,11 @@ class SetupCoins {
     }
   }
 
-  async forceSyncDecimals({ platformType, address }) {
+  async forceSyncDecimals({ chain, type, address }) {
     const where = {
       ...(address && { address }),
-      ...(platformType && { type: platformType })
+      ...(type && { type }),
+      ...(chain && { chain_uid: chain })
     }
     const platforms = await Platform.findAll({ where })
 
@@ -105,7 +106,9 @@ class SetupCoins {
 
       const decimals = await getDecimals(platform.address)
       console.log(`Fetched decimals (${decimals}) for ${platform.address} ${i + 1}; `)
-      await platform.update({ decimals })
+      if (decimals && decimals > 0) {
+        await platform.update({ decimals })
+      }
     }
 
     await UpdateState.reset('platforms')
