@@ -15,7 +15,7 @@ module.exports = {
   // GET /v1/blockchains/:blockchain/hashes
   validateHashes: validate({
     params: Joi.object({
-      blockchain: Joi.string().valid('bitcoin')
+      blockchain: Joi.string().valid('bitcoin', 'bitcoin-cash')
     })
   }, options)
 
