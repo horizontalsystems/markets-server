@@ -17,7 +17,7 @@ exports.blockNumber = async ({ params }, res, next) => {
     res.send({ block_number: blockNumber })
   } catch (e) {
     console.log(e)
-    next()
+    next(e)
   }
 }
 
@@ -28,6 +28,6 @@ exports.blockHashes = async ({ params, query }, res, next) => {
     res.send(serializer.serializeHashes(hashes))
   } catch (e) {
     console.log(e)
-    next()
+    next(e)
   }
 }

@@ -73,9 +73,11 @@ exports.error500 = (err, req, res, next) => {
 
   if (err instanceof ValidationError) {
     res.status(err.statusCode)
-  } else {
-    res.status(500)
+    res.json(err)
+    return
   }
+
+  res.status(500)
 
   if (process.env.NODE_ENV === 'development') {
     res.json(err)
