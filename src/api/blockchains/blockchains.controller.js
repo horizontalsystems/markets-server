@@ -13,7 +13,7 @@ exports.list = async (req, res) => {
 
 exports.blockNumber = async ({ params }, res, next) => {
   try {
-    const blockNumber = await bitquery.getBlockNumber(params.chain)
+    const blockNumber = await bitquery.getBlockNumber(params.blockchain)
     res.send({ block_number: blockNumber })
   } catch (e) {
     console.log(e)
@@ -24,7 +24,7 @@ exports.blockNumber = async ({ params }, res, next) => {
 exports.blockHashes = async ({ params, query }, res, next) => {
   try {
     const numbers = query.numbers || ''
-    const hashes = await Block.getBlockHashes(params.chain, numbers.split(','))
+    const hashes = await Block.getBlockHashes(params.blockchain, numbers.split(','))
     res.send(serializer.serializeHashes(hashes))
   } catch (e) {
     console.log(e)
