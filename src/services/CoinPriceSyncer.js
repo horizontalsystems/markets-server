@@ -56,7 +56,7 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     try {
       const coins = await coingecko.getMarkets(coinUids)
       await this.updateCoins(coins, idsMap)
-      await utils.sleep(1200)
+      await utils.sleep(2000)
     } catch ({ message, response = {} }) {
       if (message) {
         console.error(message)

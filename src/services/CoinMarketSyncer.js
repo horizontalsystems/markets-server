@@ -35,7 +35,7 @@ class CoinMarketSyncer extends Syncer {
     try {
       const data = await coingecko.getCoinInfo(coin.coingecko_id, { tickers: true })
       await this.updateCoinInfo(data.tickers, coin.id)
-      await utils.sleep(1200)
+      await utils.sleep(2000)
     } catch ({ message, response = {} }) {
       if (message) {
         console.log(message)
