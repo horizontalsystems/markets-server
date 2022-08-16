@@ -2,7 +2,6 @@ const { DateTime } = require('luxon')
 const opensea = require('../../providers/opensea')
 const NftAsset = require('../../db/models/NftAsset')
 const NftCollection = require('../../db/models/NftCollection')
-const logger = require('../../config/logger')
 const NftMarket = require('../../db/models/NftMarket')
 
 exports.collections = async ({ query }, res) => {
@@ -17,7 +16,7 @@ exports.collections = async ({ query }, res) => {
       collections = await NftCollection.getCollections(offset, limit)
     }
   } catch (e) {
-    logger.error('Error fetching nft collection:', e)
+    console.log('Error fetching nft collection:', e.message, (e.parent || {}).message)
   }
 
   res.send(collections)
@@ -41,7 +40,7 @@ exports.collection = async ({ params, query }, res) => {
       collection.stats_chart = await NftMarket.getStatsChart(collection.uid, dateFrom)
     }
   } catch (e) {
-    logger.error('Error fetching nft collection:', e)
+    console.log('Error fetching nft collection:', e.message, (e.parent || {}).message)
   }
 
   res.send(collection)
@@ -65,7 +64,7 @@ exports.collectionStats = async ({ params }, res) => {
 
     return res.send(collection.stats)
   } catch (e) {
-    logger.error('Error fetching nft collection:', e)
+    console.log('Error fetching nft collection:', e.message, (e.parent || {}).message)
   }
 }
 
@@ -85,7 +84,7 @@ exports.assets = async ({ query }, res) => {
       query.offset
     )
   } catch (e) {
-    logger.error('Error fetching nft assets:', e)
+    console.log('Error fetching nft assets:', e.message, (e.parent || {}).message)
   }
   res.send(assets)
 }
@@ -105,7 +104,7 @@ exports.asset = async ({ params, query }, res) => {
       NftAsset.upsertAssets([asset])
     }
   } catch (e) {
-    logger.error('Error fetching nft asset:', e)
+    console.log('Error fetching nft asset:', e.message, (e.parent || {}).message)
   }
 
   res.send(asset)
@@ -130,7 +129,7 @@ exports.events = async ({ query }, res) => {
       query.cursor
     )
   } catch (e) {
-    logger.error('Error fetching nft assets:', e)
+    console.log('Error fetching nft assets:', e.message, (e.parent || {}).message)
   }
   res.send(events)
 }
