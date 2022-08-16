@@ -15,6 +15,7 @@ const coinsJoin = require('../db/seeders/coins.json')
 class SetupCoins {
 
   constructor() {
+    this.ignorePlatforms = ['ankr-reward-earning-staked-eth', 'binance-peg-ethereum']
     this.coinsCache = coinsJoin.reduce((result, item) => ({ ...result, [item.uid]: item }), {})
     this.turndownService = new TurndownService()
       .addRule('remove_links', {
@@ -135,6 +136,10 @@ class SetupCoins {
   }
 
   async syncPlatforms(coin, platforms, bep2tokens) {
+    if (this.ignorePlatforms.includes(coin.uid)) {
+      return
+    }
+
     const upsertPlatform = async (chain, oldType, values) => {
       await this.upsertChain(chain, chain === coin.uid ? coin.name : chain)
       await this.upsertPlatform({ ...values, coin_id: coin.id, chain_uid: chain }, oldType)
@@ -300,10 +305,10 @@ class SetupCoins {
         console.log(`Syncing chains for ${coin.coingecko_id}; (${i})`)
         const coinInfo = await coingecko.getCoinInfo(coin.coingecko_id)
         await this.syncPlatforms(coin, Object.entries(coinInfo.platforms), bep2tokens)
-        await sleep(1200)
+        await sleep(2000)
       } catch (err) {
         await this.handleError(err)
-        await sleep(1200)
+        await sleep(2000)
       }
     }
   }
