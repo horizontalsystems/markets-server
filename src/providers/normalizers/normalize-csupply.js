@@ -5,20 +5,21 @@ exports.normalizeUsdt = ({ data } = {}) => {
   }
 
   return {
+    ethereum: usdt.totaltokens_eth,
     omni: usdt.totaltokens_omni,
-    algo: usdt.totaltokens_algo,
+    algorand: usdt.totaltokens_algo,
     eos: usdt.totaltokens_eos,
     solana: usdt.totaltokens_sol,
-    ethereum: usdt.totaltokens_eth,
     liq: usdt.totaltokens_liq,
     slp: usdt.totaltokens_slp,
     tron: usdt.totaltokens_tron,
-    avalanche: usdt.totaltokens_ava
+    tezos: usdt.totaltokens_tezos,
+    'avalanche-2': usdt.totaltokens_ava
   }
 }
 
 exports.normalizeUsdc = ({ data } = []) => {
-  const { chains } = data[0] || {}
+  const { chains } = data.find(item => item.symbol === 'USDC') || {}
 
   if (!chains) {
     return {}
@@ -33,7 +34,13 @@ exports.normalizeUsdc = ({ data } = []) => {
       case 'trx':
         return 'tron'
       case 'avax':
-        return 'avalanche'
+        return 'avalanche-2'
+      case 'algo':
+        return 'algorand'
+      case 'xlm':
+        return 'stellar'
+      case 'hbar':
+        return 'hedera-hashgraph'
       default:
         return key
     }
