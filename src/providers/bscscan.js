@@ -1,7 +1,8 @@
+const { create } = require('axios')
 const { stringify } = require('querystring')
 
-const web = require('axios').create({ baseURL: 'https://bscscan.com', timeout: 180000 })
-const api = require('axios').create({ baseURL: 'https://api.bscscan.com/api', timeout: 180000 })
+const web = create({ baseURL: 'https://bscscan.com', timeout: 180000 })
+const api = create({ baseURL: 'https://api.bscscan.com/api', timeout: 180000 })
 
 exports.getHolders = address => {
   return web.get(`/token/tokenholderchart/${address}?range=10`).then(res => res.data)
@@ -14,12 +15,12 @@ exports.getAccounts = () => {
 exports.getCSupply = address => {
   const params = {
     module: 'stats',
-    action: 'tokensupply',
+    action: 'tokenCsupply',
     contractaddress: address,
     apikey: process.env.BSCSCAN_KEY
   }
 
-  console.log('Fetching circulating supply for', address)
+  console.log(`Fetching circulating supply for ${address} from bscscan`)
 
   return api.get(`?${stringify(params)}`)
     .then(res => res.data)
