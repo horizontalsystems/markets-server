@@ -73,7 +73,8 @@ class SetupCoins {
     const where = {
       ...(address && { address }),
       ...(type && { type }),
-      ...(chain && { chain_uid: chain })
+      ...(chain && { chain_uid: chain }),
+      decimals: Platform.literal('address IS NULL')
     }
     const platforms = await Platform.findAll({ where })
 
