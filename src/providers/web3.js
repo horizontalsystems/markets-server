@@ -78,7 +78,7 @@ exports.getEip20Info = async (contractAddress, chainOrType) => {
       symbol
     }
   } catch (e) {
-    console.log(e)
+    console.log(contractAddress, e)
     return null
   }
 }
@@ -87,7 +87,7 @@ exports.getERC20Decimals = async (contractAddress) => {
   try {
     return await ethereum.getDecimals(contractAddress)
   } catch (e) {
-    console.log(e)
+    console.log(contractAddress, e)
     return null
   }
 }
@@ -96,7 +96,7 @@ exports.getOptimismDecimals = async (contractAddress) => {
   try {
     return await optimism.getDecimals(contractAddress)
   } catch (e) {
-    console.log(e)
+    console.log(contractAddress, e)
     return null
   }
 }
@@ -105,7 +105,7 @@ exports.getArbitrumOneDecimals = async (contractAddress) => {
   try {
     return await arbitrumOne.getDecimals(contractAddress)
   } catch (e) {
-    console.log(e)
+    console.log(contractAddress, e)
     return null
   }
 }
@@ -114,7 +114,7 @@ exports.getMRC20Decimals = async (contractAddress) => {
   try {
     return await polygon.getDecimals(contractAddress)
   } catch (e) {
-    console.log(e)
+    console.log(contractAddress, e)
     return null
   }
 }
@@ -123,7 +123,7 @@ exports.getAvalancheDecimals = async (contractAddress) => {
   try {
     return await avalanche.getDecimals(contractAddress)
   } catch (e) {
-    console.log(e)
+    console.log(contractAddress, e)
     return null
   }
 }
@@ -132,7 +132,7 @@ exports.getBEP20Decimals = async (contractAddress) => {
   try {
     return await binance.getDecimals(contractAddress)
   } catch (e) {
-    console.log(e)
+    console.log(contractAddress, e)
     return null
   }
 }
