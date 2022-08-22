@@ -78,6 +78,8 @@ class SetupCoins {
     }
     const platforms = await Platform.findAll({ where })
 
+    console.log(`Syncing decimals for ${platforms.length} platforms`)
+
     for (let i = 0; i < platforms.length; i += 1) {
       const platform = platforms[i]
 
