@@ -104,6 +104,9 @@ class SetupCoins {
         case 'cronos':
           getDecimals = web3Provider.getCronosDecimals
           break
+        case 'fantom':
+          getDecimals = web3Provider.getFantomDecimals
+          break
         case 'ethereum':
           getDecimals = web3Provider.getERC20Decimals
           break

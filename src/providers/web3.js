@@ -33,6 +33,7 @@ const polygon = new Web3Provider('https://polygon-rpc.com', erc20Abi)
 const binance = new Web3Provider('https://bsc-dataseed1.binance.org:443', erc20Abi)
 const avalanche = new Web3Provider('https://rpc.ankr.com/avalanche', erc20Abi)
 const cronos = new Web3Provider('https://evm.cronos.org', erc20Abi)
+const fantom = new Web3Provider('https://rpc.ankr.com/fantom', erc20Abi)
 
 exports.getEip20Info = async (contractAddress, chainOrType) => {
   let provider
@@ -141,6 +142,15 @@ exports.getBEP20Decimals = async (contractAddress) => {
 exports.getCronosDecimals = async (contractAddress) => {
   try {
     return await cronos.getDecimals(contractAddress)
+  } catch (e) {
+    console.log(contractAddress, e)
+    return null
+  }
+}
+
+exports.getFantomDecimals = async (contractAddress) => {
+  try {
+    return await fantom.getDecimals(contractAddress)
   } catch (e) {
     console.log(contractAddress, e)
     return null
