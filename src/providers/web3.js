@@ -34,6 +34,7 @@ const binance = new Web3Provider('https://bsc-dataseed1.binance.org:443', erc20A
 const avalanche = new Web3Provider('https://rpc.ankr.com/avalanche', erc20Abi)
 const cronos = new Web3Provider('https://evm.cronos.org', erc20Abi)
 const fantom = new Web3Provider('https://rpc.ankr.com/fantom', erc20Abi)
+const celo = new Web3Provider('https://rpc.ankr.com/celo', erc20Abi)
 
 exports.getEip20Info = async (contractAddress, chainOrType) => {
   let provider
@@ -151,6 +152,15 @@ exports.getCronosDecimals = async (contractAddress) => {
 exports.getFantomDecimals = async (contractAddress) => {
   try {
     return await fantom.getDecimals(contractAddress)
+  } catch (e) {
+    console.log(contractAddress, e)
+    return null
+  }
+}
+
+exports.getCeloDecimals = async (contractAddress) => {
+  try {
+    return await celo.getDecimals(contractAddress)
   } catch (e) {
     console.log(contractAddress, e)
     return null
