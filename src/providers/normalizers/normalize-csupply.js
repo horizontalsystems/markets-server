@@ -14,7 +14,8 @@ exports.normalizeUsdt = ({ data } = {}) => {
     slp: usdt.totaltokens_slp,
     tron: usdt.totaltokens_tron,
     tezos: usdt.totaltokens_tezos,
-    'avalanche-2': usdt.totaltokens_ava
+    avalanche: usdt.totaltokens_ava,
+    'polygon-pos': usdt.totaltokens_polygon
   }
 }
 
@@ -34,7 +35,7 @@ exports.normalizeUsdc = ({ data } = []) => {
       case 'trx':
         return 'tron'
       case 'avax':
-        return 'avalanche-2'
+        return 'avalanche'
       case 'algo':
         return 'algorand'
       case 'xlm':

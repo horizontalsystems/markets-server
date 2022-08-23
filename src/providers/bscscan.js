@@ -12,7 +12,7 @@ exports.getAccounts = () => {
   return web.get('/accounts').then(res => res.data)
 }
 
-exports.getCSupply = address => {
+exports.getTokenSupply = address => {
   const params = {
     module: 'stats',
     action: 'tokenCsupply',
