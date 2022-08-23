@@ -130,7 +130,7 @@ class DuneAnalytics {
       variables: { job_id: jobId },
       query: `
         query FindResultDataByJob($job_id: uuid!) {
-          query_results(where: {job_id: {_eq: $job_id}, error: {_is_null: true}}) {
+          query_results(where: {job_id: {_eq: $job_id}}) {
             id
             job_id
             runtime
