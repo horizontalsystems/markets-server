@@ -39,7 +39,7 @@ class CoinCirculatingSupplySyncer extends Syncer {
       }
     }
 
-    await Platform.update({ circulating_supply: null })
+    await Platform.update({ circulating_supply: null }, { where: {} })
     await this.update(Object.entries(map))
   }
 
