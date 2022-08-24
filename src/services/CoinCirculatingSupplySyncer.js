@@ -16,9 +16,9 @@ const getCSupplies = require('../providers/csupply')
 
 class CoinCirculatingSupplySyncer extends Syncer {
 
-  async sync(uids) {
+  async sync({ uids, chain }) {
     const map = {}
-    const platforms = await Platform.getMarketCap(uids)
+    const platforms = await Platform.getMarketCap(uids, chain)
     const supplies = await getCSupplies()
 
     for (let i = 0; i < platforms.length; i += 1) {
@@ -39,7 +39,6 @@ class CoinCirculatingSupplySyncer extends Syncer {
       }
     }
 
-    await Platform.update({ circulating_supply: null }, { where: {} })
     await this.update(Object.entries(map))
   }
 

@@ -6,17 +6,20 @@ const CoinCirculatingSupplySyncer = require('../src/services/CoinCirculatingSupp
 
 const program = new Command()
   .option('-c --coins <coins>', 'sync market data for given coins')
+  .option('--chain <chain>', 'sync market data for given chain')
   .parse(process.argv)
 
-async function start({ coins }) {
+async function start({ coins, chain }) {
   await sequelize.sync()
   const syncer = new CoinCirculatingSupplySyncer()
 
   if (coins) {
-    await syncer.sync(coins.split(','))
-  } else {
-    await syncer.sync()
+    return syncer.sync({ uids: coins.split(',') })
   }
+  if (chain) {
+    return syncer.sync({ chain })
+  }
+  return syncer.sync()
 }
 
 module.exports = start(program.opts())

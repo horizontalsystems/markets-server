@@ -103,7 +103,7 @@ class Platform extends SequelizeModel {
     return Platform.query(query, { values, chain })
   }
 
-  static getMarketCap(uids) {
+  static getMarketCap(uids, chain) {
     const query = `
       SELECT
         p.id,
@@ -124,10 +124,10 @@ class Platform extends SequelizeModel {
         GROUP BY coin_id
         HAVING COUNT(*) > 1
       ) m ON m.coin_id = p.coin_id
-      WHERE p.type != 'native'
+      WHERE p.type != 'native' ${chain ? 'and p.chain_uid = :chain' : ''}
     `
 
-    return Platform.query(query, { uids })
+    return Platform.query(query, { uids, chain })
   }
 
   static updateCSupplies(values) {
