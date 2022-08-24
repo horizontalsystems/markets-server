@@ -101,6 +101,15 @@ class SetupCoins {
         case 'avalanche':
           getDecimals = web3Provider.getAvalancheDecimals
           break
+        case 'cronos':
+          getDecimals = web3Provider.getCronosDecimals
+          break
+        case 'fantom':
+          getDecimals = web3Provider.getFantomDecimals
+          break
+        case 'celo':
+          getDecimals = web3Provider.getCeloDecimals
+          break
         case 'ethereum':
           getDecimals = web3Provider.getERC20Decimals
           break

@@ -32,6 +32,9 @@ const arbitrumOne = new Web3Provider('https://arb1.arbitrum.io/rpc', erc20Abi)
 const polygon = new Web3Provider('https://polygon-rpc.com', erc20Abi)
 const binance = new Web3Provider('https://bsc-dataseed1.binance.org:443', erc20Abi)
 const avalanche = new Web3Provider('https://rpc.ankr.com/avalanche', erc20Abi)
+const cronos = new Web3Provider('https://evm.cronos.org', erc20Abi)
+const fantom = new Web3Provider('https://rpc.ankr.com/fantom', erc20Abi)
+const celo = new Web3Provider('https://rpc.ankr.com/celo', erc20Abi)
 
 exports.getEip20Info = async (contractAddress, chainOrType) => {
   let provider
@@ -131,6 +134,33 @@ exports.getAvalancheDecimals = async (contractAddress) => {
 exports.getBEP20Decimals = async (contractAddress) => {
   try {
     return await binance.getDecimals(contractAddress)
+  } catch (e) {
+    console.log(contractAddress, e)
+    return null
+  }
+}
+
+exports.getCronosDecimals = async (contractAddress) => {
+  try {
+    return await cronos.getDecimals(contractAddress)
+  } catch (e) {
+    console.log(contractAddress, e)
+    return null
+  }
+}
+
+exports.getFantomDecimals = async (contractAddress) => {
+  try {
+    return await fantom.getDecimals(contractAddress)
+  } catch (e) {
+    console.log(contractAddress, e)
+    return null
+  }
+}
+
+exports.getCeloDecimals = async (contractAddress) => {
+  try {
+    return await celo.getDecimals(contractAddress)
   } catch (e) {
     console.log(contractAddress, e)
     return null

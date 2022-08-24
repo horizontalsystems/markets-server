@@ -124,7 +124,7 @@ class Platform extends SequelizeModel {
         GROUP BY coin_id
         HAVING COUNT(*) > 1
       ) m ON m.coin_id = p.coin_id
-      WHERE p.address is not null
+      WHERE p.type != 'native'
     `
 
     return Platform.query(query, { uids })

@@ -1,8 +1,8 @@
 const { create } = require('axios')
 const { stringify } = require('querystring')
 
-const web = create({ baseURL: 'https://ftmscan.com', timeout: 180000 })
-const api = create({ baseURL: 'https://api.ftmscan.com/api', timeout: 180000 })
+const web = create({ baseURL: 'https://arbiscan.io', timeout: 180000 })
+const api = create({ baseURL: 'https://api.arbiscan.io/api', timeout: 180000 })
 
 exports.getHolders = address => {
   return web.get(`/token/tokenholderchart/${address}?range=10`).then(res => res.data)
@@ -17,10 +17,10 @@ exports.getTokenSupply = address => {
     module: 'stats',
     action: 'tokensupply',
     contractaddress: address,
-    apikey: process.env.FTMSCAN_KEY
+    apikey: process.env.ARBISCAN_KEY
   }
 
-  console.log(`Fetching circulating supply for ${address} from ftmscan.com`)
+  console.log(`Fetching circulating supply for ${address} from arbiscan.io`)
 
   return api.get(`?${stringify(params)}`)
     .then(res => res.data)
