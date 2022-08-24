@@ -63,7 +63,6 @@ class Chain extends SequelizeModel {
       FROM platforms p, coins c
       WHERE c.id = p.coin_id
         AND p.circulating_supply is not null
-        AND p.address is not null
         AND p.chain_uid = :chain
       GROUP BY uid, price, price_change_24h, total_volume
       ORDER BY mcap desc
@@ -80,7 +79,6 @@ class Chain extends SequelizeModel {
       FROM platforms p, coins c
       WHERE c.id = p.coin_id
         AND p.circulating_supply is not null
-        AND p.address is not null
         AND p.chain_uid is not null
       GROUP BY p.chain_uid
       ORDER BY mcap desc

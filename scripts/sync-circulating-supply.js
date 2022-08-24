@@ -19,7 +19,8 @@ async function start({ coins, chain }) {
   if (chain) {
     return syncer.sync({ chain })
   }
-  return syncer.sync()
+
+  return syncer.sync({})
 }
 
 module.exports = start(program.opts())

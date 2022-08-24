@@ -97,7 +97,9 @@ class CoinCirculatingSupplySyncer extends Syncer {
         supply = await this.fetchSupplySolana(platform)
         break
       case 'binancecoin':
-        supply = platform.csupply
+        if (platform.uid !== 'binancecoin') {
+          supply = platform.csupply
+        }
         break
       default:
     }
