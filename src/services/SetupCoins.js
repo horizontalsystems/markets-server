@@ -69,12 +69,17 @@ class SetupCoins {
     }
   }
 
-  async forceSyncDecimals({ chain, type, address }) {
+  async forceSyncDecimals({ chain, type, address, uid }) {
     const where = {
       ...(address && { address }),
       ...(type && { type }),
       ...(chain && { chain_uid: chain }),
       decimals: Platform.literal('decimals IS NULL')
+    }
+    if (uid) {
+      await Coin.findOne({ where: { uid }, attributes: ['id'] }).then(coin => {
+        where.coin_id = coin.id
+      })
     }
     const platforms = await Platform.findAll({ where })
 

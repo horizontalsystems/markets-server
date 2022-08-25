@@ -11,11 +11,12 @@ const program = new Command()
   .option('-c --coins <coins>', 'setup only given coins')
   .option('--address-decimals <address>', 'force sync decimals for given address')
   .option('--chain-decimals <chain>', 'force sync decimals for given chain')
+  .option('--coin-decimals <coin>', 'force sync decimals for given coin')
   .option('--token-type-decimals <type>', 'force sync decimals for given token type')
   .option('--chains [coins]', 'sync with chains')
   .parse(process.argv)
 
-async function start({ all, fetch, coins, tokenTypeDecimals, addressDecimals, chainDecimals, chains }) {
+async function start({ all, fetch, coins, tokenTypeDecimals, addressDecimals, chainDecimals, coinDecimals, chains }) {
   await sequelize.sync()
   const setupCoins = new SetupCoins()
 
@@ -28,6 +29,8 @@ async function start({ all, fetch, coins, tokenTypeDecimals, addressDecimals, ch
       await setupCoins.forceSyncDecimals({ address: addressDecimals.split(',') })
     } else if (chainDecimals) {
       await setupCoins.forceSyncDecimals({ chain: chainDecimals })
+    } else if (coinDecimals) {
+      await setupCoins.forceSyncDecimals({ uid: coinDecimals })
     } else if (tokenTypeDecimals) {
       await setupCoins.forceSyncDecimals({ type: tokenTypeDecimals })
     } else if (all) {
