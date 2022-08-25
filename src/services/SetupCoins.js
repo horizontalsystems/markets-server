@@ -82,45 +82,23 @@ class SetupCoins {
 
     for (let i = 0; i < platforms.length; i += 1) {
       const platform = platforms[i]
+      const provider = web3Provider.getProvider(platform.chain_uid)
 
-      let getDecimals
-      switch (platform.chain_uid) {
-        case 'optimism':
-        case 'optimistic-ethereum':
-          getDecimals = web3Provider.getOptimismDecimals
-          break
-        case 'arbitrum-one':
-          getDecimals = web3Provider.getArbitrumOneDecimals
-          break
-        case 'binance-smart-chain':
-          getDecimals = web3Provider.getBEP20Decimals
-          break
-        case 'polygon-pos':
-          getDecimals = web3Provider.getMRC20Decimals
-          break
-        case 'avalanche':
-          getDecimals = web3Provider.getAvalancheDecimals
-          break
-        case 'cronos':
-          getDecimals = web3Provider.getCronosDecimals
-          break
-        case 'fantom':
-          getDecimals = web3Provider.getFantomDecimals
-          break
-        case 'celo':
-          getDecimals = web3Provider.getCeloDecimals
-          break
-        case 'ethereum':
-          getDecimals = web3Provider.getERC20Decimals
-          break
-        default:
-          continue
-      }
+      try {
+        const decimals = await provider.getDecimals(platform.address)
+        console.log(`Fetched decimals (${decimals}) for ${platform.address} ${i + 1}`)
 
-      const decimals = await getDecimals(platform.address)
-      console.log(`Fetched decimals (${decimals}) for ${platform.address} ${i + 1}; `)
-      if (decimals && decimals > 0) {
-        await platform.update({ decimals })
+        if (decimals > 0) {
+          await platform.update({ decimals })
+        }
+      } catch ({ message }) {
+        console.log(`Failed to fetch decimals for ${platform.address} ${i + 1}`)
+        console.log(message)
+
+        if (message.match(/^Returned values aren't valid/) || message.match(/^Provided address [\s\S]+ is invalid/)) {
+          await platform.destroy()
+          console.log('Platform removed')
+        }
       }
     }
 
@@ -190,7 +168,7 @@ class SetupCoins {
       let oldType = platform
       let newType = platform
       let decimals
-      let resolver
+      let provider = web3Provider.getProvider(platform)
       let symbol
       let mapper = data => {
         decimals = data
@@ -200,37 +178,32 @@ class SetupCoins {
         case 'ethereum':
           newType = 'eip20'
           oldType = 'erc20'
-          resolver = web3Provider.getERC20Decimals
           break
 
         case 'binance-smart-chain':
           newType = 'eip20'
           oldType = 'bep20'
-          resolver = web3Provider.getBEP20Decimals
           break
 
         case 'polygon-pos':
           newType = 'eip20'
-          resolver = web3Provider.getMRC20Decimals
           break
 
         case 'optimistic-ethereum':
           newType = 'eip20'
-          resolver = web3Provider.getOptimismDecimals
           break
 
         case 'arbitrum-one':
           newType = 'eip20'
-          resolver = web3Provider.getArbitrumOneDecimals
           break
 
         case 'avalanche':
           newType = 'eip20'
-          resolver = web3Provider.getAvalancheDecimals
           break
 
         case 'binancecoin': {
           newType = 'bep2'
+          provider = null
           const token = bep2tokens[coin.code.toUpperCase()]
           if (token) {
             decimals = token.contract_decimals
@@ -240,7 +213,7 @@ class SetupCoins {
         }
 
         case 'solana': {
-          resolver = solscan.getMeta
+          provider = { getDecimals: solscan.getMeta }
           mapper = data => {
             decimals = data.decimals
             symbol = data.symbol
@@ -257,8 +230,17 @@ class SetupCoins {
         }
       })
 
-      if (resolver && !platformOld) {
-        await resolver(address).then(data => mapper(data))
+      if (provider && !platformOld) {
+        try {
+          mapper(await provider.getDecimals(address))
+        } catch ({ message }) {
+          console.log(message)
+
+          if (message.match(/^Returned values aren't valid/) || message.match(/^Provided address [\s\S]+ is invalid/)) {
+            console.log('Skipped adding platform', address)
+            continue
+          }
+        }
       }
 
       if (platform) {

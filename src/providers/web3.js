@@ -36,37 +36,39 @@ const cronos = new Web3Provider('https://evm.cronos.org', erc20Abi)
 const fantom = new Web3Provider('https://rpc.ankr.com/fantom', erc20Abi)
 const celo = new Web3Provider('https://rpc.ankr.com/celo', erc20Abi)
 
-exports.getEip20Info = async (contractAddress, chainOrType) => {
-  let provider
-
+const getProvider = chainOrType => {
   switch (chainOrType) {
     case 'erc20':
     case 'ethereum':
-      provider = ethereum
-      break
+      return ethereum
     case 'bep20':
     case 'binance-smart-chain':
-      provider = binance
-      break
+      return binance
     case 'mrc20':
     case 'polygon-pos':
-      provider = polygon
-      break
+      return polygon
     case 'optimism':
     case 'optimistic-ethereum':
-      provider = optimism
-      break
+      return optimism
     case 'arbitrum-one':
-      provider = arbitrumOne
-      break
+      return arbitrumOne
     case 'avalanche':
-      provider = avalanche
-      break
+      return avalanche
+    case 'cronos':
+      return cronos
+    case 'fantom':
+      return fantom
+    case 'celo':
+      return celo
     default:
       return null
   }
+}
 
+exports.getProvider = getProvider
+exports.getEip20Info = async (contractAddress, chainOrType) => {
   try {
+    const provider = getProvider(chainOrType)
     const decimals = await provider.getDecimals(contractAddress)
     const name = await provider.getName(contractAddress)
     const symbol = await provider.getSymbol(contractAddress)
@@ -80,87 +82,6 @@ exports.getEip20Info = async (contractAddress, chainOrType) => {
       name,
       symbol
     }
-  } catch (e) {
-    console.log(contractAddress, e)
-    return null
-  }
-}
-
-exports.getERC20Decimals = async (contractAddress) => {
-  try {
-    return await ethereum.getDecimals(contractAddress)
-  } catch (e) {
-    console.log(contractAddress, e)
-    return null
-  }
-}
-
-exports.getOptimismDecimals = async (contractAddress) => {
-  try {
-    return await optimism.getDecimals(contractAddress)
-  } catch (e) {
-    console.log(contractAddress, e)
-    return null
-  }
-}
-
-exports.getArbitrumOneDecimals = async (contractAddress) => {
-  try {
-    return await arbitrumOne.getDecimals(contractAddress)
-  } catch (e) {
-    console.log(contractAddress, e)
-    return null
-  }
-}
-
-exports.getMRC20Decimals = async (contractAddress) => {
-  try {
-    return await polygon.getDecimals(contractAddress)
-  } catch (e) {
-    console.log(contractAddress, e)
-    return null
-  }
-}
-
-exports.getAvalancheDecimals = async (contractAddress) => {
-  try {
-    return await avalanche.getDecimals(contractAddress)
-  } catch (e) {
-    console.log(contractAddress, e)
-    return null
-  }
-}
-
-exports.getBEP20Decimals = async (contractAddress) => {
-  try {
-    return await binance.getDecimals(contractAddress)
-  } catch (e) {
-    console.log(contractAddress, e)
-    return null
-  }
-}
-
-exports.getCronosDecimals = async (contractAddress) => {
-  try {
-    return await cronos.getDecimals(contractAddress)
-  } catch (e) {
-    console.log(contractAddress, e)
-    return null
-  }
-}
-
-exports.getFantomDecimals = async (contractAddress) => {
-  try {
-    return await fantom.getDecimals(contractAddress)
-  } catch (e) {
-    console.log(contractAddress, e)
-    return null
-  }
-}
-
-exports.getCeloDecimals = async (contractAddress) => {
-  try {
-    return await celo.getDecimals(contractAddress)
   } catch (e) {
     console.log(contractAddress, e)
     return null
