@@ -79,17 +79,20 @@ class DexVolumeSyncer extends Syncer {
     const chunks = chunk(platforms.list, chunkSize)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      const dexVolume = await bitquery.getDexVolumes(dateFrom.slice(0, 10), chunks[i], chain, exchange, interval)
-      const records = dexVolume.map(item => {
-        return {
-          volume: item.tradeAmount,
-          date: item.date.value,
-          exchange: exchange[0],
-          platform_id: platforms.map[item.baseCurrency.address]
-        }
-      })
-
-      await this.bulkCreate(records)
+      try {
+        const dexVolume = await bitquery.getDexVolumes(dateFrom.slice(0, 10), chunks[i], chain, exchange, interval)
+        const records = dexVolume.map(item => {
+          return {
+            volume: item.tradeAmount,
+            date: item.date.value,
+            exchange: exchange[0],
+            platform_id: platforms.map[item.baseCurrency.address]
+          }
+        })
+        await this.bulkCreate(records)
+      } catch (e) {
+        console.log(`Error syncing chunk of dex-volume data: ${e}, Ignoring error !!!`)
+      }
     }
   }
 
@@ -113,19 +116,23 @@ class DexVolumeSyncer extends Syncer {
     return { list, map }
   }
 
-  bulkCreate(records) {
+  async bulkCreate(records) {
     const items = records.filter(item => item.platform_id)
     if (!items.length) {
       return
     }
 
-    return DexVolume.bulkCreate(items, { ignoreDuplicates: true })
-      .then(data => {
-        console.log('Inserted dex volumes', data.length)
-      })
-      .catch(e => {
-        console.error('Error inserting dex volumes', e.message)
-      })
+    const chunks = chunk(items, 300000)
+
+    for (let i = 0; i < chunks.length; i += 1) {
+      await DexVolume.bulkCreate(items, { ignoreDuplicates: true })
+        .then(data => {
+          console.log('Inserted dex volumes', data.length)
+        })
+        .catch(e => {
+          console.error('Error inserting dex volumes', e.message)
+        })
+    }
   }
 
 }

@@ -45,17 +45,20 @@ class DexLiquiditySyncer extends Syncer {
     const chunks = chunk(platforms.list, chunkSize)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      const data = await streamingfast.getPancakeLiquidity(dateFrom, chunks[i])
-      const records = data.map(item => {
-        return {
-          volume: item.volume,
-          date: item.date * 1000,
-          exchange: 'pancakeswap',
-          platform_id: platforms.map[item.token.id]
-        }
-      })
-
-      await this.upsertData(records)
+      try {
+        const data = await streamingfast.getPancakeLiquidity(dateFrom, chunks[i])
+        const records = data.map(item => {
+          return {
+            volume: item.volume,
+            date: item.date * 1000,
+            exchange: 'pancakeswap',
+            platform_id: platforms.map[item.token.id]
+          }
+        })
+        await this.upsertData(records)
+      } catch (e) {
+        console.log(`Error syncing chunk of pancake data: ${e}, Ignoring error !!!`)
+      }
     }
   }
 
@@ -100,7 +103,7 @@ class DexLiquiditySyncer extends Syncer {
       return
     }
 
-    const chunks = chunk(items, 400000)
+    const chunks = chunk(items, 300000)
 
     for (let i = 0; i < chunks.length; i += 1) {
       await DexLiquidity.bulkCreate(chunks[i], { updateOnDuplicate: ['volume', 'date', 'platform_id'] })
