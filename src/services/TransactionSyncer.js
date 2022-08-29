@@ -43,7 +43,7 @@ class TransactionSyncer extends Syncer {
     await this.syncFromBigquery(dateParams, '30m')
     await this.syncFromBigquery(dateParams, '30m', true)
     await this.syncFromBitquery(dateParams, 'binance-smart-chain', true)
-    await this.syncFromBitquery(dateParams, 'solana', true)
+    await this.syncFromBitquery(dateParams, 'solana', true, 30)
 
     console.log('Completed syncing daily transactions stats')
   }
