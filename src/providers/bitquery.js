@@ -6,7 +6,7 @@ class Bitquery {
   constructor(apiKey) {
     this.axios = axios.create({
       baseURL: 'https://graphql.bitquery.io',
-      timeout: 180000,
+      timeout: 180000 * 2,
       headers: { 'X-API-KEY': apiKey }
     })
   }

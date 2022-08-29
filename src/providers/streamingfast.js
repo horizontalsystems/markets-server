@@ -1,6 +1,6 @@
 const axios = require('axios').create({
   baseURL: 'https://bsc.streamingfast.io',
-  timeout: 300000
+  timeout: 180000 * 2
 })
 
 class Streamingfast {
