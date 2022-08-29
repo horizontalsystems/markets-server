@@ -77,31 +77,12 @@ class AddressSyncer extends Syncer {
         addressStats = await dune.getAddressStats(dateFrom)
       }
 
-      const addressesMap = addressStats.reduce((map, i) => {
-        const isoBlockDate = i.block_date.value ? i.block_date.value : i.block_date
-        const date = DateTime.fromISO(isoBlockDate, { zone: 'utc' }).toFormat('yyyy-MM-dd');
+      const chunks = chunk(addressStats, 200000)
 
-        map[i.platform] = map[i.platform] || {}
-        map[i.platform][date] = map[i.platform][date] || {}
-        map[i.platform][date][i.period] = map[i.platform][date][i.period] || []
-
-        map[i.platform][date][i.period].push({
-          date: isoBlockDate,
-          count: i.address_count
-        })
-
-        return map
-      }, {})
-
-      const records = Object.keys(addressesMap).flatMap(platform => {
-        return Object.keys(addressesMap[platform]).map(date => ({
-          date,
-          platform_id: platforms.map[platform],
-          data: addressesMap[platform][date]
-        }))
-      })
-
-      await this.upsertAddressStats(records)
+      for (let i = 0; i < chunks.length; i += 1) {
+        const data = await this.mapAddressStats(chunks[i], platforms)
+        await this.bulkCreate(data)
+      }
     } catch (e) {
       console.log('Error syncing address stats', e)
     }
@@ -131,23 +112,45 @@ class AddressSyncer extends Syncer {
     return { list, map }
   }
 
-  async upsertAddressStats(records) {
+  async mapAddressStats(addressStats, platforms) {
+    const addressesMap = addressStats.reduce((map, i) => {
+      const isoBlockDate = i.block_date.value ? i.block_date.value : i.block_date
+      const date = DateTime.fromISO(isoBlockDate, { zone: 'utc' }).toFormat('yyyy-MM-dd');
+
+      map[i.platform] = map[i.platform] || {}
+      map[i.platform][date] = map[i.platform][date] || {}
+      map[i.platform][date][i.period] = map[i.platform][date][i.period] || []
+
+      map[i.platform][date][i.period].push({
+        date: isoBlockDate,
+        count: i.address_count
+      })
+
+      return map
+    }, {})
+
+    return Object.keys(addressesMap).flatMap(platform => {
+      return Object.keys(addressesMap[platform]).map(date => ({
+        date,
+        platform_id: platforms.map[platform],
+        data: addressesMap[platform][date]
+      }))
+    })
+  }
+
+  async bulkCreate(records) {
     const items = records.filter(item => item.platform_id)
     if (!items.length) {
       return
     }
 
-    const chunks = chunk(items, 400000)
-
-    for (let i = 0; i < chunks.length; i += 1) {
-      await Address.bulkCreate(chunks[i], { updateOnDuplicate: ['data', 'date', 'platform_id'] })
-        .then((data) => {
-          console.log('Inserted address stats', data.length)
-        })
-        .catch(err => {
-          console.error(err)
-        })
-    }
+    return Address.bulkCreate(items, { updateOnDuplicate: ['data', 'date', 'platform_id'] })
+      .then((data) => {
+        console.log('Inserted address stats', data.length)
+      })
+      .catch(err => {
+        console.error(err)
+      })
   }
 }
 
