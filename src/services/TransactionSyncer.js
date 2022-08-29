@@ -53,10 +53,10 @@ class TransactionSyncer extends Syncer {
     await Transaction.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncFromBigquery({ dateFrom, dateTo }, datePeriod, syncBtcBaseCoins = false) {
+  async syncFromBigquery({ dateFrom, dateTo }, datePeriod, isBtcBaseCoins = false) {
     const chains = ['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash', 'ethereum']
     const platforms = await this.getPlatforms(chains, true, false)
-    const transactions = syncBtcBaseCoins
+    const transactions = isBtcBaseCoins
       ? await bigquery.getTransactionsStatsBtcBased(dateFrom, dateTo, datePeriod)
       : await bigquery.getTransactionsStats(dateFrom, dateTo, platforms.list, datePeriod)
 

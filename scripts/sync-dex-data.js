@@ -8,16 +8,16 @@ const DexLiquiditySyncer = require('../src/services/DexLiquiditySyncer')
 
 async function start() {
   await sequelize.sync()
-  const addressSyncer = new AddressSyncer()
   const transactionSyncer = new TransactionSyncer()
   const dexVolumeSyncer = new DexVolumeSyncer()
   const dexLiquiditySyncer = new DexLiquiditySyncer()
+  const addressSyncer = new AddressSyncer()
 
   try {
-    await addressSyncer.start()
     await transactionSyncer.start()
     await dexVolumeSyncer.start()
     await dexLiquiditySyncer.start()
+    await addressSyncer.start()
   } catch (e) {
     console.log(e.message)
     throw e

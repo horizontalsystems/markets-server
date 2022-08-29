@@ -29,7 +29,7 @@ class AddressSyncer extends Syncer {
     }
 
     if (!await Address.existsForPlatforms('binance-smart-chain')) {
-      await this.syncStats('binance-smart-chain', this.syncParamsHistorical('30m'))
+      // await this.syncStats('binance-smart-chain', this.syncParamsHistorical('30m'))
     }
 
     // if (!await Address.existsForPlatforms('solana')) {
