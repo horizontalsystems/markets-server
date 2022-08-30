@@ -71,7 +71,7 @@ describe('CoinPriceSyncer', () => {
         await syncer.syncCoins(coins.map(coin => coin.coingecko_id), idsMap)
 
         sinon.assert.calledOnceWithExactly(syncer.updateCoins, coins, idsMap)
-        sinon.assert.calledOnceWithExactly(utils.sleep, 1200)
+        sinon.assert.calledOnceWithExactly(utils.sleep, 2000)
       })
     })
 
