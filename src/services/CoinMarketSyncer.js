@@ -25,13 +25,13 @@ class CoinMarketSyncer extends Syncer {
     console.log(`Coins to sync exchanges ${coins.length}`)
 
     for (let i = 0; i < coins.length; i += 1) {
-      await this.syncCoinInfo(coins[i])
+      const coin = coins[i]
+      console.log(`Syncing coin ${coin.coingecko_id} (${i + 1})`)
+      await this.syncCoinInfo(coin)
     }
   }
 
   async syncCoinInfo(coin) {
-    console.log(`Syncing coin ${coin.coingecko_id}`)
-
     try {
       const data = await coingecko.getCoinInfo(coin.coingecko_id, { tickers: true })
       await this.updateCoinInfo(data.tickers, coin.id)
