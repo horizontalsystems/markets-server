@@ -1,4 +1,5 @@
 const { chunk } = require('lodash')
+const { utcDate } = require('../utils')
 const { bitquery } = require('../providers/bitquery')
 const bigquery = require('../providers/bigquery')
 const Transaction = require('../db/models/Transaction')
@@ -40,8 +41,12 @@ class TransactionSyncer extends Syncer {
   }
 
   async syncDailyStats(dateParams) {
-    await this.syncFromBigquery(dateParams, '30m')
-    await this.syncFromBigquery(dateParams, '30m', true)
+    const params = {
+      dateFrom: utcDate({ hours: -2 }, 'yyyy-MM-dd HH:00:00Z'),
+      dateTo: dateParams.dateTo
+    }
+    await this.syncFromBigquery(params, '30m')
+    await this.syncFromBigquery(params, '30m', true)
     await this.syncFromBitquery(dateParams, 'binance-smart-chain', true)
     await this.syncFromBitquery(dateParams, 'solana', true, 30)
 
@@ -65,7 +70,7 @@ class TransactionSyncer extends Syncer {
         count: transaction.count,
         volume: transaction.volume,
         date: transaction.date.value,
-        platform_id: platforms.map[transaction.address || transaction.platform]
+        platform_id: platforms.map[transaction.address]
       }
     })
 
@@ -156,7 +161,7 @@ class TransactionSyncer extends Syncer {
     const chunks = chunk(items, 300000)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await Transaction.bulkCreate(chunks[i], { ignoreDuplicates: true })
+      await Transaction.bulkCreate(chunks[i], { updateOnDuplicate: ['count', 'volume'] })
         .then(transactions => {
           console.log(`Inserted ${chain} transactions`, transactions.length)
         })
