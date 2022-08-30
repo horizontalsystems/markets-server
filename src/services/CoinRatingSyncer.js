@@ -19,8 +19,8 @@ class CoinRatingSyncer extends Syncer {
     const revenueRank = await this.getRevenueRank()
     const volumesRank = await this.getVolumesRank(dateFrom)
     const addressRank = await this.getAddressRank(dateFrom)
-    // const holdersRank = await this.getHoldersRank()
     const defiTvlRank = await this.getTvlRank()
+    const transactionRank = await this.getTxCountRank()
 
     const coins = await Coin.query('select id from coins')
     const coinMap = coins.reduce((res, coin) => ({ ...res, [coin.id]: {} }), {})
@@ -53,9 +53,9 @@ class CoinRatingSyncer extends Syncer {
 
     mapRank(revenueRank, 'revenue', { a: 20, b: 30, c: 40, d: 100 })
     mapRank(volumesRank, 'volumes', { a: 3.11, b: 7, c: 10, d: 100 })
-    // mapRank(holdersRank, 'holders', { a: 2, b: 7, c: 10, d: 100 })
     mapRank(addressRank, 'address', { a: 1.2, b: 3, c: 6, d: 100 })
     mapRank(defiTvlRank, 'tvl', { a: 4, b: 8, c: 20, d: 100 })
+    mapRank(transactionRank, 'tx', { a: 2, b: 7, c: 10, d: 100 })
 
     const records = Object.entries(coinMap)
       .map(([id, stats]) => {
@@ -160,6 +160,19 @@ class CoinRatingSyncer extends Syncer {
       WHERE c.id = p.coin_id
         AND p.tvl_rank IS NOT NULL
       ORDER BY tvl_rank
+    `)
+  }
+
+  getTxCountRank() {
+    return Coin.query(`
+      SELECT
+        c.uid,
+        sum(t.count) tx
+      FROM transactions t, coins c, platforms p
+        WHERE p.id = t.platform_id
+          AND c.id = p.coin_id
+      GROUP BY 1
+      ORDER BY tx DESC
     `)
   }
 }
