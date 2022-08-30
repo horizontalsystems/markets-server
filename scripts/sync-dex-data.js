@@ -13,15 +13,15 @@ async function start() {
   const dexLiquiditySyncer = new DexLiquiditySyncer()
   const addressSyncer = new AddressSyncer()
 
-  try {
-    await transactionSyncer.start()
-    await dexVolumeSyncer.start()
-    await dexLiquiditySyncer.start()
-    await addressSyncer.start()
-  } catch (e) {
+  await Promise.all([
+    transactionSyncer.start(),
+    dexVolumeSyncer.start(),
+    dexLiquiditySyncer.start(),
+    addressSyncer.start()
+  ]).catch(e => {
     console.log(e.message)
     throw e
-  }
+  })
 }
 
 module.exports = start()
