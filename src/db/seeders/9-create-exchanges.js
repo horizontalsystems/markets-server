@@ -1,8 +1,8 @@
-const funds = require('./funds.json')
+const exchanges = require('./exchanges.json')
 
 module.exports = {
   up: async queryInterface => {
-    const records = funds.map(item => {
+    const records = exchanges.map(item => {
       return {
         uid: item.uid,
         name: item.name
