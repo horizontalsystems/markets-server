@@ -1,7 +1,8 @@
+const { chunk } = require('lodash')
+const { utcDate } = require('../utils')
 const Syncer = require('./Syncer')
 const Coin = require('../db/models/Coin')
 const tokenTerminal = require('../providers/tokenterminal')
-const { utcDate } = require('../utils')
 
 class CoinRatingSyncer extends Syncer {
   async start() {
@@ -20,7 +21,7 @@ class CoinRatingSyncer extends Syncer {
     const volumesRank = await this.getVolumesRank(dateFrom)
     const addressRank = await this.getAddressRank(dateFrom)
     const defiTvlRank = await this.getTvlRank()
-    const transactionRank = await this.getTxCountRank()
+    const transactionRank = await this.getTxCountRank(dateFrom)
 
     const coins = await Coin.query('select id from coins')
     const coinMap = coins.reduce((res, coin) => ({ ...res, [coin.id]: {} }), {})
@@ -65,8 +66,13 @@ class CoinRatingSyncer extends Syncer {
         ]
       })
 
-    console.log('Updated coin stats', records.length)
-    await Coin.updateStats(records)
+    const chunks = chunk(records, 1000)
+
+    for (let i = 0; i < chunks.length; i += 1) {
+      await Coin.updateStats(chunks[i])
+    }
+
+    console.log(`Updated coin stats ${records.length}`)
   }
 
   async getRevenueRank() {
@@ -163,7 +169,7 @@ class CoinRatingSyncer extends Syncer {
     `)
   }
 
-  getTxCountRank() {
+  getTxCountRank(dateFrom) {
     return Coin.query(`
       SELECT
         c.uid,
@@ -171,9 +177,10 @@ class CoinRatingSyncer extends Syncer {
       FROM transactions t, coins c, platforms p
         WHERE p.id = t.platform_id
           AND c.id = p.coin_id
+          AND t.date >= :dateFrom
       GROUP BY 1
       ORDER BY tx DESC
-    `)
+    `, { dateFrom })
   }
 }
 
