@@ -123,7 +123,7 @@ class DuneAnalytics {
   }
 
   async getQueryResultByJobId(authToken, jobId) {
-    console.log(`Fetching query result by jobID: ${jobId}`)
+    console.log(`Fetching dune's result by jobID: ${jobId}`)
 
     const queryData = {
       operationName: 'FindResultDataByJob',

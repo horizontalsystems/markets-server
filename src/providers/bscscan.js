@@ -1,7 +1,8 @@
 const { create } = require('axios')
 const { stringify } = require('querystring')
+const { scanURL } = require('../utils')
 
-const web = create({ baseURL: 'https://bscscan.com', timeout: 180000 })
+const web = create({ baseURL: scanURL('bsc') || 'https://bscscan.com', timeout: 180000 })
 const api = create({ baseURL: 'https://api.bscscan.com/api', timeout: 180000 })
 
 exports.getHolders = address => {

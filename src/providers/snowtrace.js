@@ -1,7 +1,8 @@
 const { stringify } = require('querystring')
 const { create } = require('axios')
+const { scanURL } = require('../utils')
 
-const web = create({ baseURL: process.env.SNOWTRACE_API || 'https://snowtrace.io', timeout: 180000 })
+const web = create({ baseURL: scanURL('avalanche') || 'https://snowtrace.io', timeout: 180000 })
 const api = create({ baseURL: 'https://api.snowtrace.io/api', timeout: 180000 })
 
 exports.getHolders = address => {

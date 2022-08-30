@@ -74,3 +74,7 @@ exports.reduceMap = (items, keyField, valField) => {
     }
   }, {})
 }
+
+exports.scanURL = chain => (
+  process.env.SCAN_URL ? `${process.env.SCAN_URL}/${chain}` : null
+)

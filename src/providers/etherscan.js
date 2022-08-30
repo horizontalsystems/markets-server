@@ -1,7 +1,8 @@
 const { create } = require('axios')
 const { stringify } = require('querystring')
+const { scanURL } = require('../utils')
 
-const web = create({ baseURL: process.env.ETHERSCAN_API || 'https://etherscan.io', timeout: 180000 })
+const web = create({ baseURL: scanURL('ethereum') || 'https://etherscan.io', timeout: 180000 })
 const api = create({ baseURL: 'https://api.etherscan.io/api', timeout: 180000 })
 
 exports.getHolders = address => {
