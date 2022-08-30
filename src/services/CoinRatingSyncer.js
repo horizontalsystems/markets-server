@@ -172,7 +172,7 @@ class CoinRatingSyncer extends Syncer {
   getTxCountRank(dateFrom) {
     return Coin.query(`
       SELECT
-        c.uid,
+        c.id,
         sum(t.count) tx
       FROM transactions t, coins c, platforms p
         WHERE p.id = t.platform_id
