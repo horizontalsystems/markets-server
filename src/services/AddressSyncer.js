@@ -49,7 +49,7 @@ class AddressSyncer extends Syncer {
 
     await this.syncStats('ethereum', { dateFrom })
     await this.syncStats('bitcoin', { dateFrom })
-    // await this.syncStats('binance-smart-chain', { dateFrom })
+    await this.syncStats('binance-smart-chain', { dateFrom })
   }
 
   async syncMonthlyStats() {
