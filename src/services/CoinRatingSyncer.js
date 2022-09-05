@@ -1,4 +1,4 @@
-const { chunk } = require('lodash')
+const { chunk, sum } = require('lodash')
 const { utcDate } = require('../utils')
 const Syncer = require('./Syncer')
 const Coin = require('../db/models/Coin')
@@ -60,16 +60,24 @@ class CoinRatingSyncer extends Syncer {
 
     const records = Object.entries(coinMap)
       .map(([id, stats]) => {
+        const points = sum([
+          this.weight(stats.tx_rating),
+          this.weight(stats.tvl_rating),
+          this.weight(stats.revenue_rating),
+          this.weight(stats.volumes_rating),
+          this.weight(stats.address_rating)
+        ])
+
         return [
           parseInt(id, 10),
-          JSON.stringify(stats)
+          JSON.stringify({ ...stats, total_rating: this.rating(points) })
         ]
       })
 
     const chunks = chunk(records, 1000)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await Coin.updateStats(chunks[i])
+      await Coin.updateStats(chunks[i]).catch(e => console.error(e))
     }
 
     console.log(`Updated coin stats ${records.length}`)
@@ -181,6 +189,35 @@ class CoinRatingSyncer extends Syncer {
       GROUP BY 1
       ORDER BY tx DESC
     `, { dateFrom })
+  }
+
+  weight(label) {
+    switch (label) {
+      case 'a':
+        return 3
+      case 'b':
+        return 2
+      case 'c':
+        return 1
+      default:
+        return 0
+    }
+  }
+
+  rating(points) {
+    const percentage = (points * 100) / 12
+
+    if (percentage >= 90) {
+      return 'a'
+    }
+    if (percentage >= 80) {
+      return 'b'
+    }
+    if (percentage >= 60) {
+      return 'c'
+    }
+
+    return 'd'
   }
 }
 
