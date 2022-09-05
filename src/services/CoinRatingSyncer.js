@@ -18,7 +18,7 @@ class CoinRatingSyncer extends Syncer {
     const dateFrom = utcDate({ month: -1 }, 'yyyy-MM-dd')
 
     const revenueRank = await this.getRevenueRank()
-    const volumesRank = await this.getVolumesRank(dateFrom)
+    const volumesRank = await this.getVolumesRank()
     const addressRank = await this.getAddressRank(dateFrom)
     const defiTvlRank = await this.getTvlRank()
     const transactionRank = await this.getTxCountRank(dateFrom)
@@ -89,7 +89,7 @@ class CoinRatingSyncer extends Syncer {
     `, { revenue })
   }
 
-  getVolumesRank(dateFrom) {
+  getVolumesRank() {
     return Coin.query(`
       SELECT
         c.id,
@@ -103,7 +103,7 @@ class CoinRatingSyncer extends Syncer {
       ) m ON c.id = m.coin_id
       GROUP BY c.id
       ORDER BY volumes DESC
-    `, { dateFrom })
+    `)
   }
 
   getAddressRank(dateFrom) {
