@@ -16,7 +16,7 @@ class NftMarketSyncer extends Syncer {
   }
 
   async syncHistorical() {
-    await this.syncMarkets(utcDate({}, 'yyyy-MM-dd HH:mm:00Z'))
+    await this.syncMarkets(utcDate())
   }
 
   async syncLatest() {
@@ -59,8 +59,9 @@ class NftMarketSyncer extends Syncer {
     try {
 
       for (let i = 0; i < this.topNftCollections.length; i += 1) {
-        logger.info(`Getting: ${this.topNftCollections[i].collection_uid}`)
-        const collection = await opensea.getCollection(this.topNftCollections[i].collection_uid)
+        const nftCollection = this.topNftCollections[i]
+        logger.info(`Getting: ${nftCollection.collection_uid}`)
+        const collection = await opensea.getCollection(nftCollection.collection_uid)
         if (collection) {
           collections.push(collection)
         }
@@ -126,7 +127,7 @@ class NftMarketSyncer extends Syncer {
 
   upsertNftCollections(collections) {
     NftCollection.bulkCreate(collections, {
-      updateOnDuplicate: ['stats']
+      updateOnDuplicate: ['stats', 'asset_contracts', 'image_data']
     })
       .catch(err => {
         console.error('Error inserting NFT collections', err.message)
