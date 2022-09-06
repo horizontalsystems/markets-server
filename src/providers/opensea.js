@@ -1,13 +1,24 @@
 const { stringify } = require('querystring')
-const axios = require('axios').create({
+const { create } = require('axios')
+const {
+  normalizeCollection,
+  normalizeCollections,
+  normalizeEvents,
+  normalizeAssets,
+  normalizeAsset
+} = require('./normalizers/opensea-normalizer')
+
+const axios = create({
   baseURL: 'https://api.opensea.io/api/v1',
   timeout: 180000,
   headers: { 'X-API-KEY': process.env.OPENSEA_KEY }
 })
 
-const normalizer = require('./normalizers/opensea-normalizer')
-
 class Opensea {
+
+  proxyEvents(params) {
+    return axios.get(`/events?${stringify(params)}`)
+  }
 
   getEvents(eventType, accountAddress, collectionUid, assetContract, tokenId, occuredBefore, cursor) {
     const getEventType = () => {
@@ -42,7 +53,7 @@ class Opensea {
 
     return axios
       .get(`/events?${stringify(params)}`)
-      .then(({ data }) => normalizer.normalizeEvents(data))
+      .then(({ data }) => normalizeEvents(data))
   }
 
   getCollections(assetOwner, offset = 0, limit = 20) {
@@ -54,13 +65,13 @@ class Opensea {
 
     return axios
       .get(`/collections?${stringify(params)}`)
-      .then(({ data }) => normalizer.normalizeCollections(data.collections || data))
+      .then(({ data }) => normalizeCollections(data.collections || data))
   }
 
   getCollection(collectionUid) {
     return axios
       .get(`/collection/${collectionUid}`)
-      .then(({ data }) => normalizer.normalizeCollection(data.collection || data))
+      .then(({ data }) => normalizeCollection(data.collection || data))
       .catch(e => {
         console.error(e)
         return null
@@ -93,7 +104,7 @@ class Opensea {
     return axios
       .get(`/assets?${stringify(params)}`)
       .then(({ data }) => {
-        const result = normalizer.normalizeAssets(data)
+        const result = normalizeAssets(data)
         return offset ? result.assets : result
       })
   }
@@ -106,7 +117,7 @@ class Opensea {
 
     return axios
       .get(`/asset/${contractAddress}/${tokenId}?${stringify(params)}`)
-      .then(({ data }) => normalizer.normalizeAsset(data))
+      .then(({ data }) => normalizeAsset(data))
   }
 
 }

@@ -11,6 +11,7 @@ const router = express.Router()
 /**
  * @api {get} /v1/nft/collections Get NFT Collections
  * @apiDescription Get NFT Collections
+ * @apiDeprecated
  * @apiVersion 1.0.0
  * @apiGroup NFT
  *
@@ -41,6 +42,7 @@ router.get('/collections', validateCollections, controller.collections)
  * @api {get} /v1/nft/collection/:collection_uid Get NFT Collection details
  * @apiDescription Get NFT Collection details
  * @apiVersion 1.0.0
+ * @apiDeprecated
  * @apiGroup NFT
  *
  * @apiParam {String}  [collection_uid]       UID (collection slug) of the collection to retrieve details for
@@ -103,9 +105,35 @@ router.get('/collections', validateCollections, controller.collections)
 router.get('/collection/:collection_uid', controller.collection)
 
 /**
+ * @api {get} /v1/nft/collection/:collection_uid/chart Get NFT Collection chart
+ * @apiDescription Get NFT Collection chart
+ * @apiVersion 1.0.0
+ * @apiDeprecated
+ * @apiGroup NFT
+ *
+ * @apiParam {String}  [collection_uid]       UID (collection slug) of the collection to retrieve details for
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    [
+ *      "timestamp": 123123123,
+ *      "one_day_volume": 123,
+ *      "avеrage_price": 123,
+ *      "floor_price": 123,
+ *      "one_day_sales": 123
+ *    ]
+ *  }
+ *  @apiError (Bad Request 400)  ValidationError Some parameters or Collection UID/slug are not valid
+ *  @apiError (Not Found 404)    NotFound        Collection does not exist
+ */
+router.get('/collection/:collection_uid/chart', controller.collectionChart)
+
+/**
  * @api {get} /v1/nft/collection/:collection_uid/stats Get NFT Collection stats data
  * @apiDescription Get NFT Collection details
  * @apiVersion 1.0.0
+ * @apiDeprecated
  * @apiGroup NFT
  *
  * @apiParam {String}  [collection_uid] UID (collection slug) of the collection to retrieve details for
@@ -144,6 +172,7 @@ router.get('/collection/:collection_uid/stats', controller.collectionStats)
  * @api {get} /v1/nft/assets Get NFT Assets
  * @apiDescription Get NFT assets
  * @apiVersion 1.0.0
+ * @apiDeprecated
  * @apiGroup NFT
  *
  * @apiParam {String}                          [owner]                     The address of the owner of the assets
@@ -201,6 +230,7 @@ router.get('/assets', validateAssets, controller.assets)
  * @api {get} /v1/nft/asset/:contract_address/:token_id Get NFT Asset details
  * @apiDescription Get NFT asset details
  * @apiVersion 1.0.0
+ * @apiDeprecated
  * @apiGroup NFT
  *
  * @apiParam {String}  [contract_address]     Address of the contract for this NFT
@@ -243,6 +273,7 @@ router.get('/asset/:contract_address/:token_id', controller.asset)
  * @api {get} /v1/nft/events Get NFT Events (Activities)
  * @apiDescription Get NFT events
  * @apiVersion 1.0.0
+ * @apiDeprecated
  * @apiGroup NFT
  *
  * @apiParam {String} [event_type]       The event type to filter (sale, list, offer, bid, transfer) (do not include param to ignore filter)

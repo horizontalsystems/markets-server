@@ -9,6 +9,7 @@ module.exports = {
   validateCollections: validate({
     query: Joi.object({
       asset_owner: Joi.string(),
+      simplified: Joi.boolean(),
       limit: Joi.number()
         .min(1)
         .max(1500),

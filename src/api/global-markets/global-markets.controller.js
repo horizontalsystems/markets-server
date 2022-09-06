@@ -13,7 +13,7 @@ exports.index = async (req, res) => {
   res.json(serializeList(markets, req.currencyRate))
 }
 
-exports.overview = async (req, res, next) => {
+exports.overview = async ({ currencyRate, query }, res, next) => {
   try {
     const dateFrom = utcDate({ hours: -24 })
     const nft = await NftCollection.getTopMovers()
@@ -22,7 +22,7 @@ exports.overview = async (req, res, next) => {
     const platforms = await Chain.getList(5)
 
     res.status(200)
-    res.json(serializeOverview({ global, categories, nft, platforms }, req.currencyRate))
+    res.json(serializeOverview({ global, categories, nft, platforms, simplified: query.simplified }, currencyRate))
   } catch (e) {
     next(e)
   }

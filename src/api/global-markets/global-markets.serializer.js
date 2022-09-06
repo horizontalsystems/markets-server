@@ -25,12 +25,12 @@ const serializeTvls = (tvls, currencyRate) => {
   })
 }
 
-const serializeOverview = ({ global, categories, nft, platforms }, currencyRate) => {
+const serializeOverview = ({ global, categories, nft, platforms, simplified }, currencyRate) => {
   return {
     global: serializeList(global, currencyRate),
     sectors: serializeCategories(categories, currencyRate),
     platforms: serializePlatforms(platforms, currencyRate),
-    nft: serializeNft(nft)
+    nft: serializeNft(nft, simplified)
   }
 }
 

@@ -3,12 +3,25 @@ const opensea = require('../../providers/opensea')
 const NftAsset = require('../../db/models/NftAsset')
 const NftCollection = require('../../db/models/NftCollection')
 const NftMarket = require('../../db/models/NftMarket')
+const { serializeList } = require('./nft.serializer')
+const { utcDate } = require('../../utils')
 
 exports.collections = async ({ query }, res) => {
   const { limit = 100, page = 1 } = query
   const offset = query.offset ? query.offset : limit * (page - 1)
-  let collections = []
 
+  if (query.simplified) {
+    return NftCollection.getCollections(offset, limit)
+      .then(data => {
+        res.send(serializeList(data))
+      })
+      .catch(e => {
+        console.log('Error getting nft collections:', e.message, (e.parent || {}).message)
+        res.send([])
+      })
+  }
+
+  let collections = []
   try {
     if (query.asset_owner) {
       collections = await opensea.getCollections(query.asset_owner, offset, limit)
@@ -46,8 +59,18 @@ exports.collection = async ({ params, query }, res) => {
   res.send(collection)
 }
 
-exports.collectionStats = async ({ params }, res) => {
+exports.collectionChart = async ({ params }, res) => {
+  let chart = []
+  try {
+    chart = await NftMarket.getStatsChart(params.collection_uid, utcDate({ hours: -24 }))
+  } catch (e) {
+    console.log('Error fetching nft collection:', e.message, (e.parent || {}).message)
+  }
 
+  res.send(chart)
+}
+
+exports.collectionStats = async ({ params }, res) => {
   try {
     const collection = await NftCollection.getCachedCollection(params.collection_uid)
 
@@ -110,14 +133,24 @@ exports.asset = async ({ params, query }, res) => {
   res.send(asset)
 }
 
-exports.events = async ({ query }, res) => {
-  let events = []
+exports.events = async ({ query: { simplified, ...query } }, res) => {
+  if (simplified) {
+    return opensea.proxyEvents(query)
+      .then(({ data }) => {
+        res.send(data)
+      })
+      .catch(({ message, response = {} }) => {
+        res.status(response.status || 500)
+        res.send({ error: message || 'Internal server error' })
+      })
+  }
 
   if (query.token_id && !query.asset_contract) {
     res.status(400)
     res.send({ error: 'asset_contract field is required when using token_id filter' })
   }
 
+  let events = []
   try {
     events = await opensea.getEvents(
       query.event_type,
@@ -126,7 +159,8 @@ exports.events = async ({ query }, res) => {
       query.asset_contract,
       query.token_id,
       query.occured_before,
-      query.cursor
+      query.cursor,
+      query.simplified
     )
   } catch (e) {
     console.log('Error fetching nft assets:', e.message, (e.parent || {}).message)

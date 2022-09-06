@@ -76,12 +76,12 @@ class NftMarket extends SequelizeModel {
           m.*,
           ${this.truncateDateWindow('date', interval)} AS trunc
           FROM nft_markets m, nft_collections c
-          WHERE
-                c.uid = :collectionUid
+          WHERE c.uid = :collectionUid
             AND m.collection_id = c.id
             AND m.date >= :dateFrom
       ) nm
-      ORDER BY nm.trunc, nm.date DESC`)
+      ORDER BY nm.trunc, nm.date DESC`
+    )
 
     return NftMarket.query(query, { collectionUid, dateFrom })
   }
