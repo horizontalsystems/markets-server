@@ -13,7 +13,8 @@ exports.normalizeCollection = collection => {
     })) : [],
     image_data: {
       image_url: collection.image_url,
-      featured_image_url: collection.featured_image_url
+      featured_image_url: collection.featured_image_url,
+      large_image_url: collection.large_image_url
     },
     links: {
       external_url: collection.external_url,

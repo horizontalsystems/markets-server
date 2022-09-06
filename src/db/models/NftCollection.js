@@ -24,7 +24,8 @@ class NftCollection extends SequelizeModel {
         image_data: DataTypes.JSONB,
         // {
         //   "image_url",
-        //   "featured_image_url"
+        //   "featured_image_url",
+        //   "large_image_url"
         // }
         stats: DataTypes.JSONB,
         // {

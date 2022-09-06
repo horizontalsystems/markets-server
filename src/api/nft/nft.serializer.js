@@ -3,7 +3,7 @@ const serializeList = items => items.map(({ uid, name, stats, image_data: image 
     name,
     opensea_uid: uid,
     blockchain_uid: 'ethereum',
-    thumbnail_url: image.featured_image_url || image.image_url,
+    thumbnail_url: image.large_image_url || image.image_url,
     floor_price: stats.floor_price,
     volume_1d: stats.one_day_volume,
     change_1d: stats.one_day_change,
