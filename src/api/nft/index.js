@@ -105,31 +105,6 @@ router.get('/collections', validateCollections, controller.collections)
 router.get('/collection/:collection_uid', controller.collection)
 
 /**
- * @api {get} /v1/nft/collection/:collection_uid/chart Get NFT Collection chart
- * @apiDescription Get NFT Collection chart
- * @apiVersion 1.0.0
- * @apiDeprecated
- * @apiGroup NFT
- *
- * @apiParam {String}  [collection_uid]       UID (collection slug) of the collection to retrieve details for
- *
- * @apiSuccessExample {json} Success-Response:
- *  HTTP/1.1 200 OK
- *  {
- *    [
- *      "timestamp": 123123123,
- *      "one_day_volume": 123,
- *      "avеrage_price": 123,
- *      "floor_price": 123,
- *      "one_day_sales": 123
- *    ]
- *  }
- *  @apiError (Bad Request 400)  ValidationError Some parameters or Collection UID/slug are not valid
- *  @apiError (Not Found 404)    NotFound        Collection does not exist
- */
-router.get('/collection/:collection_uid/chart', controller.collectionChart)
-
-/**
  * @api {get} /v1/nft/collection/:collection_uid/stats Get NFT Collection stats data
  * @apiDescription Get NFT Collection details
  * @apiVersion 1.0.0

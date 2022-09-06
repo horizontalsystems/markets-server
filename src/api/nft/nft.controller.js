@@ -4,7 +4,6 @@ const NftAsset = require('../../db/models/NftAsset')
 const NftCollection = require('../../db/models/NftCollection')
 const NftMarket = require('../../db/models/NftMarket')
 const { serializeList } = require('./nft.serializer')
-const { utcDate } = require('../../utils')
 
 exports.collections = async ({ query }, res) => {
   const { limit = 100, page = 1 } = query
@@ -57,17 +56,6 @@ exports.collection = async ({ params, query }, res) => {
   }
 
   res.send(collection)
-}
-
-exports.collectionChart = async ({ params }, res) => {
-  let chart = []
-  try {
-    chart = await NftMarket.getStatsChart(params.collection_uid, utcDate({ hours: -24 }))
-  } catch (e) {
-    console.log('Error fetching nft collection:', e.message, (e.parent || {}).message)
-  }
-
-  res.send(chart)
 }
 
 exports.collectionStats = async ({ params }, res) => {
