@@ -175,6 +175,7 @@ class CoinRatingSyncer extends Syncer {
       FROM defi_protocols p, coins c
       WHERE c.id = p.coin_id
         AND p.tvl_rank IS NOT NULL
+        AND p.tvl > 0
       ORDER BY tvl_rank
     `)
   }
