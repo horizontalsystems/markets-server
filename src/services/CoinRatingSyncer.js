@@ -69,9 +69,7 @@ class CoinRatingSyncer extends Syncer {
           this.weight(stats.address_rating)
         ])
 
-        if (points > 0) {
-          rating.total_rating = this.rating(points)
-        }
+        rating.total_rating = this.rating(points)
 
         return [parseInt(id, 10), JSON.stringify(rating)]
       })
