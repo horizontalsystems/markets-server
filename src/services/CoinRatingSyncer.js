@@ -60,6 +60,7 @@ class CoinRatingSyncer extends Syncer {
 
     const records = Object.entries(coinMap)
       .map(([id, stats]) => {
+        const rating = stats
         const points = sum([
           this.weight(stats.tx_rating),
           this.weight(stats.tvl_rating),
@@ -68,10 +69,11 @@ class CoinRatingSyncer extends Syncer {
           this.weight(stats.address_rating)
         ])
 
-        return [
-          parseInt(id, 10),
-          JSON.stringify({ ...stats, total_rating: this.rating(points) })
-        ]
+        if (points > 0) {
+          rating.total_rating = this.rating(points)
+        }
+
+        return [parseInt(id, 10), JSON.stringify(rating)]
       })
 
     const chunks = chunk(records, 1000)
