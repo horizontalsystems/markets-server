@@ -24,6 +24,7 @@ exports.holders = async ({ query }, res) => {
   }
 }
 
+// @deprecated
 exports.coins = async ({ params, query }, res, next) => {
   const data = await bitquery.getAddressCoins(params.address, query.blockchain || query.chain)
   const values = data.balances

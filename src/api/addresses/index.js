@@ -64,6 +64,8 @@ router.get('/labels', controller.labels)
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  */
-router.get('/:address/coins', validateAddressCoins, controller.coins)
+if (process.env.NODE_ENV === 'production') {
+  router.get('/:address/coins', validateAddressCoins, controller.coins)
+}
 
 module.exports = router

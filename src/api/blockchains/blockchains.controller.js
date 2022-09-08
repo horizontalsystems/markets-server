@@ -11,6 +11,7 @@ exports.list = async (req, res) => {
   res.send(serializer.serialize(chains))
 }
 
+// @deprecated
 exports.blockNumber = async ({ params }, res, next) => {
   try {
     const blockNumber = await bitquery.getBlockNumber(params.blockchain)

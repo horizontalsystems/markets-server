@@ -31,8 +31,10 @@ router.get('/list', controller.list)
  *    "block_number": "123456",
  *  }
  */
-router.get('/:blockchain', validateBlockNumber, controller.blockNumber)
-router.get('/:blockchain/block-number', validateBlockNumber, controller.blockNumber)
+if (process.env.NODE_ENV === 'production') {
+  router.get('/:blockchain', validateBlockNumber, controller.blockNumber)
+  router.get('/:blockchain/block-number', validateBlockNumber, controller.blockNumber)
+}
 
 /**
  * @api {get} /v1/blockchains/:blockchain/hashes Blockchain block hashes

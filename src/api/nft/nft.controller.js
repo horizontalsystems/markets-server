@@ -47,9 +47,11 @@ exports.collection = async ({ params, query }, res) => {
       }
     }
 
-    if (query.include_stats_chart === 'true') {
-      const dateFrom = DateTime.now().minus({ days: 1 }).toSQL()
-      collection.stats_chart = await NftMarket.getStatsChart(collection.uid, dateFrom)
+    if (process.env.NODE_ENV === 'production') {
+      if (query.include_stats_chart === 'true') {
+        const dateFrom = DateTime.now().minus({ days: 1 }).toSQL()
+        collection.stats_chart = await NftMarket.getStatsChart(collection.uid, dateFrom) // @deprecated
+      }
     }
   } catch (e) {
     console.log('Error fetching nft collection:', e.message, (e.parent || {}).message)
