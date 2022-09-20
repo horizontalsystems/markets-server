@@ -102,7 +102,8 @@ class TransactionSyncer extends Syncer {
   }
 
   async adjustHourlyData(transfers, dateFrom, date, network) {
-    const transactions = await Transaction.getSummedItems(dateFrom, transfers.map(item => item.platform_id))
+    const items = transfers.filter(item => item.date === dateFrom)
+    const transactions = await Transaction.getSummedItems(dateFrom, items.map(item => item.platform_id))
     const transactionsMap = transactions.reduce((mapped, item) => ({
       ...mapped,
       [item.platform_id]: {
@@ -111,7 +112,7 @@ class TransactionSyncer extends Syncer {
       }
     }), {})
 
-    const records = transfers.map(item => {
+    const records = items.map(item => {
       const tx = transactionsMap[item.platform_id]
       if (!tx) {
         return item
