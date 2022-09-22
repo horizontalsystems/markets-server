@@ -113,10 +113,13 @@ describe('TransactionSyncer', async () => {
         { id: 3, type: 'eip20', decimals: 18, coin_id: 2, address: usdcBep20, chain_uid: 'binance-smart-chain' },
       ])
 
+      const dateFrom = param30m.dateFrom.slice(0, 10)
+
       bitquery.getTransfers
-        .withArgs(param30m.dateFrom.slice(0, 10), [{ address: usdcBep20 }], 'binance-smart-chain')
+        .withArgs(dateFrom, [{ address: usdcBep20 }], 'binance-smart-chain')
         .returns([
-          { count: 60, amount: 600, currency: { address: usdcBep20 }, date: { startOfInterval: param30m.dateFrom } }
+          { count: 60, amount: 600, currency: { address: usdcBep20 }, date: { startOfInterval: dateFrom } },
+          { count: 10, amount: 700, currency: { address: usdcBep20 }, date: { startOfInterval: '2021-01-01' } },
         ])
     })
 
