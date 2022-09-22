@@ -52,9 +52,7 @@ async function search(q, limit, Model, attributes) {
 }
 
 async function getList({ filter, limit, offset, order }, Model, attributes) {
-  const count = await Model.count()
-  const rows = await Model.findAll({ where: filter, limit, order, offset, attributes })
-
+  const { rows, count } = await Model.findAndCountAll({ where: filter, limit, order, offset, attributes })
   return { rows, count }
 }
 
