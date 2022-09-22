@@ -21,7 +21,7 @@ module.exports = {
 
     const platformNames = [...new Set(ids)]
       .flatMap(id => platforms.find(platform => platform.id === id))
-      .map(item => item.type)
+      .map(item => item.chain_uid)
 
     return { platforms: platformNames, addresses: items }
   },
