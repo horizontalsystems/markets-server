@@ -14,6 +14,7 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
   async start() {
     this.adjustHistoryGaps()
+    this.cron('1d', this.syncUids)
 
     const running = true
     while (running) {
@@ -108,6 +109,28 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     } catch (e) {
       debug(e)
     }
+  }
+
+  async syncUids() {
+    const allCoins = utils.reduceMap(await coingecko.getCoinList(), 'id')
+    const oldCoins = await Coin.findAll({
+      attributes: ['id', 'coingecko_id'],
+      where: {
+        coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
+      }
+    })
+
+    const depCoins = oldCoins.filter(c => !allCoins[c.coingecko_id])
+    console.log(`Deprecated or deleted coins ${depCoins.length}`, JSON.stringify(depCoins))
+
+    if (!depCoins.length) {
+      return
+    }
+
+    return Coin.update(
+      { coingecko_id: null },
+      { where: { id: depCoins.map(c => c.id) } }
+    )
   }
 
   chunk(array) {
