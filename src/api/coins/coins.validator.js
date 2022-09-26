@@ -47,7 +47,8 @@ module.exports = {
       uid: Joi.string().required()
     }),
     query: Joi.object({
-      timestamp: Joi.number().required()
+      timestamp: Joi.number().required(),
+      currency: Joi.string()
     })
   }, options),
 }
