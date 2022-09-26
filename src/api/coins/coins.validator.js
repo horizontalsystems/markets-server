@@ -41,4 +41,13 @@ module.exports = {
       currency: Joi.string()
     })
   }, options),
+
+  validatePriceHistory: validate({
+    params: Joi.object({
+      uid: Joi.string().required()
+    }),
+    query: Joi.object({
+      timestamp: Joi.number().required()
+    })
+  }, options),
 }

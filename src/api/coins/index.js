@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./coins.controller')
-const { validateCoins, validateShow, validateChart } = require('./coins.validator')
+const { validateCoins, validateShow, validateChart, validatePriceHistory } = require('./coins.validator')
 const { setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
@@ -193,7 +193,7 @@ router.get('/:uid/price_chart', validateChart, setCurrencyRate, controller.price
  * @apiVersion 1.0.0
  * @apiGroup Coin
  *
- * @apiParam    {String}  uid   Coin's uid
+ * @apiParam    {String}  uid         Coin's uid
  * @apiParam    {Number}  timestamp   Unix epoch timestamp
  *
  * @apiSuccessExample {json} Success-Response:
@@ -206,6 +206,6 @@ router.get('/:uid/price_chart', validateChart, setCurrencyRate, controller.price
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/:uid/price_history', setCurrencyRate, controller.price_history)
+router.get('/:uid/price_history', validatePriceHistory, setCurrencyRate, controller.price_history)
 
 module.exports = router
