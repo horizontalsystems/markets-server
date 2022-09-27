@@ -32,7 +32,7 @@ class DuneAnalytics {
     )
 
     this.axiosGraph = axios.create({
-      baseURL: 'https://core-hsr.duneanalytics.com/v1/graphql',
+      baseURL: 'https://core-hsr.dune.com/v1/graphql',
       timeout: 180000
     })
   }
@@ -173,7 +173,7 @@ class DuneAnalytics {
       if (this.parseError(response.data.errors).error === 'invalid-jwt') {
         await this.fetchAuthToken()
       }
-      return { query_results: [] }
+      return { query_results: [], query_errors: [] }
     }
 
     return response.data.data
@@ -188,8 +188,13 @@ class DuneAnalytics {
 
       if (jobId) {
         let response = []
-        for (let lc = 0; lc <= 70; lc += 1) {
+        for (let lc = 0; lc <= 80; lc += 1) {
           response = await this.getQueryResultByJobId(this.authToken, jobId)
+
+          if (response.query_errors.length > 0) {
+            console.log(`Error getting query results: ${JSON.stringify(response.data.errors)}`)
+            return []
+          }
 
           if (response.query_results.length > 0) {
             return response.get_result_by_job_id.map(i => i.data)
