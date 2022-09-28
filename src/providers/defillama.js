@@ -1,19 +1,11 @@
 const createAxios = require('axios').create
 
-const api = createAxios({
-  baseURL: 'https://api.llama.fi',
-  timeout: 180000 * 3
-})
+const api = createAxios({ baseURL: 'https://api.llama.fi', timeout: 180000 * 3 })
+const coinsApi = createAxios({ baseURL: 'https://coins.llama.fi', timeout: 180000 * 3 })
+const stablecoinsApi = createAxios({ baseURL: 'https://stablecoins.llama.fi', timeout: 180000 * 3 })
+const nftApi = createAxios({ baseURL: 'https://ybrjmu6r60.execute-api.eu-west-2.amazonaws.com/prod', timeout: 180000 * 3 })
 
-const coinsApi = createAxios({
-  baseURL: 'https://coins.llama.fi',
-  timeout: 180000 * 3
-})
-
-const nftApi = createAxios({
-  baseURL: 'https://ybrjmu6r60.execute-api.eu-west-2.amazonaws.com/prod',
-  timeout: 180000 * 3
-})
+const { normalize } = require('./normalizers/defillama-normalizer')
 
 exports.getCharts = (chain) => {
   const url = chain
@@ -57,6 +49,23 @@ exports.getPrices = platforms => {
     .catch(e => {
       console.log(e)
       return []
+    })
+}
+
+exports.getStablecoins = () => {
+  console.log('Fetching stablecoins')
+
+  return stablecoinsApi.get('stablecoins')
+    .then(({ data }) => {
+      if (!data || !data.peggedAssets) {
+        return {}
+      }
+
+      return normalize(data.peggedAssets)
+    })
+    .catch(e => {
+      console.log(e)
+      return {}
     })
 }
 

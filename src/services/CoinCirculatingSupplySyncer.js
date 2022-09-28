@@ -1,6 +1,7 @@
 const Syncer = require('./Syncer')
 const utils = require('../utils')
 const Platform = require('../db/models/Platform')
+const defillama = require('../providers/defillama')
 const etherscan = require('../providers/etherscan')
 const optimistic = require('../providers/etherscan-optimistic')
 const arbiscan = require('../providers/arbiscan')
@@ -12,14 +13,13 @@ const solscan = require('../providers/solscan')
 const cronoscan = require('../providers/cronoscan')
 const ftmscan = require('../providers/ftmscan')
 const celoscan = require('../providers/celoscan')
-const getCSupplies = require('../providers/csupply')
 
 class CoinCirculatingSupplySyncer extends Syncer {
 
   async sync({ uids, chain }) {
     const map = {}
     const platforms = await Platform.getMarketCap(uids, chain)
-    const supplies = await getCSupplies()
+    const stablecoins = await defillama.getStablecoins()
 
     for (let i = 0; i < platforms.length; i += 1) {
       const platform = platforms[i]
@@ -30,7 +30,7 @@ class CoinCirculatingSupplySyncer extends Syncer {
 
       let supply = platform.csupply
       if (platform.multi_chain_id) {
-        supply = await this.getSupply(platform, supplies)
+        supply = await this.getSupply(platform, stablecoins)
         await utils.sleep(100)
       }
 
@@ -42,17 +42,14 @@ class CoinCirculatingSupplySyncer extends Syncer {
     await this.update(Object.entries(map))
   }
 
-  async getSupply(platform, supplies) {
+  async getSupply(platform, stablecoins) {
+    const stablecoin = stablecoins[platform.uid]
+    if (stablecoin) {
+      console.log('Stablecoin supply for', platform.uid, platform.chain_uid, platform.address)
+      return stablecoin[platform.chain_uid]
+    }
+
     switch (platform.uid) {
-      case 'tether':
-      case 'usd-coin': {
-        const mapped = supplies[platform.uid] || {}
-        const supply = mapped[platform.chain_uid]
-        if (supply) {
-          return supply
-        }
-        break
-      }
       case 'stepn':
         if (platform.type === 'solana') {
           return platform.csupply
