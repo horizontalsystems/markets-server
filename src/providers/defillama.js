@@ -1,9 +1,16 @@
-const axios = require('axios').create({
+const createAxios = require('axios').create
+
+const api = createAxios({
   baseURL: 'https://api.llama.fi',
   timeout: 180000 * 3
 })
 
-const axiosNft = require('axios').create({
+const coinsApi = createAxios({
+  baseURL: 'https://coins.llama.fi',
+  timeout: 180000 * 3
+})
+
+const nftApi = createAxios({
   baseURL: 'https://ybrjmu6r60.execute-api.eu-west-2.amazonaws.com/prod',
   timeout: 180000 * 3
 })
@@ -15,7 +22,7 @@ exports.getCharts = (chain) => {
 
   console.log('Fetching TVL history', chain)
 
-  return axios.get(url)
+  return api.get(url)
     .then(resp => resp.data)
     .catch(e => {
       console.error(e)
@@ -26,7 +33,7 @@ exports.getCharts = (chain) => {
 exports.getProtocols = () => {
   console.log('Fetching DeFi protocols')
 
-  return axios.get('/protocols').then(({ data = [] }) => {
+  return api.get('/protocols').then(({ data = [] }) => {
     return data.filter(item => item.slug !== 'polygon-bridge-&-staking')
   })
 }
@@ -34,13 +41,28 @@ exports.getProtocols = () => {
 exports.getProtocol = id => {
   console.log(`Fetching defi protocol info ${id}`)
 
-  return axios.get(`/protocol/${id}`)
+  return api.get(`/protocol/${id}`)
     .then(resp => resp.data)
+}
+
+exports.getPrices = platforms => {
+  const addresses = platforms
+    .map(item => [`${item.chain_uid}:${item.address}`])
+    .join(',')
+
+  console.log('Fetching staked coins prices')
+
+  return coinsApi.get(`/prices/current/${addresses}`)
+    .then(resp => (resp.data || {}).coins || {})
+    .catch(e => {
+      console.log(e)
+      return []
+    })
 }
 
 exports.getNftCollections = (limit = 100) => {
   console.log('Fetching NFT Collections')
 
-  return axiosNft.get(`/collections?limit=${limit}`)
+  return nftApi.get(`/collections?limit=${limit}`)
     .then(resp => resp.data.data)
 }

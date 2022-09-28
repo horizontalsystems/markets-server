@@ -2,6 +2,7 @@ const { parseInt } = require('lodash')
 const { DateTime } = require('luxon')
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
+const defillama = require('../providers/defillama')
 const Coin = require('../db/models/Coin')
 const CoinPrice = require('../db/models/CoinPrice')
 const CoinPriceHistorySyncer = require('./CoinPriceHistorySyncer')
@@ -15,6 +16,7 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
   async start() {
     this.adjustHistoryGaps()
     this.cron('1d', this.syncUids)
+    this.cron('5m', this.syncDefiCoins)
 
     const running = true
     while (running) {
@@ -131,6 +133,54 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
       { coingecko_id: null },
       { where: { id: depCoins.map(c => c.id) } }
     )
+  }
+
+  async syncDefiCoins() {
+    const coins = await Coin.query(`
+      SELECT c.id, c.uid, p.chain_uid, p.address
+        FROM coins c, platforms p
+      WHERE c.id = p.coin_id
+        AND c.is_defi = true
+        AND c.coingecko_id is null
+        AND p.address <> ''
+    `)
+
+    const mapChain = chain => {
+      switch (chain) {
+        case 'binance-smart-chain':
+          return 'bsc'
+        case 'arbitrum-one':
+          return 'arbitrum'
+        default:
+          return chain
+      }
+    }
+
+    const map = {}
+    const prices = {}
+
+    const response = await defillama.getPrices(
+      coins.map(coin => {
+        map[coin.address] = coin.id
+        return {
+          address: coin.address,
+          chain_uid: mapChain(coin.chain_uid)
+        }
+      })
+    )
+
+    Object.entries(response).forEach(([key, value]) => {
+      const [, address] = key.split(':')
+      const coinId = map[address]
+
+      if (coinId) {
+        prices[coinId] = { price: value.price, timestamp: new Date(value.timestamp * 1000) }
+      }
+    })
+
+    console.log('Fetched staked coins prices', prices)
+    const records = Object.entries(prices).map(([id, value]) => [parseInt(id), value.price, value.timestamp])
+    await Coin.updatePrices(records)
   }
 
   chunk(array) {

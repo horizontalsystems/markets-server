@@ -14,6 +14,8 @@ class Syncer {
 
   cronTime(time) {
     switch (time) {
+      case '5m':
+        return '*/5 * * * *'
       case '10m':
         return '0 */10 * * * *'
       case '30m':
