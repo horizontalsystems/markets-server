@@ -119,13 +119,13 @@ class CoinHolderSyncer extends Syncer {
         continue
       }
 
-      console.log(`Fetching major holders for ${platform.type} ${platform.address} (${i + 1})`)
+      console.log(`Fetching major holders for ${platform.chain_uid}:${platform.type} ${platform.address} (${i + 1})`)
 
       await request
         .then(data => this.upsert(data, platform.id))
         .catch(({ message, response }) => {
           if (message) {
-            console.log(`Error fetching holders ${message}; Platform ${platform.type}`)
+            console.log(`Error fetching holders ${message}; Chain ${platform.chain_uid}; Platform ${platform.type}`)
           }
 
           if (response && response.status === 429) {
