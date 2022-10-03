@@ -61,21 +61,10 @@ function getOne(id, Model, attributes) {
 }
 
 const createUpdateDelete = Model => {
-  const updateNew = () => { // will be removed after table rename
-    switch (Model.tableName) {
-      case 'chains':
-        return UpdateState.reset('blockchains')
-      case 'platforms':
-        return UpdateState.reset('tokens')
-      default:
-    }
-  }
-
   return {
     create: async data => {
       const record = await Model.create(data)
       await UpdateState.reset(Model.tableName)
-      await updateNew()
       await purgeCache()
 
       return record
@@ -83,7 +72,6 @@ const createUpdateDelete = Model => {
     update: async (id, values) => {
       const record = await Model.update(values, { where: { id } }).then(() => values)
       await UpdateState.reset(Model.tableName)
-      await updateNew()
       await purgeCache()
 
       return record
@@ -91,7 +79,6 @@ const createUpdateDelete = Model => {
     destroy: async id => {
       const destroy = await Model.destroy({ where: { id } })
       await UpdateState.reset(Model.tableName)
-      await updateNew()
       await purgeCache()
 
       return destroy

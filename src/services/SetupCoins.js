@@ -108,7 +108,6 @@ class SetupCoins {
     }
 
     await UpdateState.reset('platforms')
-    await UpdateState.reset('tokens')
   }
 
   async syncCoins(coinIds, returnOnlyNew) {
