@@ -195,6 +195,10 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
       value.timestamp
     ])
 
+    if (!records.length) {
+      return
+    }
+
     return Coin.updatePrices(records)
   }
 
