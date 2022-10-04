@@ -13,7 +13,7 @@ const debug = msg => {
 
 class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
-  async start() {
+  async start(fromDefillama) {
     this.adjustHistoryGaps()
     this.cron('1d', this.syncUids)
     this.cron('5m', this.syncDefiCoins)
@@ -21,7 +21,11 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     const running = true
     while (running) {
       try {
-        await this.sync()
+        if (fromDefillama) {
+          await this.syncFromDefillama()
+        } else {
+          await this.syncFromCoingecko()
+        }
       } catch (e) {
         debug(e)
         process.exit(1)
@@ -29,31 +33,25 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     }
   }
 
-  async sync(uid) {
-    const where = {
-      ...(uid && { uid }),
-      coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
-    }
-    const coins = await Coin.findAll({ attributes: ['id', 'coingecko_id'], where })
-    const uids = new Set()
-    const map = {}
-
-    for (let i = 0; i < coins.length; i += 1) {
-      const coin = coins[i]
-      const ids = map[coin.coingecko_id] || (map[coin.coingecko_id] = [])
-
-      uids.add(coin.coingecko_id)
-      ids.push(coin.id)
-    }
-
-    const chunks = this.chunk(Array.from(uids))
+  async syncFromCoingecko(uid) {
+    const coins = await this.getCoins(uid)
+    const chunks = this.chunk(Array.from(coins.uids))
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await this.syncCoins(chunks[i], map)
+      await this.fetchFromCoingecko(chunks[i], coins.map)
     }
   }
 
-  async syncCoins(coinUids, idsMap) {
+  async syncFromDefillama(uid) {
+    const coins = await this.getCoins(uid)
+    const chunks = this.chunk(Array.from(coins.uids).map(i => `coingecko:${i}`))
+
+    for (let i = 0; i < chunks.length; i += 1) {
+      await this.fetchFromDefillama(chunks[i], coins.map)
+    }
+  }
+
+  async fetchFromCoingecko(coinUids, idsMap) {
     debug(`Syncing coins ${coinUids.length}`)
 
     try {
@@ -78,6 +76,28 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
         await utils.sleep(50000)
       }
     }
+  }
+
+  async fetchFromDefillama(coinUids, idsMap) {
+    debug(`Syncing coins ${coinUids.length}`)
+
+    const data = await defillama.getPrices(coinUids)
+    const prices = {}
+
+    Object.entries(data).forEach(([key, value]) => {
+      const [, address] = key.split(':')
+      const coinIds = idsMap[address] || []
+
+      coinIds.forEach(coinId => {
+        prices[coinId] = {
+          price: value.price,
+          timestamp: new Date(value.timestamp * 1000)
+        }
+      })
+    })
+
+    await this.updateCoinPrices(Object.entries(prices))
+    await utils.sleep(500)
   }
 
   async updateCoins(coins, idsMap) {
@@ -137,7 +157,7 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
   async syncDefiCoins() {
     const coins = await Coin.query(`
-      SELECT c.id, c.uid, p.chain_uid, p.address
+      SELECT c.id, p.chain_uid, p.address
         FROM coins c, platforms p
       WHERE c.id = p.coin_id
         AND c.is_defi = true
@@ -145,29 +165,15 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
         AND p.address <> ''
     `)
 
-    const mapChain = chain => {
-      switch (chain) {
-        case 'binance-smart-chain':
-          return 'bsc'
-        case 'arbitrum-one':
-          return 'arbitrum'
-        default:
-          return chain
-      }
-    }
-
-    const map = {}
     const prices = {}
+    const map = {}
+    const ids = coins.map(coin => {
+      map[coin.address] = coin.id
+      return `${this.mapDefillamaChain(coin.chain_uid)}:${coin.address}`
+    })
 
-    const response = await defillama.getPrices(
-      coins.map(coin => {
-        map[coin.address] = coin.id
-        return {
-          address: coin.address,
-          chain_uid: mapChain(coin.chain_uid)
-        }
-      })
-    )
+    console.log('Fetching staked coins prices', ids.length)
+    const response = await defillama.getPrices(ids)
 
     Object.entries(response).forEach(([key, value]) => {
       const [, address] = key.split(':')
@@ -179,8 +185,51 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     })
 
     console.log('Fetched staked coins prices', prices)
-    const records = Object.entries(prices).map(([id, value]) => [parseInt(id), value.price, value.timestamp])
-    await Coin.updatePrices(records)
+    await this.updateCoinPrices(Object.entries(prices))
+  }
+
+  updateCoinPrices(entries) {
+    const records = entries.map(([id, value]) => [
+      parseInt(id),
+      value.price,
+      value.timestamp
+    ])
+
+    return Coin.updatePrices(records)
+  }
+
+  async getCoins(uid) {
+    const coins = await Coin.findAll({
+      attributes: ['id', 'coingecko_id'],
+      where: {
+        ...(uid && { uid }),
+        coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
+      }
+    })
+
+    const uids = new Set()
+    const map = {}
+
+    for (let i = 0; i < coins.length; i += 1) {
+      const coin = coins[i]
+      const ids = map[coin.coingecko_id] || (map[coin.coingecko_id] = [])
+
+      uids.add(coin.coingecko_id)
+      ids.push(coin.id)
+    }
+
+    return { uids, map }
+  }
+
+  mapDefillamaChain(chain) {
+    switch (chain) {
+      case 'binance-smart-chain':
+        return 'bsc'
+      case 'arbitrum-one':
+        return 'arbitrum'
+      default:
+        return chain
+    }
   }
 
   chunk(array) {

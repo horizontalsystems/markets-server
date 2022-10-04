@@ -37,12 +37,8 @@ exports.getProtocol = id => {
     .then(resp => resp.data)
 }
 
-exports.getPrices = platforms => {
-  const addresses = platforms
-    .map(item => [`${item.chain_uid}:${item.address}`])
-    .join(',')
-
-  console.log('Fetching staked coins prices')
+exports.getPrices = coins => {
+  const addresses = coins.join(',')
 
   return coinsApi.get(`/prices/current/${addresses}`)
     .then(resp => (resp.data || {}).coins || {})

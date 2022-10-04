@@ -7,9 +7,10 @@ const CoinPriceSyncer = require('../src/services/CoinPriceSyncer')
 const program = new Command()
   .option('-c --coins <coins>', 'sync market data for given coin')
   .option('-h --history <history>', 'sync historical price for given coin')
+  .option('-d --defillama', 'sync coin prices from defillama')
   .parse(process.argv)
 
-async function start({ coins, history }) {
+async function start({ coins, history, defillama }) {
   await sequelize.sync()
   const syncer = new CoinPriceSyncer()
 
@@ -18,7 +19,7 @@ async function start({ coins, history }) {
   } else if (history) {
     await syncer.syncHistory(history.split(','))
   } else {
-    await syncer.start()
+    await syncer.start(defillama)
   }
 }
 
