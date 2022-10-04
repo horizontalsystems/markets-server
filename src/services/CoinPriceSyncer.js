@@ -91,7 +91,7 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
       coinIds.forEach(coinId => {
         prices[coinId] = {
           price: value.price,
-          timestamp: new Date(value.timestamp * 1000)
+          timestamp: new Date()
         }
       })
     })
