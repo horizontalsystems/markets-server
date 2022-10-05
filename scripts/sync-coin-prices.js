@@ -14,12 +14,14 @@ async function start({ coins, history, defillama }) {
   await sequelize.sync()
   const syncer = new CoinPriceSyncer()
 
-  if (coins) {
-    await syncer.sync(coins.split(','))
+  if (defillama) {
+    await syncer.run(syncer.syncFromDefillama)
+  } else if (coins) {
+    await syncer.syncFromCoingecko(coins.split(','))
   } else if (history) {
     await syncer.syncHistory(history.split(','))
   } else {
-    await syncer.start(defillama)
+    await syncer.start()
   }
 }
 

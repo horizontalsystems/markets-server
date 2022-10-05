@@ -13,19 +13,19 @@ const debug = msg => {
 
 class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
-  async start(fromDefillama) {
+  async start() {
     this.adjustHistoryGaps()
     this.cron('1d', this.syncUids)
     this.cron('5m', this.syncDefiCoins)
 
+    await this.run(this.syncFromCoingecko)
+  }
+
+  async run(sync) {
     const running = true
     while (running) {
       try {
-        if (fromDefillama) {
-          await this.syncFromDefillama()
-        } else {
-          await this.syncFromCoingecko()
-        }
+        await sync()
       } catch (e) {
         debug(e)
         process.exit(1)
@@ -189,11 +189,19 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
   }
 
   updateCoinPrices(entries) {
-    const records = entries.map(([id, value]) => [
-      parseInt(id),
-      value.price,
-      value.timestamp
-    ])
+    const records = entries
+      .map(([id, value]) => {
+        if (!id || !value || !value.price || !value.timestamp) {
+          return null
+        }
+
+        return [
+          parseInt(id),
+          value.price,
+          value.timestamp
+        ]
+      })
+      .filter(i => i)
 
     if (!records.length) {
       return
