@@ -87,12 +87,15 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     Object.entries(data).forEach(([key, value]) => {
       const [, address] = key.split(':')
       const coinIds = idsMap[address] || []
+      const now = DateTime.now()
 
       coinIds.forEach(coinId => {
-        prices[coinId] = {
-          price: value.price,
-          timestamp: new Date()
+        let timestamp = new Date(value.timestamp * 1000)
+        if (timestamp >= now.plus({ minutes: -30 })) {
+          timestamp = new Date()
         }
+
+        prices[coinId] = { timestamp, price: value.price }
       })
     })
 
