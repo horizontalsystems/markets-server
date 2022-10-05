@@ -211,6 +211,9 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     }
 
     return Coin.updatePrices(records)
+      .catch(e => {
+        console.log(e)
+      })
   }
 
   async getCoins(uid) {
