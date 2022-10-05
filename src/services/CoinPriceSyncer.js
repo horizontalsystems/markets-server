@@ -18,14 +18,14 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     this.cron('1d', this.syncUids)
     this.cron('5m', this.syncDefiCoins)
 
-    await this.run(this.syncFromCoingecko)
+    await this.sync()
   }
 
-  async run(sync) {
+  async sync(fromDefillama) {
     const running = true
     while (running) {
       try {
-        await sync()
+        await (fromDefillama ? this.syncFromDefillama() : this.syncFromCoingecko())
       } catch (e) {
         debug(e)
         process.exit(1)

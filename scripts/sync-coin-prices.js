@@ -15,7 +15,7 @@ async function start({ coins, history, defillama }) {
   const syncer = new CoinPriceSyncer()
 
   if (defillama) {
-    await syncer.run(syncer.syncFromDefillama)
+    await syncer.sync(true)
   } else if (coins) {
     await syncer.syncFromCoingecko(coins.split(','))
   } else if (history) {
