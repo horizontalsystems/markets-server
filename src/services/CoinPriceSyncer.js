@@ -227,9 +227,10 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
     for (let i = 0; i < coins.length; i += 1) {
       const coin = coins[i]
-      const ids = map[coin.coingecko_id] || (map[coin.coingecko_id] = [])
+      const cid = coin.coingecko_id
+      const ids = map[cid] || (map[cid] = [])
 
-      uids.add(coin.coingecko_id)
+      uids.add(encodeURIComponent(cid))
       ids.push(coin.id)
     }
 
