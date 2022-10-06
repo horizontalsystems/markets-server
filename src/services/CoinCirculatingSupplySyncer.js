@@ -51,7 +51,7 @@ class CoinCirculatingSupplySyncer extends Syncer {
 
     switch (platform.uid) {
       case 'stepn':
-        if (platform.type === 'solana') {
+        if (platform.type === 'spl') {
           return platform.csupply
         }
         break

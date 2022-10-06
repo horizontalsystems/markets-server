@@ -94,7 +94,7 @@ class SetupCoins {
         console.log(`Fetched decimals (${decimals}) for ${platform.address} ${i + 1}`)
 
         if (decimals > 0) {
-          await platform.update({ decimals })
+          await platform.update({ decimals, type: 'spl' })
         }
       } catch ({ message }) {
         console.log(`Failed to fetch decimals for ${platform.address} ${i + 1}`)
@@ -217,6 +217,7 @@ class SetupCoins {
         }
 
         case 'solana': {
+          newType = 'spl'
           provider = { getDecimals: solscan.getMeta }
           mapper = data => {
             decimals = data.decimals

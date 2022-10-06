@@ -26,6 +26,7 @@
   ],
   "dependencies": {
     "@google-cloud/bigquery": "^5.12.0",
+    "@solana/web3.js": "^1.63.1",
     "apidoc": "^0.51.1",
     "axios": "^0.27.2",
     "axios-cookiejar-support": "^4.0.1",
