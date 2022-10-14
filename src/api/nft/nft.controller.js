@@ -2,7 +2,6 @@ const { DateTime } = require('luxon')
 const opensea = require('../../providers/opensea')
 const NftAsset = require('../../db/models/NftAsset')
 const NftCollection = require('../../db/models/NftCollection')
-const NftMarket = require('../../db/models/NftMarket')
 const { serializeList } = require('./nft.serializer')
 
 exports.collections = async ({ query }, res) => {
@@ -34,7 +33,7 @@ exports.collections = async ({ query }, res) => {
   res.send(collections)
 }
 
-exports.collection = async ({ params, query }, res) => {
+exports.collection = async ({ params }, res) => {
   let collection = {}
   try {
     collection = await NftCollection.getCachedCollection(params.collection_uid)
@@ -44,13 +43,6 @@ exports.collection = async ({ params, query }, res) => {
 
       if (collection) {
         NftCollection.upsertCollections([collection])
-      }
-    }
-
-    if (process.env.NODE_ENV === 'production') {
-      if (query.include_stats_chart === 'true') {
-        const dateFrom = DateTime.now().minus({ days: 1 }).toSQL()
-        collection.stats_chart = await NftMarket.getStatsChart(collection.uid, dateFrom) // @deprecated
       }
     }
   } catch (e) {
