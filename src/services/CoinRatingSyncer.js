@@ -129,7 +129,6 @@ class CoinRatingSyncer extends Syncer {
         WHERE a.date >= :dateFrom
           AND p.id = a.platform_id
           AND c.id = p.coin_id
-          AND (c.market_data->>'market_cap')::numeric > 500000
       )
       SELECT
         id,
@@ -227,16 +226,41 @@ class CoinRatingSyncer extends Syncer {
   }
 
   rating(ratings) {
-    const a = ratings.filter(r => r === 'a')
+    const map = { a: 0, b: 0, c: 0, d: 0 }
 
-    if (a.length >= 3) {
+    for (let i = 0; i < ratings.length; i += 1) {
+      const rating = ratings[i]
+      map[rating] = (map[rating] || 0) + 1
+    }
+
+    if (map.a >= 3) {
+      if (map.c || map.d) {
+        return 'b'
+      }
+
       return 'a'
     }
-    if (a.length >= 2) {
+    if (map.a >= 2) {
       return 'b'
     }
 
-    return null
+    if (map.b >= 3) {
+      if (map.c || map.d) {
+        return 'c'
+      }
+
+      return 'b'
+    }
+
+    if (map.c >= 3) {
+      if (map.d) {
+        return 'd'
+      }
+
+      return 'c'
+    }
+
+    return map.d ? 'd' : null
   }
 
   ratingByPercent(points) {
