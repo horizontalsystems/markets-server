@@ -21,6 +21,8 @@ class Bitquery {
         return 'ethereum(network: matic)'
       case 'avalanche':
         return 'ethereum(network: avalanche)'
+      case 'bitcoin-cash':
+        return 'bitcoin(network: bitcash)'
       default:
         return `${network}(network: ${network})`
     }
