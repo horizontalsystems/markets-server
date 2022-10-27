@@ -19,8 +19,13 @@ class CoinMarketSyncer extends Syncer {
   }
 
   async sync(uid) {
-    const where = { ...(uid && { uid }) }
-    const coins = await Coin.findAll({ attributes: ['id', 'coingecko_id'], where })
+    const coins = await Coin.findAll({
+      attributes: ['id', 'coingecko_id'],
+      where: {
+        ...(uid && { uid }),
+        coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
+      }
+    })
 
     console.log(`Coins to sync exchanges ${coins.length}`)
 
@@ -35,7 +40,7 @@ class CoinMarketSyncer extends Syncer {
     try {
       const data = await coingecko.getCoinInfo(coin.coingecko_id, { tickers: true })
       await this.updateCoinInfo(data.tickers, coin.id)
-      await utils.sleep(2000)
+      await utils.sleep(3000)
     } catch ({ message, response = {} }) {
       if (message) {
         console.log(message)
