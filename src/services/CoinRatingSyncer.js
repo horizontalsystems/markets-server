@@ -52,11 +52,11 @@ class CoinRatingSyncer extends Syncer {
       })
     }
 
-    mapRank(revenueRank, 'revenue', { a: 10, b: 30, c: 60, d: 100 }) // { a: 20, b: 30, c: 40, d: 100
-    mapRank(volumesRank, 'volumes', { a: 10, b: 30, c: 60, d: 100 }) // { a: 3.11, b: 7, c: 10, d: 100
-    mapRank(addressRank, 'address', { a: 10, b: 30, c: 60, d: 100 }) // { a: 1.2, b: 3, c: 6, d: 100
-    mapRank(defiTvlRank, 'tvl', { a: 10, b: 30, c: 60, d: 100 }) //     { a: 4, b: 8, c: 20, d: 100
-    mapRank(transactionRank, 'tx', { a: 10, b: 30, c: 60, d: 100 }) //  { a: 2, b: 7, c: 10, d: 100
+    mapRank(revenueRank, 'revenue', { a: 10, b: 20, c: 40, d: 100 }) // { a: 20, b: 30, c: 40, d: 100
+    mapRank(volumesRank, 'volumes', { a: 10, b: 20, c: 40, d: 100 }) // { a: 3.11, b: 7, c: 10, d: 100
+    mapRank(addressRank, 'address', { a: 10, b: 20, c: 40, d: 100 }) // { a: 1.2, b: 3, c: 6, d: 100
+    mapRank(defiTvlRank, 'tvl', { a: 10, b: 20, c: 40, d: 100 }) //     { a: 4, b: 8, c: 20, d: 100
+    mapRank(transactionRank, 'tx', { a: 10, b: 20, c: 40, d: 100 }) //  { a: 2, b: 7, c: 10, d: 100
 
     const records = Object.entries(coinMap)
       .map(([id, stats]) => {
@@ -260,7 +260,7 @@ class CoinRatingSyncer extends Syncer {
       return 'c'
     }
 
-    return map.d ? 'd' : null
+    return map.d >= 3 ? 'd' : null
   }
 
   ratingByPercent(points) {
