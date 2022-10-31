@@ -77,7 +77,7 @@ class DefiProtocolTvl extends SequelizeModel {
        FROM defi_protocol_tvls T
        JOIN defi_protocols P on P.id = T.defi_protocol_id
       WHERE date <= :dateTo
-        AND date >= (date :dateTo - INTERVAL :interval)
+        AND date >= (timestamp :dateTo - INTERVAL :interval)
       ORDER BY T.date
     `
 
