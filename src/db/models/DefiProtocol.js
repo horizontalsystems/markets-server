@@ -85,12 +85,22 @@ class DefiProtocol extends SequelizeModel {
     return DefiProtocol.findAll({ attributes: ['id', 'coingecko_id', 'defillama_id'], where })
   }
 
-  static resetRank(ids) {
+  static clean(ids) {
     if (!ids.length) {
       return
     }
 
     return DefiProtocol.query('DELETE FROM defi_protocols WHERE id NOT IN(:ids)', { ids })
+  }
+
+  static resetRank() {
+    return DefiProtocol.query(`
+      UPDATE defi_protocols p SET tvl_rank = r.ranked
+      FROM (
+        SELECT id, ROW_NUMBER() OVER(order by tvl desc nulls last) AS ranked FROM defi_protocols
+      ) r
+      WHERE p.id = r.id
+    `)
   }
 }
 

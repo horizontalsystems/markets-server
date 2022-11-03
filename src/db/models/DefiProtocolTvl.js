@@ -1,3 +1,4 @@
+const { sum } = require('lodash')
 const SequelizeModel = require('./SequelizeModel')
 const DefiProtocol = require('./DefiProtocol')
 
@@ -68,20 +69,25 @@ class DefiProtocolTvl extends SequelizeModel {
     return DefiProtocolTvl.query(query, { defi_protocol_id: defiProtocol.id, dateFrom })
   }
 
-  static getListByDate(dateTo, interval = '1 day') {
+  static getListByDate(dateTo, slugs, interval = '1 day') {
     const query = `
-      SELECT
-        P.defillama_id,
-        T.defi_protocol_id,
-        T.tvl
-       FROM defi_protocol_tvls T
-       JOIN defi_protocols P on P.id = T.defi_protocol_id
-      WHERE date <= :dateTo
-        AND date >= (timestamp :dateTo - INTERVAL :interval)
-      ORDER BY T.date
+      SELECT * from (
+        SELECT
+          P.defillama_id,
+          T.defi_protocol_id,
+          T.tvl,
+          ROW_NUMBER() OVER (PARTITION BY P.defillama_id ORDER BY T.date DESC) rn
+         FROM defi_protocol_tvls T
+         JOIN defi_protocols P on P.id = T.defi_protocol_id
+        WHERE date <= :dateTo
+          AND date >= (timestamp :dateTo - INTERVAL :interval)
+          AND P.defillama_id IN(:slugs)
+        ORDER BY T.date
+      ) x
+      WHERE x.rn = 1
     `
 
-    return DefiProtocolTvl.query(query, { dateTo, interval })
+    return DefiProtocolTvl.query(query, { dateTo, interval, slugs })
   }
 
   static async exists() {
@@ -95,13 +101,47 @@ class DefiProtocolTvl extends SequelizeModel {
     })
   }
 
-  static delete(defiProtocolIds) {
+  static delete(defiProtocol) {
     return DefiProtocolTvl.destroy({
       where: {
-        defi_protocol_id: defiProtocolIds
+        defi_protocol_id: defiProtocol
       }
     })
   }
+
+  static async mergeProtocols(baseProtocol, childProtocols) {
+    const recs = {}
+    const data = await DefiProtocolTvl.query(`
+      SELECT t.date, t.tvl, t.chain_tvls
+        FROM defi_protocols p, defi_protocol_tvls t
+       WHERE p.id = t.defi_protocol_id
+        AND p.defillama_id in (:childProtocols)
+    `, { childProtocols: childProtocols.map(p => p.defillama_id) })
+
+    for (let i = 0; i < data.length; i += 1) {
+      const item2 = data[i]
+      const item1 = recs[item2.date]
+
+      if (item1) {
+        item1.tvl = sum([parseFloat(item1.tvl), parseFloat(item2.tvl)])
+
+        Object.keys(item2.chain_tvls).forEach(key => {
+          item1.chain_tvls[key] = sum([
+            item1.chain_tvls[key],
+            item2.chain_tvls[key]
+          ])
+        })
+      } else {
+        recs[item2.date] = { ...item2, defi_protocol_id: baseProtocol.id }
+      }
+    }
+
+    await DefiProtocolTvl.delete(childProtocols.map(p => p.id))
+    await DefiProtocolTvl.bulkCreate(Object.values(recs))
+
+    console.log(`Merged into base protocol: ${baseProtocol.coingecko_id}`)
+  }
+
 }
 
 module.exports = DefiProtocolTvl

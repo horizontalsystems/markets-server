@@ -1,3 +1,4 @@
+const { sum, sortBy, groupBy } = require('lodash')
 const defillama = require('../providers/defillama')
 const Syncer = require('./Syncer')
 const DefiProtocol = require('../db/models/DefiProtocol')
@@ -84,8 +85,7 @@ class DefiProtocolSyncer extends Syncer {
   async syncDailyStats({ dateTo }) {
     try {
       const protocols = await this.fetchProtocols()
-      await this.syncProtocols(protocols, await this.mapTvlsMap())
-      await this.syncLatestTvls(protocols, dateTo)
+      await this.syncProtocols(protocols, dateTo, await this.mapTvlsMap(protocols))
     } catch (e) {
       console.error(e)
     }
@@ -95,38 +95,7 @@ class DefiProtocolSyncer extends Syncer {
     await DefiProtocolTvl.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncLatestTvls(protocols, dateTo) {
-    const ids = {}
-    const tvls = []
-    const defiProtocols = await DefiProtocol.getIds()
-
-    for (let i = 0; i < defiProtocols.length; i += 1) {
-      const coin = defiProtocols[i]
-      ids[coin.defillama_id] = coin.id
-    }
-
-    for (let i = 0; i < protocols.length; i += 1) {
-      const protocol = protocols[i]
-      const defiCoinId = ids[protocol.slug]
-
-      if (!defiCoinId) {
-        continue
-      }
-
-      console.log(`Syncing tvl for slug: ${protocol.slug}; gecko_id: ${protocol.gecko_id}`)
-
-      tvls.push({
-        defi_protocol_id: defiCoinId,
-        date: dateTo,
-        tvl: protocol.tvl,
-        chain_tvls: protocol.chainTvls
-      })
-    }
-
-    await DefiProtocolTvl.bulkCreate(tvls, { ignoreDuplicates: true })
-  }
-
-  async syncProtocols(protocols, prevTvlMap = {}) {
+  async syncProtocols(protocols, dateTo, prevTvlMap = {}) {
     const coins = await Coin.findAll({
       attributes: ['id', 'coingecko_id'],
       where: {
@@ -134,11 +103,43 @@ class DefiProtocolSyncer extends Syncer {
       }
     })
 
-    const ids = utils.reduceMap(coins, 'coingecko_id', 'id')
-    const recordIds = []
+    const protocolsList = []
+    const parentProtocols = {}
 
     for (let i = 0; i < protocols.length; i += 1) {
       const protocol = protocols[i]
+      if (!protocol.parentProtocol) {
+        protocolsList.push(protocol)
+        continue
+      }
+
+      const parentProtocol = parentProtocols[protocol.parentProtocol]
+      if (parentProtocol) {
+        parentProtocol.tvl = sum([protocol.tvl, parentProtocol.tvl])
+        parentProtocol.chains = [...new Set([...protocol.chains, ...parentProtocol.chains])]
+
+        if (protocol.gecko_id) {
+          parentProtocol.slug = protocol.slug
+          parentProtocol.name = protocol.name
+        }
+
+        Object.keys(protocol.chainTvls).forEach(key => {
+          parentProtocol.chainTvls[key] = sum([
+            protocol.chainTvls[key],
+            parentProtocol.chainTvls[key]
+          ])
+        })
+      } else {
+        parentProtocols[protocol.parentProtocol] = protocol
+      }
+    }
+
+    const projects = sortBy([...protocolsList, ...Object.values(parentProtocols)], 'tvl')
+    const ids = utils.reduceMap(coins, 'coingecko_id', 'id')
+    const recordIds = []
+
+    for (let i = 0; i < projects.length; i += 1) {
+      const protocol = projects[i]
       const coinId = ids[protocol.gecko_id]
       const prevTvl = prevTvlMap[protocol.slug] || {}
 
@@ -148,11 +149,9 @@ class DefiProtocolSyncer extends Syncer {
         defillama_id: protocol.slug,
         coingecko_id: protocol.gecko_id,
         tvl: protocol.tvl,
-        tvl_rank: i + 1,
         tvl_change: {
-          change_1h: protocol.change_1h,
-          change_1d: protocol.change_1d,
-          change_1w: protocol.change_7d,
+          change_1d: utils.percentageChange(prevTvl['1d'], protocol.tvl),
+          change_1w: utils.percentageChange(prevTvl['1w'], protocol.tvl),
           change_2w: utils.percentageChange(prevTvl['2w'], protocol.tvl),
           change_1m: utils.percentageChange(prevTvl['1m'], protocol.tvl),
           change_3m: utils.percentageChange(prevTvl['3m'], protocol.tvl),
@@ -168,10 +167,12 @@ class DefiProtocolSyncer extends Syncer {
       }
 
       const record = await this.upsertProtocol(values)
+      await this.upsertProtocolTvl(record, dateTo)
       recordIds.push(record.id)
     }
 
-    await DefiProtocol.resetRank(recordIds.filter(i => i))
+    await DefiProtocol.clean(recordIds.filter(i => i))
+    await DefiProtocol.resetRank()
   }
 
   async upsertProtocol(values) {
@@ -187,6 +188,21 @@ class DefiProtocolSyncer extends Syncer {
     return record
   }
 
+  upsertProtocolTvl(protocol, date) {
+    if (!date) {
+      return
+    }
+
+    const protocolTvl = {
+      date,
+      tvl: protocol.tvl,
+      defi_protocol_id: protocol.id,
+      chain_tvls: protocol.chainTvls
+    }
+
+    return DefiProtocolTvl.upsert(protocolTvl).catch(e => console.log(e.message))
+  }
+
   async fetchProtocols() {
     let protocols = []
     try {
@@ -199,7 +215,39 @@ class DefiProtocolSyncer extends Syncer {
     return protocols
   }
 
-  async mapTvlsMap() {
+  async mergeProtocols() {
+    const protocols = await defillama.getProtocols()
+      .then(p => p.filter(i => i.parentProtocol && i.slug))
+
+    const values = Object.values(groupBy(protocols, 'parentProtocol'))
+
+    for (let i = 0; i < values.length; i += 1) {
+      let parentProtocol
+
+      const data = values[i]
+      const childProtocolSlugs = data.map(p => {
+        if (p.gecko_id) {
+          parentProtocol = p.gecko_id
+        }
+        return p.slug
+      })
+
+      if (!parentProtocol) {
+        continue
+      }
+
+      const baseProtocols = await DefiProtocol.findOne({ where: { coingecko_id: parentProtocol } })
+      if (baseProtocols) {
+        console.log('Merging protocols', parentProtocol, childProtocolSlugs.join(','))
+        const childProtocols = await DefiProtocol.getIds(childProtocolSlugs)
+        await this.syncHistoricalTvls(childProtocols)
+        await DefiProtocolTvl.mergeProtocols(baseProtocols, childProtocols)
+      }
+    }
+  }
+
+  async mapTvlsMap(protocols) {
+    const ids = [...new Set(protocols.map(item => item.slug).filter(id => id))]
     const mapped = {}
 
     const mapBy = (items, key) => {
@@ -211,12 +259,17 @@ class DefiProtocolSyncer extends Syncer {
       }
     }
 
-    const history2w = await DefiProtocolTvl.getListByDate(utils.utcDate({ days: -14 }), '4 hour')
-    const history1m = await DefiProtocolTvl.getListByDate(utils.utcDate({ days: -30 }))
-    const history3m = await DefiProtocolTvl.getListByDate(utils.utcDate({ days: -90 }))
-    const history6m = await DefiProtocolTvl.getListByDate(utils.utcDate({ days: -180 }))
-    const history1y = await DefiProtocolTvl.getListByDate(utils.utcDate({ days: -365 }))
+    const { utcDate } = utils
+    const history1d = await DefiProtocolTvl.getListByDate(utcDate({ days: -1 }), ids, '1 hour')
+    const history1w = await DefiProtocolTvl.getListByDate(utcDate({ days: -7 }), ids)
+    const history2w = await DefiProtocolTvl.getListByDate(utcDate({ days: -14 }), ids)
+    const history1m = await DefiProtocolTvl.getListByDate(utcDate({ days: -30 }), ids)
+    const history3m = await DefiProtocolTvl.getListByDate(utcDate({ days: -90 }), ids)
+    const history6m = await DefiProtocolTvl.getListByDate(utcDate({ days: -180 }), ids)
+    const history1y = await DefiProtocolTvl.getListByDate(utcDate({ days: -365 }), ids)
 
+    mapBy(history1d, '1d')
+    mapBy(history1w, '1w')
     mapBy(history2w, '2w')
     mapBy(history1m, '1m')
     mapBy(history3m, '3m')
