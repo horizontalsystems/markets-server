@@ -1,4 +1,4 @@
-const { sum, sortBy, groupBy } = require('lodash')
+const { sum, groupBy } = require('lodash')
 const defillama = require('../providers/defillama')
 const Syncer = require('./Syncer')
 const DefiProtocol = require('../db/models/DefiProtocol')
@@ -134,7 +134,7 @@ class DefiProtocolSyncer extends Syncer {
       }
     }
 
-    const projects = sortBy([...protocolsList, ...Object.values(parentProtocols)], 'tvl')
+    const projects = [...protocolsList, ...Object.values(parentProtocols)]
     const ids = utils.reduceMap(coins, 'coingecko_id', 'id')
     const recordIds = []
 
