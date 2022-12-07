@@ -1,4 +1,4 @@
-const { parseInt } = require('lodash')
+const { parseInt, chunk } = require('lodash')
 const { DateTime } = require('luxon')
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
@@ -35,7 +35,7 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
   async syncFromCoingecko(uid) {
     const coins = await this.getCoins(uid)
-    const chunks = this.chunk(Array.from(coins.uids))
+    const chunks = chunk(Array.from(coins.uids), 250)
 
     for (let i = 0; i < chunks.length; i += 1) {
       await this.fetchFromCoingecko(chunks[i], coins.map)
@@ -55,7 +55,7 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     debug(`Syncing coins ${coinUids.length}`)
 
     try {
-      const coins = await coingecko.getMarkets(coinUids)
+      const coins = await coingecko.getMarkets(coinUids, 1, 250)
       await this.updateCoins(coins, idsMap)
       await utils.sleep(3000)
     } catch ({ message, response = {} }) {
@@ -258,7 +258,7 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
   }
 
   chunk(array) {
-    const chunk = []
+    const chunkList = []
     const chunkSize = 6000 // to fit header buffers
 
     let size = 0
@@ -272,15 +272,15 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
         index += 1
       }
 
-      if (!chunk[index]) {
-        chunk[index] = []
+      if (!chunkList[index]) {
+        chunkList[index] = []
       }
 
-      chunk[index].push(item)
+      chunkList[index].push(item)
       size += item.length
     }
 
-    return chunk
+    return chunkList
   }
 
 }
