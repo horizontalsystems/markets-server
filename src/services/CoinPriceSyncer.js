@@ -66,6 +66,7 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
       if (response.status === 429) {
         debug(`Sleeping 1min; Status ${response.status}`)
         await utils.sleep(60000)
+        await this.fetchFromDefillama(coinUids.map(i => `coingecko:${i}`))
       } else if (response.status >= 502 && response.status <= 504) {
         debug(`Sleeping 30s; Status ${response.status}`)
         await utils.sleep(30000)
@@ -81,9 +82,14 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
   async fetchFromDefillama(coinUids, idsMap) {
     debug(`Syncing coins ${coinUids.length}`)
 
-    const data = await defillama.getPrices(coinUids)
-    const prices = {}
+    let data = {}
+    try {
+      data = await defillama.getPrices(coinUids)
+    } catch (e) {
+      console.error(e)
+    }
 
+    const prices = {}
     Object.entries(data).forEach(([key, value]) => {
       const [, address] = key.split(':')
       const coinIds = idsMap[address] || []
