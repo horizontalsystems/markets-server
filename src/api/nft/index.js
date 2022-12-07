@@ -89,15 +89,7 @@ router.get('/collections', validateCollections, controller.collections)
  *      "num_reports": 0,
  *      "market_cap": 0,
  *      "floor_price": 0
- *    },
- *    "stats_chart": [
- *      "timestamp": 123123123,
- *      "one_day_volume": 123,
- *      "avеrage_price": 123,
- *      "floor_price": 123,
- *      "one_day_sales": 123
- *    ]
- *
+ *    }
  *  }
  *  @apiError (Bad Request 400)  ValidationError Some parameters or Collection UID/slug are not valid
  *  @apiError (Not Found 404)    NotFound        Collection does not exist

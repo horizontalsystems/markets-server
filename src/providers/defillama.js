@@ -26,7 +26,7 @@ exports.getProtocols = () => {
   console.log('Fetching DeFi protocols')
 
   return api.get('/protocols').then(({ data = [] }) => {
-    return data.filter(item => item.slug !== 'polygon-bridge-&-staking')
+    return data.filter(item => item.category !== 'Bridge' && item.category !== 'Chain' && item.category !== 'CEX')
   })
 }
 

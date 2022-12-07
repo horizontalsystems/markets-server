@@ -62,29 +62,6 @@ class NftMarket extends SequelizeModel {
     })
   }
 
-  static async getStatsChart(collectionUid, dateFrom, interval = '1h') {
-    const query = (`
-      SELECT
-        DISTINCT ON (nm.trunc)
-        nm.trunc as timestamp,
-        nm.volume24h as one_day_volume,
-        nm.avg_price as average_price,
-        nm.floor_price as floor_price,
-        nm.sales24h as one_day_sales
-      FROM (
-        SELECT
-          m.*,
-          ${this.truncateDateWindow('date', interval)} AS trunc
-          FROM nft_markets m, nft_collections c
-          WHERE c.uid = :collectionUid
-            AND m.collection_id = c.id
-            AND m.date >= :dateFrom
-      ) nm
-      ORDER BY nm.trunc, nm.date DESC`
-    )
-
-    return NftMarket.query(query, { collectionUid, dateFrom })
-  }
 }
 
 module.exports = NftMarket

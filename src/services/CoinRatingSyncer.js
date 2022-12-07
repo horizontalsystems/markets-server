@@ -23,7 +23,7 @@ class CoinRatingSyncer extends Syncer {
     const defiTvlRank = await this.getTvlRank()
     const transactionRank = await this.getTxCountRank(dateFrom)
 
-    const coins = await Coin.query('select id from coins')
+    const coins = await Coin.query('SELECT id, market_data->\'market_cap\' mcap FROM coins ORDER BY mcap DESC NULLS LAST LIMIT 500')
     const coinMap = coins.reduce((res, coin) => ({ ...res, [coin.id]: {} }), {})
 
     const mapRank = (items, type, ratings) => {
@@ -52,11 +52,11 @@ class CoinRatingSyncer extends Syncer {
       })
     }
 
-    mapRank(revenueRank, 'revenue', { a: 20, b: 30, c: 40, d: 100 })
-    mapRank(volumesRank, 'volumes', { a: 3.11, b: 7, c: 10, d: 100 })
-    mapRank(addressRank, 'address', { a: 1.2, b: 3, c: 6, d: 100 })
-    mapRank(defiTvlRank, 'tvl', { a: 4, b: 8, c: 20, d: 100 })
-    mapRank(transactionRank, 'tx', { a: 2, b: 7, c: 10, d: 100 })
+    mapRank(revenueRank, 'revenue', { a: 10, b: 20, c: 40, d: 100 }) // { a: 20, b: 30, c: 40, d: 100
+    mapRank(volumesRank, 'volumes', { a: 10, b: 20, c: 40, d: 100 }) // { a: 3.11, b: 7, c: 10, d: 100
+    mapRank(addressRank, 'address', { a: 10, b: 20, c: 40, d: 100 }) // { a: 1.2, b: 3, c: 6, d: 100
+    mapRank(defiTvlRank, 'tvl', { a: 10, b: 20, c: 40, d: 100 }) //     { a: 4, b: 8, c: 20, d: 100
+    mapRank(transactionRank, 'tx', { a: 10, b: 20, c: 40, d: 100 }) //  { a: 2, b: 7, c: 10, d: 100
 
     const records = Object.entries(coinMap)
       .map(([id, stats]) => {
@@ -89,10 +89,11 @@ class CoinRatingSyncer extends Syncer {
     const revenue = await tokenTerminal.getProjects()
 
     return Coin.query(`
+      with topcoins as (${this.getTopCoins()})
       SELECT
         c.id,
         v.revenue
-      FROM (values :revenue) as v(id, revenue), coins c
+      FROM (values :revenue) as v(id, revenue), topcoins c
       WHERE c.coingecko_id = v.id
         AND v.revenue IS NOT NULL
       ORDER BY v.revenue desc
@@ -101,10 +102,11 @@ class CoinRatingSyncer extends Syncer {
 
   getVolumesRank() {
     return Coin.query(`
+      with topcoins as (${this.getTopCoins()})
       SELECT
         c.id,
         SUM(m.volume_usd) AS volumes
-      FROM coins c
+      FROM topcoins c
       JOIN (
         SELECT
           m.*
@@ -118,15 +120,15 @@ class CoinRatingSyncer extends Syncer {
 
   getAddressRank(dateFrom) {
     return Coin.query(`
-      with records as (
+      with topcoins as (${this.getTopCoins()}),
+      records as (
         SELECT
           c.id,
           jsonb_array_elements(a.data->'1d')->'count' as address_count
-        FROM addresses a, platforms p, coins c
+        FROM addresses a, platforms p, topcoins c
         WHERE a.date >= :dateFrom
           AND p.id = a.platform_id
           AND c.id = p.coin_id
-          AND (c.market_data->>'market_cap')::numeric > 500000
       )
       SELECT
         id,
@@ -139,7 +141,8 @@ class CoinRatingSyncer extends Syncer {
 
   getHoldersRank() {
     return Coin.query(`
-      with top_holders as (
+      with topcoins as (${this.getTopCoins()}),
+      top_holders as (
         SELECT
           p.coin_id,
           SUM(h.percentage) as holders,
@@ -151,7 +154,7 @@ class CoinRatingSyncer extends Syncer {
               ELSE 3
             END ASC
           ) AS row_num
-        FROM coin_holders h, coins c, platforms p
+        FROM coin_holders h, topcoins c, platforms p
         WHERE p.id = h.platform_id
           AND c.id = p.coin_id
           AND (c.market_data->>'market_cap')::numeric > 7790000
@@ -169,10 +172,11 @@ class CoinRatingSyncer extends Syncer {
 
   getTvlRank() {
     return Coin.query(`
+      with topcoins as (${this.getTopCoins()})
       SELECT
         c.id,
         p.tvl
-      FROM defi_protocols p, coins c
+      FROM defi_protocols p, topcoins c
       WHERE c.id = p.coin_id
         AND p.tvl_rank IS NOT NULL
         AND p.tvl > 0
@@ -182,16 +186,30 @@ class CoinRatingSyncer extends Syncer {
 
   getTxCountRank(dateFrom) {
     return Coin.query(`
+      with topcoins as (${this.getTopCoins()})
       SELECT
         c.id,
         sum(t.count) tx
-      FROM transactions t, coins c, platforms p
+      FROM transactions t, topcoins c, platforms p
         WHERE p.id = t.platform_id
           AND c.id = p.coin_id
           AND t.date >= :dateFrom
       GROUP BY 1
       ORDER BY tx DESC
     `, { dateFrom })
+  }
+
+  getTopCoins() {
+    return (`
+      SELECT
+        id,
+        uid,
+        coingecko_id,
+        NULLIF((market_data->>'market_cap')::numeric, 0) mcap
+      FROM coins
+      WHERE coingecko_id IS NOT NULL
+      ORDER BY mcap DESC NULLS LAST LIMIT 500
+    `)
   }
 
   weight(label) {
@@ -208,16 +226,41 @@ class CoinRatingSyncer extends Syncer {
   }
 
   rating(ratings) {
-    const a = ratings.filter(r => r === 'a')
+    const map = { a: 0, b: 0, c: 0, d: 0 }
 
-    if (a.length >= 3) {
+    for (let i = 0; i < ratings.length; i += 1) {
+      const rating = ratings[i]
+      map[rating] = (map[rating] || 0) + 1
+    }
+
+    if (map.a >= 3) {
+      if (map.c || map.d) {
+        return 'b'
+      }
+
       return 'a'
     }
-    if (a.length >= 2) {
+    if (map.a >= 2) {
       return 'b'
     }
 
-    return null
+    if (map.b >= 3) {
+      if (map.c || map.d) {
+        return 'c'
+      }
+
+      return 'b'
+    }
+
+    if (map.c >= 3) {
+      if (map.d) {
+        return 'd'
+      }
+
+      return 'c'
+    }
+
+    return map.d >= 3 ? 'd' : null
   }
 
   ratingByPercent(points) {
