@@ -5,7 +5,7 @@ const router = express.Router()
 
 /**
  * @apiDefine Languages
- * @apiParam  {String=en,de,es,fa,fr,ko,ru,tr,zh} [language=en] Language code
+ * @apiParam  {String=en,de,es,fa,fr,ko,ru,tr,zh,pt} [language=en] Language code
  */
 
 /**
