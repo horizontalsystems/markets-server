@@ -66,7 +66,6 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
       if (response.status === 429) {
         debug(`Sleeping 1min; Status ${response.status}`)
         await utils.sleep(60000)
-        await this.fetchFromDefillama(coinUids.map(i => `coingecko:${i}`))
       } else if (response.status >= 502 && response.status <= 504) {
         debug(`Sleeping 30s; Status ${response.status}`)
         await utils.sleep(30000)
@@ -96,17 +95,20 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
       const now = DateTime.now()
 
       coinIds.forEach(coinId => {
-        let timestamp = new Date(value.timestamp * 1000)
+        const updateTime = new Date(value.timestamp * 1000)
+        const updatedAt = new Date(updateTime - 60 * 1000)
+
+        let timestamp = updateTime
         if (timestamp >= now.plus({ minutes: -30 })) {
           timestamp = new Date()
         }
 
-        prices[coinId] = { timestamp, price: value.price }
+        prices[coinId] = { timestamp, updatedAt, price: value.price }
       })
     })
 
     await this.updateCoinPrices(Object.entries(prices))
-    await utils.sleep(500)
+    await utils.sleep(1000)
   }
 
   async updateCoins(coins, idsMap) {
@@ -207,7 +209,8 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
         return [
           parseInt(id),
           value.price,
-          value.timestamp
+          value.timestamp,
+          value.updatedAt
         ]
       })
       .filter(i => i)
@@ -217,6 +220,9 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     }
 
     return Coin.updatePrices(records)
+      .then(([, updated]) => {
+        console.log('Updated coins', updated)
+      })
       .catch(e => {
         console.log(e)
       })
