@@ -4,6 +4,7 @@ const Web3EvmProvider = require('./Web3EvmProvider')
 const Web3SolanaProvider = require('./Web3SolanaProvider')
 
 const ethereum = new Web3EvmProvider('https://mainnet.infura.io/v3/d13bc12e6f5a4d3bad8d80291c74c1d3', erc20Abi)
+const ethereumGoerli = new Web3EvmProvider('https://goerli.infura.io/v3/d13bc12e6f5a4d3bad8d80291c74c1d3', erc20Abi)
 const optimism = new Web3EvmProvider('https://mainnet.optimism.io', erc20Abi)
 const arbitrumOne = new Web3EvmProvider('https://arb1.arbitrum.io/rpc', erc20Abi)
 const polygon = new Web3EvmProvider('https://polygon-rpc.com', erc20Abi)
@@ -19,6 +20,8 @@ const getProvider = chainOrType => {
     case 'erc20':
     case 'ethereum':
       return ethereum
+    case 'ethereum-goerli':
+      return ethereumGoerli
     case 'bep20':
     case 'binance-smart-chain':
       return binance
