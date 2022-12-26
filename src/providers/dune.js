@@ -8,7 +8,7 @@ class DuneAnalytics {
     this.duneUsername = username
     this.dunePassword = password
     const jar = new CookieJar()
-    this.baseUrl = 'https://dune.xyz'
+    this.baseUrl = 'https://dune.com'
     this.axiosBase = wrapper(
       axios.create({
         baseURL: this.baseUrl,
@@ -33,6 +33,11 @@ class DuneAnalytics {
 
     this.axiosGraph = axios.create({
       baseURL: 'https://core-hsr.dune.com/v1/graphql',
+      timeout: 180000
+    })
+
+    this.axiosGraphApi = axios.create({
+      baseURL: 'https://app-api.dune.com/v1/graphql',
       timeout: 180000
     })
   }
@@ -94,7 +99,7 @@ class DuneAnalytics {
       },
       query: `
         mutation ExecuteQuery($query_id: Int!, $parameters: [Parameter!]!) {
-          execute_query(query_id: $query_id, parameters: $parameters) {
+          execute_query_v2(query_id: $query_id, parameters: $parameters) {
             job_id
             __typename
           }
@@ -114,7 +119,7 @@ class DuneAnalytics {
           return null
         }
 
-        return data.data.execute_query.job_id
+        return data.data.execute_query_v2.job_id
       })
       .catch(e => {
         console.log(e)
@@ -122,41 +127,57 @@ class DuneAnalytics {
       })
   }
 
-  async getQueryResultByJobId(authToken, jobId) {
+  async getQueryResultByJobId(authToken, jobId, queryId, params) {
     console.log(`Fetching dune's result by jobID: ${jobId}`)
 
     const queryData = {
-      operationName: 'FindResultDataByJob',
-      variables: { job_id: jobId },
+      operationName: 'GetExecution',
+      variables: {
+        execution_id: jobId,
+        parameters: params,
+        query_id: queryId
+      },
       query: `
-        query FindResultDataByJob($job_id: uuid!) {
-          query_results(where: {job_id: {_eq: $job_id}}) {
-            id
-            job_id
-            runtime
-            generated_at
-            columns
-            __typename
-          }
-          query_errors(where: {job_id: {_eq: $job_id}}) {
-            id
-            job_id
-            runtime
-            message
-            metadata
-            type
-            generated_at
-            __typename
-          }
-          get_result_by_job_id(args: {want_job_id: $job_id}) {
-            data
+        query GetExecution($execution_id: String!, $query_id: Int!, $parameters: [Parameter!]!) {
+          get_execution(
+            execution_id: $execution_id
+            query_id: $query_id
+            parameters: $parameters
+          ) {
+            execution_queued {
+              created_at
+              __typename
+            }
+            execution_running {
+              created_at
+              __typename
+            }
+            execution_succeeded {
+              columns
+              data
+              __typename
+            }
+            execution_failed {
+              execution_id
+              type
+              message
+              metadata {
+                line
+                column
+                hint
+                __typename
+              }
+              runtime_seconds
+              generated_at
+              __typename
+            }
             __typename
           }
         }
       `
     }
 
-    const response = await this.axiosGraph
+    const { data } = await this.axiosGraphApi
       .post('', queryData, {
         headers: {
           Authorization: `Bearer ${authToken}`
@@ -167,41 +188,43 @@ class DuneAnalytics {
         return { query_results: [] }
       })
 
-    if (response.data.errors) {
-      console.log(JSON.stringify(response.data.errors))
+    if (data.errors) {
+      console.log(JSON.stringify(data.errors))
 
-      if (this.parseError(response.data.errors).error === 'invalid-jwt') {
+      if (this.parseError(data.errors).error === 'invalid-jwt') {
         await this.fetchAuthToken()
       }
-      return { query_results: [], query_errors: [] }
+
+      return {}
     }
 
-    return response.data.data
-
+    return data.data.get_execution || {}
   }
 
   async getQueryResults(queryId, params) {
-
     await this.fetchAuthToken()
+
     if (this.authToken) {
       const jobId = await this.executeQuery(this.authToken, queryId, params)
+      if (!jobId) {
+        return
+      }
 
-      if (jobId) {
-        let response = []
-        for (let lc = 0; lc <= 80; lc += 1) {
-          response = await this.getQueryResultByJobId(this.authToken, jobId)
+      for (let lc = 0; lc <= 80; lc += 1) {
+        const resp = await this.getQueryResultByJobId(this.authToken, jobId, queryId, params)
 
-          if (response.query_errors.length > 0) {
-            console.log(`Error getting query results: ${JSON.stringify(response.data.errors)}`)
-            return []
-          }
-
-          if (response.query_results.length > 0) {
-            return response.get_result_by_job_id.map(i => i.data)
-          }
-          const seconds = 5 + parseInt(lc / 3, 10)
-          await utils.sleep(seconds * 1000)
+        if (resp.execution_failed) {
+          console.log(`Error getting query results: ${JSON.stringify(resp.execution_failed)}`)
+          return []
         }
+
+        if (resp.execution_succeeded) {
+          console.log(resp.execution_succeeded)
+          return resp.execution_succeeded.data
+        }
+
+        const seconds = 5 + parseInt(lc / 3, 10)
+        await utils.sleep(seconds * 1000)
       }
     }
 
