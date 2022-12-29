@@ -219,7 +219,6 @@ class DuneAnalytics {
         }
 
         if (resp.execution_succeeded) {
-          console.log(resp.execution_succeeded)
           return resp.execution_succeeded.data
         }
 
@@ -249,6 +248,7 @@ class DuneAnalytics {
   }
 
   async getDexLiquidity(dateFrom) {
+    // category != 'CEX'
     const params = [{ key: 'date_from', type: 'text', value: dateFrom }]
     return this.getQueryResults(918643, params)
   }

@@ -2,7 +2,7 @@ const { chunk } = require('lodash')
 const { utcDate, utcStartOfDay } = require('../utils')
 const DexLiquidity = require('../db/models/DexLiquidity')
 const dune = require('../providers/dune')
-const streamingfast = require('../providers/streamingfast')
+const pancakeGraph = require('../providers/pancake-graph')
 const Platform = require('../db/models/Platform')
 const Syncer = require('./Syncer')
 
@@ -19,17 +19,17 @@ class DexLiquiditySyncer extends Syncer {
     }
 
     await this.syncFromDune(utcDate({ month: -1 }, 'yyyy-MM-dd'))
-    await this.syncFromStreamingfast(utcStartOfDay({ month: -12 }), 33)
+    await this.syncFromGraph(utcStartOfDay({ month: -12 }, true), true)
   }
 
   async syncLatest() {
     this.cron('1d', this.syncDailyFromDune)
-    this.cron('30m', this.syncDailyFromStreamingfast)
+    this.cron('30m', this.syncDailyFromGraph)
     this.cron('1d', this.syncMonthlyStats)
   }
 
-  async syncDailyFromStreamingfast() {
-    await this.syncFromStreamingfast(utcStartOfDay({}, true))
+  async syncDailyFromGraph({ dateTo }) {
+    await this.syncFromGraph(dateTo, false)
   }
 
   async syncDailyFromDune() {
@@ -40,24 +40,27 @@ class DexLiquiditySyncer extends Syncer {
     await DexLiquidity.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncFromStreamingfast(dateFrom, chunkSize = 100) {
+  async syncFromGraph(dateFrom, isHistory, chunkSize = 50) {
     const platforms = await this.getPlatforms(['binance-smart-chain'])
     const chunks = chunk(platforms.list, chunkSize)
 
     for (let i = 0; i < chunks.length; i += 1) {
       try {
-        const data = await streamingfast.getPancakeLiquidity(dateFrom, chunks[i])
+        const data = isHistory
+          ? await pancakeGraph.getLiquidityHistory(dateFrom, chunks[i])
+          : await pancakeGraph.getLiquidity(chunks[i])
+
         const records = data.map(item => {
           return {
             volume: item.volume,
-            date: item.date * 1000,
+            date: isHistory ? (item.date * 1000) : dateFrom,
             exchange: 'pancakeswap',
-            platform_id: platforms.map[item.token.id]
+            platform_id: platforms.map[item.address.toLowerCase()]
           }
         })
         await this.upsertData(records)
       } catch (e) {
-        console.log(`Error syncing chunk of pancake data: ${e}, Ignoring error !!!`)
+        console.log(`Error syncing chunk of pancake data: ${e}, Ignoring error`, (e.parent || {}).message)
       }
     }
   }
@@ -71,7 +74,7 @@ class DexLiquiditySyncer extends Syncer {
         date: item.date,
         volume: item.liquidity,
         exchange: item.exchange,
-        platform_id: platforms.map[item.platform]
+        platform_id: platforms.map[item.platform.toLowerCase()]
       }
     })
 
@@ -89,8 +92,9 @@ class DexLiquiditySyncer extends Syncer {
       }
 
       if (address) {
-        map[address] = id
-        list.push({ address })
+        const addr = address.toLowerCase()
+        map[addr] = id
+        list.push({ address: addr })
       }
     })
 
