@@ -14,11 +14,12 @@ exports.utcDate = (duration = {}, format = 'yyyy-MM-dd HH:mm:00Z') => {
     .toFormat(format)
 }
 
-exports.utcStartOfDay = (duration = {}) => {
-  return DateTime.utc()
+exports.utcStartOfDay = (duration = {}, inSeconds = false) => {
+  const dateTime = DateTime.utc()
     .plus(duration)
     .startOf('day')
-    .toSeconds()
+
+  return inSeconds ? dateTime.toSeconds() : dateTime.toFormat('yyyy-MM-dd')
 }
 
 exports.requireFile = file => {

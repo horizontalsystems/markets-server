@@ -29,7 +29,7 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncDailyFromStreamingfast() {
-    await this.syncFromStreamingfast(utcStartOfDay())
+    await this.syncFromStreamingfast(utcStartOfDay({}, true))
   }
 
   async syncDailyFromDune() {
