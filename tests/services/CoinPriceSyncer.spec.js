@@ -1,69 +1,110 @@
+const { times } = require('lodash')
 const sinon = require('sinon')
-const { DateTime } = require('luxon')
-const CoinPriceSyncer = require('../../src/services/CoinPriceSyncer')
-const CoinPrice = require('../../src/db/models/CoinPrice')
+const utils = require('../../src/utils')
+const coingecko = require('../../src/providers/coingecko')
+const Coin = require('../../src/db/models/Coin')
+const Syncer = require('../../src/services/CoinPriceSyncer')
 
-describe('CoinPriceSyncer', async () => {
-  const syncer = new CoinPriceSyncer()
+describe('CoinPriceSyncer', () => {
+
+  /** @type CoinPriceSyncer */
+  let syncer
   let clock
 
+  beforeEach(() => {
+    clock = sinon.useFakeTimers()
+    syncer = new Syncer()
+  })
+
   afterEach(() => {
-    sinon.restore()
     clock.restore()
+    sinon.restore()
   })
 
-  describe('#adjustHistoryGaps', () => {
-    describe('30m', () => {
-      beforeEach(() => {
-        clock = sinon.useFakeTimers(DateTime.fromISO('2021-01-31T01:00:00Z').ts)
-        sinon.stub(CoinPrice, 'deleteExpired')
+  describe('#syncFromCoingecko', () => {
+    beforeEach(() => {
+      sinon.stub(syncer, 'fetchFromCoingecko')
+    })
 
-        syncer.adjustHistoryGaps()
+    describe('when coins more than chunk size', () => {
+      beforeEach(() => {
+        const coins = times(401, i => ({ id: 1, coingecko_id: `long-coin-name-${i}` }))
+        sinon.stub(Coin, 'findAll').returns(coins)
       })
 
-      it('deletes expired 10-minutes data since 1d+30m', () => {
-        sinon.assert.notCalled(CoinPrice.deleteExpired)
-        clock.tick(30 * 60 * 1000)
-        sinon.assert.calledWith(CoinPrice.deleteExpired, '2021-01-30 01:00:00+0', '2021-01-30 01:30:00+0')
+      it('syncs coins by chunk', async () => {
+        sinon.assert.notCalled(syncer.fetchFromCoingecko)
+        await syncer.syncFromCoingecko()
+        sinon.assert.calledTwice(syncer.fetchFromCoingecko)
       })
     })
 
-    describe('4h', () => {
+    describe('when coins less than chunk size', () => {
       beforeEach(() => {
-        sinon.stub(CoinPrice, 'deleteExpired')
-        clock = sinon.useFakeTimers(DateTime.fromISO('2021-01-31T03:30:00Z').ts)
-
-        syncer.adjustHistoryGaps()
+        const coins = [{ coingecko_id: 'bitcoin' }]
+        sinon.stub(Coin, 'findAll').returns(coins)
       })
 
-      it('deletes expired 30-minutes data since 7d+4h', () => {
-        sinon.assert.notCalled(CoinPrice.deleteExpired)
-        clock.tick(30 * 60 * 1000)
-
-        sinon.assert.calledTwice(CoinPrice.deleteExpired)
-        sinon.assert.calledWith(CoinPrice.deleteExpired.firstCall, '2021-01-30 03:30:00+0', '2021-01-30 04:00:00+0')
-        sinon.assert.calledWith(CoinPrice.deleteExpired.secondCall, '2021-01-24 00:00:00+0', '2021-01-24 04:00:00+0')
-      })
-    })
-
-    describe('1d', () => {
-      beforeEach(() => {
-        sinon.stub(CoinPrice, 'deleteExpired')
-        clock = sinon.useFakeTimers(DateTime.fromISO('2021-01-31T23:30:00Z').ts)
-
-        syncer.adjustHistoryGaps()
-      })
-
-      it('deletes expired 4-hours data since 30d+1d', () => {
-        sinon.assert.notCalled(CoinPrice.deleteExpired)
-        clock.tick(30 * 60 * 1000)
-
-        sinon.assert.calledThrice(CoinPrice.deleteExpired)
-        sinon.assert.calledWith(CoinPrice.deleteExpired.firstCall, '2021-01-30 23:30:00+0', '2021-01-31 00:00:00+0')
-        sinon.assert.calledWith(CoinPrice.deleteExpired.secondCall, '2021-01-24 20:00:00+0', '2021-01-25 00:00:00+0')
-        sinon.assert.calledWith(CoinPrice.deleteExpired.thirdCall, '2021-01-01', '2021-01-02')
+      it('syncs coins once', async () => {
+        sinon.assert.notCalled(syncer.fetchFromCoingecko)
+        await syncer.syncFromCoingecko()
+        sinon.assert.calledOnce(syncer.fetchFromCoingecko)
       })
     })
   })
 
+  describe('#fetchFromCoingecko', () => {
+    const coins = [{ id: 1, coingecko_id: 'bitcoin' }, { id: 2, coingecko_id: 'ethereum' }]
+
+    beforeEach(() => {
+      sinon.stub(syncer, 'updateCoins')
+      sinon.stub(utils, 'sleep')
+    })
+
+    describe('when fetched coins', () => {
+      beforeEach(() => {
+        sinon.stub(coingecko, 'getMarkets').returns(coins)
+      })
+
+      it('fetches & save coins', async () => {
+        const idsMap = { bitcoin: 1, ethereum: 2 }
+        await syncer.fetchFromCoingecko(coins.map(coin => coin.coingecko_id), idsMap)
+
+        sinon.assert.calledOnceWithExactly(syncer.updateCoins, coins, idsMap)
+        sinon.assert.calledOnceWithExactly(utils.sleep, 3000)
+      })
+    })
+
+    describe('when API responded with 429', () => {
+      const reason = { response: { status: 429 } }
+      const rejected = new Promise((_, reject) => {
+        reject(reason)
+      })
+
+      beforeEach(() => {
+        sinon.stub(coingecko, 'getMarkets').returns(rejected)
+      })
+
+      it('fetches & sleeps for 1m', async () => {
+        await syncer.fetchFromCoingecko(coins.map(coin => coin.coingecko_id))
+        sinon.assert.calledOnceWithExactly(utils.sleep, 60000)
+      })
+    })
+
+    describe('when API responded with 502', () => {
+      const reason = { response: { status: 502 } }
+      const rejected = new Promise((_, reject) => {
+        reject(reason)
+      })
+
+      beforeEach(() => {
+        sinon.stub(coingecko, 'getMarkets').returns(rejected)
+      })
+
+      it('fetches & sleeps for 30sec', async () => {
+        await syncer.fetchFromCoingecko(coins.map(coin => coin.coingecko_id))
+        sinon.assert.calledOnceWithExactly(utils.sleep, 30000)
+      })
+    })
+  })
 })

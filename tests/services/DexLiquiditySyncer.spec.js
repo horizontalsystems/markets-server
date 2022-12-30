@@ -35,7 +35,7 @@ describe('DexLiquiditySyncer', async () => {
     beforeEach(() => {
       sinon.stub(syncer, 'syncHistorical')
       sinon.stub(syncer, 'syncFromDune')
-      sinon.stub(syncer, 'syncFromStreamingfast')
+      sinon.stub(syncer, 'syncFromGraph')
     })
 
     describe('when already liquidity exists', () => {
@@ -43,7 +43,7 @@ describe('DexLiquiditySyncer', async () => {
         sinon.stub(DexLiquidity, 'exists').returns(true)
         await syncer.syncHistorical()
         sinon.assert.notCalled(syncer.syncFromDune)
-        sinon.assert.notCalled(syncer.syncFromStreamingfast)
+        sinon.assert.notCalled(syncer.syncFromGraph)
       })
     })
 
