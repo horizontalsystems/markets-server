@@ -91,7 +91,7 @@ describe('TransactionSyncer', async () => {
       expect(utcDate({}, dateFormat)).to.equal('2021-01-01 09:10:00+0')
 
       sinon.assert.calledWith(syncer.syncDailyStats, {
-        dateFrom: '2021-01-01 08:30:00+0',
+        dateFrom: '2021-01-01 08:00:00+0',
         dateTo: '2021-01-01 09:00:00+0'
       })
     })

@@ -17,20 +17,20 @@ class DexVolumeSyncer extends Syncer {
       return
     }
 
-    await this.syncFromBigquery(this.syncParamsHistorical('1d', { days: -30 }), '1d')
-    await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m')
+    await this.syncFromBigquery(this.syncParamsHistorical('1y', { days: -30 }), '1d')
+    await this.syncFromBigquery(this.syncParamsHistorical('1M'), '1h')
 
-    await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'binance-smart-chain', 'day', 30)
+    await this.syncFromBitquery(this.syncParamsHistorical('1y'), 'binance-smart-chain', 'day', 30)
   }
 
   async syncLatest() {
-    this.cron('30m', this.syncDailyStatsBigquery)
+    this.cron('1h', this.syncDailyStatsBigquery)
     this.cron('1h', this.syncDailyStatsBitquery)
     this.cron('1d', this.syncMonthlyStats)
   }
 
   async syncDailyStatsBigquery(dateParams) {
-    await this.syncFromBigquery(dateParams, '30m')
+    await this.syncFromBigquery(dateParams, '1h')
   }
 
   async syncDailyStatsBitquery(dateParams) {

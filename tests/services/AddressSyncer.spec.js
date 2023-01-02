@@ -23,7 +23,7 @@ describe('AddressSyncer', async () => {
 
       syncer.syncLatest()
 
-      sinon.assert.calledWith(cronStub, '30m', syncDailyStatsSpy)
+      sinon.assert.calledWith(cronStub, '1h', syncDailyStatsSpy)
       sinon.assert.calledWith(cronStub, '1d', syncMonthlyStatsSpy)
     })
   })

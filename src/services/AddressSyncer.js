@@ -1,19 +1,14 @@
 /* eslint-disable no-param-reassign */
 const { chunk } = require('lodash')
 const { DateTime } = require('luxon')
+const { utcDate } = require('../utils')
 const dune = require('../providers/dune')
 const bigquery = require('../providers/bigquery')
 const Platform = require('../db/models/Platform')
 const Address = require('../db/models/Address')
 const Syncer = require('./Syncer')
-const { utcDate } = require('../utils')
 
 class AddressSyncer extends Syncer {
-  constructor() {
-    super()
-    this.BUSDT_ADDRESS = '0x55d398326f99059ff775485246999027b3197955'
-  }
-
   async start() {
     await this.syncHistorical()
     await this.syncLatest()
@@ -21,11 +16,11 @@ class AddressSyncer extends Syncer {
 
   async syncHistorical() {
     if (!await Address.existsForPlatforms('ethereum')) {
-      await this.syncStats('ethereum', this.syncParamsHistorical('1d'))
+      await this.syncStats('ethereum', this.syncParamsHistorical('1y'))
     }
 
     if (!await Address.existsForPlatforms('bitcoin')) {
-      await this.syncStats('bitcoin', this.syncParamsHistorical('1d'))
+      await this.syncStats('bitcoin', this.syncParamsHistorical('1y'))
     }
 
     if (!await Address.existsForPlatforms('binance-smart-chain')) {
@@ -33,14 +28,14 @@ class AddressSyncer extends Syncer {
     }
 
     // if (!await Address.existsForPlatforms('solana')) {
-    //   await this.syncStats('solana', this.syncParamsHistorical('1d'))
+    //   await this.syncStats('solana', this.syncParamsHistorical('1y'))
     // }
 
     console.log('Successfully synced historical address stats !!!')
   }
 
   async syncLatest() {
-    this.cron('30m', this.syncDailyStats)
+    this.cron('1h', this.syncDailyStats)
     this.cron('1d', this.syncMonthlyStats)
   }
 
@@ -57,7 +52,7 @@ class AddressSyncer extends Syncer {
   }
 
   async adjustPoints() {
-    await Address.deleteExpired(utcDate({ days: -4 }), utcDate({ days: -1 }), ['30m'])
+    await Address.deleteExpired(utcDate({ days: -4 }), utcDate({ days: -1 }), ['1h'])
     await Address.deleteExpired(utcDate({ days: -18 }), utcDate({ days: -14 }), ['4h', '8h'])
   }
 

@@ -40,15 +40,15 @@ describe('TransactionSyncer', async () => {
 
   describe('#syncHistorical', () => {
     let param1d
-    let param30m
+    let param1M
 
     beforeEach(() => {
       sinon.stub(bigquery, 'getTransactionsStats').returns([])
       sinon.stub(bigquery, 'getTransactionsStatsBtcBased').returns([])
       sinon.stub(bitquery, 'getTransfers').returns([])
 
-      param1d = syncer.syncParamsHistorical('1d', { days: -30 })
-      param30m = syncer.syncParamsHistorical('30m')
+      param1d = syncer.syncParamsHistorical('1y', { days: -30 })
+      param1M = syncer.syncParamsHistorical('1M')
     })
 
     describe('Ethereum and ERC20 tokens', () => {
@@ -65,9 +65,9 @@ describe('TransactionSyncer', async () => {
           ])
 
         bigquery.getTransactionsStats
-          .withArgs(param30m.dateFrom, param30m.dateTo, [{ address: usdcErc20, decimals: 18 }], '30m')
+          .withArgs(param1M.dateFrom, param1M.dateTo, [{ address: usdcErc20, decimals: 18 }], '1h')
           .returns([
-            { count: 10, volume: 100, address: usdcErc20, date: { value: param30m.dateFrom } }
+            { count: 10, volume: 100, address: usdcErc20, date: { value: param1M.dateFrom } }
           ])
       })
 
@@ -87,7 +87,7 @@ describe('TransactionSyncer', async () => {
         bitquery.getTransfers
           .withArgs(param1d.dateFrom.slice(0, 10), [{ address: usdcBep20 }], 'binance-smart-chain')
           .returns([
-            { count: 50, amount: 500, currency: { address: usdcBep20 }, date: { startOfInterval: param30m.dateFrom } }
+            { count: 50, amount: 500, currency: { address: usdcBep20 }, date: { startOfInterval: param1M.dateFrom } }
           ])
       })
 
@@ -100,20 +100,20 @@ describe('TransactionSyncer', async () => {
   })
 
   describe('#syncDailyStats', () => {
-    let param30m
+    let param1h
 
     beforeEach(async () => {
       sinon.stub(bigquery, 'getTransactionsStats').returns([])
       sinon.stub(bigquery, 'getTransactionsStatsBtcBased').returns([])
       sinon.stub(bitquery, 'getTransfers').returns([])
 
-      param30m = syncer.syncParams('30m')
+      param1h = syncer.syncParams('1h')
 
       await Platform.bulkCreate([
         { id: 3, type: 'eip20', decimals: 18, coin_id: 2, address: usdcBep20, chain_uid: 'binance-smart-chain' },
       ])
 
-      const dateFrom = param30m.dateFrom.slice(0, 10)
+      const dateFrom = param1h.dateFrom.slice(0, 10)
 
       bitquery.getTransfers
         .withArgs(dateFrom, [{ address: usdcBep20 }], 'binance-smart-chain')
@@ -138,14 +138,14 @@ describe('TransactionSyncer', async () => {
 
       it('calculates hourly volume', async () => {
         expect(await Transaction.count()).to.equal(5)
-        await syncer.syncDailyStats(param30m)
+        await syncer.syncDailyStats(param1h)
         const txs = await Transaction.findAll()
         expect(txs).to.have.length(6)
         expect(txs[5].dataValues).to.deep.equal({
           id: 6,
           count: 10,
           volume: '100',
-          date: new Date(param30m.dateFrom),
+          date: new Date(param1h.dateFrom),
           platform_id: 3
         })
       })

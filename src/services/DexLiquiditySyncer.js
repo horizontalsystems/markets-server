@@ -24,7 +24,7 @@ class DexLiquiditySyncer extends Syncer {
 
   async syncLatest() {
     this.cron('1d', this.syncDailyFromDune)
-    this.cron('30m', this.syncDailyFromGraph)
+    this.cron('1h', this.syncDailyFromGraph)
     this.cron('1d', this.syncMonthlyStats)
   }
 

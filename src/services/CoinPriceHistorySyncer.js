@@ -25,16 +25,16 @@ class CoinPriceHistorySyncer extends Syncer {
     const where = { ...(uid && { uid }) }
     const coins = await Coin.findAll({ attributes: ['id', 'uid', 'coingecko_id'], where })
 
-    const syncParams1d = this.syncParamsHistorical('1d')
-    const syncParams1h = this.syncParamsHistorical('1h')
+    const syncParams1y = this.syncParamsHistorical('1y')
+    const syncParams1M = this.syncParamsHistorical('1M')
 
     for (let i = 0; i < coins.length; i += 1) {
       const coin = coins[i]
 
       console.log(`Syncing: ${coin.uid}. Coingecko_id: ${coin.coingecko_id} (${i + 1}/${coins.length})`)
 
-      await this.syncRange(syncParams1d.dateFrom, syncParams1d.dateTo, coin)
-      await this.syncRange(syncParams1h.dateFrom, syncParams1h.dateTo, coin)
+      await this.syncRange(syncParams1y.dateFrom, syncParams1y.dateTo, coin)
+      await this.syncRange(syncParams1M.dateFrom, syncParams1M.dateTo, coin)
     }
   }
 
@@ -81,12 +81,12 @@ class CoinPriceHistorySyncer extends Syncer {
   syncParamsHistorical(period) {
     const now = DateTime.utc()
     switch (period) {
-      case '1h':
+      case '1M':
         return {
           dateFrom: now.plus({ days: -30 }),
           dateTo: now
         }
-      case '1d':
+      case '1y':
         return {
           dateFrom: now.plus({ month: -24 }),
           dateTo: now

@@ -15,28 +15,28 @@ class TransactionSyncer extends Syncer {
 
   async syncHistorical() {
     if (!await Transaction.existsForPlatforms('ethereum')) {
-      await this.syncFromBigquery(this.syncParamsHistorical('1d', { days: -30 }), '1d')
-      await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m')
+      await this.syncFromBigquery(this.syncParamsHistorical('1y', { days: -30 }), '1d')
+      await this.syncFromBigquery(this.syncParamsHistorical('1M'), '1h')
     }
 
     if (!await Transaction.existsForPlatforms('bitcoin')) {
-      await this.syncFromBigquery(this.syncParamsHistorical('1d', { days: -30 }), '1d', true)
-      await this.syncFromBigquery(this.syncParamsHistorical('30m'), '30m', true)
+      await this.syncFromBigquery(this.syncParamsHistorical('1y', { days: -30 }), '1d', true)
+      await this.syncFromBigquery(this.syncParamsHistorical('1M'), '1h', true)
     }
 
     if (!await Transaction.existsForPlatforms('binance-smart-chain')) {
-      await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'binance-smart-chain', false, 30)
+      await this.syncFromBitquery(this.syncParamsHistorical('1y'), 'binance-smart-chain', false, 30)
     }
 
     if (!await Transaction.existsForPlatforms('solana')) {
-      await this.syncFromBitquery(this.syncParamsHistorical('1d'), 'solana', false, 30)
+      await this.syncFromBitquery(this.syncParamsHistorical('1y'), 'solana', false, 30)
     }
 
     console.log('Completed syncing historical transactions stats')
   }
 
   async syncLatest() {
-    this.cron('30m', this.syncDailyStats)
+    this.cron('1h', this.syncDailyStats)
     this.cron('1d', this.syncMonthlyStats)
   }
 
@@ -45,8 +45,8 @@ class TransactionSyncer extends Syncer {
       dateFrom: utcDate({ hours: -2 }, 'yyyy-MM-dd HH:00:00Z'),
       dateTo: dateParams.dateTo
     }
-    await this.syncFromBigquery(params, '30m')
-    await this.syncFromBigquery(params, '30m', true)
+    await this.syncFromBigquery(params, '1h')
+    await this.syncFromBigquery(params, '1h', true)
     await this.syncFromBitquery(dateParams, 'binance-smart-chain', true)
     await this.syncFromBitquery(dateParams, 'solana', true, 30)
 

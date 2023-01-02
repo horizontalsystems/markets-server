@@ -76,15 +76,15 @@ describe('Syncer', async () => {
 
   describe('#syncParamsHistorical', () => {
 
-    it('returns date params for the `30m` period', () => {
-      expect(syncer.syncParamsHistorical('30m')).deep.equal({
+    it('returns date params for the `1M` period', () => {
+      expect(syncer.syncParamsHistorical('1M')).deep.equal({
         dateFrom: '2020-12-02',
         dateTo: '2021-01-01 00:00:00+0'
       })
     })
 
-    it('returns date params for the `1d` period', () => {
-      expect(syncer.syncParamsHistorical('1d')).deep.equal({
+    it('returns date params for the `1y` period', () => {
+      expect(syncer.syncParamsHistorical('1y')).deep.equal({
         dateFrom: '2020-01-01',
         dateTo: '2021-01-01'
       })
