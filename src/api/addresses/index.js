@@ -1,7 +1,7 @@
 const express = require('express')
 const controller = require('./addresses.controller')
 const { validateAddresses, validateHolders, validateAddressCoins } = require('./addresses.validator')
-const { setDateInterval } = require('../middlewares')
+const { setDexDateInterval } = require('../middlewares')
 
 const router = express.Router()
 
@@ -28,7 +28,7 @@ const router = express.Router()
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  */
-router.get('/', validateAddresses, setDateInterval, controller.index)
+router.get('/', validateAddresses, setDexDateInterval, controller.index)
 
 /**
  * @api {get} /v1/addresses/holders List coin holders

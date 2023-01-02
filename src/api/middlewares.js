@@ -2,6 +2,53 @@ const { ValidationError } = require('express-validation')
 const { utcDate } = require('../utils')
 const CurrencyRate = require('../db/models/CurrencyRate')
 
+const dateInterval = (interval, minInterval) => {
+  switch (interval) {
+    case '1d':
+      return {
+        dateInterval: minInterval,
+        dateFrom: utcDate({ days: -1 })
+      }
+    case '7d': // @deprecated use 1w instead
+    case '1w':
+      return {
+        dateInterval: '4h',
+        dateFrom: utcDate({ days: -7 })
+      }
+    case '2w':
+      return {
+        dateInterval: '8h',
+        dateFrom: utcDate({ days: -14 }, 'yyyy-MM-dd')
+      }
+    case '30d': // @deprecated use 1m instead
+    case '1m':
+      return {
+        dateInterval: '1d',
+        dateFrom: utcDate({ month: -1 }, 'yyyy-MM-dd')
+      }
+    case '3m':
+      return {
+        dateInterval: '1d',
+        dateFrom: utcDate({ month: -3 }, 'yyyy-MM-dd')
+      }
+    case '6m':
+      return {
+        dateInterval: '1d',
+        dateFrom: utcDate({ month: -6 }, 'yyyy-MM-dd')
+      }
+    case '1y':
+      return {
+        dateInterval: '1d',
+        dateFrom: utcDate({ month: -12 }, 'yyyy-MM-dd')
+      }
+    default:
+      return {
+        dateInterval: minInterval,
+        dateFrom: utcDate({ days: -1 })
+      }
+  }
+}
+
 exports.setCurrencyRate = async (req, res, next) => {
 
   const record = await CurrencyRate.getCurrencyRate(req.query.currency, req.query.timestamp)
@@ -20,43 +67,19 @@ exports.setCurrencyRate = async (req, res, next) => {
 }
 
 exports.setDateInterval = (req, res, next) => {
-  let dateInterval = '1d'
-  let dateFrom
+  const dateParams = dateInterval(req.query.interval, '30m')
 
-  switch (req.query.interval) {
-    case '1d':
-      dateInterval = '30m'
-      dateFrom = utcDate({ days: -1 })
-      break
-    case '7d': // @deprecated use 1w instead
-    case '1w':
-      dateInterval = '4h'
-      dateFrom = utcDate({ days: -7 })
-      break
-    case '2w':
-      dateInterval = '8h'
-      dateFrom = utcDate({ days: -14 }, 'yyyy-MM-dd')
-      break
-    case '30d': // @deprecated use 1m instead
-    case '1m':
-      dateFrom = utcDate({ month: -1 }, 'yyyy-MM-dd')
-      break
-    case '3m':
-      dateFrom = utcDate({ month: -3 }, 'yyyy-MM-dd')
-      break
-    case '6m':
-      dateFrom = utcDate({ month: -6 }, 'yyyy-MM-dd')
-      break
-    case '1y':
-      dateFrom = utcDate({ month: -12 }, 'yyyy-MM-dd')
-      break
-    default:
-      dateInterval = '30m'
-      dateFrom = utcDate({ days: -1 })
-  }
+  req.dateInterval = dateParams.dateInterval // eslint-disable-line
+  req.dateFrom = dateParams.dateFrom // eslint-disable-line
 
-  req.dateInterval = dateInterval // eslint-disable-line
-  req.dateFrom = dateFrom // eslint-disable-line
+  next()
+}
+
+exports.setDexDateInterval = (req, res, next) => {
+  const dateParams = dateInterval(req.query.interval, '1h')
+
+  req.dateInterval = dateParams.dateInterval // eslint-disable-line
+  req.dateFrom = dateParams.dateFrom // eslint-disable-line
 
   next()
 }

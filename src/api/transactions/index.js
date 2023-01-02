@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./transactions.controller')
-const { setDateInterval } = require('../middlewares')
+const { setDexDateInterval } = require('../middlewares')
 const {
   validateTransactions,
   validateDexVolumes,
@@ -35,7 +35,7 @@ const router = express.Router()
  *  }]
  */
 
-router.get('/', validateTransactions, setDateInterval, controller.index)
+router.get('/', validateTransactions, setDexDateInterval, controller.index)
 
 /**
  * @api {get} /v1/transactions/dex-volumes List dex-volumes
@@ -62,7 +62,7 @@ router.get('/', validateTransactions, setDateInterval, controller.index)
  *  }]
  */
 
-router.get('/dex-volumes', validateDexVolumes, setDateInterval, controller.dexVolume)
+router.get('/dex-volumes', validateDexVolumes, setDexDateInterval, controller.dexVolume)
 
 /**
  * @api {get} /v1/transactions/dex-liquidity List dex-liquidity
@@ -88,6 +88,6 @@ router.get('/dex-volumes', validateDexVolumes, setDateInterval, controller.dexVo
  *  }]
  */
 
-router.get('/dex-liquidity', validateDexLiquidity, setDateInterval, controller.dexLiquidity)
+router.get('/dex-liquidity', validateDexLiquidity, setDexDateInterval, controller.dexLiquidity)
 
 module.exports = router
