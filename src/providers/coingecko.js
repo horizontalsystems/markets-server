@@ -132,7 +132,7 @@ exports.getChainList = function getCoinList() {
     .get('/asset_platforms')
     .then(resp => resp.data)
     .catch(e => {
-      console.log(e)
+      console.error(e)
       return []
     })
 }

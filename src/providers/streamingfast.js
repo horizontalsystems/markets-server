@@ -32,7 +32,7 @@ class Streamingfast {
         return data.tokenDayDatas
       })
       .catch(e => {
-        console.log(e)
+        console.error(e)
         return []
       })
   }

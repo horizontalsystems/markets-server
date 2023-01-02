@@ -64,7 +64,7 @@ class DuneAnalytics {
 
       // console.log(`Auth-Refresh-Token: ${this.authRefreshToken}`)
     } catch (e) {
-      console.log(e.message)
+      console.error(e)
     }
   }
 
@@ -82,7 +82,7 @@ class DuneAnalytics {
         return
       }
     } catch (e) {
-      console.log(e.message)
+      console.error(e)
     }
 
     this.authToken = null
@@ -122,7 +122,7 @@ class DuneAnalytics {
         return data.data.execute_query_v2.job_id
       })
       .catch(e => {
-        console.log(e)
+        console.error(e)
         return null
       })
   }
@@ -184,7 +184,7 @@ class DuneAnalytics {
         }
       })
       .catch(e => {
-        console.log(e)
+        console.error(e)
         return { query_results: [] }
       })
 

@@ -11,7 +11,7 @@ class Web3SolanaProvider {
       return this.web3.getParsedAccountInfo(publicKey)
         .then(({ value }) => this.getParsedInfo(value).decimals)
     } catch (e) {
-      console.log(e)
+      console.error(e)
       return null
     }
   }

@@ -27,7 +27,7 @@ exports.getTokenSupply = address => {
     .then(res => res.data)
     .then(res => (res || {}).result)
     .catch(e => {
-      console.log(e)
+      console.error(e)
       return 0
     })
 }

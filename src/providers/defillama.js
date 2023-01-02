@@ -43,7 +43,7 @@ exports.getPrices = coins => {
   return coinsApi.get(`/prices/current/${addresses}`)
     .then(resp => (resp.data || {}).coins || {})
     .catch(e => {
-      console.log(e)
+      console.error(e)
       return []
     })
 }
@@ -60,7 +60,7 @@ exports.getStablecoins = () => {
       return normalize(data.peggedAssets)
     })
     .catch(e => {
-      console.log(e)
+      console.error(e)
       return {}
     })
 }

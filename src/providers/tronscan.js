@@ -17,7 +17,7 @@ exports.getTokenInfo = address => {
     .then(res => (res.data || {}).trc20_tokens || [])
     .then(tokens => tokens[0])
     .catch(e => {
-      console.log(e)
+      console.error(e)
       return null
     })
 }

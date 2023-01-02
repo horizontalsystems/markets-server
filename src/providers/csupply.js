@@ -5,7 +5,7 @@ function fetchUsdt() {
   return axios.get('https://app.tether.to/transparency.json')
     .then(({ data }) => normalizeUsdt(data))
     .catch(e => {
-      console.log(e)
+      console.error(e)
       return {}
     })
 }
@@ -14,7 +14,7 @@ function fetchUsdc() {
   return axios.get('https://api.circle.com/v1/stablecoins')
     .then(({ data }) => normalizeUsdc(data))
     .catch(e => {
-      console.log(e)
+      console.error(e)
       return {}
     })
 }

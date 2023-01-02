@@ -65,7 +65,7 @@ class Bitquery {
         }
       })
       .catch(e => {
-        console.log(e)
+        console.error(e)
         return {
           balances: [],
           blockNumber: 0
@@ -91,7 +91,7 @@ class Bitquery {
         return get(data, 'res.blocks[0].count') || 0
       })
       .catch(e => {
-        console.log(e)
+        console.error(e)
         return 0
       })
   }
@@ -213,7 +213,7 @@ class Bitquery {
         return data.res.dexTrades
       })
       .catch(e => {
-        console.log(e)
+        console.error(e)
         return []
       })
   }
@@ -229,7 +229,7 @@ class Bitquery {
         return data.res.transfers
       })
       .catch(e => {
-        console.log(e)
+        console.error(e)
         return []
       })
   }
