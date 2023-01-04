@@ -248,9 +248,8 @@ class DuneAnalytics {
   }
 
   async getDexLiquidity(dateFrom) {
-    // category != 'CEX'
     const params = [{ key: 'date_from', type: 'text', value: dateFrom }]
-    return this.getQueryResults(918643, params)
+    return this.getQueryResults(1840822, params)
   }
 
 }

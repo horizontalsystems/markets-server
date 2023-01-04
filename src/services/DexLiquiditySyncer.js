@@ -3,6 +3,7 @@ const { utcDate, utcStartOfDay } = require('../utils')
 const DexLiquidity = require('../db/models/DexLiquidity')
 const dune = require('../providers/dune')
 const pancakeGraph = require('../providers/pancake-graph')
+const uniswapGraph = require('../providers/uniswap-graph')
 const Platform = require('../db/models/Platform')
 const Syncer = require('./Syncer')
 
@@ -18,8 +19,12 @@ class DexLiquiditySyncer extends Syncer {
       return
     }
 
+    const dateFrom = utcStartOfDay({ month: -12 }, true)
+
     await this.syncFromDune(utcDate({ month: -1 }, 'yyyy-MM-dd'))
-    await this.syncFromGraph(utcStartOfDay({ month: -12 }, true), true)
+    await this.syncUniswap(dateFrom, true, true)
+    await this.syncUniswap(dateFrom, false, true)
+    await this.syncPancakeswap(dateFrom, true)
   }
 
   async syncLatest() {
@@ -29,7 +34,9 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncDailyFromGraph({ dateTo }) {
-    await this.syncFromGraph(dateTo, false)
+    await this.syncPancakeswap(dateTo, false)
+    await this.syncUniswap(dateTo, true, false)
+    await this.syncUniswap(dateTo, false, false)
   }
 
   async syncDailyFromDune() {
@@ -40,7 +47,7 @@ class DexLiquiditySyncer extends Syncer {
     await DexLiquidity.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncFromGraph(dateFrom, isHistory, chunkSize = 50) {
+  async syncPancakeswap(dateFrom, isHistory, chunkSize = 50) {
     const platforms = await this.getPlatforms(['binance-smart-chain'])
     const chunks = chunk(platforms.list, chunkSize)
 
@@ -55,6 +62,31 @@ class DexLiquiditySyncer extends Syncer {
             volume: item.volume,
             date: isHistory ? (item.date * 1000) : dateFrom,
             exchange: 'pancakeswap',
+            platform_id: platforms.map[item.address.toLowerCase()]
+          }
+        })
+        await this.upsertData(records)
+      } catch (e) {
+        console.log(`Error syncing chunk of pancake data: ${e}, Ignoring error`, (e.parent || {}).message)
+      }
+    }
+  }
+
+  async syncUniswap(dateFrom, isV3, isHistory, chunkSize = 50) {
+    const platforms = await this.getPlatforms(['ethereum'])
+    const chunks = chunk(platforms.list, chunkSize)
+
+    for (let i = 0; i < chunks.length; i += 1) {
+      try {
+        const data = isHistory
+          ? await uniswapGraph.getLiquidityHistory(dateFrom, chunks[i], isV3)
+          : await uniswapGraph.getLiquidity(chunks[i], isV3)
+
+        const records = data.map(item => {
+          return {
+            volume: item.volume,
+            date: isHistory ? (item.date * 1000) : dateFrom,
+            exchange: isV3 ? 'uniswap-v3' : 'uniswap-v2',
             platform_id: platforms.map[item.address.toLowerCase()]
           }
         })
