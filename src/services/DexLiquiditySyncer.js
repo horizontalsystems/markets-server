@@ -28,22 +28,22 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('1d', this.syncDailyFromDune)
-    this.cron('1h', this.syncDailyFromGraph)
-    this.cron('1d', this.syncMonthlyStats)
+    this.cron('1h', this.syncHourlyStats)
+    this.cron('1d', this.syncDailyStats)
   }
 
-  async syncDailyFromGraph({ dateTo }) {
+  async syncHourlyStats({ dateTo }) {
     await this.syncPancakeswap(dateTo, false)
     await this.syncUniswap(dateTo, true, false)
     await this.syncUniswap(dateTo, false, false)
   }
 
-  async syncDailyFromDune() {
+  async syncDailyStats(dateParams) {
     await this.syncFromDune(utcStartOfDay())
+    await this.adjustData(dateParams)
   }
 
-  async syncMonthlyStats({ dateFrom, dateTo }) {
+  async adjustData({ dateFrom, dateTo }) {
     await DexLiquidity.deleteExpired(dateFrom, dateTo)
   }
 

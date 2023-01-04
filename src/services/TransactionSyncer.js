@@ -36,11 +36,11 @@ class TransactionSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('1h', this.syncDailyStats)
-    this.cron('1d', this.syncMonthlyStats)
+    this.cron('1h', this.syncHourlyStats)
+    this.cron('1d', this.syncDailyStats)
   }
 
-  async syncDailyStats(dateParams) {
+  async syncHourlyStats(dateParams) {
     const params = {
       dateFrom: utcDate({ hours: -2 }, 'yyyy-MM-dd HH:00:00Z'),
       dateTo: dateParams.dateTo
@@ -53,7 +53,11 @@ class TransactionSyncer extends Syncer {
     console.log('Completed syncing daily transactions stats')
   }
 
-  async syncMonthlyStats({ dateFrom, dateTo }) {
+  async syncDailyStats({ dateFrom, dateTo }) {
+    await this.adjustData({ dateFrom, dateTo })
+  }
+
+  async adjustData({ dateFrom, dateTo }) {
     await Transaction.updatePoints(dateFrom, dateTo)
     await Transaction.deleteExpired(dateFrom, dateTo)
   }

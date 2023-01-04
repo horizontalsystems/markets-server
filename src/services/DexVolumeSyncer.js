@@ -24,21 +24,23 @@ class DexVolumeSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('1h', this.syncDailyStatsBigquery)
-    this.cron('1h', this.syncDailyStatsBitquery)
-    this.cron('1d', this.syncMonthlyStats)
+    this.cron('1h', this.syncHourlyStats)
+    this.cron('1d', this.syncDailyStats)
   }
 
-  async syncDailyStatsBigquery(dateParams) {
-    await this.syncFromBigquery(dateParams, '1h')
+  async syncHourlyStats(dateParams) {
+    await Promise.all([
+      this.syncFromBigquery(dateParams, '1h'),
+      this.syncFromBitquery(dateParams, 'binance-smart-chain', 'hour', 100)
+    ])
   }
 
-  async syncDailyStatsBitquery(dateParams) {
-    await this.syncFromBitquery(dateParams, 'binance-smart-chain', 'hour', 100)
+  async syncDailyStats({ dateFrom, dateTo }) {
+    await this.adjustData({ dateFrom, dateTo })
   }
 
-  async syncMonthlyStats({ dateFrom, dateTo }) {
-    await DexVolume.deleteExpired(dateFrom, dateTo)
+  adjustData({ dateFrom, dateTo }) {
+    return DexVolume.deleteExpired(dateFrom, dateTo)
   }
 
   async syncFromBigquery({ dateFrom, dateTo }, datePeriod) {

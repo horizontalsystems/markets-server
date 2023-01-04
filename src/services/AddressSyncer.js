@@ -35,11 +35,11 @@ class AddressSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('1h', this.syncDailyStats)
-    this.cron('1d', this.syncMonthlyStats)
+    this.cron('1h', this.syncHourlyStats)
+    this.cron('1d', this.syncDailyStats)
   }
 
-  async syncDailyStats() {
+  async syncHourlyStats() {
     const dateFrom = utcDate({}, 'yyyy-MM-dd')
 
     await this.syncStats('ethereum', { dateFrom })
@@ -47,11 +47,11 @@ class AddressSyncer extends Syncer {
     await this.syncStats('binance-smart-chain', { dateFrom })
   }
 
-  async syncMonthlyStats() {
-    await this.adjustPoints()
+  async syncDailyStats() {
+    await this.adjustData()
   }
 
-  async adjustPoints() {
+  async adjustData() {
     await Address.deleteExpired(utcDate({ days: -4 }), utcDate({ days: -1 }), ['1h'])
     await Address.deleteExpired(utcDate({ days: -18 }), utcDate({ days: -14 }), ['4h', '8h'])
   }
