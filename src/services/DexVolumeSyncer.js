@@ -1,4 +1,5 @@
 const { chunk } = require('lodash')
+const { utcDate } = require('../utils')
 const { bitquery } = require('../providers/bitquery')
 const bigquery = require('../providers/bigquery')
 const DexVolume = require('../db/models/DexVolume')
@@ -29,8 +30,13 @@ class DexVolumeSyncer extends Syncer {
   }
 
   async syncHourlyStats(dateParams) {
+    const params = {
+      dateFrom: utcDate({ hours: -2 }, 'yyyy-MM-dd HH:00:00Z'),
+      dateTo: dateParams.dateTo
+    }
+
     await Promise.all([
-      this.syncFromBigquery(dateParams, '1h'),
+      this.syncFromBigquery(params, '1h'),
       this.syncFromBitquery(dateParams, 'binance-smart-chain', 'hour', 100)
     ])
   }
