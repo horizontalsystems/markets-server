@@ -14,6 +14,7 @@ const cronos = new Web3EvmProvider('https://evm.cronos.org', erc20Abi)
 const fantom = new Web3EvmProvider('https://rpc.ankr.com/fantom', erc20Abi)
 const solana = new Web3SolanaProvider('https://rpc.ankr.com/solana') // SPL
 const celo = new Web3EvmProvider('https://rpc.ankr.com/celo', erc20Abi)
+const gnosis = new Web3EvmProvider('https://rpc.ankr.com/gnosis', erc20Abi)
 
 const getProvider = chainOrType => {
   switch (chainOrType) {
@@ -41,6 +42,9 @@ const getProvider = chainOrType => {
       return fantom
     case 'celo':
       return celo
+    case 'gnosis':
+    case 'xdai':
+      return gnosis
     case 'solana':
       return solana
     default:

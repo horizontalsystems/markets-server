@@ -94,10 +94,10 @@ class SetupCoins {
         console.log(`Fetched decimals (${decimals}) for ${platform.address} ${i + 1}`)
 
         if (decimals > 0) {
-          await platform.update({ decimals, type: 'spl' })
+          await platform.update({ decimals })
         }
       } catch ({ message }) {
-        console.log(`Failed to fetch decimals for ${platform.address} ${i + 1}`)
+        console.log(`Failed to fetch decimals for ${platform.address}; i: ${i + 1}`)
         console.log(message)
 
         if (message.match(/^Returned values aren't valid/) || message.match(/^Provided address [\s\S]+ is invalid/)) {
