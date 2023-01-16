@@ -5,26 +5,30 @@ const sequelize = require('../src/db/sequelize')
 const CoinPriceSyncer = require('../src/services/CoinPriceSyncer')
 
 const program = new Command()
-  .option('-c --coins <coins>', 'sync market data for given coin')
-  .option('-h --history <history>', 'sync historical price for given coin')
-  .option('-d --defillama [coins]', 'sync coin prices from defillama')
+  .option('-c --coins <coins>', 'sync given coins')
+  .option('-d --defillama', 'change sync source to defillama')
+  .option('-h --history', 'sync historical data')
+  .option('-f --force', 'force sync data')
   .parse(process.argv)
 
-async function start({ coins, history, defillama }) {
+async function start({ coins, history, defillama, force }) {
   await sequelize.sync()
   const syncer = new CoinPriceSyncer()
+  const uids = coins ? coins.split(',') : null
 
-  if (defillama === true) {
-    await syncer.sync(true)
-  } else if (defillama) {
-    await syncer.syncFromDefillama(defillama.split(','))
-  } else if (coins) {
-    await syncer.syncFromCoingecko(coins.split(','))
-  } else if (history) {
-    await syncer.syncHistory(history.split(','))
-  } else {
-    await syncer.start()
+  if (history) {
+    return syncer.syncHistory(uids)
   }
+
+  if (defillama) {
+    return force
+      ? syncer.syncFromDefillama(uids)
+      : syncer.sync(defillama)
+  }
+
+  return force
+    ? syncer.syncFromCoingecko(uids)
+    : syncer.start()
 }
 
 module.exports = start(program.opts())
