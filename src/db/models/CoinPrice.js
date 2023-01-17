@@ -74,7 +74,7 @@ class CoinPrice extends SequelizeModel {
           ${this.truncateDateWindow('date', interval)} AS trunc
         FROM coin_prices p, coins c
         WHERE p.coin_id = c.id
-          AND EXTRACT(epoch from p.date) >= :dateFrom
+          ${dateFrom ? 'AND EXTRACT(epoch from p.date) >= :dateFrom' : ''}
           AND c.uid = :uid
       ) cp
       ORDER BY cp.trunc, cp.date DESC

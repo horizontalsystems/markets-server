@@ -33,6 +33,8 @@ class SequelizeModel extends Sequelize.Model {
           return `DATE_TRUNC('hour', (${field} - timestamptz 'epoch') / 8) * 8 + timestamptz 'epoch'`
         case '1d':
           return `DATE_TRUNC('day', ${field})`
+        case '1w':
+          return `DATE_TRUNC('week', ${field})`
         default:
           return field
       }
