@@ -33,7 +33,7 @@ class GlobalMarketsSyncer extends Syncer {
   }
 
   async syncLatestMarkets(dateTo, retry = 0) {
-    if (retry >= 3) {
+    if (retry >= 5) {
       return
     }
 
@@ -70,7 +70,7 @@ class GlobalMarketsSyncer extends Syncer {
     } catch (e) {
       if (e.response) {
         console.log(`Retrying due to error ${e.message}; Retry count ${retry + 1}`)
-        await utils.sleep(1000)
+        await utils.sleep(10000)
         await this.syncLatestMarkets(dateTo, retry + 1)
       } else {
         console.error(e)
