@@ -17,13 +17,15 @@ class CoinPriceHistorySyncer extends Syncer {
     return CoinPrice.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncHistory(uid) {
-    if (await CoinPrice.exists() && !uid) {
-      return
-    }
-
-    const where = { ...(uid && { uid }) }
-    const coins = await Coin.findAll({ attributes: ['id', 'uid', 'coingecko_id'], where })
+  async syncHistory(uid, all) {
+    const coins = await Coin.query(`
+      SELECT c.id, c.uid, c.coingecko_id, EXTRACT (epoch FROM p.date)::int as timestamp
+      FROM coins c
+      LEFT JOIN coin_prices p ON c.id = p.coin_id AND p.date = (
+        SELECT MIN(date) FROM coin_prices pp WHERE pp.coin_id = c.id
+      )
+      WHERE c.coingecko_id is NOT NULL ${uid ? ' AND c.uid IN (:uid)' : ''}
+    `, { uid })
 
     const syncParams1y = this.syncParamsHistorical('1y')
     const syncParams1M = this.syncParamsHistorical('1M')
@@ -33,16 +35,24 @@ class CoinPriceHistorySyncer extends Syncer {
 
       console.log(`Syncing: ${coin.uid}. Coingecko_id: ${coin.coingecko_id} (${i + 1}/${coins.length})`)
 
-      await this.syncRange(syncParams1y.dateFrom, syncParams1y.dateTo, coin)
-      await this.syncRange(syncParams1M.dateFrom, syncParams1M.dateTo, coin)
+      if (all) {
+        await this.syncRange(DateTime.fromISO('2010-01-01'), DateTime.fromSeconds(coin.timestamp || syncParams1y.dateTo.toSeconds()), coin)
+      } else {
+        await this.syncRange(syncParams1y.dateFrom, syncParams1y.dateTo, coin)
+        await this.syncRange(syncParams1M.dateFrom, syncParams1M.dateTo, coin)
+      }
     }
   }
 
-  async syncRange(dateFrom, dateTo, coin) {
+  async syncRange(dateFrom, dateTo, coin, retry = 0) {
+    if (retry >= 10) {
+      return
+    }
+
     try {
       const data = await coingecko.getMarketsChart(coin.coingecko_id, dateFrom.toSeconds(), dateTo.toSeconds())
       await this.storeMarketData(data.prices, data.total_volumes, coin.id)
-      await utils.sleep(1100)
+      await utils.sleep(4000)
     } catch ({ message, response = {} }) {
       if (message) {
         console.error(`Error fetching prices chart ${message}`)
@@ -51,11 +61,13 @@ class CoinPriceHistorySyncer extends Syncer {
       if (response.status === 429) {
         console.error(`Sleeping 60s (coin-price-syncer); Status ${response.status}`)
         await utils.sleep(60000)
+        await this.syncRange(dateFrom, dateTo, coin, retry + 1)
       }
 
       if (response.status >= 502 && response.status <= 504) {
         console.error(`Sleeping 30s (coin-price-syncer); Status ${response.status}`)
         await utils.sleep(30000)
+        await this.syncRange(dateFrom, dateTo, coin, retry + 1)
       }
     }
   }
