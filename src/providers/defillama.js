@@ -30,6 +30,19 @@ exports.getProtocols = () => {
   })
 }
 
+exports.getChains = () => {
+  console.log('Fetching DeFi chains')
+
+  return api.get('/chains')
+    .then(({ data = [] }) => {
+      return data
+    })
+    .catch(e => {
+      console.log(e)
+      return []
+    })
+}
+
 exports.getProtocol = id => {
   console.log(`Fetching defi protocol info ${id}`)
 
