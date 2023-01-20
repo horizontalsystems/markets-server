@@ -219,7 +219,9 @@ class DuneAnalytics {
         }
 
         if (resp.execution_succeeded) {
-          return resp.execution_succeeded.data
+          const { data } = resp.execution_succeeded
+          console.log('Fetched data from Dune', data.length)
+          return data
         }
 
         const seconds = 5 + parseInt(lc / 3, 10)
