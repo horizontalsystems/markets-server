@@ -188,6 +188,10 @@ exports.serializeTwitter = coin => ({
   twitter: nullOrString(coin.twitter)
 })
 
+exports.serializeFirstCoinPrice = (price = {}) => ({
+  timestamp: price.timestamp
+})
+
 exports.serializeMovers = (data, currencyRate) => {
   const mapper = items => items.map(item => ({
     uid: item.uid,

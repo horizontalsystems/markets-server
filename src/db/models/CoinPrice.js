@@ -98,6 +98,17 @@ class CoinPrice extends SequelizeModel {
     return result
   }
 
+  static async getFirstCoinPrice(uid) {
+    const [price] = await CoinPrice.query(`
+      SELECT EXTRACT(epoch FROM p.date)::int AS timestamp
+      FROM coin_prices p, coins c
+      WHERE c.uid = :uid AND p.coin_id = c.id
+      ORDER BY date ASC
+      limit 1`, { uid })
+
+    return price
+  }
+
   static deleteExpired(dateFrom, dateTo) {
     return CoinPrice.query('DELETE FROM coin_prices WHERE date > :dateFrom AND date < :dateTo', {
       dateFrom,

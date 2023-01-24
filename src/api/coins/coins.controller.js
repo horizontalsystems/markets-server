@@ -1,6 +1,6 @@
 const Coin = require('../../db/models/Coin')
 const Platform = require('../../db/models/Platform')
-const CoinMarket = require('../../db/models/CoinPrice')
+const CoinPrice = require('../../db/models/CoinPrice')
 const serializer = require('./coins.serializer')
 
 exports.index = async ({ query, currencyRate }, res) => {
@@ -92,12 +92,17 @@ exports.twitter = async ({ params }, res) => {
 
 exports.price_chart = async ({ params, query, currencyRate }, res) => {
   const interval = query.from_timestamp ? query.interval : '1w'
-  const pricesChart = await CoinMarket.getPriceChart(params.uid, interval, parseInt(query.from_timestamp, 10))
+  const pricesChart = await CoinPrice.getPriceChart(params.uid, interval, parseInt(query.from_timestamp, 10))
   res.send(serializer.serializePriceChart(pricesChart, currencyRate))
 }
 
+exports.price_chart_start = async ({ params }, res) => {
+  const coinPrice = await CoinPrice.getFirstCoinPrice(params.uid)
+  res.send(serializer.serializeFirstCoinPrice(coinPrice))
+}
+
 exports.price_history = async ({ params, query, currencyRate }, res) => {
-  const price = await CoinMarket.getHistoricalPrice(params.uid, parseInt(query.timestamp, 10))
+  const price = await CoinPrice.getHistoricalPrice(params.uid, parseInt(query.timestamp, 10))
   if (price) {
     res.send(serializer.serializePriceHistory(price, currencyRate))
   } else {

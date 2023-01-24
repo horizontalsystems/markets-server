@@ -188,6 +188,25 @@ router.get('/:uid/twitter', controller.twitter)
 router.get('/:uid/price_chart', validateChart, setCurrencyRate, controller.price_chart)
 
 /**
+ * @api {get} /v1/coins/:uid/price_chart_start Get the date of the first point on the coin's price chart.
+ * @apiDescription Get the date of the first point on the coin's price chart.
+ * @apiVersion 1.0.0
+ * @apiGroup Coin
+ *
+ * @apiParam    {String}                   uid             Coin's uid
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "timestamp": 1641945600
+ *   }
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ * @apiError (Not Found 404)    NotFound          Coin does not exist
+ */
+router.get('/:uid/price_chart_start', controller.price_chart_start)
+
+/**
  * @api {get} /v1/coins/:uid/price_history Get coin historical price
  * @apiDescription Get coin's historical volume chart
  * @apiVersion 1.0.0
