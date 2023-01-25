@@ -39,7 +39,7 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncDailyStats(dateParams) {
-    await this.syncFromDune(utcStartOfDay())
+    await this.syncFromDune(utcStartOfDay({ days: -1 }))
     await this.adjustData(dateParams)
   }
 
