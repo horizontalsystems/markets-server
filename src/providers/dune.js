@@ -244,6 +244,20 @@ class DuneAnalytics {
     return this.getQueryResults(756108, params)
   }
 
+  async getAddressStatsFor(tokens, dateFrom) {
+    const params = [{
+      key: 'date_from',
+      type: 'text',
+      value: dateFrom
+    }, {
+      key: 'tokens',
+      type: 'text',
+      value: tokens.map(t => t.address).join(',')
+    }]
+
+    return this.getQueryResults(1922534, params)
+  }
+
   async getTopNftCollections(limit = 100) {
     const params = [{ key: 'top', type: 'number', value: `${limit}` }]
     return this.getQueryResults(785004, params)

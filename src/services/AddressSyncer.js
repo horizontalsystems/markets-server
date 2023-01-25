@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 const { chunk } = require('lodash')
-const { DateTime } = require('luxon')
 const { utcDate } = require('../utils')
 const dune = require('../providers/dune')
 const bigquery = require('../providers/bigquery')
@@ -24,7 +23,7 @@ class AddressSyncer extends Syncer {
     }
 
     if (!await Address.existsForPlatforms('binance-smart-chain')) {
-      await this.syncStats('binance-smart-chain', { dateFrom: utcDate({ days: -15 }, 'yyyy-MM-dd') })
+      await this.syncStats('binance-smart-chain', { dateFrom: utcDate({ month: -6 }, 'yyyy-MM-dd') })
     }
 
     // if (!await Address.existsForPlatforms('solana')) {
@@ -69,7 +68,7 @@ class AddressSyncer extends Syncer {
         addressStats = await bigquery.getAddressStatsBtcBased(dateFrom)
       } else if (chain === 'binance-smart-chain') {
         platforms = await this.getPlatforms(chain, true, false)
-        addressStats = await dune.getAddressStats(dateFrom)
+        addressStats = await dune.getAddressStatsFor(platforms.list, dateFrom)
       }
 
       const chunks = chunk(addressStats, 200000)
@@ -109,15 +108,15 @@ class AddressSyncer extends Syncer {
 
   async mapAddressStats(addressStats, platforms) {
     const addressesMap = addressStats.reduce((map, i) => {
-      const isoBlockDate = i.block_date.value ? i.block_date.value : i.block_date
-      const date = DateTime.fromISO(isoBlockDate, { zone: 'utc' }).toFormat('yyyy-MM-dd');
+      const dateString = i.block_date.value || i.block_date
+      const dayOnly = dateString.slice(0, 10)
 
       map[i.platform] = map[i.platform] || {}
-      map[i.platform][date] = map[i.platform][date] || {}
-      map[i.platform][date][i.period] = map[i.platform][date][i.period] || []
+      map[i.platform][dayOnly] = map[i.platform][dayOnly] || {}
+      map[i.platform][dayOnly][i.period] = map[i.platform][dayOnly][i.period] || []
 
-      map[i.platform][date][i.period].push({
-        date: isoBlockDate,
+      map[i.platform][dayOnly][i.period].push({
+        date: dateString,
         count: i.address_count
       })
 
