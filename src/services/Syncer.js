@@ -64,6 +64,11 @@ class Syncer {
           dateFrom: utcDate({ days: -30 }, 'yyyy-MM-dd'),
           dateTo: utcDate(toDuration)
         }
+      case '6M':
+        return {
+          dateFrom: utcDate({ month: -6 }, 'yyyy-MM-dd'),
+          dateTo: utcDate(toDuration)
+        }
       case '1y':
         return {
           dateFrom: utcDate({ month: -12 }, 'yyyy-MM-dd'),

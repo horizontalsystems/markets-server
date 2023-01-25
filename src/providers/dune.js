@@ -239,12 +239,7 @@ class DuneAnalytics {
     }
   }
 
-  async getAddressStats(dateFrom) {
-    const params = [{ key: 'date_from', type: 'text', value: dateFrom }]
-    return this.getQueryResults(756108, params)
-  }
-
-  async getAddressStatsFor(tokens, dateFrom) {
+  async getAddressStats(queryId, tokens, dateFrom) {
     const params = [{
       key: 'date_from',
       type: 'text',
@@ -252,7 +247,7 @@ class DuneAnalytics {
     }, {
       key: 'tokens',
       type: 'text',
-      value: tokens.map(t => t.address).join(',')
+      value: tokens.map(token => token.address).join(',')
     }]
 
     return this.getQueryResults(1922534, params)
