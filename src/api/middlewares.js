@@ -9,7 +9,6 @@ const dateInterval = (interval, minInterval) => {
         dateInterval: minInterval,
         dateFrom: utcDate({ days: -1 })
       }
-    case '7d': // @deprecated use 1w instead
     case '1w':
       return {
         dateInterval: '4h',
@@ -20,7 +19,6 @@ const dateInterval = (interval, minInterval) => {
         dateInterval: '8h',
         dateFrom: utcDate({ days: -14 }, 'yyyy-MM-dd')
       }
-    case '30d': // @deprecated use 1m instead
     case '1m':
       return {
         dateInterval: '1d',
