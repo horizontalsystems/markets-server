@@ -91,7 +91,11 @@ exports.twitter = async ({ params }, res) => {
 }
 
 exports.price_chart = async ({ params, query, currencyRate }, res) => {
-  const interval = query.from_timestamp ? query.interval : '1w'
+  let { interval } = query.interval
+  if (!interval && !query.from_timestamp) {
+    interval = '1w'
+  }
+
   const pricesChart = await CoinPrice.getPriceChart(params.uid, interval, parseInt(query.from_timestamp, 10))
   res.send(serializer.serializePriceChart(pricesChart, currencyRate))
 }
