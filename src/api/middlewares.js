@@ -39,6 +39,16 @@ const dateInterval = (interval, minInterval) => {
         dateInterval: '1d',
         dateFrom: utcDate({ month: -12 }, 'yyyy-MM-dd')
       }
+    case '2y':
+      return {
+        dateInterval: '1d',
+        dateFrom: utcDate({ month: -24 }, 'yyyy-MM-dd')
+      }
+    case 'all':
+      return {
+        dateInterval: '1d',
+        dateFrom: utcDate({ years: -10 }, 'yyyy-MM-dd')
+      }
     default:
       return {
         dateInterval: minInterval,

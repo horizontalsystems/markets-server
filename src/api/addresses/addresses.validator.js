@@ -21,7 +21,7 @@ module.exports = {
     query: Joi.object({
       coin_uid: Joi.string().required(),
       platform: Joi.string().valid('bitcoin', 'ethereum', 'binance-smart-chain', 'solana'),
-      interval: Joi.string().valid('1d', '1w', '2w', '1m', '3m', '6m', '1y'),
+      interval: Joi.string().valid('1d', '1w', '2w', '1m', '3m', '6m', '1y', '2y', 'all'),
       currency: Joi.string()
     })
   }, options),
