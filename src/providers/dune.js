@@ -250,7 +250,7 @@ class DuneAnalytics {
       value: tokens.map(token => token.address).join(',')
     }]
 
-    return this.getQueryResults(1922534, params)
+    return this.getQueryResults(queryId, params)
   }
 
   async getTopNftCollections(limit = 100) {
