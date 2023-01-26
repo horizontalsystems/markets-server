@@ -91,7 +91,7 @@ exports.twitter = async ({ params }, res) => {
 }
 
 exports.price_chart = async ({ params, query, currencyRate }, res) => {
-  let { interval } = query.interval
+  let { interval } = query
   if (!interval && !query.from_timestamp) {
     interval = '1w'
   }
