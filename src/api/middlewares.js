@@ -1,5 +1,5 @@
 const { ValidationError } = require('express-validation')
-const { utcDate } = require('../utils')
+const { utcDate, utcStartOfDay } = require('../utils')
 const CurrencyRate = require('../db/models/CurrencyRate')
 
 const dateInterval = (interval, minInterval) => {
@@ -7,52 +7,62 @@ const dateInterval = (interval, minInterval) => {
     case '1d':
       return {
         dateInterval: minInterval,
-        dateFrom: utcDate({ days: -1 })
+        dateFrom: utcDate({ days: -1 }),
+        dateTo: utcDate({})
       }
     case '1w':
       return {
         dateInterval: '4h',
-        dateFrom: utcDate({ days: -7 })
+        dateFrom: utcDate({ days: -7 }),
+        dateTo: utcStartOfDay({})
       }
     case '2w':
       return {
         dateInterval: '8h',
-        dateFrom: utcDate({ days: -14 }, 'yyyy-MM-dd')
+        dateFrom: utcDate({ days: -14 }, 'yyyy-MM-dd'),
+        dateTo: utcStartOfDay({})
       }
     case '1m':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ month: -1 }, 'yyyy-MM-dd')
+        dateFrom: utcDate({ month: -1 }, 'yyyy-MM-dd'),
+        dateTo: utcStartOfDay({})
       }
     case '3m':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ month: -3 }, 'yyyy-MM-dd')
+        dateFrom: utcDate({ month: -3 }, 'yyyy-MM-dd'),
+        dateTo: utcStartOfDay({})
       }
     case '6m':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ month: -6 }, 'yyyy-MM-dd')
+        dateFrom: utcDate({ month: -6 }, 'yyyy-MM-dd'),
+        dateTo: utcStartOfDay({})
       }
     case '1y':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ month: -12 }, 'yyyy-MM-dd')
+        dateFrom: utcDate({ month: -12 }, 'yyyy-MM-dd'),
+        dateTo: utcStartOfDay({})
       }
     case '2y':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ month: -24 }, 'yyyy-MM-dd')
+        dateFrom: utcDate({ month: -24 }, 'yyyy-MM-dd'),
+        dateTo: utcStartOfDay({})
       }
     case 'all':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ years: -10 }, 'yyyy-MM-dd')
+        dateFrom: utcDate({ years: -10 }, 'yyyy-MM-dd'),
+        dateTo: utcStartOfDay({})
       }
     default:
       return {
         dateInterval: minInterval,
-        dateFrom: utcDate({ days: -1 })
+        dateFrom: utcDate({ days: -1 }),
+        dateTo: utcDate({})
       }
   }
 }
@@ -88,6 +98,7 @@ exports.setDexDateInterval = (req, res, next) => {
 
   req.dateInterval = dateParams.dateInterval // eslint-disable-line
   req.dateFrom = dateParams.dateFrom // eslint-disable-line
+  req.dateTo = dateParams.dateTo // eslint-disable-line
 
   next()
 }

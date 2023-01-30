@@ -5,9 +5,9 @@ const CoinHolder = require('../../db/models/CoinHolder')
 const serializer = require('./addresses.serializer')
 const Platforms = require('../../db/models/Platform')
 
-exports.index = async ({ query, dateInterval, dateFrom }, res, next) => {
+exports.index = async ({ query, dateInterval, dateFrom, dateTo }, res, next) => {
   try {
-    const addresses = await Address.getByCoinUid(query.coin_uid, query.platform, dateInterval, dateFrom)
+    const addresses = await Address.getByCoinUid(query.coin_uid, query.platform, dateInterval, dateFrom, dateTo)
     res.send(serializer.serializeAddresses(addresses))
   } catch (e) {
     next(e)

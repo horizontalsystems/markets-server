@@ -51,7 +51,7 @@ class Transaction extends SequelizeModel {
     return result.count > 0
   }
 
-  static async getByCoin(uid, chain, window, dateFrom) {
+  static async getByCoin(uid, chain, window, dateFrom, dateTo) {
     const platforms = await Platform.findByCoinUID(uid, chain)
     if (!platforms.length) {
       return {}
@@ -66,12 +66,14 @@ class Transaction extends SequelizeModel {
       FROM transactions
       WHERE platform_id IN(:platformIds)
         AND date >= :dateFrom
+        AND date < :dateTo
       GROUP by 1
       ORDER by date
     `
 
     const transactions = await Transaction.query(query, {
       dateFrom,
+      dateTo,
       platformIds: platforms.map(item => item.id)
     })
 

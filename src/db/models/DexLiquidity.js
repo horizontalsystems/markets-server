@@ -40,7 +40,7 @@ class DexLiquidity extends SequelizeModel {
     return !!await DexLiquidity.findOne()
   }
 
-  static async getByCoin(uid, chain, window, dateFrom) {
+  static async getByCoin(uid, chain, window, dateFrom, dateTo) {
     const platforms = await Platform.findByCoinUID(uid, chain)
     if (!platforms.length) {
       return {}
@@ -54,12 +54,14 @@ class DexLiquidity extends SequelizeModel {
       FROM dex_liquidities
       WHERE platform_id IN(:platformIds)
         AND date >= :dateFrom
+        AND date < :dateTo
       GROUP by 1
       ORDER by date
     `
 
     const liquidity = await DexLiquidity.query(query, {
       dateFrom,
+      dateTo,
       platformIds: platforms.map(item => item.id)
     })
 

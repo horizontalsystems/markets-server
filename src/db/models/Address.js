@@ -58,7 +58,7 @@ class Address extends SequelizeModel {
     return result.count > 0
   }
 
-  static async getByCoinUid(uid, platform, period, dateFrom) {
+  static async getByCoinUid(uid, platform, period, dateFrom, dateTo) {
     const platforms = await Platform.findByCoinUID(uid, platform)
     if (!platforms.length) {
       return {}
@@ -72,11 +72,13 @@ class Address extends SequelizeModel {
       FROM addresses A, jsonb_array_elements(data->'${period}') AS items
       WHERE A.platform_id in (:platforms)
         AND A.date >= :dateFrom
+        AND A.date < :dateTo
       GROUP BY 1
     `)
 
     const addresses = await Address.query(query, {
       dateFrom,
+      dateTo,
       platforms: platforms.map(item => item.id)
     })
 
