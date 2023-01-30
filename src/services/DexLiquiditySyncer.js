@@ -92,7 +92,7 @@ class DexLiquiditySyncer extends Syncer {
         })
         await this.upsertData(records)
       } catch (e) {
-        console.log(`Error syncing chunk of pancake data: ${e}, Ignoring error`, (e.parent || {}).message)
+        console.log(`Error syncing chunk of uniswap-v2/v3 data: ${e}, Ignoring error`, (e.parent || {}).message)
       }
     }
   }
