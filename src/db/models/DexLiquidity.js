@@ -48,15 +48,23 @@ class DexLiquidity extends SequelizeModel {
 
     const query = `
       SELECT
-        ${this.truncateDateWindow('date', window)} as date,
-        SUM(volume) AS volume,
-        ARRAY_AGG(distinct platform_id) as platforms
-      FROM dex_liquidities
-      WHERE platform_id IN(:platformIds)
-        AND date >= :dateFrom
-        AND date < :dateTo
+        t2.trunc AS date,
+        SUM(t1.volume) AS volume,
+        ARRAY_AGG(distinct t1.platform_id) AS platforms
+      FROM dex_liquidities t1
+      JOIN (
+        SELECT
+          ${this.truncateDateWindow('date', window)} as trunc,
+          max(id) as max_id,
+          max(date) as max_date
+         FROM dex_liquidities
+        WHERE platform_id IN(:platformIds)
+          AND date >= :dateFrom
+          AND date < :dateTo
+        GROUP by trunc, exchange
+      ) t2 ON (t1.id = t2.max_id)
       GROUP by 1
-      ORDER by date
+      ORDER BY date
     `
 
     const liquidity = await DexLiquidity.query(query, {
