@@ -20,7 +20,7 @@ class UniswapGraph {
         query tokens($tokens: [ID!]) {
           tokens(where: { id_in: $tokens }) {
             address: id
-            volume: ${liquidityField}
+            liquidityUSD: ${liquidityField}
           }
         }
       `
@@ -44,13 +44,17 @@ class UniswapGraph {
   async getLiquidityHistory(dateFrom, tokens, isV3 = true) {
     console.log(`Fetching dex liquidity history from uniswap-${isV3 ? 'v3' : 'v2'}`)
 
-    const liquidityField = isV3 ? 'totalValueLockedUSD' : 'totalLiquidityUSD'
     const subgraph = isV3 ? 'uniswap-v3' : 'uniswap-v2'
+
+    // const volume = isV3 ? 'volume' : 'dailyVolumeToken'
+    const volumeUSD = isV3 ? 'volumeUSD' : 'dailyVolumeUSD'
+    const liquidityUSD = isV3 ? 'totalValueLockedUSD' : 'totalLiquidityUSD'
 
     const build = token => `
       ${this.tokenKey(token)}: tokenDayDatas(first: 1000, skip: $skip, where: { token: "${token}", date_gt: $startTime }, orderBy: date, orderDirection: asc, subgraphError: allow) {
         date
-        volume: ${liquidityField}
+        volumeUSD: ${volumeUSD}
+        liquidityUSD: ${liquidityUSD}
       }
     `
 

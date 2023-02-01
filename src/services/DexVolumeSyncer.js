@@ -9,7 +9,7 @@ const Syncer = require('./Syncer')
 class DexVolumeSyncer extends Syncer {
 
   async start() {
-    await this.syncHistorical()
+    // await this.syncHistorical()
     await this.syncLatest()
   }
 
@@ -42,21 +42,19 @@ class DexVolumeSyncer extends Syncer {
   }
 
   async syncDailyStats({ dateFrom, dateTo }) {
-    await this.adjustData({ dateFrom, dateTo })
-  }
-
-  adjustData({ dateFrom, dateTo }) {
-    return DexVolume.deleteExpired(dateFrom, dateTo)
+    await DexVolume.deleteExpired(dateFrom, dateTo)
   }
 
   async syncFromBigquery({ dateFrom, dateTo }, datePeriod) {
     const platforms = await this.getPlatforms('ethereum', true)
     const mapVolumes = (items, exchange) => items.map(item => {
+      const platform = platforms.map[item.address] || {}
+      const price = platform.price || 1
       return {
         exchange,
-        volume: item.volume,
+        volume: item.volume * price,
         date: item.date.value,
-        platform_id: platforms.map[item.address]
+        platform_id: platform.id
       }
     })
 
@@ -83,18 +81,19 @@ class DexVolumeSyncer extends Syncer {
         return
     }
 
-    const platforms = await this.getPlatforms(chain)
+    const platforms = await this.getPlatforms(chain, false)
     const chunks = chunk(platforms.list, chunkSize)
 
     for (let i = 0; i < chunks.length; i += 1) {
       try {
         const dexVolume = await bitquery.getDexVolumes(dateFrom.slice(0, 10), chunks[i], chain, exchange, interval)
         const records = dexVolume.map(item => {
+          const platform = platforms.map[item.baseCurrency.address] || {}
           return {
             volume: item.tradeAmount,
             date: item.date.value,
             exchange: exchange[0],
-            platform_id: platforms.map[item.baseCurrency.address]
+            platform_id: platform.id
           }
         })
         await this.bulkCreate(records)
@@ -104,20 +103,15 @@ class DexVolumeSyncer extends Syncer {
     }
   }
 
-  async getPlatforms(chain, withDecimals) {
-    const platforms = await Platform.getByChain(chain)
+  async getPlatforms(chain, withPrice) {
+    const platforms = withPrice ? await Platform.getByChainWithPrice(chain) : await Platform.getByChain(chain)
     const list = []
     const map = {}
 
-    platforms.forEach(({ address, decimals, id }) => {
+    platforms.forEach(({ id, address, price }) => {
       if (address) {
-        map[address] = id
-
-        if (!withDecimals) {
-          list.push({ address })
-        } else if (decimals) {
-          list.push({ address, decimals })
-        }
+        map[address] = { id, price }
+        list.push({ address })
       }
     })
 

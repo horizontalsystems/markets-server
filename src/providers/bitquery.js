@@ -191,7 +191,7 @@ class Bitquery {
             baseCurrency: { in: $tokens }
             exchangeName: { in: $exchange }
           ) {
-            tradeAmount(calculate: sum)
+            tradeAmount(calculate: sum, in: USD)
             baseCurrency {
               address
             }

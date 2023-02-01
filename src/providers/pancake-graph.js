@@ -17,9 +17,7 @@ class PancakeGraph {
         query tokens($tokens: [ID!]) {
           tokens(where: { id_in: $tokens }) {
             address: id
-            volume: totalLiquidity
-            # tradeVolumeUSD
-            # totalTransactions
+            liquidityUSD: totalLiquidity
           }
         }
       `
@@ -46,8 +44,9 @@ class PancakeGraph {
     const build = token => `
       ${this.tokenKey(token)}: tokenDayDatas(first: 1000, skip: $skip, where: { token: "${token}", date_gt: $startTime }, orderBy: date, orderDirection: asc) {
         date
-        volume: totalLiquidityUSD
-        # dailyVolumeUSD
+        volumeUSD: dailyVolumeUSD
+        liquidityUSD: totalLiquidityUSD
+        # volume: dailyVolumeToken
       }
     `
 

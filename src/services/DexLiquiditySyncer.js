@@ -1,6 +1,7 @@
 const { chunk } = require('lodash')
 const { utcDate, utcStartOfDay } = require('../utils')
 const DexLiquidity = require('../db/models/DexLiquidity')
+const DexVolume = require('../db/models/DexVolume')
 const dune = require('../providers/dune')
 const pancakeGraph = require('../providers/pancake-graph')
 const uniswapGraph = require('../providers/uniswap-graph')
@@ -57,15 +58,7 @@ class DexLiquiditySyncer extends Syncer {
           ? await pancakeGraph.getLiquidityHistory(dateFrom, chunks[i])
           : await pancakeGraph.getLiquidity(chunks[i])
 
-        const records = data.map(item => {
-          return {
-            volume: item.volume,
-            date: isHistory ? (item.date * 1000) : dateFrom,
-            exchange: 'pancakeswap',
-            platform_id: platforms.map[item.address.toLowerCase()]
-          }
-        })
-        await this.upsertData(records)
+        await this.upsertHistoryData(data, platforms.map, 'pancakeswap', dateFrom, isHistory)
       } catch (e) {
         console.log(`Error syncing chunk of pancake data: ${e}, Ignoring error`, (e.parent || {}).message)
       }
@@ -82,15 +75,8 @@ class DexLiquiditySyncer extends Syncer {
           ? await uniswapGraph.getLiquidityHistory(dateFrom, chunks[i], isV3)
           : await uniswapGraph.getLiquidity(chunks[i], isV3)
 
-        const records = data.map(item => {
-          return {
-            volume: item.volume,
-            date: isHistory ? (item.date * 1000) : dateFrom,
-            exchange: isV3 ? 'uniswap-v3' : 'uniswap-v2',
-            platform_id: platforms.map[item.address.toLowerCase()]
-          }
-        })
-        await this.upsertData(records)
+        const exchange = isV3 ? 'uniswap-v3' : 'uniswap-v2'
+        await this.upsertHistoryData(data, platforms.map, exchange, dateFrom, isHistory)
       } catch (e) {
         console.log(`Error syncing chunk of uniswap-v2/v3 data: ${e}, Ignoring error`, (e.parent || {}).message)
       }
@@ -110,7 +96,7 @@ class DexLiquiditySyncer extends Syncer {
       }
     })
 
-    await this.upsertData(records)
+    await this.upsertLiquidity(records)
   }
 
   async getPlatforms(chains) {
@@ -133,7 +119,29 @@ class DexLiquiditySyncer extends Syncer {
     return { list, map }
   }
 
-  async upsertData(records) {
+  async upsertHistoryData(records, platformMap, exchange, dateTo, isHistory) {
+    const volumes = []
+    const liquidity = []
+
+    for (let i = 0; i < records.length; i += 1) {
+      const item = records[i];
+      const date = isHistory ? (item.date * 1000) : dateTo
+      const platformId = platformMap[item.address.toLowerCase()]
+
+      liquidity.push({ date, exchange, volume: item.liquidityUSD, platform_id: platformId })
+      if (isHistory) {
+        volumes.push({ date, exchange, volume: item.volumeUSD, platform_id: platformId })
+      }
+    }
+
+    await this.upsertLiquidity(liquidity)
+
+    if (isHistory) {
+      await this.upsertVolumes(volumes)
+    }
+  }
+
+  async upsertLiquidity(records) {
     const items = records.filter(item => item.platform_id)
     if (!items.length) {
       return
@@ -142,7 +150,7 @@ class DexLiquiditySyncer extends Syncer {
     const chunks = chunk(items, 300000)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await DexLiquidity.bulkCreate(chunks[i], { updateOnDuplicate: ['volume', 'date', 'platform_id'] })
+      await DexLiquidity.bulkCreate(chunks[i], { updateOnDuplicate: ['date', 'platform_id', 'exchange'] })
         .then((data) => {
           console.log('Inserted dex liquidity', data.length)
         })
@@ -152,6 +160,24 @@ class DexLiquiditySyncer extends Syncer {
     }
   }
 
+  async upsertVolumes(records) {
+    const items = records.filter(item => item.platform_id)
+    if (!items.length) {
+      return
+    }
+
+    const chunks = chunk(items, 300000)
+
+    for (let i = 0; i < chunks.length; i += 1) {
+      await DexVolume.bulkCreate(items, { updateOnDuplicate: ['date', 'platform_id', 'exchange'] })
+        .then(data => {
+          console.log('Inserted dex volumes', data.length)
+        })
+        .catch(e => {
+          console.error('Error inserting dex volumes', e.message)
+        })
+    }
+  }
 }
 
 module.exports = DexLiquiditySyncer
