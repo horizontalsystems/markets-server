@@ -123,9 +123,9 @@ class DexLiquiditySyncer extends Syncer {
       const item = records[i];
       const date = isHistory ? (item.date * 1000) : dateTo
       const platform = platformMap[item.address.toLowerCase()] || {}
-      const liquidityUSD = (exchange === 'uniswap-v2')
-        ? item.liquidityUSD * platform.price
-        : item.liquidityUSD
+      const liquidityUSD = (exchange === 'uniswap-v3')
+        ? item.liquidityUSD
+        : item.liquidityUSD * platform.price
 
       liquidity.push({ date, exchange, volume: liquidityUSD, platform_id: platform.id })
       if (isHistory) {
