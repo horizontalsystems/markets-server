@@ -108,10 +108,10 @@ class DexVolumeSyncer extends Syncer {
     const list = []
     const map = {}
 
-    platforms.forEach(({ id, address, price }) => {
+    platforms.forEach(({ id, address, decimals, price }) => {
       if (address) {
         map[address] = { id, price }
-        list.push({ address })
+        list.push({ address, decimals })
       }
     })
 
