@@ -34,9 +34,9 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncHourlyStats({ dateTo }) {
-    await this.syncPancakeswap(dateTo, false)
     await this.syncUniswap(dateTo, true, false)
     await this.syncUniswap(dateTo, false, false)
+    await this.syncPancakeswap(dateTo, false)
   }
 
   async syncDailyStats(dateParams) {
@@ -49,7 +49,7 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncPancakeswap(dateFrom, isHistory, chunkSize = 50) {
-    const platforms = await this.getPlatforms(['binance-smart-chain'])
+    const platforms = await this.getPlatforms('binance-smart-chain')
     const chunks = chunk(platforms.list, chunkSize)
 
     for (let i = 0; i < chunks.length; i += 1) {
@@ -66,7 +66,7 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncUniswap(dateFrom, isV3, isHistory, chunkSize = 50) {
-    const platforms = await this.getPlatforms(['ethereum'])
+    const platforms = await this.getPlatforms('ethereum')
     const chunks = chunk(platforms.list, chunkSize)
 
     for (let i = 0; i < chunks.length; i += 1) {
@@ -84,7 +84,7 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncFromDune(dateFrom) {
-    const platforms = await this.getPlatforms(['ethereum'])
+    const platforms = await this.getPlatforms('ethereum')
     const data = await dune.getDexLiquidity(dateFrom)
 
     const records = data.map(item => {
@@ -100,19 +100,15 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async getPlatforms(chains) {
-    const platforms = await Platform.getByChain(chains, false, true)
+    const platforms = await Platform.getByChainWithPrice(chains)
     const map = {}
     const list = []
 
-    platforms.forEach(({ id, type, chain_uid: chain, address }) => {
-      if (type === 'native') {
-        map[chain] = id
-      }
-
+    platforms.forEach(({ id, address, price }) => {
       if (address) {
         const addr = address.toLowerCase()
-        map[addr] = id
         list.push({ address: addr })
+        map[addr] = { id, price }
       }
     })
 
@@ -126,11 +122,14 @@ class DexLiquiditySyncer extends Syncer {
     for (let i = 0; i < records.length; i += 1) {
       const item = records[i];
       const date = isHistory ? (item.date * 1000) : dateTo
-      const platformId = platformMap[item.address.toLowerCase()]
+      const platform = platformMap[item.address.toLowerCase()] || {}
+      const liquidityUSD = (exchange === 'uniswap-v2')
+        ? item.liquidityUSD * platform.price
+        : item.liquidityUSD
 
-      liquidity.push({ date, exchange, volume: item.liquidityUSD, platform_id: platformId })
+      liquidity.push({ date, exchange, volume: liquidityUSD, platform_id: platform.id })
       if (isHistory) {
-        volumes.push({ date, exchange, volume: item.volumeUSD, platform_id: platformId })
+        volumes.push({ date, exchange, volume: item.volumeUSD, platform_id: platform.id })
       }
     }
 
