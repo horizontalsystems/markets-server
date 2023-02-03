@@ -66,7 +66,7 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
   }
 
   async updateCoins(coins, idsMap) {
-    const now = DateTime.now().toFormat('yyyy-MM-dd HH:mm')
+    const now = DateTime.utc().toSQL()
 
     const mapData = (id, item) => [
       id,
@@ -86,7 +86,7 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
     }
 
     try {
-      await Coin.updatePrices(values)
+      await Coin.updatePrices(values).then(console.log)
       debug(`Synced coins ${values.length}`)
     } catch (e) {
       debug(e)
