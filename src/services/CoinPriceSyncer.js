@@ -219,7 +219,7 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
       return
     }
 
-    return Coin.updatePrices(records)
+    return Coin.updatePricesIfExpired(records)
       .then(([, updated]) => {
         console.log('Updated coins', updated)
       })

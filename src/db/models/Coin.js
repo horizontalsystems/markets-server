@@ -255,13 +255,25 @@ class Coin extends SequelizeModel {
     return Coin.queryUpdate(query, { values })
   }
 
-  static updatePrices(values) {
+  static updatePricesIfExpired(values) {
     const query = `
       UPDATE coins AS c set
         price = v.price,
         last_updated = v.last_updated::timestamptz
       FROM (values :values) as v(id, price, last_updated, api_updated_time)
       WHERE c.id = v.id AND c.last_updated < v.api_updated_time::timestamptz
+    `
+
+    return Coin.queryUpdate(query, { values })
+  }
+
+  static updatePrices(values) {
+    const query = `
+      UPDATE coins AS c set
+        price = v.price,
+        last_updated = v.last_updated::timestamptz
+      FROM (values :values) as v(id, price, last_updated)
+      WHERE c.id = v.id
     `
 
     return Coin.queryUpdate(query, { values })
