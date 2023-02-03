@@ -38,7 +38,7 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
     try {
       const coins = await coinstats.getCoins(skip, limit)
       await this.updateCoins(coins, idsMap)
-      await utils.sleep(1000)
+      await utils.sleep(2000)
     } catch ({ message, response = {} }) {
       if (message) {
         console.error(message)
@@ -86,7 +86,7 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
     }
 
     try {
-      await Coin.updatePrices(values).then(console.log)
+      await Coin.updatePrices(values)
       debug(`Synced coins ${values.length}`)
     } catch (e) {
       debug(e)
