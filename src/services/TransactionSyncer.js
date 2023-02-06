@@ -28,9 +28,9 @@ class TransactionSyncer extends Syncer {
       await this.syncFromBitquery(this.syncParamsHistorical('1y'), 'binance-smart-chain', false, 30)
     }
 
-    if (!await Transaction.existsForPlatforms('solana')) {
-      await this.syncFromBitquery(this.syncParamsHistorical('1y'), 'solana', false, 30)
-    }
+    // if (!await Transaction.existsForPlatforms('solana')) {
+    // await this.syncFromBitquery(this.syncParamsHistorical('1y'), 'solana', false, 30)
+    // }
 
     console.log('Completed syncing historical transactions stats')
   }
@@ -48,7 +48,7 @@ class TransactionSyncer extends Syncer {
     await this.syncFromBigquery(params, '1h')
     await this.syncFromBigquery(params, '1h', true)
     await this.syncFromBitquery(dateParams, 'binance-smart-chain', true)
-    await this.syncFromBitquery(dateParams, 'solana', true, 30)
+    // await this.syncFromBitquery(dateParams, 'solana', true, 30)
 
     console.log('Completed syncing daily transactions stats')
   }
