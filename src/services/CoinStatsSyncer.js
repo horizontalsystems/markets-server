@@ -48,10 +48,9 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
 
   async getCoins(uid) {
     const coins = await Coin.findAll({
-      attributes: ['id', 'coingecko_id'],
+      attributes: ['id', 'uid', 'coingecko_id'],
       where: {
-        ...(uid && { uid }),
-        coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
+        ...(uid && { uid })
       }
     })
 
@@ -59,7 +58,7 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
 
     for (let i = 0; i < coins.length; i += 1) {
       const coin = coins[i]
-      map[coin.coingecko_id] = coin.id
+      map[coin.coingecko_id || coin.uid] = coin.id
     }
 
     return map
@@ -76,8 +75,8 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
 
     const values = coins
       .map(c => {
-        const id = idsMap[c.id]
-        return c.price && id ? mapData(id, c) : null
+        const cid = idsMap[c.id] || idsMap[c.id.replace('-', '')]
+        return c.price && cid ? mapData(cid, c) : null
       })
       .filter(c => c)
 
