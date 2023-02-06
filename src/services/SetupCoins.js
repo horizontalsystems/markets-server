@@ -61,7 +61,7 @@ class SetupCoins {
 
     for (let i = 0; i < coins.length; i += 1) {
       await this.syncCoinInfo(coins[i], languages, bep2tokens)
-      await sleep(1100)
+      await sleep(10000)
     }
 
     if (coins.length) {
