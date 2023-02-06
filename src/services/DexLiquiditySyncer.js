@@ -169,7 +169,7 @@ class DexLiquiditySyncer extends Syncer {
     const chunks = chunk(items, 300000)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await DexVolume.bulkCreate(items, { updateOnDuplicate: ['date', 'platform_id', 'exchange'] })
+      await DexVolume.bulkCreate(chunks[i], { updateOnDuplicate: ['date', 'platform_id', 'exchange'] })
         .then(data => {
           console.log('Inserted dex volumes', data.length)
         })
