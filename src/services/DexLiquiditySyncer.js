@@ -88,11 +88,12 @@ class DexLiquiditySyncer extends Syncer {
     const data = await dune.getDexLiquidity(dateFrom)
 
     const records = data.map(item => {
+      const platform = platforms.map[item.platform.toLowerCase()] || {}
       return {
         date: item.date,
         volume: item.liquidity,
         exchange: item.exchange,
-        platform_id: platforms.map[item.platform.toLowerCase()]
+        platform_id: platform.id
       }
     })
 
