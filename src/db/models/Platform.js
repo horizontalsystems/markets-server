@@ -83,15 +83,16 @@ class Platform extends SequelizeModel {
     return Platform.findAll({ where })
   }
 
-  static getByChainWithPrice(chain) {
+  static getByChainWithPrice(chain, uids) {
     return Platform.query(`
       SELECT p.id, p.address, p.decimals, c.price
       FROM platforms p, coins c
       WHERE c.id = p.coin_id
         AND p.chain_uid = :chain
+        ${uids ? 'and c.uid in (:uids)' : ''}
         AND p.address is not null
         AND p.decimals is not null
-      `, { chain })
+      `, { chain, uids })
   }
 
   static getBalances(values, chain) {

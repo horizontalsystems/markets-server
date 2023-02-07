@@ -12,9 +12,11 @@ const program = new Command()
   .option('-v --volume', 'sync dex volumes only')
   .option('-l --liquidity', 'sync dex liquidity only')
   .option('-a --address', 'sync addresses only')
+  .option('-c --coins <coins>', 'sync historical data for the given coins')
+  .option('-s --source <source>', 'sync historical data for the given coins')
   .parse(process.argv)
 
-async function start({ tx, volume, liquidity, address }) {
+async function start({ tx, volume, liquidity, address, coins, source }) {
   await sequelize.sync()
   const transactionSyncer = new TransactionSyncer()
   const dexVolumeSyncer = new DexVolumeSyncer()
@@ -31,8 +33,11 @@ async function start({ tx, volume, liquidity, address }) {
     syncers.push(transactionSyncer, dexVolumeSyncer, dexLiquiditySyncer, addressSyncer)
   }
 
-  await Promise.all(syncers.map(s => s.start())).catch(e => {
-    console.log(e.message)
+  const promise = coins
+    ? syncers.map(s => s.syncHistorical(coins.split(','), source))
+    : syncers.map(s => s.start())
+
+  await Promise.all(promise).catch(e => {
     throw e
   })
 }

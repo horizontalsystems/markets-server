@@ -15,17 +15,30 @@ class DexLiquiditySyncer extends Syncer {
     await this.syncLatest()
   }
 
-  async syncHistorical() {
-    if (await DexLiquidity.exists()) {
+  async syncHistorical(uids, source) {
+    if (!uids && await DexLiquidity.exists()) {
       return
     }
 
     const dateFrom = utcStartOfDay({ month: -12 }, true)
 
+    if (source === 'uniswap-v3') {
+      return this.syncUniswap(dateFrom, true, true, uids)
+    }
+    if (source === 'uniswap-v2') {
+      return this.syncUniswap(dateFrom, false, true, uids)
+    }
+    if (source === 'pancakeswap') {
+      return this.syncPancakeswap(dateFrom, true, uids)
+    }
+    if (source === 'dune') {
+      return this.syncFromDune(utcDate({ month: -1 }, 'yyyy-MM-dd'))
+    }
+
     await this.syncFromDune(utcDate({ month: -1 }, 'yyyy-MM-dd'))
-    await this.syncUniswap(dateFrom, true, true)
-    await this.syncUniswap(dateFrom, false, true)
-    await this.syncPancakeswap(dateFrom, true)
+    await this.syncUniswap(dateFrom, true, true, uids)
+    await this.syncUniswap(dateFrom, false, true, uids)
+    await this.syncPancakeswap(dateFrom, true, uids)
   }
 
   async syncLatest() {
@@ -48,8 +61,8 @@ class DexLiquiditySyncer extends Syncer {
     await DexLiquidity.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncPancakeswap(dateFrom, isHistory, chunkSize = 50) {
-    const platforms = await this.getPlatforms('binance-smart-chain')
+  async syncPancakeswap(dateFrom, isHistory, uids, chunkSize = 50) {
+    const platforms = await this.getPlatforms('binance-smart-chain', uids)
     const chunks = chunk(platforms.list, chunkSize)
 
     for (let i = 0; i < chunks.length; i += 1) {
@@ -65,8 +78,8 @@ class DexLiquiditySyncer extends Syncer {
     }
   }
 
-  async syncUniswap(dateFrom, isV3, isHistory, chunkSize = 50) {
-    const platforms = await this.getPlatforms('ethereum')
+  async syncUniswap(dateFrom, isV3, isHistory, uids, chunkSize = 50) {
+    const platforms = await this.getPlatforms('ethereum', uids)
     const chunks = chunk(platforms.list, chunkSize)
 
     for (let i = 0; i < chunks.length; i += 1) {
@@ -84,7 +97,7 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncFromDune(dateFrom) {
-    const platforms = await this.getPlatforms('ethereum')
+    const platforms = await this.getPlatforms('ethereum', null)
     const data = await dune.getDexLiquidity(dateFrom)
 
     const records = data.map(item => {
@@ -100,8 +113,8 @@ class DexLiquiditySyncer extends Syncer {
     await this.upsertLiquidity(records)
   }
 
-  async getPlatforms(chains) {
-    const platforms = await Platform.getByChainWithPrice(chains)
+  async getPlatforms(chains, uids) {
+    const platforms = await Platform.getByChainWithPrice(chains, uids)
     const map = {}
     const list = []
 
