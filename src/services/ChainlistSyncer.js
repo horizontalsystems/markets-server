@@ -12,11 +12,11 @@ class ChainlistSyncer {
     for (let i = 0; i < chains.length; i += 1) {
       const chain = chains[i];
       const platform = await this.getPlatform(map[chain.chainId])
-      await this.storeChain(platform, chain)
+      await this.syncChain(chain, platform)
     }
   }
 
-  async storeChain(platform, chain) {
+  async syncChain(chain, platform) {
     const record = {
       uid: platform ? platform.uid : chain.name.toLowerCase().split(' ').join('-'),
       name: chain.name,
@@ -25,7 +25,7 @@ class ChainlistSyncer {
         rpc: chain.rpc,
         chainId: chain.chainId,
         explorers: chain.explorers,
-        isTesnet: this.isTestnet(chain.name) || this.isTestnet(chain.title) || this.isTestnet(chain.network)
+        isTestnet: this.isTestnet(chain.name) || this.isTestnet(chain.title) || this.isTestnet(chain.network)
       }
     }
 
