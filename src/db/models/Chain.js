@@ -26,6 +26,14 @@ class Chain extends SequelizeModel {
         //    change_1w: '7.10'
         //    change_1m: '6.10'
         //  }
+        evm: DataTypes.JSONB
+        // {
+        //   chainId: 1,
+        //   isTestnet: false,
+        //   explorers: [],
+        //   nativeCurrency: {},
+        //   rpc: []
+        // }
       },
       {
         timestamps: false,
