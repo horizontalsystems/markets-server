@@ -1,8 +1,10 @@
+const { isString } = require('lodash')
 const { sleep } = require('../utils')
 const chainlist = require('../providers/chainlist')
 const coingecko = require('../providers/coingecko')
 const Chain = require('../db/models/Chain')
 const Platform = require('../db/models/Platform')
+const Web3EvmProvider = require('../providers/Web3EvmProvider')
 
 class ChainlistSyncer {
   async sync() {
@@ -10,13 +12,104 @@ class ChainlistSyncer {
     const chains = await chainlist.getChains()
 
     for (let i = 0; i < chains.length; i += 1) {
-      const chain = chains[i];
-      const platform = await this.getPlatform(map[chain.chainId])
-      await this.syncChain(chain, platform)
+      const item = chains[i]
+      const platform = await this.getPlatform(map[item.chainId])
+      await this.storeChain(item, platform)
     }
   }
 
-  async syncChain(chain, platform) {
+  async syncChains(uid) {
+    const chains = await Chain.findAll({
+      attributes: ['uid', 'evm'],
+      where: {
+        ...(uid && { uid }),
+        evm: Chain.literal('evm IS NOT NULL'),
+      }
+    })
+
+    const chainsMainnet = chains.filter(item => !item.evm.isTestnet)
+
+    for (let i = 0; i < chainsMainnet.length; i += 1) {
+      const chain = chainsMainnet[i]
+      const platforms = await Platform.findAll({
+        where: {
+          chain_uid: chain.uid,
+          decimals: Platform.literal('decimals IS NULL')
+        }
+      })
+
+      await this.syncPlatforms(platforms, chain)
+    }
+  }
+
+  getProviders({ chainId, rpc }) {
+    const extra = chainlist.extraRpcs[chainId]
+
+    let rpcs = []
+    if (extra && extra.rpcs && extra.rpcs.length) {
+      rpcs = extra.rpcs
+        .map(item => (isString(item) ? item : item.url))
+        .filter(item => item.startsWith('https'))
+    }
+
+    return (rpcs.length ? rpcs : rpc).map(url => new Web3EvmProvider(url))
+  }
+
+  async syncPlatforms(platforms, { uid, evm }) {
+    if (!evm || !evm.rpc || !evm.rpc.length) {
+      console.log('No prc provided for', uid)
+      return
+    }
+
+    let activeProvider
+    const providers = this.getProviders(evm)
+    const getDecimals = address => {
+      if (activeProvider) {
+        return activeProvider.getDecimals(address)
+      }
+
+      for (let i = 0; i < providers.length; i += 1) {
+        const provider = providers[i];
+
+        try {
+          const decimals = provider.getDecimals(address)
+
+          if (decimals) {
+            activeProvider = provider
+            return decimals
+          }
+        } catch (e) {
+          console.log(e.message)
+        }
+      }
+    }
+
+    console.log(`Fetching decimals for ${uid}; platforms: ${platforms.length}; rpc: ${providers.length}`)
+
+    for (let i = 0; i < platforms.length; i += 1) {
+      const platform = platforms[i]
+
+      if (platform.type === 'native') {
+        console.log(`Update native decimals: ${evm.nativeCurrency.decimals}`)
+        await platform.update({ decimals: evm.nativeCurrency.decimals })
+        continue
+      }
+
+      if (!platform.address) {
+        continue
+      }
+
+      try {
+        const decimals = await getDecimals(platform.address)
+        console.log(`Update decimals: ${decimals} address: ${platform.address}`)
+        await platform.update({ type: 'eip20', decimals })
+      } catch (e) {
+        console.log(e)
+      }
+    }
+  }
+
+  async storeChain(chain, platform) {
     const record = {
       uid: platform ? platform.uid : chain.name.toLowerCase().split(' ').join('-'),
       name: chain.name,
