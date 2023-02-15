@@ -59,6 +59,19 @@ class Chain extends SequelizeModel {
     return Chain.query(query, { limit })
   }
 
+  static getListEvm() {
+    const query = `
+      SELECT
+        c.uid, c.name, c.evm, p.type, p.decimals, coins.uid as coin_uid
+      FROM chains c
+      LEFT JOIN platforms p on p.chain_uid = c.uid AND p.type = 'native'
+      LEFT JOIN coins on coins.id = p.coin_id
+      WHERE c.evm IS NOT NULL
+    `
+
+    return Chain.query(query)
+  }
+
   static getPlatforms(chain) {
     const query = `
       SELECT

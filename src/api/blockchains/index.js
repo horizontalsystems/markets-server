@@ -20,6 +20,24 @@ const router = express.Router()
 router.get('/list', controller.list)
 
 /**
+ * @api {get} /v1/blockchains/list-evm Evm-Blockchains list
+ * @apiDescription Get a blockchains evm chains
+ * @apiVersion 1.0.0
+ * @apiGroup Chain
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {[
+ *    "name: "Ethereum"
+ *    "uid": "ethereum",
+ *    "decimals": 18,
+ *    "is_testnet": false,
+ *    "coin_uid": "ethereum"
+ *  ]}
+ */
+router.get('/list-evm', controller.listEvm)
+
+/**
  * @api {get} /v1/blockchains/:blockchain/block-number Blockchain block number
  * @apiDescription Get a block number for specific chain
  * @apiVersion 1.0.0

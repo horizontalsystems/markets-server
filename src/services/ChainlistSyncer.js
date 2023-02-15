@@ -190,7 +190,7 @@ class ChainlistSyncer {
       56: 'binancecoin',
       57: 'syscoin',
       58: 'ong',
-      59: 'eos',
+      // 59: 'eos',
       60: 'gochain',
       61: 'ethereum-classic',
       66: 'oec-token',

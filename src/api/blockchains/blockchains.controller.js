@@ -11,6 +11,12 @@ exports.list = async (req, res) => {
   res.send(serializer.serialize(chains))
 }
 
+exports.listEvm = async (req, res) => {
+  const chains = await Chain.getListEvm()
+
+  res.send(serializer.serializeEvm(chains))
+}
+
 // @deprecated
 exports.blockNumber = async ({ params }, res, next) => {
   try {
