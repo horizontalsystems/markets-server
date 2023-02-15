@@ -110,7 +110,7 @@ class ChainlistSyncer {
   }
 
   async storeChain(chain, platform) {
-    const record = {
+    const values = {
       uid: platform ? platform.uid : chain.name.toLowerCase().split(' ').join('-'),
       name: chain.name,
       evm: {
@@ -122,8 +122,8 @@ class ChainlistSyncer {
       }
     }
 
-    return Chain.bulkCreate([record], { updateOnDuplicate: ['evm'] })
-      .then(() => {
+    return Chain.bulkCreate([values], { updateOnDuplicate: ['evm'] })
+      .then(([record]) => {
         console.log(`Updated ${record.name}`)
       })
       .catch(console.error)
