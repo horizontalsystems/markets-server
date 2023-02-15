@@ -16,6 +16,8 @@ class ChainlistSyncer {
       const platform = await this.getPlatform(map[item.chainId])
       await this.storeChain(item, platform)
     }
+
+    console.log(`${chains.length} chains updated`)
   }
 
   async syncChains(uid) {
@@ -40,6 +42,8 @@ class ChainlistSyncer {
 
       await this.syncPlatforms(platforms, chain)
     }
+
+    console.log(`${chainsMainnet.length} chains synced`)
   }
 
   getProviders({ chainId, rpc }) {
