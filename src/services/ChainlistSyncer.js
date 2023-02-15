@@ -67,7 +67,7 @@ class ChainlistSyncer {
 
     let activeProvider
     const providers = this.getProviders(evm)
-    const getDecimals = address => {
+    const getDecimals = async address => {
       if (activeProvider) {
         return activeProvider.getDecimals(address)
       }
@@ -76,7 +76,7 @@ class ChainlistSyncer {
         const provider = providers[i];
 
         try {
-          const decimals = provider.getDecimals(address)
+          const decimals = await provider.getDecimals(address)
 
           if (parseInt(decimals, 10)) {
             activeProvider = provider
