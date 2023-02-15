@@ -78,7 +78,7 @@ class ChainlistSyncer {
         try {
           const decimals = provider.getDecimals(address)
 
-          if (decimals) {
+          if (parseInt(decimals, 10)) {
             activeProvider = provider
             return decimals
           }
