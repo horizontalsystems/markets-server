@@ -10,14 +10,17 @@ class ChainlistSyncer {
   async sync() {
     const map = this.chainIdsMap()
     const chains = await chainlist.getChains()
+    const chainsMainnet = chains.filter(chain => {
+      return !this.isTestnet(chain.name) && !this.isTestnet(chain.title) && !this.isTestnet(chain.network)
+    })
 
-    for (let i = 0; i < chains.length; i += 1) {
-      const item = chains[i]
+    for (let i = 0; i < chainsMainnet.length; i += 1) {
+      const item = chainsMainnet[i]
       const platform = await this.getPlatform(map[item.chainId])
       await this.storeChain(item, platform)
     }
 
-    console.log(`${chains.length} chains updated`)
+    console.log(`${chainsMainnet.length} chains updated`)
   }
 
   async syncChains(uid) {
@@ -93,9 +96,10 @@ class ChainlistSyncer {
     for (let i = 0; i < platforms.length; i += 1) {
       const platform = platforms[i]
 
-      if (platform.type === 'native') {
+      if (platform.type === 'native' || (platform.type === uid && !platform.address)) {
         console.log(`Update native decimals: ${evm.nativeCurrency.decimals}`)
-        await platform.update({ decimals: evm.nativeCurrency.decimals })
+        await platform.update({ type: 'native', decimals: evm.nativeCurrency.decimals })
+          .catch(e => console.log(e.message))
         continue
       }
 
