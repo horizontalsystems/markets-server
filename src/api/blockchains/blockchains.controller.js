@@ -4,9 +4,7 @@ const serializer = require('./blockchains.serializer')
 const bitquery = require('../../providers/bitquery').bitqueryProxy
 
 exports.list = async (req, res) => {
-  const chains = await Chain.findAll({
-    attributes: ['uid', 'name', 'url']
-  })
+  const chains = await Chain.getWithNativePlatform()
 
   res.send(serializer.serialize(chains))
 }

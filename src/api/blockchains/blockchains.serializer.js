@@ -1,10 +1,19 @@
 module.exports = {
   serialize: items => {
-    return items.map(item => ({
-      uid: item.uid,
-      name: item.name,
-      url: item.url
-    }))
+    return items.map(item => {
+      const record = {
+        uid: item.uid,
+        name: item.name,
+        url: item.url
+      }
+
+      if (item.evm && item.decimals) {
+        record.decimals = item.decimals
+        record.chainId = item.evm.chainId
+      }
+
+      return record
+    })
   },
 
   serializeEvm: items => {
