@@ -95,7 +95,7 @@ class ChainlistSyncer {
         continue
       }
 
-      if (!platform.address) {
+      if (!platform.address || platform.type === 'bep2') {
         continue
       }
 
@@ -104,6 +104,7 @@ class ChainlistSyncer {
         console.log(`Update decimals: ${decimals} address: ${platform.address}`)
         await platform.update({ type: 'eip20', decimals })
       } catch (e) {
+        await platform.update({ type: 'eip20' })
         console.log(e)
       }
     }
