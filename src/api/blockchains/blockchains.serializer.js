@@ -9,13 +9,14 @@ module.exports = {
 
   serializeEvm: items => {
     return items.map((item = {}) => {
-      const { isTestnet, nativeCurrency, rpc } = item.evm || {}
+      const { isTestnet, nativeCurrency, rpc, chainId } = item.evm || {}
       const platform = {
         uid: item.uid,
         name: item.name,
         type: item.type,
         decimals: item.decimals,
         coin_uid: item.coin_uid,
+        chainId,
         is_testnet: isTestnet,
         rpc
       }
