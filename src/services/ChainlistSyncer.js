@@ -270,6 +270,7 @@ class ChainlistSyncer {
       2000: 'dogechain',
       2021: 'edgeware',
       2025: 'rangers-protocol-gas',
+      2109: 'exosama-network',
       2151: 'bosagora',
       2152: 'findora',
       2213: 'evanesco-network',
