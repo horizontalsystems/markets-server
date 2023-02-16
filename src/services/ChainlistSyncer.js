@@ -120,7 +120,7 @@ class ChainlistSyncer {
 
   async storeChain(chain, platform) {
     const values = {
-      uid: platform ? platform.uid : chain.name.toLowerCase().split(' ').join('-'),
+      uid: platform ? platform.chain_uid : chain.name.toLowerCase().split(' ').join('-'),
       name: chain.name,
       evm: {
         nativeCurrency: chain.nativeCurrency,
@@ -142,12 +142,8 @@ class ChainlistSyncer {
     if (!uid) return null
 
     const platforms = await Platform.query(`
-      SELECT
-        c.uid, p.type, p.chain_uid
-      FROM coins c
-      LEFT JOIN platforms p on p.coin_id = c.id
-       AND (p.type = 'native' or p.type = c.uid)
-      WHERE c.uid = :uid
+      SELECT type, chain_uid FROM platforms
+      WHERE (type = 'native' or type = :uid) and chain_uid = :uid
     `, { uid })
 
     let platform = platforms.find(p => p.chain_uid === uid)
@@ -196,7 +192,7 @@ class ChainlistSyncer {
       50: 'xdc',
       52: 'coinex-token',
       55: 'zyx',
-      56: 'binancecoin',
+      56: 'binance-smart-chain',
       57: 'syscoin',
       58: 'ong',
       // 59: 'eos',
@@ -220,7 +216,7 @@ class ChainlistSyncer {
       111: 'etherlite-2',
       122: 'fuse-network-token',
       128: 'huobi-token',
-      137: 'matic-network',
+      137: 'polygon-pos',
       163: 'lightstreams',
       168: 'aioz-network',
       180: 'amepay',
@@ -325,11 +321,11 @@ class ChainlistSyncer {
       32659: 'fsn',
       39797: 'energi',
       39815: 'oho-blockchain',
-      42161: 'arbitrum',
+      42161: 'arbitrum-one',
       42170: 'arb-nova',
       42220: 'celo',
       42262: 'oasis-network',
-      43114: 'avalanche-2',
+      43114: 'avalanche',
       45000: 'autobahn-network',
       47805: 'rei-network',
       55555: 'reichain',
