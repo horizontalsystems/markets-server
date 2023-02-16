@@ -59,17 +59,6 @@ class Chain extends SequelizeModel {
     return Chain.query(query, { limit })
   }
 
-  static getWithNativePlatform() {
-    const query = `
-      SELECT
-        c.uid, c.name, c.url, c.evm, p.decimals
-      FROM chains c
-      LEFT JOIN platforms p on p.chain_uid = c.uid AND p.type = 'native'
-    `
-
-    return Chain.query(query)
-  }
-
   static getListEvm() {
     const query = `
       SELECT

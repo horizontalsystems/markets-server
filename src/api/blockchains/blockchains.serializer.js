@@ -7,9 +7,8 @@ module.exports = {
         url: item.url
       }
 
-      if (item.evm && item.decimals) {
-        record.decimals = item.decimals
-        record.chainId = item.evm.chainId
+      if (item.evm && item.evm.chainId) {
+        record.evm_chain_id = item.evm.chainId
       }
 
       return record
