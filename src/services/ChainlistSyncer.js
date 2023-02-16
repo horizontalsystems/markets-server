@@ -181,7 +181,7 @@ class ChainlistSyncer {
       1: 'ethereum',
       2: 'expanse',
       8: 'ubiq',
-      10: 'optimism',
+      10: 'optimistic-ethereum',
       11: 'metadium',
       14: 'flare-networks',
       19: 'songbird',
