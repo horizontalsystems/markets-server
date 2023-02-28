@@ -1,5 +1,5 @@
 const axios = require('axios').create({
-  baseURL: 'https://api.tokenterminal.com/v1',
+  baseURL: 'https://api.tokenterminal.com/v2',
   timeout: 180000,
   headers: { Authorization: `Bearer ${process.env.TOKEN_TERMINAL_KEY}` }
 })
@@ -9,12 +9,13 @@ const {
 } = require('./normalizers/tokenterminal-normalizer')
 
 exports.getProjects = () => {
-  return axios.get('/projects?interval=daily')
+  return axios.get('/internal/bulky/projects-metric-aggregations')
     .then(({ data }) => data.map(item => {
-      return [
-        mapUID(item.project_id),
-        item.revenue_30d
-      ]
+      const revenue = (item.metric_aggregations || {}).revenue || {}
+      return {
+        uid: mapUID(item.project_id),
+        revenue: revenue.sums || {}
+      }
     }))
     .catch(e => {
       console.error(e)

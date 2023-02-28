@@ -253,6 +253,16 @@ class DuneAnalytics {
     return this.getQueryResults(queryId, params)
   }
 
+  async getMonthlyAddressStats(queryId, tokens) {
+    const params = [{
+      key: 'tokens',
+      type: 'text',
+      value: tokens.map(token => token.address).join(',')
+    }]
+
+    return this.getQueryResults(queryId, params)
+  }
+
   async getTopNftCollections(limit = 100) {
     const params = [{ key: 'top', type: 'number', value: `${limit}` }]
     return this.getQueryResults(785004, params)
