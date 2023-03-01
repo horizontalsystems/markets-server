@@ -31,7 +31,7 @@ async function start({ category, rating, platforms, rank, force }) {
     if (platforms) syncers.push(topPlatformsSyncer)
 
     if (!syncers.length) {
-      syncers.push(categoryMarketCapSyncer, coinRatingSyncer, coinRankSyncer, topPlatformsSyncer)
+      syncers.push(categoryMarketCapSyncer, coinRankSyncer, topPlatformsSyncer)
     }
 
     await Promise.all(syncers.map(s => s.start(force))).catch(e => {
