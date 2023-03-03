@@ -72,7 +72,7 @@ class DefiProtocolTvl extends SequelizeModel {
   static getByDefiProtocol(defiProtocolId, dateFrom, window) {
     const query = (`
       SELECT
-        t2.time AS date,
+        t2.time AS timestamp,
         t1.tvl
       FROM defi_protocol_tvls t1
       JOIN (
@@ -85,7 +85,7 @@ class DefiProtocolTvl extends SequelizeModel {
           AND date >= :dateFrom
         GROUP by time
       ) t2 ON (t1.id = t2.max_id AND t1.date = t2.max_date)
-      ORDER BY date
+      ORDER BY timestamp
     `)
 
     return DefiProtocolTvl.query(query, { defi_protocol_id: defiProtocolId, dateFrom })
