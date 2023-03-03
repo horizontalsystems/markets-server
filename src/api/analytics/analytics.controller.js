@@ -40,8 +40,8 @@ exports.show = async ({ params, dateFrom, dateTo, dateInterval }, res) => {
           addresses,
           transactions,
           defiProtocolData,
-          ranks: stats.rank,
-          other: stats.other
+          ranks: stats.rank || {},
+          other: stats.other || {}
         })
       )
     } else {
