@@ -76,7 +76,12 @@ module.exports = {
           day: nullOrInteger(ranks.revenue_day_rank),
           week: nullOrInteger(ranks.revenue_week_rank),
           month: nullOrInteger(ranks.revenue_month_rank)
-        }
+        },
+        values: {
+          day: nullOrString(ranks.revenue_day),
+          week: nullOrString(ranks.revenue_week),
+          month: nullOrString(ranks.revenue_month)
+        },
       }
     }
 
