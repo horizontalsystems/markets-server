@@ -80,6 +80,15 @@ exports.reduceMap = (items, keyField, valField) => {
   }, {})
 }
 
+exports.stringToHex = str => {
+  let result = ''
+  for (let i = 0; i < str.length; i += 1) {
+    result += str.charCodeAt(i).toString(16)
+  }
+
+  return `0x${result}`
+}
+
 exports.scanURL = chain => (
   process.env.SCAN_URL ? `${process.env.SCAN_URL}/${chain}` : null
 )

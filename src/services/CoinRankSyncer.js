@@ -4,6 +4,7 @@ const CoinStats = require('../db/models/CoinStats')
 const Platform = require('../db/models/Platform')
 const tokenterminal = require('../providers/tokenterminal')
 const dune = require('../providers/dune')
+const { stringToHex } = require('../utils')
 
 class CoinRankSyncer extends Syncer {
   async start(force) {
@@ -443,6 +444,7 @@ class CoinRankSyncer extends Syncer {
     platforms.forEach(({ type, address, coin_id: coinId }) => {
       if (type === 'native') {
         map[chain] = { coinId }
+        map[stringToHex(chain)] = { coinId }
       }
 
       if (address) {

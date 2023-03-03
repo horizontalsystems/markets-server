@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const { chunk } = require('lodash')
-const { utcDate } = require('../utils')
+const { utcDate, stringToHex } = require('../utils')
 const dune = require('../providers/dune')
 const bigquery = require('../providers/bigquery')
 const Platform = require('../db/models/Platform')
@@ -90,6 +90,7 @@ class AddressSyncer extends Syncer {
     platforms.forEach(({ id, type, chain_uid: chain, address, decimals }) => {
       if (type === 'native') {
         map[chain] = id
+        map[stringToHex(chain)] = id
       }
 
       if (address) {
