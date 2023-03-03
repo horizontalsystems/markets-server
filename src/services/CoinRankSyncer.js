@@ -18,7 +18,8 @@ class CoinRankSyncer extends Syncer {
 
   async syncForce() {
     console.log('Force sync ranks')
-    await this.sync()
+    await this.sync(true)
+    await this.syncRestStats()
   }
 
   async sync(isFull) {
