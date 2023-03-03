@@ -49,9 +49,9 @@ module.exports = {
     if (transactions.length) {
       data.transactions = {
         ranks: {
-          day: nullOrInteger(ranks.tx_day_count_rank),
-          week: nullOrInteger(ranks.tx_week_count_rank),
-          month: nullOrInteger(ranks.tx_month_count_rank)
+          day: nullOrInteger(ranks.tx_day_rank),
+          week: nullOrInteger(ranks.tx_week_rank),
+          month: nullOrInteger(ranks.tx_month_rank)
         },
         volumes: {
           day: nullOrString(ranks.tx_day),
