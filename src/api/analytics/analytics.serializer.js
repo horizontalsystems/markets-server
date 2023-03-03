@@ -26,7 +26,7 @@ module.exports = {
     }
     if (dexLiquidity.length) {
       data.dex_liquidity = {
-        ranks: nullOrInteger(ranks.liquidity_rank),
+        rank: nullOrInteger(ranks.liquidity_rank),
         points: dexLiquidity
       }
     }
@@ -54,9 +54,9 @@ module.exports = {
           month: nullOrInteger(ranks.tx_month_count_rank)
         },
         volumes: {
-          day: nullOrInteger(ranks.tx_day),
-          week: nullOrInteger(ranks.tx_week),
-          month: nullOrInteger(ranks.tx_month)
+          day: nullOrString(ranks.tx_day),
+          week: nullOrString(ranks.tx_week),
+          month: nullOrString(ranks.tx_month)
         },
         points: transactions
       }
@@ -64,7 +64,7 @@ module.exports = {
 
     if (defiProtocolData.tvls && defiProtocolData.tvls.length) {
       data.tvl = {
-        ranks: nullOrInteger(ranks.tvl_rank),
+        rank: nullOrInteger(ranks.tvl_rank),
         ratio: nullOrString(defiProtocolData.ratio),
         points: defiProtocolData.tvls
       }
