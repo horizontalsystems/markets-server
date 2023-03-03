@@ -83,7 +83,7 @@ class Transaction extends SequelizeModel {
   static async getByPlatform(platformIds, window, dateFrom, dateTo) {
     const query = `
       SELECT
-        ${this.truncateDateWindow('date', window)} as date,
+        ${this.truncateDateWindow('date', window)} as timestamp,
         SUM (count) AS count,
         SUM (volume) AS volume
       FROM transactions
@@ -91,7 +91,7 @@ class Transaction extends SequelizeModel {
         AND date >= :dateFrom
         AND date < :dateTo
       GROUP by 1
-      ORDER by date
+      ORDER by timestamp
     `
 
     return Transaction.query(query, { dateFrom, dateTo, platformIds })

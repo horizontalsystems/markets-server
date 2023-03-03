@@ -88,7 +88,6 @@ class CoinPrice extends SequelizeModel {
       SELECT
         DISTINCT ON (cp.trunc)
         cp.trunc as timestamp,
-        cp.price,
         cp.volume
       FROM (
         SELECT

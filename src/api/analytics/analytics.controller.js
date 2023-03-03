@@ -18,8 +18,8 @@ exports.show = async ({ params, dateFrom, dateTo, dateInterval }, res) => {
 
     const stats = await CoinStats.analytics(coin.id)
 
-    const dexVolumes = await DexVolume.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
     const cexVolumes = await CoinPrice.getListByCoin(coin.id, dateInterval, dateFrom)
+    const dexVolumes = await DexVolume.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
     const dexLiquidity = await DexLiquidity.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
     const addresses = await Address.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
     const transactions = await Transaction.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
@@ -28,7 +28,7 @@ exports.show = async ({ params, dateFrom, dateTo, dateInterval }, res) => {
     const defiProtocol = await DefiProtocol.findOne({ where: { coin_id: coin.id } })
     if (defiProtocol) {
       defiProtocolData.tvls = await DefiProtocolTvl.getByDefiProtocol(defiProtocol.id, dateFrom, dateInterval)
-      defiProtocolData.rank = parseFloat(coin.market_cap) / parseFloat(defiProtocol.tvl)
+      defiProtocolData.ratio = parseFloat(coin.market_cap) / parseFloat(defiProtocol.tvl)
     }
 
     if (stats) {

@@ -71,14 +71,14 @@ class DexVolume extends SequelizeModel {
   static async getByPlatform(platformIds, window, dateFrom, dateTo) {
     const query = `
       SELECT 
-        ${this.truncateDateWindow('date', window)} as date,
+        ${this.truncateDateWindow('date', window)} as timestamp,
         SUM(volume) volume
       FROM dex_volumes
       WHERE platform_id IN (:platformIds)
         AND date >= :dateFrom
         AND date < :dateTo
       GROUP BY 1
-      ORDER BY date
+      ORDER BY timestamp
     `
 
     return DexVolume.query(query, { dateFrom, dateTo, platformIds })

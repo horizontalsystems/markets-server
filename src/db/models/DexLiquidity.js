@@ -80,7 +80,7 @@ class DexLiquidity extends SequelizeModel {
   static async getByPlatform(platformIds, window, dateFrom, dateTo) {
     const query = `
       SELECT
-        t2.trunc AS date,
+        t2.trunc AS timestamp,
         SUM(t1.volume) AS volume
       FROM dex_liquidities t1
       JOIN (
@@ -96,7 +96,7 @@ class DexLiquidity extends SequelizeModel {
         GROUP by trunc, exchange
       ) t2 ON (t1.id = t2.max_id)
       GROUP by 1
-      ORDER BY date
+      ORDER BY timestamp
     `
 
     return DexLiquidity.query(query, {
