@@ -81,21 +81,21 @@ module.exports = {
     }
 
     if (other.reports) {
-      data.reports = other.reports
+      data.reports = nullOrInteger(other.reports)
     }
 
     if (other.funding) {
-      data.funding = other.funding
+      data.funding = nullOrString(other.funding)
     }
 
     if (other.treasuries) {
-      data.treasuries = other.treasuries
+      data.treasuries = nullOrString(other.treasuries)
     }
 
-    data.holders = {
-      ethereum: 0,
-      bsc: 0
-    }
+    data.holders = [
+      { blockchain_uid: 'ethereum', count: 0 },
+      { blockchain_uid: 'binance-smart-chain', count: 0 }
+    ]
 
     return data
   }
