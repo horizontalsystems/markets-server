@@ -68,6 +68,22 @@ class DexVolume extends SequelizeModel {
     return { volumes, platforms }
   }
 
+  static async getByPlatform(platformIds, window, dateFrom, dateTo) {
+    const query = `
+      SELECT 
+        ${this.truncateDateWindow('date', window)} as date,
+        SUM(volume) volume
+      FROM dex_volumes
+      WHERE platform_id IN (:platformIds)
+        AND date >= :dateFrom
+        AND date < :dateTo
+      GROUP BY 1
+      ORDER BY date
+    `
+
+    return DexVolume.query(query, { dateFrom, dateTo, platformIds })
+  }
+
   static deleteExpired(dateFrom, dateTo) {
     return DexVolume.query('DELETE FROM dex_volumes WHERE date > :dateFrom AND date < :dateTo', {
       dateFrom,

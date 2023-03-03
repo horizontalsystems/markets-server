@@ -103,6 +103,16 @@ exports.setDexDateInterval = (req, res, next) => {
   next()
 }
 
+exports.setMonthlyInterval = (req, res, next) => {
+  const dateParams = dateInterval('1m', '1d')
+
+  req.dateInterval = dateParams.dateInterval // eslint-disable-line
+  req.dateFrom = dateParams.dateFrom // eslint-disable-line
+  req.dateTo = dateParams.dateTo // eslint-disable-line
+
+  next()
+}
+
 exports.error404 = (req, res) => {
   res.status(404)
   res.send({

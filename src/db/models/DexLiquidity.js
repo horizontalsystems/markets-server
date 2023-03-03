@@ -77,6 +77,35 @@ class DexLiquidity extends SequelizeModel {
     return { liquidity, platforms }
   }
 
+  static async getByPlatform(platformIds, window, dateFrom, dateTo) {
+    const query = `
+      SELECT
+        t2.trunc AS date,
+        SUM(t1.volume) AS volume
+      FROM dex_liquidities t1
+      JOIN (
+        SELECT
+          ${this.truncateDateWindow('date', window)} as trunc,
+          max(id) as max_id,
+          max(date) as max_date
+         FROM dex_liquidities
+        WHERE platform_id IN(:platformIds)
+          AND date >= :dateFrom
+          AND date < :dateTo
+          AND (exchange = 'uniswap-v2' OR exchange = 'uniswap-v3' OR exchange = 'pancakeswap')
+        GROUP by trunc, exchange
+      ) t2 ON (t1.id = t2.max_id)
+      GROUP by 1
+      ORDER BY date
+    `
+
+    return DexLiquidity.query(query, {
+      dateFrom,
+      dateTo,
+      platformIds
+    })
+  }
+
   static getWithPlatforms(date, exchange) {
     return DexLiquidity.query(`
       SELECT

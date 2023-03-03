@@ -30,6 +30,10 @@ exports.nullOrString = value => {
   return (value || value === 0 || value === 0.0) ? value.toString() : null
 }
 
+exports.nullOrInteger = value => {
+  return parseInt(value, 10)
+}
+
 exports.floatToString = (value, precision = 2) => {
   return (value || value === 0.0) ? value.toPrecision(precision) : null
 }

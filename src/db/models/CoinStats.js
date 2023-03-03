@@ -15,6 +15,12 @@ class CoinStats extends SequelizeModel {
         //    tvl: 100
         //    tvl_rank: 1
         //  }
+        other: DataTypes.JSONB,
+        // {
+        //   reports: 1,
+        //   funding: 100,
+        //   treasuries: 1000
+        // }
       },
       {
         sequelize,
@@ -31,6 +37,31 @@ class CoinStats extends SequelizeModel {
     CoinStats.belongsTo(models.Coin, {
       foreignKey: 'coin_id'
     })
+  }
+
+  static analytics(coinId) {
+    return CoinStats.findOne({ where: { coin_id: coinId } })
+  }
+
+  static getOtherStats() {
+    return CoinStats.query(`
+      with records as (
+        SELECT
+          C.id,
+          sum(DISTINCT F.amount) as funds_invested,
+          sum(DISTINCT T.amount) * C.price as treasuries,
+          count(DISTINCT R.id) as reports
+        FROM coins C
+        LEFT JOIN funds_invested F ON F.coin_id = C.id
+        LEFT JOIN treasuries T ON T.coin_id = C.id
+        LEFT JOIN reports R on R.coin_id = C.id
+        GROUP BY C.id
+      )
+      SELECT * from records
+       WHERE funds_invested > 0
+          OR treasuries > 0
+          OR reports > 0
+    `)
   }
 
 }

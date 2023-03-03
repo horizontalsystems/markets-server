@@ -69,6 +69,28 @@ class DefiProtocolTvl extends SequelizeModel {
     return DefiProtocolTvl.query(query, { defi_protocol_id: defiProtocol.id, dateFrom })
   }
 
+  static getByDefiProtocol(defiProtocolId, dateFrom, window) {
+    const query = (`
+      SELECT
+        t2.time AS date,
+        t1.tvl
+      FROM defi_protocol_tvls t1
+      JOIN (
+        SELECT
+          ${this.truncateDateWindow('date', window)} as time,
+          max(id) as max_id,
+          max(date) as max_date
+         FROM defi_protocol_tvls
+        WHERE defi_protocol_id = :defi_protocol_id
+          AND date >= :dateFrom
+        GROUP by time
+      ) t2 ON (t1.id = t2.max_id AND t1.date = t2.max_date)
+      ORDER BY date
+    `)
+
+    return DefiProtocolTvl.query(query, { defi_protocol_id: defiProtocolId, dateFrom })
+  }
+
   static getListByDate(dateTo, slugs, interval = '1 day') {
     const query = `
       SELECT * from (

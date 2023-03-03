@@ -12,6 +12,7 @@ class CoinRankSyncer extends Syncer {
     }
 
     this.cron('1h', () => this.sync())
+    this.cron('1h', () => this.syncRestStats())
     this.cron('1d', () => this.sync(true))
   }
 
@@ -39,6 +40,7 @@ class CoinRankSyncer extends Syncer {
         map[fields] = val
       }
     }
+
     for (let i = 0; i < stats.length; i += 1) {
       const { coin_id: coinId, rank } = stats[i]
       const item = {}
@@ -121,7 +123,7 @@ class CoinRankSyncer extends Syncer {
       }
 
       if (isTx) {
-        item[`${key}Count`] = record.count
+        item[`${key}_count_rank`] = record.count
       }
 
       map[record.id] = item
@@ -152,6 +154,40 @@ class CoinRankSyncer extends Syncer {
     }
 
     await this.storeStats(map)
+  }
+
+  async syncRestStats() {
+    const coins = await CoinStats.getOtherStats()
+    const records = []
+
+    for (let i = 0; i < coins.length; i += 1) {
+      const coin = coins[i];
+      const data = {}
+
+      if (coin.funds_invested > 0) {
+        data.funds_invested = coin.funds_invested
+      }
+      if (coin.treasuries > 0) {
+        data.treasuries = coin.treasuries
+      }
+      if (coin.reports > 0) {
+        data.reports = coin.reports
+      }
+
+      records.push({
+        coin_id: coin.id,
+        other: data
+      })
+    }
+
+    await CoinStats.query('update coin_stats set other = jsonb_set(other, \'{}\', null) where other is not null')
+    await CoinStats.bulkCreate(records, { updateOnDuplicate: ['other'] })
+      .then(recs => {
+        console.log('Upserted other stats', recs.length)
+      })
+      .catch(e => {
+        console.log(e)
+      })
   }
 
   async getCexVolumesRank(isFull) {
@@ -246,7 +282,7 @@ class CoinRankSyncer extends Syncer {
         WHERE v.date > NOW() - INTERVAL :dateFrom
         GROUP BY 1
       )
-      SELECT *, RANK() over (ORDER BY count DESC)
+      SELECT *, RANK() over (ORDER BY count DESC) rank
       FROM records where count > 0;
     `
 

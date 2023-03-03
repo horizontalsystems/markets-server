@@ -88,6 +88,22 @@ class Address extends SequelizeModel {
     }
   }
 
+  static async getByPlatform(platformIds, period, dateFrom, dateTo) {
+    const query = (`
+      SELECT
+        EXTRACT (epoch from (items->>'date')::timestamp)::int AS date,
+        SUM ((items->>'count')::int) AS count
+      FROM addresses A, jsonb_array_elements(data->'${period}') AS items
+      WHERE A.platform_id in (:platformIds)
+        AND A.date >= :dateFrom
+        AND A.date < :dateTo
+      GROUP BY 1
+      ORDER BY date
+    `)
+
+    return Address.query(query, { dateFrom, dateTo, platformIds })
+  }
+
   static deleteExpired(dateFrom, dateTo, periods) {
     const query = `
       UPDATE addresses

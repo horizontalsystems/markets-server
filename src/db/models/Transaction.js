@@ -80,6 +80,23 @@ class Transaction extends SequelizeModel {
     return { transactions, platforms }
   }
 
+  static async getByPlatform(platformIds, window, dateFrom, dateTo) {
+    const query = `
+      SELECT
+        ${this.truncateDateWindow('date', window)} as date,
+        SUM (count) AS count,
+        SUM (volume) AS volume
+      FROM transactions
+      WHERE platform_id IN(:platformIds)
+        AND date >= :dateFrom
+        AND date < :dateTo
+      GROUP by 1
+      ORDER by date
+    `
+
+    return Transaction.query(query, { dateFrom, dateTo, platformIds })
+  }
+
   static getSummedItems(dateFrom, platformIds) {
     const query = `
       SELECT

@@ -83,6 +83,27 @@ class CoinPrice extends SequelizeModel {
     return CoinPrice.query(query, { dateFrom, uid })
   }
 
+  static async getListByCoin(coinId, interval, dateFrom) {
+    const query = `
+      SELECT
+        DISTINCT ON (cp.trunc)
+        cp.trunc as timestamp,
+        cp.price,
+        cp.volume
+      FROM (
+        SELECT
+          p.*,
+          ${this.truncateDateWindow('date', interval)} AS trunc
+        FROM coin_prices p
+        WHERE p.coin_id = :coinId
+          AND p.date >= :dateFrom
+      ) cp
+      ORDER BY cp.trunc, cp.date DESC
+    `
+
+    return CoinPrice.query(query, { dateFrom, coinId })
+  }
+
   static async getHistoricalPrice(coinUid, timestamp) {
     const query = `
       SELECT
