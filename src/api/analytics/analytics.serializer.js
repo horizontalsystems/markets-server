@@ -66,8 +66,8 @@ module.exports = {
     }
 
     data.holders = [
-      { blockchain_uid: 'ethereum', count: 900 },
-      { blockchain_uid: 'binance-smart-chain', count: 273 }
+      { blockchain_uid: 'ethereum', holders_count: '900' },
+      { blockchain_uid: 'binance-smart-chain', holders_count: '273' }
     ]
 
     return data
@@ -135,5 +135,16 @@ module.exports = {
     data.holders = true
 
     return data
+  },
+
+  holders: () => {
+    return {
+      count: '371380',
+      holders: [{
+        address: '0x123',
+        percentage: '12.38',
+        balance: '29393.1'
+      }]
+    }
   }
 }

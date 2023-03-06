@@ -91,5 +91,5 @@ exports.show = async ({ params, dateFrom, dateTo, dateInterval }, res) => {
 }
 
 exports.holders = async (req, res) => {
-  res.send({})
+  res.send(serializer.holders())
 }
