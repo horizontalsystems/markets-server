@@ -42,6 +42,10 @@ exports.preview = async ({ params }, res) => {
 }
 
 exports.show = async ({ params, dateFrom, dateTo, dateInterval }, res) => {
+  if (params.uid === 'pancakeswap-token') {
+    return res.status(401).send({}) // todo: for testing only
+  }
+
   try {
     const coin = await Coin.getPlatforms(params.uid)
     if (!coin) {
@@ -84,4 +88,8 @@ exports.show = async ({ params, dateFrom, dateTo, dateInterval }, res) => {
     res.status(500)
     res.send({ error: 'Internal server error' })
   }
+}
+
+exports.holders = async (req, res) => {
+  res.send({})
 }
