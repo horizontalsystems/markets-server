@@ -29,8 +29,8 @@ exports.preview = async ({ params }, res) => {
 
     const preview = { ...data, ranks: {}, other: {}, defiProtocol }
     if (stats) {
-      preview.ranks = stats.rank
-      preview.other = stats.other
+      preview.ranks = stats.rank || {}
+      preview.other = stats.other || {}
     }
 
     res.send(serializer.preview(preview))
