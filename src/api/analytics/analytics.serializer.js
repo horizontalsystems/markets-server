@@ -49,7 +49,7 @@ module.exports = {
     if (ranks.revenue_day_rank || ranks.revenue_week_rank || ranks.revenue_month_rank) {
       data.revenue = {
         rank_30d: nullOrInteger(ranks.revenue_month_rank),
-        values: nullOrString(ranks.revenue_month)
+        value_30d: nullOrString(ranks.revenue_month)
       }
     }
 
