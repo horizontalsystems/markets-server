@@ -6,4 +6,6 @@ const router = express.Router()
 
 router.get('/:uid', setMonthlyInterval, controller.show)
 
+router.get('/:uid/preview', controller.preview)
+
 module.exports = router

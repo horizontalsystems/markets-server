@@ -6,21 +6,13 @@ module.exports = {
 
     if (cexVolumes.length) {
       data.cex_volume = {
-        ranks: {
-          day: nullOrInteger(ranks.cex_volume_day_rank),
-          week: nullOrInteger(ranks.cex_volume_week_rank),
-          month: nullOrInteger(ranks.cex_volume_month_rank)
-        },
+        rank_30d: nullOrInteger(ranks.cex_volume_month_rank),
         points: cexVolumes
       }
     }
     if (dexVolumes.length) {
       data.dex_volume = {
-        ranks: {
-          day: nullOrInteger(ranks.dex_volume_day_rank),
-          week: nullOrInteger(ranks.dex_volume_week_rank),
-          month: nullOrInteger(ranks.dex_volume_month_rank)
-        },
+        rank_30d: nullOrInteger(ranks.dex_volume_month_rank),
         points: dexVolumes
       }
     }
@@ -32,32 +24,16 @@ module.exports = {
     }
     if (addresses.length) {
       data.addresses = {
-        ranks: {
-          day: nullOrInteger(ranks.address_day_rank),
-          week: nullOrInteger(ranks.address_week_rank),
-          month: nullOrInteger(ranks.address_month_rank)
-        },
-        counts: {
-          day: nullOrInteger(ranks.address_day),
-          week: nullOrInteger(ranks.address_week),
-          month: nullOrInteger(ranks.address_month),
-        },
+        rank_30d: nullOrInteger(ranks.address_month_rank),
+        count_30d: nullOrInteger(ranks.address_month),
         points: addresses
       }
     }
 
     if (transactions.length) {
       data.transactions = {
-        ranks: {
-          day: nullOrInteger(ranks.tx_day_rank),
-          week: nullOrInteger(ranks.tx_week_rank),
-          month: nullOrInteger(ranks.tx_month_rank)
-        },
-        volumes: {
-          day: nullOrString(ranks.tx_day),
-          week: nullOrString(ranks.tx_week),
-          month: nullOrString(ranks.tx_month)
-        },
+        rank_30d: nullOrInteger(ranks.tx_month_rank),
+        volume_30d: nullOrString(ranks.tx_month),
         points: transactions
       }
     }
@@ -72,16 +48,8 @@ module.exports = {
 
     if (ranks.revenue_day_rank || ranks.revenue_week_rank || ranks.revenue_month_rank) {
       data.revenue = {
-        ranks: {
-          day: nullOrInteger(ranks.revenue_day_rank),
-          week: nullOrInteger(ranks.revenue_week_rank),
-          month: nullOrInteger(ranks.revenue_month_rank)
-        },
-        values: {
-          day: nullOrString(ranks.revenue_day),
-          week: nullOrString(ranks.revenue_week),
-          month: nullOrString(ranks.revenue_month)
-        },
+        rank_30d: nullOrInteger(ranks.revenue_month_rank),
+        values: nullOrString(ranks.revenue_month)
       }
     }
 
@@ -98,9 +66,73 @@ module.exports = {
     }
 
     data.holders = [
-      { blockchain_uid: 'ethereum', count: 0 },
-      { blockchain_uid: 'binance-smart-chain', count: 0 }
+      { blockchain_uid: 'ethereum', count: 900 },
+      { blockchain_uid: 'binance-smart-chain', count: 273 }
     ]
+
+    return data
+  },
+
+  preview: ({ cexvolumes, dexvolumes, dexliquidity, addresses, transactions, ranks, other, defiProtocol }) => {
+    const data = {}
+
+    if (cexvolumes) {
+      data.cex_volume = {
+        rank_30d: !!ranks.cex_volume_month_rank,
+        points: true
+      }
+    }
+
+    if (dexvolumes) {
+      data.dex_volume = {
+        rank_30d: !!ranks.dex_volume_month_rank,
+        points: true
+      }
+    }
+
+    if (dexliquidity) {
+      data.dex_liquidity = {
+        rank: !!ranks.liquidity_rank,
+        points: true
+      }
+    }
+
+    if (addresses) {
+      data.addresses = {
+        rank_30d: !!ranks.address_month_rank,
+        count_30d: !!ranks.address_month,
+        points: true
+      }
+    }
+
+    if (transactions) {
+      data.transactions = {
+        rank_30d: !!ranks.tx_month_count_rank,
+        volume_30d: !!ranks.tx_month,
+        points: true
+      }
+    }
+
+    if (defiProtocol) {
+      data.tvl = {
+        rank: !!defiProtocol.tvl_rank,
+        ratio: true,
+        points: true
+      }
+    }
+
+    if (ranks.revenue_month_rank) {
+      data.revenue = {
+        rank_30d: !!ranks.revenue_month_rank,
+        value_30d: !!ranks.revenue_month
+      }
+    }
+
+    data.reports = !!other.reports
+    data.funds_invested = !!other.funds_invested
+    data.treasuries = !!other.treasuries
+
+    data.holders = true
 
     return data
   }

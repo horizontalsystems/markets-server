@@ -9,6 +9,38 @@ const DefiProtocol = require('../../db/models/DefiProtocol')
 const DefiProtocolTvl = require('../../db/models/DefiProtocolTvl')
 const CoinPrice = require('../../db/models/CoinPrice')
 
+exports.preview = async ({ params }, res) => {
+  try {
+    const coin = await Coin.getPlatforms(params.uid)
+    if (!coin) {
+      return res.status(404).send({ error: 'Coin not found' })
+    }
+
+    const stats = await CoinStats.analytics(coin.id)
+    const defiProtocol = await DefiProtocol.findOne({ where: { coin_id: coin.id } })
+    const [data] = await Coin.query(`
+      SELECT
+        exists(select 1 from dex_volumes where platform_id in (:platforms)) as dexVolumes,
+        exists(select 1 from dex_liquidities where platform_id in (:platforms)) as dexLiquidity,
+        exists(select 1 from addresses where platform_id in (:platforms)) as addresses,
+        exists(select 1 from transactions where platform_id in (:platforms)) as transactions,
+        exists(select 1 from coin_prices where coin_id in (:coin)) as cexVolumes
+    `, { platforms: coin.platforms, coin: coin.id })
+
+    const preview = { ...data, ranks: {}, other: {}, defiProtocol }
+    if (stats) {
+      preview.ranks = stats.rank
+      preview.other = stats.other
+    }
+
+    res.send(serializer.preview(preview))
+  } catch (e) {
+    console.log(e)
+    res.status(500)
+    res.send({ error: 'Internal server error' })
+  }
+}
+
 exports.show = async ({ params, dateFrom, dateTo, dateInterval }, res) => {
   try {
     const coin = await Coin.getPlatforms(params.uid)
