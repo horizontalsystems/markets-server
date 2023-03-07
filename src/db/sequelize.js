@@ -2,6 +2,7 @@ const Sequelize = require('sequelize')
 const Coin = require('./models/Coin')
 const CoinCategories = require('./models/CoinCategories')
 const CoinHolder = require('./models/CoinHolder')
+const CoinHolderStats = require('./models/CoinHolderStats')
 const CoinPrice = require('./models/CoinPrice')
 const CoinStats = require('./models/CoinStats')
 const CoinMarket = require('./models/CoinMarket')
@@ -51,6 +52,7 @@ const db = {
   Coin: Coin.init(sequelize, Sequelize),
   CoinCategories: CoinCategories.init(sequelize, Sequelize),
   CoinHolder: CoinHolder.init(sequelize, Sequelize),
+  CoinHolderStats: CoinHolderStats.init(sequelize, Sequelize),
   CoinMarket: CoinMarket.init(sequelize, Sequelize),
   CoinPrice: CoinPrice.init(sequelize, Sequelize),
   CoinStats: CoinStats.init(sequelize, Sequelize),

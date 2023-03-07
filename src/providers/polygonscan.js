@@ -13,6 +13,10 @@ exports.getAccounts = () => {
   return web.get('/accounts').then(res => res.data)
 }
 
+exports.getUniqueAddress = () => {
+  return web.get('/chart/address?output=csv', { responseType: 'blob' }).then(res => res.data)
+}
+
 exports.getTokenSupply = address => {
   const params = {
     module: 'stats',

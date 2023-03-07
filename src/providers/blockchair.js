@@ -7,5 +7,5 @@ exports.getAddresses = (chain, limit = 10) => {
   console.log(`Fetching Holders for  ${chain} ...`)
 
   return axios.get(`/${chain}/addresses/?limit=${limit}`)
-    .then(({ data }) => data.data)
+    .then(res => res.data)
 }

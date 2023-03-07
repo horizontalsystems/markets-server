@@ -1,7 +1,10 @@
 const axios = require('axios').create({
   baseURL: 'https://proxy-worker.pancake-swap.workers.dev',
   timeout: 180000 * 2,
-  headers: {}
+  headers: {
+    origin: 'https://pancakeswap.finance',
+    referer: 'https://pancakeswap.finance/'
+  }
 })
 
 class PancakeGraph {

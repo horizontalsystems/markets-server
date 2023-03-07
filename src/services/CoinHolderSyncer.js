@@ -1,16 +1,22 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-param-reassign,import/no-unresolved */
 const cheerio = require('cheerio')
+const csv = require('csv-parse/sync')
 const blockchair = require('../providers/blockchair')
 const etherscan = require('../providers/etherscan')
 const snowtrace = require('../providers/snowtrace')
 const bigquery = require('../providers/bigquery')
 const ftmscan = require('../providers/ftmscan')
+const optimism = require('../providers/etherscan-optimistic')
+const arbiscan = require('../providers/arbiscan')
+const celoscan = require('../providers/celoscan')
+const cronoscan = require('../providers/cronoscan')
+const polygonscan = require('../providers/polygonscan')
 const bscscan = require('../providers/bscscan')
 const solscan = require('../providers/solscan')
 const Platform = require('../db/models/Platform')
 const NftAsset = require('../db/models/NftAsset')
 const NftHolder = require('../db/models/NftHolder')
-const CoinHolder = require('../db/models/CoinHolder')
+const CoinHolderStats = require('../db/models/CoinHolderStats')
 const Syncer = require('./Syncer')
 const utils = require('../utils')
 const logger = require('../config/logger')
@@ -84,27 +90,47 @@ class CoinHolderSyncer extends Syncer {
           return resolve(blockchair.getAddresses(chain), this.mapBlockchairData(id, chain))
         case 'ethereum':
           return type === 'native'
-            ? resolve(etherscan.getAccounts(), this.mapChainHolders(id))
+            ? resolve(this.getAccounts(etherscan), this.mapChainHolders(id))
             : resolve(etherscan.getHolders(address), this.mapTokenHolders(id))
         case 'binance-smart-chain':
           return type === 'native'
-            ? resolve(bscscan.getAccounts(), this.mapChainHolders(id))
+            ? resolve(this.getAccounts(bscscan), this.mapChainHolders(id))
             : resolve(bscscan.getHolders(address), this.mapTokenHolders(id))
         case 'avalanche':
           return address
             ? resolve(snowtrace.getHolders(address), this.mapTokenHolders(id))
-            : resolve(snowtrace.getAccounts(), this.mapChainHolders(id))
+            : resolve(this.getAccounts(snowtrace), this.mapChainHolders(id))
         case 'fantom':
           return address
             ? resolve(ftmscan.getHolders(address), this.mapTokenHolders(id))
-            : resolve(ftmscan.getAccounts(), this.mapChainHolders(id))
+            : resolve(this.getAccounts(ftmscan), this.mapChainHolders(id))
+        case 'optimistic-ethereum':
+          return address
+            ? resolve(optimism.getHolders(address), this.mapTokenHolders(id))
+            : resolve(this.getAccounts(optimism), this.mapChainHolders(id))
+        case 'arbitrum-one':
+          return address
+            ? resolve(arbiscan.getHolders(address), this.mapTokenHolders(id))
+            : resolve(this.getAccounts(arbiscan), this.mapChainHolders(id))
+        case 'celo':
+          return address
+            ? resolve(celoscan.getHolders(address), this.mapTokenHolders(id))
+            : resolve(this.getAccounts(celoscan), this.mapChainHolders(id))
+        case 'cronos':
+          return address
+            ? resolve(cronoscan.getHolders(address), this.mapTokenHolders(id))
+            : resolve(this.getAccounts(cronoscan), this.mapChainHolders(id))
+        case 'polygon':
+          return address
+            ? resolve(polygonscan.getHolders(address), this.mapTokenHolders(id))
+            : resolve(this.getAccounts(polygonscan), this.mapChainHolders(id))
         case 'solana': {
           const requests = [
             solscan.getHolders(address),
             solscan.getTokenInfo(address)
           ]
 
-          return resolve(Promise.all(requests), this.mapSolanaHolders(id))
+          return resolve(Promise.all(requests), this.mapSolanaHolders())
         }
         default:
           return null
@@ -138,8 +164,24 @@ class CoinHolderSyncer extends Syncer {
     }
   }
 
+  async getAccounts(scan) {
+    const data = await scan.getUniqueAddress()
+    const records = csv.parse(data)
+
+    let total = null
+    if (records) {
+      const record = records[records.length - 1]
+      if (record) {
+        total = record[record.length - 1]
+      }
+    }
+
+    const accounts = await scan.getAccounts()
+    return [total, accounts]
+  }
+
   mapBlockchairData(platformId, chain) {
-    return data => {
+    return ({ context, data }) => {
       let supply = 21000000
 
       if (chain === 'dash') {
@@ -150,12 +192,17 @@ class CoinHolderSyncer extends Syncer {
         supply = 132670764299
       }
 
-      return data.map(item => ({
+      const items = data.map(item => ({
         balance: item.balance * 0.00000001,
         address: item.address,
         percentage: ((item.balance * 0.00000001) * 100) / supply,
         platform_id: platformId
       }))
+
+      return {
+        items,
+        total: context.total_rows
+      }
     }
   }
 
@@ -165,8 +212,11 @@ class CoinHolderSyncer extends Syncer {
 
       let address
       if (addressHref) {
-        const { searchParams } = new URL(addressHref, 'https://domain.com')
-        address = searchParams.get('a')
+        const { pathname } = new URL(addressHref, 'https://domain.com')
+        const parts = pathname.split('/')
+        if (parts) {
+          address = parts[parts.length - 1]
+        }
       }
 
       if (!address) {
@@ -189,27 +239,33 @@ class CoinHolderSyncer extends Syncer {
   }
 
   mapChainHolders(platformId) {
-    return data => {
+    return ([total, data]) => {
       const $ = cheerio.load(data)
       const items = $('table>tbody>tr')
+        .filter(i => i < 10)
+        .map((i, item) => {
+          return this.mapHoldersData(
+            $(item.children[1]),
+            $(item.children[3]),
+            $(item.children[4]),
+            platformId
+          )
+        })
+        .toArray()
+        .filter(i => i)
 
-      return items.filter(i => i < 10).map((i, item) => {
-        return this.mapHoldersData(
-          $(item.children[1]),
-          $(item.children[3]),
-          $(item.children[4]),
-          platformId
-        )
-      }).toArray().filter(i => i)
+      return {
+        items,
+        total
+      }
     }
   }
 
   mapTokenHolders(platformId) {
     return data => {
       const $ = cheerio.load(data)
-      const items = $('table>tbody>tr')
-
-      return items.map((i, item) => {
+      const total = $('.card .card-header').text().trim()
+      const items = $('table>tbody>tr').map((i, item) => {
         return this.mapHoldersData(
           $(item.children[1]),
           $(item.children[2]),
@@ -217,12 +273,17 @@ class CoinHolderSyncer extends Syncer {
           platformId
         )
       }).toArray().filter(i => i)
+
+      return {
+        items,
+        total: this.normalizeNumber(total.split('Total Token Holders: ')[1])
+      }
     }
   }
 
-  mapSolanaHolders(platformId) {
+  mapSolanaHolders() {
     return ([data, token]) => {
-      return data.map(holder => {
+      const items = data.result.map(holder => {
         if (!token || !token.decimals || !token.supply) {
           return null
         }
@@ -235,14 +296,23 @@ class CoinHolderSyncer extends Syncer {
           supply,
           balance,
           address: holder.address,
-          percentage: (balance * 100) / supply,
-          platform_id: platformId
+          percentage: (balance * 100) / supply
         }
       }).filter(i => i)
+
+      return {
+        items,
+        total: data.total
+      }
     }
   }
 
-  async upsert(holders, platformId) {
+  normalizeNumber(string) {
+    if (!string) return ''
+    return string.replace(',', '')
+  }
+
+  async upsert({ total, items: holders }, platformId) {
     if (!platformId || !holders.length) {
       return
     }
@@ -251,10 +321,10 @@ class CoinHolderSyncer extends Syncer {
       return
     }
 
-    await CoinHolder.deleteAll(platformId)
-    await CoinHolder.bulkCreate(holders)
-      .then(data => {
-        console.log('Inserted coin holders', data.length)
+    const records = { platform_id: platformId, holders, total }
+    await CoinHolderStats.bulkCreate([records], { updateOnDuplicate: ['total', 'holders'] })
+      .then(() => {
+        console.log('Inserted coin holders', holders.length)
       })
       .catch(err => {
         console.error('Error inserting coin holders', err.message)

@@ -1,23 +1,23 @@
 const querystring = require('querystring')
 const axios = require('axios').create({
-  baseURL: 'https://public-api.solscan.io',
+  baseURL: 'https://api.solscan.io',
   timeout: 180000
 })
 
 exports.getMeta = address => {
-  return axios.get(`/token/meta?tokenAddress=${address}`).then(res => res.data)
+  return axios.get(`/token/meta?token=${address}`).then(res => res.data)
 }
 
 exports.getHolders = address => {
   const query = querystring.stringify({
+    token: address,
     offset: 0,
-    tokenAddress: address,
-    limit: 10
+    size: 10
   })
 
   return axios.get(`/token/holders?${query}`).then(({ data }) => data.data)
 }
 
 exports.getTokenInfo = address => {
-  return axios.get(`/account/${address}`).then(res => (res.data || {}).tokenInfo)
+  return axios.get(`/account?address=${address}`).then(({ data }) => (data.data || {}).tokenInfo)
 }
