@@ -30,15 +30,29 @@ class CoinHolderStats extends SequelizeModel {
 
   static async getList(uid, chain = 'ethereum') {
     const query = (`
-      SELECT H.*
-        FROM coin_holders H
-        JOIN platforms P on P.id = H.platform_id
-        JOIN coins C on C.id = P.coin_id
-       WHERE C.uid = :uid
-         AND P.chain_uid = :chain
+      SELECT h.total as count, h.holders as top_holders
+        FROM coin_holder_stats h
+        JOIN platforms p on p.id = h.platform_id
+        JOIN coins c on c.id = p.coin_id
+       WHERE c.uid = :uid
+         AND p.chain_uid = :chain
     `)
 
     return CoinHolderStats.query(query, { chain, uid })
+  }
+
+  static async getTotalByPlatforms(platforms) {
+    const query = (`
+      SELECT
+        p.chain_uid as blockchain_uid,
+        h.total as holders_count
+       FROM coin_holder_stats h, platforms p
+      WHERE p.id = h.platform_id
+        AND h.platform_id in (:platforms)
+      ORDER BY holders_count ASC
+    `)
+
+    return CoinHolderStats.query(query, { platforms })
   }
 
   static async exists() {

@@ -79,7 +79,7 @@ class CoinHolderSyncer extends Syncer {
     console.log(`Platforms to sync ${platforms.length}`)
 
     const resolve = (request, mapper) => request.then(mapper)
-    const fetcher = ({ chain_uid: chain, id, type, address }) => {
+    const fetcher = ({ chain_uid: chain, type, address }) => {
       switch (chain) {
         case 'bitcoin':
         case 'bitcoin-cash':
@@ -87,43 +87,43 @@ class CoinHolderSyncer extends Syncer {
         case 'dogecoin':
         case 'litecoin':
         case 'zcash':
-          return resolve(blockchair.getAddresses(chain), this.mapBlockchairData(id, chain))
+          return resolve(blockchair.getAddresses(chain), this.mapBlockchairData(chain))
         case 'ethereum':
           return type === 'native'
-            ? resolve(this.getAccounts(etherscan), this.mapChainHolders(id))
-            : resolve(etherscan.getHolders(address), this.mapTokenHolders(id))
+            ? resolve(this.getAccounts(etherscan), this.mapChainHolders())
+            : resolve(etherscan.getHolders(address), this.mapTokenHolders())
         case 'binance-smart-chain':
           return type === 'native'
-            ? resolve(this.getAccounts(bscscan), this.mapChainHolders(id))
-            : resolve(bscscan.getHolders(address), this.mapTokenHolders(id))
+            ? resolve(this.getAccounts(bscscan), this.mapChainHolders())
+            : resolve(bscscan.getHolders(address), this.mapTokenHolders())
         case 'avalanche':
           return address
-            ? resolve(snowtrace.getHolders(address), this.mapTokenHolders(id))
-            : resolve(this.getAccounts(snowtrace), this.mapChainHolders(id))
+            ? resolve(snowtrace.getHolders(address), this.mapTokenHolders())
+            : resolve(this.getAccounts(snowtrace), this.mapChainHolders())
         case 'fantom':
           return address
-            ? resolve(ftmscan.getHolders(address), this.mapTokenHolders(id))
-            : resolve(this.getAccounts(ftmscan), this.mapChainHolders(id))
+            ? resolve(ftmscan.getHolders(address), this.mapTokenHolders())
+            : resolve(this.getAccounts(ftmscan), this.mapChainHolders())
         case 'optimistic-ethereum':
           return address
-            ? resolve(optimism.getHolders(address), this.mapTokenHolders(id))
-            : resolve(this.getAccounts(optimism), this.mapChainHolders(id))
+            ? resolve(optimism.getHolders(address), this.mapTokenHolders())
+            : resolve(this.getAccounts(optimism), this.mapChainHolders())
         case 'arbitrum-one':
           return address
-            ? resolve(arbiscan.getHolders(address), this.mapTokenHolders(id))
-            : resolve(this.getAccounts(arbiscan), this.mapChainHolders(id))
+            ? resolve(arbiscan.getHolders(address), this.mapTokenHolders())
+            : resolve(this.getAccounts(arbiscan), this.mapChainHolders())
         case 'celo':
           return address
-            ? resolve(celoscan.getHolders(address), this.mapTokenHolders(id))
-            : resolve(this.getAccounts(celoscan), this.mapChainHolders(id))
+            ? resolve(celoscan.getHolders(address), this.mapTokenHolders())
+            : resolve(this.getAccounts(celoscan), this.mapChainHolders())
         case 'cronos':
           return address
-            ? resolve(cronoscan.getHolders(address), this.mapTokenHolders(id))
-            : resolve(this.getAccounts(cronoscan), this.mapChainHolders(id))
+            ? resolve(cronoscan.getHolders(address), this.mapTokenHolders())
+            : resolve(this.getAccounts(cronoscan), this.mapChainHolders())
         case 'polygon':
           return address
-            ? resolve(polygonscan.getHolders(address), this.mapTokenHolders(id))
-            : resolve(this.getAccounts(polygonscan), this.mapChainHolders(id))
+            ? resolve(polygonscan.getHolders(address), this.mapTokenHolders())
+            : resolve(this.getAccounts(polygonscan), this.mapChainHolders())
         case 'solana': {
           const requests = [
             solscan.getHolders(address),
@@ -180,7 +180,7 @@ class CoinHolderSyncer extends Syncer {
     return [total, accounts]
   }
 
-  mapBlockchairData(platformId, chain) {
+  mapBlockchairData(chain) {
     return ({ context, data }) => {
       let supply = 21000000
 
@@ -196,7 +196,6 @@ class CoinHolderSyncer extends Syncer {
         balance: item.balance * 0.00000001,
         address: item.address,
         percentage: ((item.balance * 0.00000001) * 100) / supply,
-        platform_id: platformId
       }))
 
       return {
@@ -206,16 +205,20 @@ class CoinHolderSyncer extends Syncer {
     }
   }
 
-  mapHoldersData(addressItem, quantityItem, percentageItem, platformId) {
+  mapHoldersData(addressItem, quantityItem, percentageItem, isChain) {
     try {
       const addressHref = addressItem.find('a').attr('href')
 
       let address
       if (addressHref) {
-        const { pathname } = new URL(addressHref, 'https://domain.com')
-        const parts = pathname.split('/')
-        if (parts) {
-          address = parts[parts.length - 1]
+        const { pathname, searchParams } = new URL(addressHref, 'https://domain.com')
+        address = searchParams.get('a')
+
+        if (isChain && pathname) {
+          const parts = pathname.split('/')
+          if (parts) {
+            address = parts[parts.length - 1]
+          }
         }
       }
 
@@ -229,7 +232,6 @@ class CoinHolderSyncer extends Syncer {
       return {
         address,
         percentage: percentage || 0,
-        platform_id: platformId,
         balance: parseFloat(quantity.replace(/,/g, '')) || 0
       }
     } catch (e) {
@@ -238,7 +240,7 @@ class CoinHolderSyncer extends Syncer {
     }
   }
 
-  mapChainHolders(platformId) {
+  mapChainHolders() {
     return ([total, data]) => {
       const $ = cheerio.load(data)
       const items = $('table>tbody>tr')
@@ -248,7 +250,7 @@ class CoinHolderSyncer extends Syncer {
             $(item.children[1]),
             $(item.children[3]),
             $(item.children[4]),
-            platformId
+            true
           )
         })
         .toArray()
@@ -261,7 +263,7 @@ class CoinHolderSyncer extends Syncer {
     }
   }
 
-  mapTokenHolders(platformId) {
+  mapTokenHolders() {
     return data => {
       const $ = cheerio.load(data)
       const total = $('.card .card-header').text().trim()
@@ -269,8 +271,7 @@ class CoinHolderSyncer extends Syncer {
         return this.mapHoldersData(
           $(item.children[1]),
           $(item.children[2]),
-          $(item.children[3]),
-          platformId
+          $(item.children[3])
         )
       }).toArray().filter(i => i)
 
@@ -309,7 +310,7 @@ class CoinHolderSyncer extends Syncer {
 
   normalizeNumber(string) {
     if (!string) return ''
-    return string.replace(',', '')
+    return string.replace(/,/g, '')
   }
 
   async upsert({ total, items: holders }, platformId) {

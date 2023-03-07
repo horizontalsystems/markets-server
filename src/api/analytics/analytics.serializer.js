@@ -1,7 +1,7 @@
 const { nullOrInteger, nullOrString } = require('../../utils')
 
 module.exports = {
-  overview: ({ cexVolumes, dexVolumes, dexLiquidity, addresses, transactions, defiProtocolData, ranks, other }) => {
+  overview: ({ cexVolumes, dexVolumes, dexLiquidity, addresses, transactions, defiProtocolData, ranks, other, holders }) => {
     const data = {}
 
     if (cexVolumes.length) {
@@ -65,15 +65,12 @@ module.exports = {
       data.treasuries = nullOrString(other.treasuries)
     }
 
-    data.holders = [
-      { blockchain_uid: 'ethereum', holders_count: '900' },
-      { blockchain_uid: 'binance-smart-chain', holders_count: '273' }
-    ]
+    data.holders = holders
 
     return data
   },
 
-  preview: ({ cexvolumes, dexvolumes, dexliquidity, addresses, transactions, ranks, other, defiProtocol }) => {
+  preview: ({ cexvolumes, dexvolumes, dexliquidity, addresses, transactions, ranks, other, defiProtocol, holders }) => {
     const data = {}
 
     if (cexvolumes) {
@@ -132,19 +129,21 @@ module.exports = {
     data.funds_invested = !!other.funds_invested
     data.treasuries = !!other.treasuries
 
-    data.holders = true
+    data.holders = !!holders
 
     return data
   },
 
-  holders: () => {
+  holders: data => {
     return {
-      count: '371380',
-      holders: [{
-        address: '0x123',
-        percentage: '12.38',
-        balance: '29393.1'
-      }]
+      count: nullOrString(data.count),
+      top_holders: data.top_holders.map(item => {
+        return {
+          address: item.address,
+          balance: nullOrString(item.balance),
+          percentage: nullOrString(item.percentage),
+        }
+      })
     }
   }
 }

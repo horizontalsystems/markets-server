@@ -8,6 +8,7 @@ const Transaction = require('../../db/models/Transaction')
 const DefiProtocol = require('../../db/models/DefiProtocol')
 const DefiProtocolTvl = require('../../db/models/DefiProtocolTvl')
 const CoinPrice = require('../../db/models/CoinPrice')
+const CoinHolderStats = require('../../db/models/CoinHolderStats')
 
 exports.preview = async ({ params }, res) => {
   try {
@@ -23,6 +24,7 @@ exports.preview = async ({ params }, res) => {
         exists(select 1 from dex_volumes where platform_id in (:platforms)) as dexVolumes,
         exists(select 1 from dex_liquidities where platform_id in (:platforms)) as dexLiquidity,
         exists(select 1 from addresses where platform_id in (:platforms)) as addresses,
+        exists(select 1 from coin_holder_stats where platform_id in (:platforms)) as holders,
         exists(select 1 from transactions where platform_id in (:platforms)) as transactions,
         exists(select 1 from coin_prices where coin_id in (:coin)) as cexVolumes
     `, { platforms: coin.platforms, coin: coin.id })
@@ -59,6 +61,7 @@ exports.show = async ({ params, dateFrom, dateTo, dateInterval }, res) => {
     const dexLiquidity = await DexLiquidity.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
     const addresses = await Address.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
     const transactions = await Transaction.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
+    const holders = await CoinHolderStats.getTotalByPlatforms(coin.platforms)
 
     const defiProtocolData = {}
     const defiProtocol = await DefiProtocol.findOne({ where: { coin_id: coin.id } })
@@ -76,6 +79,7 @@ exports.show = async ({ params, dateFrom, dateTo, dateInterval }, res) => {
           addresses,
           transactions,
           defiProtocolData,
+          holders,
           ranks: stats.rank || {},
           other: stats.other || {}
         })
@@ -90,6 +94,13 @@ exports.show = async ({ params, dateFrom, dateTo, dateInterval }, res) => {
   }
 }
 
-exports.holders = async (req, res) => {
-  res.send(serializer.holders())
+exports.holders = async ({ params, query }, res) => {
+  try {
+    const [holders] = await CoinHolderStats.getList(params.uid, query.blockchain_uid)
+    res.send(serializer.holders(holders))
+  } catch (e) {
+    console.log(e)
+    res.status(500)
+    res.send({ error: 'Internal server error' })
+  }
 }
