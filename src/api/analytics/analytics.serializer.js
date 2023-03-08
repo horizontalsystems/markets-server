@@ -145,5 +145,47 @@ module.exports = {
         }
       })
     }
+  },
+
+  ranks: (ranks, type) => {
+    const items = []
+    const getRank = rank => {
+      if (type === 'dex_liquidity') {
+        return {
+          value: rank.liquidity
+        }
+      }
+
+      if (type === 'tx_count') {
+        return {
+          value_1d: rank.tx_day_count,
+          value_7d: rank.tx_week_count,
+          value_30d: rank.tx_month_count
+        }
+      }
+
+      return {
+        value_1d: rank[`${type}_day`],
+        value_7d: rank[`${type}_week`],
+        value_30d: rank[`${type}_month`]
+      }
+    }
+
+    for (let i = 0; i < ranks.length; i += 1) {
+      const { uid, rank } = ranks[i]
+      const item = getRank(rank)
+      const data = { uid }
+
+      if (item.value_1d) data.value_1d = nullOrInteger(item.value_1d)
+      if (item.value_7d) data.value_7d = nullOrInteger(item.value_7d)
+      if (item.value_30d) data.value_30d = nullOrInteger(item.value_30d)
+      if (item.value) data.value = nullOrInteger(item.value)
+
+      if (item.value_1d || item.value_7d || item.value_30d || item.value) {
+        items.push(data)
+      }
+    }
+
+    return items
   }
 }

@@ -104,3 +104,14 @@ exports.holders = async ({ params, query }, res) => {
     res.send({ error: 'Internal server error' })
   }
 }
+
+exports.ranks = async ({ query }, res) => {
+  try {
+    const data = await CoinStats.getList()
+    res.send(serializer.ranks(data, query.type))
+  } catch (e) {
+    console.log(e)
+    res.status(500)
+    res.send({ error: 'Internal server error' })
+  }
+}

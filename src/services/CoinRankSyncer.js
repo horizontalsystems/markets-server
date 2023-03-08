@@ -113,16 +113,22 @@ class CoinRankSyncer extends Syncer {
       dexLiquidity.length,
     )
 
-    const setRank = (key, record) => {
+    const setRank = (key, record, isTx) => {
       if (!record || !record.id) {
         return
       }
 
-      map[record.id] = {
+      const item = {
         ...map[record.id],
         [key]: String(record.volume),
         [`${key}_rank`]: String(record.rank)
       }
+
+      if (isTx) {
+        item[`${key}_count`] = record.count
+      }
+
+      map[record.id] = item
     }
 
     for (let i = 0; i < lengths; i += 1) {
@@ -135,9 +141,9 @@ class CoinRankSyncer extends Syncer {
       setRank('dex_volume_month', dexVolumes.monthly[i])
       setRank('liquidity', dexLiquidity[i])
 
-      setRank('tx_day', transactions.daily[i])
-      setRank('tx_week', transactions.weekly[i])
-      setRank('tx_month', transactions.monthly[i])
+      setRank('tx_day', transactions.daily[i], true)
+      setRank('tx_week', transactions.weekly[i], true)
+      setRank('tx_month', transactions.monthly[i], true)
 
       setRank('tvl', tvls[i])
       setRank('address_day', address.daily[i])
