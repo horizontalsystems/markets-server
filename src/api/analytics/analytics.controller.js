@@ -43,7 +43,7 @@ exports.preview = async ({ params }, res) => {
   }
 }
 
-exports.show = async ({ params, dateFrom, dateTo, dateInterval }, res) => {
+exports.show = async ({ params, dateFrom, dateTo, dateInterval, currencyRate }, res) => {
   if (params.uid === 'pancakeswap-token') {
     return res.status(401).send({}) // todo: for testing only
   }
@@ -82,7 +82,7 @@ exports.show = async ({ params, dateFrom, dateTo, dateInterval }, res) => {
           holders,
           ranks: stats.rank || {},
           other: stats.other || {}
-        })
+        }, currencyRate)
       )
     } else {
       res.status(404)

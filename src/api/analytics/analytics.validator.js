@@ -1,11 +1,11 @@
 const { validate, Joi } = require('../validations')
 
 module.exports = {
-  // GET /v1/analytics/:uid
+  // GET /v1/analytics/ranks
   validateRanks: validate({
     query: Joi.object({
-      type: Joi.string()
-        .required()
+      currency: Joi.string(),
+      type: Joi.string().required()
         .valid(
           'cex_volume',
           'dex_volume',
@@ -17,4 +17,30 @@ module.exports = {
     })
   }),
 
+  // GET /v1/analytics/:uid
+  validateShow: validate({
+    params: Joi.object({
+      uid: Joi.string().required()
+    }),
+    query: Joi.object({
+      currency: Joi.string(),
+    })
+  }),
+
+  // GET /v1/analytics/:uid/preview
+  validatePreview: validate({
+    params: Joi.object({
+      uid: Joi.string().required()
+    })
+  }),
+
+  // GET /v1/analytics/:uid/holders
+  validateHolders: validate({
+    params: Joi.object({
+      uid: Joi.string().required()
+    }),
+    query: Joi.object({
+      blockchain_uid: Joi.string().required()
+    })
+  }),
 }

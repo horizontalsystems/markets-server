@@ -1,25 +1,46 @@
-const { nullOrInteger, nullOrString } = require('../../utils')
+const { nullOrInteger, nullOrString, valueInCurrency } = require('../../utils')
 
 module.exports = {
-  overview: ({ cexVolumes, dexVolumes, dexLiquidity, addresses, transactions, defiProtocolData, ranks, other, holders }) => {
+  overview: ({ cexVolumes, dexVolumes, dexLiquidity, addresses, transactions, defiProtocolData, ranks, other, holders }, rate) => {
     const data = {}
+    const mapRates = (records, isTvl) => {
+      if (rate === 1) {
+        return records
+      }
+
+      const items = []
+      for (let i = 0; i < records.length; i += 1) {
+        const item = records[i];
+        const rec = { timestamp: item.timestamp }
+
+        if (isTvl) {
+          rec.tvl = valueInCurrency(item.tvl, rate)
+        } else {
+          rec.volume = valueInCurrency(item.volume, rate)
+        }
+
+        items.push(rec)
+      }
+
+      return items
+    }
 
     if (cexVolumes.length) {
       data.cex_volume = {
         rank_30d: nullOrInteger(ranks.cex_volume_month_rank),
-        points: cexVolumes
+        points: mapRates(cexVolumes)
       }
     }
     if (dexVolumes.length) {
       data.dex_volume = {
         rank_30d: nullOrInteger(ranks.dex_volume_month_rank),
-        points: dexVolumes
+        points: mapRates(dexVolumes)
       }
     }
     if (dexLiquidity.length) {
       data.dex_liquidity = {
         rank: nullOrInteger(ranks.liquidity_rank),
-        points: dexLiquidity
+        points: mapRates(dexLiquidity)
       }
     }
     if (addresses.length) {
@@ -29,7 +50,6 @@ module.exports = {
         points: addresses
       }
     }
-
     if (transactions.length) {
       data.transactions = {
         rank_30d: nullOrInteger(ranks.tx_month_rank),
@@ -37,15 +57,13 @@ module.exports = {
         points: transactions
       }
     }
-
     if (defiProtocolData.tvls && defiProtocolData.tvls.length) {
       data.tvl = {
         rank: nullOrInteger(ranks.tvl_rank),
         ratio: nullOrString(defiProtocolData.ratio),
-        points: defiProtocolData.tvls
+        points: mapRates(defiProtocolData.tvls, true)
       }
     }
-
     if (ranks.revenue_day_rank || ranks.revenue_week_rank || ranks.revenue_month_rank) {
       data.revenue = {
         rank_30d: nullOrInteger(ranks.revenue_month_rank),
@@ -58,7 +76,7 @@ module.exports = {
     }
 
     if (other.funds_invested) {
-      data.funds_invested = nullOrString(other.funds_invested)
+      data.funds_invested = valueInCurrency(other.funds_invested, rate)
     }
 
     if (other.treasuries) {
