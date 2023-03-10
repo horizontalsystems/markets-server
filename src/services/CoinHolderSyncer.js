@@ -331,6 +331,45 @@ class CoinHolderSyncer extends Syncer {
         console.error('Error inserting coin holders', err.message)
       })
   }
+
+  static getHolderUrl(chain, isNative) {
+    const replace = url => {
+      return isNative ? `${url}/accounts` : `${url}/token/tokenholderchart/$address`
+    }
+
+    switch (chain) {
+      case 'bitcoin':
+      case 'bitcoin-cash':
+      case 'dash':
+      case 'dogecoin':
+      case 'litecoin':
+      case 'zcash':
+        return 'https://blockchair.com/$uid/addresses'
+      case 'ethereum':
+        return replace('https://etherscan.io')
+      case 'binance-smart-chain':
+        return replace('https://bscscan.com')
+      case 'avalanche':
+        return replace('https://snowtrace.io')
+      case 'fantom':
+        return replace('https://ftmscan.com')
+      case 'optimistic-ethereum':
+        return replace('https://optimistic.etherscan.io')
+      case 'arbitrum-one':
+        return replace('https://arbiscan.io')
+      case 'celo':
+        return replace('https://celoscan.io')
+      case 'cronos':
+        return replace('https://cronoscan.com')
+      case 'polygon':
+        return replace('https://polygonscan.com')
+      case 'solana': {
+        return replace('https://solscan.io')
+      }
+      default:
+        return ''
+    }
+  }
 }
 
 module.exports = CoinHolderSyncer

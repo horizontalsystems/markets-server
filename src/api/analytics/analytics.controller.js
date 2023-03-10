@@ -96,8 +96,12 @@ exports.show = async ({ params, dateFrom, dateTo, dateInterval, currencyRate }, 
 
 exports.holders = async ({ params, query }, res) => {
   try {
-    const [holders] = await CoinHolderStats.getList(params.uid, query.blockchain_uid)
-    res.send(serializer.holders(holders))
+    const holders = await CoinHolderStats.getList(params.uid, query.blockchain_uid)
+    if (!holders) {
+      res.status(404).send({})
+      return
+    }
+    res.send(serializer.holders(holders, query.blockchain_uid, holders.type === 'native'))
   } catch (e) {
     console.log(e)
     res.status(500)

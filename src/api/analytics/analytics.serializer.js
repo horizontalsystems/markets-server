@@ -1,3 +1,4 @@
+const CoinHolderSyncer = require('../../services/CoinHolderSyncer')
 const { nullOrInteger, nullOrString, valueInCurrency } = require('../../utils')
 
 module.exports = {
@@ -152,9 +153,10 @@ module.exports = {
     return data
   },
 
-  holders: data => {
+  holders: (data, chain, isNative) => {
     return {
       count: nullOrString(data.count),
+      holders_url: CoinHolderSyncer.getHolderUrl(chain, isNative),
       top_holders: data.top_holders.map(item => {
         return {
           address: item.address,
