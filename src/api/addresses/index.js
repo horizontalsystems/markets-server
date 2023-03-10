@@ -29,6 +29,7 @@ const router = express.Router()
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  */
 router.get('/', validateAddresses, setDexDateInterval, controller.index)
+router.get('/list', validateAddresses, setDexDateInterval, controller.list)
 
 /**
  * @api {get} /v1/addresses/holders List coin holders
