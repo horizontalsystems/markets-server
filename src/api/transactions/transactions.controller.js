@@ -9,12 +9,12 @@ exports.index = async ({ query, dateFrom, dateTo, dateInterval }, res) => {
   res.send(serializer.serializeTransactions(transactions))
 }
 
-exports.dexVolume = async ({ query, dateFrom, dateTo, dateInterval }, res) => {
+exports.dexVolume = async ({ query, dateFrom, dateTo, dateInterval, currencyRate }, res) => {
   const dexVolume = await DexVolume.getByCoin(query.coin_uid, query.platform, dateInterval, dateFrom, dateTo)
-  res.send(serializer.serializeDexVolumes(dexVolume))
+  res.send(serializer.serializeDexVolumes(dexVolume, currencyRate))
 }
 
-exports.dexLiquidity = async ({ query, dateFrom, dateInterval }, res) => {
+exports.dexLiquidity = async ({ query, dateFrom, dateInterval, currencyRate }, res) => {
   const dexLiquidity = await DexLiquidity.getByCoin(query.coin_uid, query.platform, dateInterval, dateFrom, utcDate({}))
-  res.send(serializer.serializeDexLiquidity(dexLiquidity))
+  res.send(serializer.serializeDexLiquidity(dexLiquidity, currencyRate))
 }
