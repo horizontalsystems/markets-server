@@ -14,15 +14,6 @@ exports.index = async ({ query, dateInterval, dateFrom, dateTo }, res, next) => 
   }
 }
 
-exports.list = async ({ query, dateInterval, dateFrom, dateTo }, res, next) => {
-  try {
-    const addresses = await Address.getByCoinUid(query.coin_uid, query.platform, dateInterval, dateFrom, dateTo)
-    res.send(serializer.serializeAddressList(addresses))
-  } catch (e) {
-    next(e)
-  }
-}
-
 exports.holders = async ({ query }, res) => {
   const holders = await CoinHolder.getList(query.coin_uid, query.platform)
 

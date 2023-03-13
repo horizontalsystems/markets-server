@@ -26,31 +26,6 @@ module.exports = {
     return { platforms: platformNames, addresses: items }
   },
 
-  serializeAddressList: ({ addresses, platforms }) => {
-    if (!addresses || !platforms) {
-      return {
-        platforms: [],
-        addresses: []
-      }
-    }
-
-    const ids = []
-    const items = addresses.map(item => {
-      ids.push(...item.platforms)
-
-      return {
-        timestamp: item.timestamp,
-        count: nullOrString(item.count),
-      }
-    })
-
-    const platformNames = [...new Set(ids)]
-      .flatMap(id => platforms.find(platform => platform.id === id))
-      .map(item => item.chain_uid)
-
-    return { platforms: platformNames, addresses: items }
-  },
-
   serializeCoinHolders: coinHolders => {
     return coinHolders.map((item) => ({
       address: item.address,

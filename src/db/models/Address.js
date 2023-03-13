@@ -92,7 +92,7 @@ class Address extends SequelizeModel {
     const query = (`
       SELECT
         EXTRACT (epoch from (items->>'date')::timestamp)::int AS timestamp,
-        SUM ((items->>'count')::int) AS count
+        SUM ((items->>'count')::int)::int AS count
       FROM addresses A, jsonb_array_elements(data->'${period}') AS items
       WHERE A.platform_id in (:platformIds)
         AND A.date >= :dateFrom

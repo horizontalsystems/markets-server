@@ -84,7 +84,7 @@ class Transaction extends SequelizeModel {
     const query = `
       SELECT
         ${this.truncateDateWindow('date', window)} as timestamp,
-        SUM (count) AS count
+        SUM (count)::int AS count
         -- // SUM (volume) AS volume
       FROM transactions
       WHERE platform_id IN(:platformIds)
