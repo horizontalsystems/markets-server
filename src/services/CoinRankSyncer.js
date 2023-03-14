@@ -12,7 +12,7 @@ class CoinRankSyncer extends Syncer {
       return this.syncForce()
     }
 
-    this.cron('1h', () => this.sync())
+    this.cron('* 1-23 * * *', () => this.sync())
     this.cron('1h', () => this.syncRestStats())
     this.cron('1d', () => this.sync(true))
   }
