@@ -17,7 +17,7 @@ async function start({ chain, coins, address, nft }) {
   const coinHolderSyncer = new CoinHolderSyncer()
 
   if (chain) {
-    await coinHolderSyncer.sync(await Platform.getByChain(chain, false, false))
+    await coinHolderSyncer.sync(await Platform.getByChain(chain.split(','), false, false))
   } else if (coins) {
     await coinHolderSyncer.sync(await Platform.findByCoinUID(coins.split(',')))
   } else if (address) {
