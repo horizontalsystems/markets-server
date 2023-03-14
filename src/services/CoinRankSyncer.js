@@ -48,11 +48,15 @@ class CoinRankSyncer extends Syncer {
       const item = {}
 
       // These fields should be kept
-      pickIfExists(item, rank, ['tvl',
+      pickIfExists(item, rank, [
+        'tvl',
         'liquidity',
         'tx_day',
         'tx_week',
         'tx_month',
+        'tx_day_count',
+        'tx_week_count',
+        'tx_month_count',
         'cex_volume_day',
         'cex_volume_week',
         'cex_volume_month',
