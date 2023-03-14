@@ -196,10 +196,10 @@ module.exports = {
       const item = getRank(rank)
       const data = { uid }
 
-      if (item.value_1d) data.value_1d = nullOrInteger(item.value_1d)
-      if (item.value_7d) data.value_7d = nullOrInteger(item.value_7d)
-      if (item.value_30d) data.value_30d = nullOrInteger(item.value_30d)
-      if (item.value) data.value = nullOrInteger(item.value)
+      if (item.value_1d) data.value_1d = nullOrString(item.value_1d)
+      if (item.value_7d) data.value_7d = nullOrString(item.value_7d)
+      if (item.value_30d) data.value_30d = nullOrString(item.value_30d)
+      if (item.value) data.value = nullOrString(item.value)
 
       if (item.value_1d || item.value_7d || item.value_30d || item.value) {
         items.push(data)
