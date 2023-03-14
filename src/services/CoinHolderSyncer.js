@@ -120,7 +120,7 @@ class CoinHolderSyncer extends Syncer {
           return address
             ? resolve(cronoscan.getHolders(address), this.mapTokenHolders())
             : resolve(this.getAccounts(cronoscan), this.mapChainHolders())
-        case 'polygon':
+        case 'polygon-pos':
           return address
             ? resolve(polygonscan.getHolders(address), this.mapTokenHolders())
             : resolve(this.getAccounts(polygonscan), this.mapChainHolders())
