@@ -107,7 +107,7 @@ class CoinHolderSyncer extends Syncer {
         case 'optimistic-ethereum':
           return address
             ? resolve(optimism.getHolders(address), this.mapTokenHolders())
-            : resolve(this.getAccounts(optimism), this.mapChainHolders())
+            : resolve(this.getAccounts(optimism), this.mapChainHolders(1, 2, 3))
         case 'arbitrum-one':
           return address
             ? resolve(arbiscan.getHolders(address), this.mapTokenHolders())
@@ -240,16 +240,16 @@ class CoinHolderSyncer extends Syncer {
     }
   }
 
-  mapChainHolders() {
+  mapChainHolders(addr = 1, quantity = 3, percent = 4) {
     return ([total, data]) => {
       const $ = cheerio.load(data)
       const items = $('table>tbody>tr')
         .filter(i => i < 10)
         .map((i, item) => {
           return this.mapHoldersData(
-            $(item.children[1]),
-            $(item.children[3]),
-            $(item.children[4]),
+            $(item.children[addr]),
+            $(item.children[quantity]),
+            $(item.children[percent]),
             true
           )
         })
