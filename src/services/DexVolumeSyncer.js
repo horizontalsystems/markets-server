@@ -13,15 +13,15 @@ class DexVolumeSyncer extends Syncer {
     await this.syncLatest()
   }
 
-  async syncHistorical() {
-    if (await DexVolume.exists()) {
+  async syncHistorical(uids) {
+    if (!uids && await DexVolume.exists()) {
       return
     }
 
-    await this.syncFromBigquery(this.syncParamsHistorical('1y', { days: -30 }), '1d')
-    await this.syncFromBigquery(this.syncParamsHistorical('1M'), '1h')
+    await this.syncFromBigquery(uids, this.syncParamsHistorical('1y', { days: -30 }), '1d')
+    await this.syncFromBigquery(uids, this.syncParamsHistorical('1M'), '1h')
 
-    await this.syncFromBitquery(this.syncParamsHistorical('1y'), 'binance-smart-chain', 'day', 30)
+    await this.syncFromBitquery(uids, this.syncParamsHistorical('1y'), 'binance-smart-chain', 'day', 30)
   }
 
   async syncLatest() {
@@ -36,8 +36,8 @@ class DexVolumeSyncer extends Syncer {
     }
 
     await Promise.all([
-      this.syncFromBigquery(params, '1h'),
-      this.syncFromBitquery(dateParams, 'binance-smart-chain', 'hour', 100)
+      this.syncFromBigquery(null, params, '1h'),
+      this.syncFromBitquery(null, dateParams, 'binance-smart-chain', 'hour', 100)
     ])
   }
 
@@ -45,8 +45,8 @@ class DexVolumeSyncer extends Syncer {
     await DexVolume.deleteExpired(dateFrom, dateTo)
   }
 
-  async syncFromBigquery({ dateFrom, dateTo }, datePeriod) {
-    const platforms = await this.getPlatforms('ethereum', true)
+  async syncFromBigquery(uids, { dateFrom, dateTo }, datePeriod) {
+    const platforms = await this.getPlatforms('ethereum', uids)
     const mapVolumes = (items, exchange) => items.map(item => {
       const platform = platforms.map[item.address] || {}
       const price = platform.price || 1
@@ -70,7 +70,7 @@ class DexVolumeSyncer extends Syncer {
     }
   }
 
-  async syncFromBitquery({ dateFrom }, chain, interval, chunkSize = 100) {
+  async syncFromBitquery(uids, { dateFrom }, chain, interval, chunkSize = 100) {
     let exchange
 
     switch (chain) {
@@ -81,7 +81,7 @@ class DexVolumeSyncer extends Syncer {
         return
     }
 
-    const platforms = await this.getPlatforms(chain, false)
+    const platforms = await this.getPlatforms(chain, uids)
     const chunks = chunk(platforms.list, chunkSize)
 
     for (let i = 0; i < chunks.length; i += 1) {
@@ -103,8 +103,8 @@ class DexVolumeSyncer extends Syncer {
     }
   }
 
-  async getPlatforms(chain, withPrice) {
-    const platforms = withPrice ? await Platform.getByChainWithPrice(chain) : await Platform.getByChain(chain)
+  async getPlatforms(chain, uids) {
+    const platforms = await Platform.getByChainWithPrice(chain, uids)
     const list = []
     const map = {}
 
