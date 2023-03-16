@@ -254,7 +254,7 @@ class CoinRankSyncer extends Syncer {
           SUM(v.volume) AS volume
         FROM platforms p
         LEFT JOIN dex_volumes v ON v.platform_id = p.id
-        WHERE v.date > NOW() - INTERVAL '30 days'
+        WHERE v.date > NOW() - INTERVAL :dateFrom
         GROUP BY 1
       )
       SELECT *, RANK() over (ORDER BY volume DESC) as rank
