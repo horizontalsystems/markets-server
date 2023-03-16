@@ -118,7 +118,7 @@ class CoinRankSyncer extends Syncer {
     )
 
     const setRank = (key, record, isTx) => {
-      if (!record || !record.id) {
+      if (!record || !record.id || !record.volume || !record.rank) {
         return
       }
 
@@ -128,7 +128,7 @@ class CoinRankSyncer extends Syncer {
         [`${key}_rank`]: String(record.rank)
       }
 
-      if (isTx) {
+      if (isTx && record.count) {
         item[`${key}_count`] = record.count
       }
 
@@ -514,13 +514,15 @@ class CoinRankSyncer extends Syncer {
   }
 
   storeStats(map) {
-    const records = Object.entries(map)
-      .map(([coinId, rank]) => {
-        return {
-          coin_id: parseInt(coinId, 10),
-          rank
-        }
-      })
+    const records = []
+    const entries = Object.entries(map)
+
+    for (let i = 0; i < entries.length; i += 1) {
+      const [coinId, rank] = entries[i];
+      if (coinId && rank) {
+        records.push({ rank, coin_id: parseInt(coinId, 10) })
+      }
+    }
 
     return CoinStats.bulkCreate(records, { updateOnDuplicate: ['rank'] })
       .then(recs => {
