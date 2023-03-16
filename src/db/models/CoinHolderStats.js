@@ -32,6 +32,7 @@ class CoinHolderStats extends SequelizeModel {
     const query = (`
       SELECT
          p.type,
+         p.address,
          h.total as count,
          h.holders as top_holders
         FROM coin_holder_stats h

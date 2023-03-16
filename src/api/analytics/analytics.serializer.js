@@ -153,10 +153,10 @@ module.exports = {
     return data
   },
 
-  holders: (data, chain, isNative) => {
+  holders: (data, chain, coinUid, isNative) => {
     return {
       count: nullOrString(data.count),
-      holders_url: CoinHolderSyncer.getHolderUrl(chain, isNative),
+      holders_url: CoinHolderSyncer.getHolderUrl(chain, coinUid, data.address, isNative),
       top_holders: data.top_holders.map(item => {
         return {
           address: item.address,

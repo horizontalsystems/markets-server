@@ -101,7 +101,7 @@ exports.holders = async ({ params, query }, res) => {
       res.status(404).send({})
       return
     }
-    res.send(serializer.holders(holders, query.blockchain_uid, holders.type === 'native'))
+    res.send(serializer.holders(holders, query.blockchain_uid, params.uid, holders.type === 'native'))
   } catch (e) {
     console.log(e)
     res.status(500)

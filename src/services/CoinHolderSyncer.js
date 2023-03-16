@@ -332,9 +332,9 @@ class CoinHolderSyncer extends Syncer {
       })
   }
 
-  static getHolderUrl(chain, isNative) {
+  static getHolderUrl(chain, coinUid, address, isNative) {
     const replace = url => {
-      return isNative ? `${url}/accounts` : `${url}/token/tokenholderchart/$address`
+      return isNative ? `${url}/accounts` : `${url}/token/tokenholderchart/${address}`
     }
 
     switch (chain) {
@@ -344,7 +344,7 @@ class CoinHolderSyncer extends Syncer {
       case 'dogecoin':
       case 'litecoin':
       case 'zcash':
-        return 'https://blockchair.com/$uid/addresses'
+        return `https://blockchair.com/${coinUid}/addresses`
       case 'ethereum':
         return replace('https://etherscan.io')
       case 'binance-smart-chain':
