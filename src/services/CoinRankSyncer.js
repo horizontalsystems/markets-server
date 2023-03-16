@@ -86,7 +86,9 @@ class CoinRankSyncer extends Syncer {
         ])
       }
 
-      map[coinId] = item
+      if (coinId) {
+        map[coinId] = item
+      }
     }
 
     const cexVolumes = await this.getCexVolumesRank(isFull)
