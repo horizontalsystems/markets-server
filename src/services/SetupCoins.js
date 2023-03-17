@@ -1,5 +1,5 @@
 const TurndownService = require('turndown')
-const { chunk, difference } = require('lodash')
+const { chunk, difference, intersection } = require('lodash')
 const { sleep } = require('../utils')
 const Coin = require('../db/models/Coin')
 const Chain = require('../db/models/Chain')
@@ -31,11 +31,12 @@ class SetupCoins {
 
     console.log('Fetched new coins', newCoins.length)
 
-    const chunks = chunk(newCoins, 400)
+    const chunks = chunk(newCoins, 250)
     const coins = []
 
     for (let i = 0; i < chunks.length; i += 1) {
       const data = await coingecko.getMarkets(chunks[i])
+      await sleep(10000)
       coins.push(...data)
     }
 
@@ -49,6 +50,17 @@ class SetupCoins {
 
     console.log(`Coins with market data ${coins.length}; ${filtered.length} coins with volume >= ${minVolume}`)
     console.log(filtered.map(coin => coin.uid).join(','))
+  }
+
+  async orphanedCoins() {
+    const allCoins = await coingecko.getCoinList()
+    const oldCoins = await Coin.findAll({
+      attributes: ['uid'],
+      where: { coingecko_id: Coin.literal('coingecko_id is null') }
+    })
+    console.log(`All coins: ${allCoins.length}; old coins: ${oldCoins.length}`)
+    const matchCoins = intersection(allCoins.map(coin => coin.id), oldCoins.map(coin => coin.coingecko_id))
+    console.log(matchCoins)
   }
 
   async setupCoins(ids) {

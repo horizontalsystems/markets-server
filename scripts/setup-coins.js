@@ -8,6 +8,7 @@ const sequelize = require('../src/db/sequelize')
 const program = new Command()
   .option('-a --all', 'setup all coins')
   .option('-f --fetch', 'fetch news coins')
+  .option('-o --orphaned', 'fetch orphaned coins')
   .option('-c --coins <coins>', 'setup only given coins')
   .option('--address-decimals <address>', 'force sync decimals for given address')
   .option('--chain-decimals <chain>', 'force sync decimals for given chain')
@@ -16,7 +17,7 @@ const program = new Command()
   .option('--chains [coins]', 'sync with chains')
   .parse(process.argv)
 
-async function start({ all, fetch, coins, tokenTypeDecimals, addressDecimals, chainDecimals, coinDecimals, chains }) {
+async function start({ all, fetch, coins, tokenTypeDecimals, addressDecimals, chainDecimals, coinDecimals, chains, orphaned }) {
   await sequelize.sync()
   const setupCoins = new SetupCoins()
 
@@ -37,6 +38,8 @@ async function start({ all, fetch, coins, tokenTypeDecimals, addressDecimals, ch
       await setupCoins.setupCoins()
     } else if (chains) {
       await setupCoins.syncChains(isString(chains) && chains.split(','))
+    } else if (orphaned) {
+      await setupCoins.orphanedCoins()
     }
   } catch (e) {
     console.log(e)
