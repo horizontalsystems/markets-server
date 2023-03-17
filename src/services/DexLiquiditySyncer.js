@@ -69,7 +69,7 @@ class DexLiquiditySyncer extends Syncer {
       try {
         const data = isHistory
           ? await pancakeGraph.getLiquidityHistory(dateFrom, chunks[i])
-          : await pancakeGraph.getLiquidity(chunks[i])
+          : await pancakeGraph.getLiquidityNow(chunks[i])
 
         await this.upsertHistoryData(data, platforms.map, 'pancakeswap', dateFrom, isHistory)
       } catch (e) {
@@ -84,9 +84,14 @@ class DexLiquiditySyncer extends Syncer {
 
     for (let i = 0; i < chunks.length; i += 1) {
       try {
-        const data = isHistory
-          ? await uniswapGraph.getLiquidityHistory(dateFrom, chunks[i], isV3)
-          : await uniswapGraph.getLiquidity(chunks[i], isV3)
+        let data
+        if (isHistory) {
+          data = await uniswapGraph.getLiquidityHistory(dateFrom, chunks[i], isV3)
+        } else if (isV3) {
+          data = await uniswapGraph.getLiquidity(chunks[i], isV3)
+        } else {
+          data = await uniswapGraph.getLiquidityNow(chunks[i], isV3)
+        }
 
         const exchange = isV3 ? 'uniswap-v3' : 'uniswap-v2'
         await this.upsertHistoryData(data, platforms.map, exchange, dateFrom, isHistory)
@@ -137,11 +142,9 @@ class DexLiquiditySyncer extends Syncer {
       const item = records[i];
       const date = isHistory ? (item.date * 1000) : dateTo
       const platform = platformMap[item.address.toLowerCase()] || {}
-      const liquidityUSD = (isHistory || exchange === 'uniswap-v3')
-        ? item.liquidityUSD
-        : item.liquidityUSD * platform.price
 
-      liquidity.push({ date, exchange, volume: liquidityUSD, platform_id: platform.id })
+      liquidity.push({ date, exchange, volume: item.liquidityUSD, platform_id: platform.id })
+
       if (isHistory) {
         volumes.push({ date, exchange, volume: item.volumeUSD, platform_id: platform.id })
       }

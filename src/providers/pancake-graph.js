@@ -77,6 +77,41 @@ class PancakeGraph {
       })
   }
 
+  async getLiquidityNow(tokens) {
+    console.log('Fetching dex liquidity from pancakeswap')
+
+    const build = token => `
+      ${this.tokenKey(token)}: tokenDayDatas(first: 1, skip: $skip, where: { token: "${token}" }, orderBy: date, orderDirection: desc) {
+        date
+        volumeUSD: dailyVolumeUSD
+        liquidityUSD: totalLiquidityUSD
+        # volume: dailyVolumeToken
+      }
+    `
+
+    const queries = tokens.map(token => build(token.address)).join('')
+    const query = {
+      variables: {
+        skip: 0
+      },
+      query: `query tokenDayDatas($skip: Int!) { ${queries} }`
+    }
+
+    return axios.post('/bsc-exchange', query)
+      .then(({ data }) => data)
+      .then(({ data }) => {
+        if (!data) {
+          return []
+        }
+
+        return this.normalizeLiquidity(tokens, data)
+      })
+      .catch(e => {
+        console.log(JSON.stringify(e.response.data))
+        return []
+      })
+  }
+
   normalizeLiquidity(tokens, data) {
     return tokens.flatMap(token => {
       const datum = data[this.tokenKey(token.address)]
