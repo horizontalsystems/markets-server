@@ -248,17 +248,20 @@ class CoinRankSyncer extends Syncer {
     }
 
     const query = `
-      with records as (
-        SELECT
-          p.coin_id as id,
-          SUM(v.volume) AS volume
+      with platforms as (
+        SELECT c.id as coin_id, p.id
+        FROM platforms p, coins c
+        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1
+      ),
+      records as (
+        SELECT p.coin_id AS id, SUM(v.volume) AS volume
         FROM platforms p
         LEFT JOIN dex_volumes v ON v.platform_id = p.id
-        WHERE v.date > NOW() - INTERVAL :dateFrom
+        WHERE v.date > NOW() - INTERVAL '30 days'
         GROUP BY 1
       )
       SELECT *, RANK() over (ORDER BY volume DESC) as rank
-      FROM records where volume > 1;
+      FROM records where volume > 0
     `
 
     result.daily = await Coin.query(query, { dateFrom: '24 hours' })
@@ -280,7 +283,12 @@ class CoinRankSyncer extends Syncer {
     }
 
     const query = `
-      with records as (
+      with platforms as (
+        SELECT c.id as coin_id, p.id
+        FROM platforms p, coins c
+        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1
+      ),
+      records as (
         SELECT
           p.coin_id as id,
           SUM(v.count) AS count,
@@ -307,7 +315,12 @@ class CoinRankSyncer extends Syncer {
   async getDexLiquidityRank() {
     console.log('Getting Liquidity Rank')
     const query = `
-      with liquidity as (
+      with platforms as (
+        SELECT c.id as coin_id, p.id
+        FROM platforms p, coins c
+        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1
+      ),
+      liquidity as (
         SELECT t1.platform_id, t1.volume
         FROM dex_liquidities t1
         JOIN (
