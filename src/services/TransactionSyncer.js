@@ -82,9 +82,16 @@ class TransactionSyncer extends Syncer {
   }
 
   async syncFromBitquery(dateParams, chain, isHourly, chunkSize = 100) {
-    const platforms = await this.getPlatforms(chain)
+    const platforms = await this.getPlatforms(chain, false, false)
     const chunks = chunk(platforms.list, chunkSize)
     const dateFrom = dateParams.dateFrom.slice(0, 10)
+    const storeData = async recs => {
+      if (isHourly && records.length) {
+        await this.adjustHourlyData(recs, dateFrom, dateParams.dateFrom, chain)
+      } else {
+        await this.bulkCreate(recs, chain)
+      }
+    }
 
     for (let i = 0; i < chunks.length; i += 1) {
       const transfers = await bitquery.getTransfers(dateFrom, chunks[i], chain)
@@ -97,12 +104,20 @@ class TransactionSyncer extends Syncer {
         }
       })
 
-      if (isHourly && records.length) {
-        await this.adjustHourlyData(records, dateFrom, dateParams.dateFrom, chain)
-      } else {
-        await this.bulkCreate(records, chain)
-      }
+      await storeData(records)
     }
+
+    const transactions = await bitquery.getTransactions(dateFrom, chain)
+    const records = transactions.map(transfer => {
+      return {
+        count: transfer.count,
+        volume: transfer.amount,
+        date: transfer.date.startOfInterval,
+        platform_id: platforms.map[chain]
+      }
+    })
+
+    await storeData(records)
   }
 
   async adjustHourlyData(transfers, dateFrom, date, network) {

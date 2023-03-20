@@ -148,12 +148,18 @@ class Bitquery {
 
   async getTransfers(dateFrom, platforms, network) {
     console.log(`Fetching transfers for ${network}`)
+    const tokens = platforms.map(item => item.address)
+
+    // Skips the native platforms
+    if (!tokens.length) {
+      return []
+    }
 
     const chain = this.getChain(network)
     const query = {
       variables: {
         since: dateFrom,
-        tokens: platforms.map(item => item.address)
+        tokens
       },
       query: `query ($since: ISO8601DateTime!, $tokens: [String!]) {
         res:${chain} {
@@ -165,6 +171,30 @@ class Bitquery {
             }
             currency {
               address
+            }
+          }
+        }
+      }`
+    }
+
+    return this.fetchTransfers(query)
+  }
+
+  async getTransactions(dateFrom, network) {
+    console.log(`Fetching transaction for ${network}`)
+
+    const chain = this.getChain(network)
+    const query = {
+      variables: {
+        since: dateFrom
+      },
+      query: `query ($since: ISO8601DateTime!) {
+        res:${chain} {
+          transfers: transactions(date: { since: $since }) {
+            count
+            amount(calculate: sum)
+            date {
+              startOfInterval(unit: day)
             }
           }
         }
