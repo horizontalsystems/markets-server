@@ -9,7 +9,7 @@ const { stringToHex } = require('../utils')
 class CoinRankSyncer extends Syncer {
   async start(force) {
     if (force) {
-      return this.syncForce()
+      return this.syncForce(true)
     }
 
     this.cron('0 1-23 * * *', () => this.sync())
@@ -17,9 +17,9 @@ class CoinRankSyncer extends Syncer {
     this.cron('1d', () => this.sync(true))
   }
 
-  async syncForce() {
-    console.log('Force sync ranks')
-    await this.sync(true)
+  async syncForce(isFull) {
+    console.log('Force sync ranks', isFull)
+    await this.sync(isFull)
     await this.syncRestStats()
   }
 
@@ -48,40 +48,44 @@ class CoinRankSyncer extends Syncer {
       const item = {}
 
       // These fields should be kept
-      pickIfExists(item, rank, [
-        'tvl',
-        'liquidity',
-        'tx_day',
-        'tx_week',
-        'tx_month',
-        'tx_day_count',
-        'tx_week_count',
-        'tx_month_count',
-        'cex_volume_day',
-        'cex_volume_week',
-        'cex_volume_month',
-        'dex_volume_day',
-        'dex_volume_week',
-        'dex_volume_month',
-        'address_day',
-        'address_week',
-        'address_month',
-        'revenue_day',
-        'revenue_week',
-        'revenue_month'
-      ])
-
       if (!isFull) {
         pickIfExists(item, rank, [
+          // 'tvl_rank',
+          'tvl',
+          // 'liquidity_rank',
+          'liquidity',
+          // 'tx_day',
+          // 'tx_day_rank',
+          // 'tx_day_count',
+          'tx_week',
           'tx_week_rank',
+          'tx_week_count',
+          'tx_month',
           'tx_month_rank',
+          'tx_month_count',
+          // 'cex_volume_day',
+          // 'cex_volume_day_rank',
+          'cex_volume_week',
           'cex_volume_week_rank',
+          'cex_volume_month',
           'cex_volume_month_rank',
+          // 'dex_volume_day',
+          // 'dex_volume_day_rank',
+          'dex_volume_week',
           'dex_volume_week_rank',
+          'dex_volume_month',
           'dex_volume_month_rank',
+          // 'address_day',
+          // 'address_day_rank',
+          'address_week',
           'address_week_rank',
+          'address_month',
           'address_month_rank',
+          // 'revenue_day',
+          // 'revenue_day_rank',
+          'revenue_week',
           'revenue_week_rank',
+          'revenue_month',
           'revenue_month_rank'
         ])
       }
