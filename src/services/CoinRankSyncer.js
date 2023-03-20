@@ -251,13 +251,13 @@ class CoinRankSyncer extends Syncer {
       with platforms as (
         SELECT c.id as coin_id, p.id
         FROM platforms p, coins c
-        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1
+        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1000000
       ),
       records as (
         SELECT p.coin_id AS id, SUM(v.volume) AS volume
         FROM platforms p
         LEFT JOIN dex_volumes v ON v.platform_id = p.id
-        WHERE v.date > NOW() - INTERVAL '30 days'
+        WHERE v.date > NOW() - INTERVAL :dateFrom
         GROUP BY 1
       )
       SELECT *, RANK() over (ORDER BY volume DESC) as rank
@@ -286,7 +286,7 @@ class CoinRankSyncer extends Syncer {
       with platforms as (
         SELECT c.id as coin_id, p.id
         FROM platforms p, coins c
-        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1
+        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1000000
       ),
       records as (
         SELECT
@@ -318,7 +318,7 @@ class CoinRankSyncer extends Syncer {
       with platforms as (
         SELECT c.id as coin_id, p.id
         FROM platforms p, coins c
-        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1
+        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1000000
       ),
       liquidity as (
         SELECT t1.platform_id, t1.volume
