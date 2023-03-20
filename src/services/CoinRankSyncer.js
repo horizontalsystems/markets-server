@@ -521,14 +521,14 @@ class CoinRankSyncer extends Syncer {
     }
 
     const coins = Object.values(map)
-    const weekly = coins.sort((a, b) => b.week - a.week)
+    const weekly = coins.sort((a, b) => parseFloat(b.week) - parseFloat(a.week))
       .map((item, index) => ({
         id: item.id,
         volume: item.week,
         rank: index + 1
       }))
 
-    const monthly = coins.sort((a, b) => b.month - a.month)
+    const monthly = coins.sort((a, b) => parseFloat(b.month) - parseFloat(a.month))
       .map((item, index) => ({
         id: item.id,
         volume: item.month,
