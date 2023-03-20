@@ -366,7 +366,12 @@ class CoinRankSyncer extends Syncer {
     }
 
     result.daily = await Coin.query(`
-      with records as (
+      with top_platforms as (
+        SELECT p.id, p.coin_id, p.type, p.address
+        FROM platforms p, coins c
+        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1000000
+      ),
+      records as (
         SELECT
           distinct on (t1.platform_id)
           t1.platform_id,
@@ -380,7 +385,7 @@ class CoinRankSyncer extends Syncer {
         SELECT
          p.coin_id as id,
          sum(r.count) as volume
-        FROM records r, platforms p
+        FROM records r, top_platforms p
         WHERE r.platform_id = p.id
         GROUP by 1
       )
@@ -456,9 +461,13 @@ class CoinRankSyncer extends Syncer {
   }
 
   async getPlatforms(chain) {
-    const platforms = await Platform.getByChain(chain, null, false)
     const map = {}
     const list = []
+    const platforms = await Platform.query(`
+      SELECT p.id, p.coin_id, p.type, p.address
+      FROM platforms p, coins c
+      WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1000000
+    `)
 
     platforms.forEach(({ type, address, coin_id: coinId }) => {
       if (type === 'native') {
