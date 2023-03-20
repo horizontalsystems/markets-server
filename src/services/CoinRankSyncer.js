@@ -475,7 +475,7 @@ class CoinRankSyncer extends Syncer {
         map[stringToHex(chain)] = { coinId }
       }
 
-      if (address) {
+      if (address && address.startsWith('0x')) {
         list.push({ address })
         map[address] = { coinId }
       }
