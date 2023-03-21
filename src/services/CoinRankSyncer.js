@@ -472,8 +472,10 @@ class CoinRankSyncer extends Syncer {
     const platforms = await Platform.query(`
       SELECT p.id, p.coin_id, p.type, p.address
       FROM platforms p, coins c
-      WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1000000
-    `)
+      WHERE c.id = p.coin_id
+        AND (c.market_data->>'market_cap')::numeric > 1000000
+        AND p.chain_uid = :chain
+    `, { chain })
 
     platforms.forEach(({ type, address, coin_id: coinId }) => {
       if (type === 'native') {
