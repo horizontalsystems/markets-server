@@ -43,7 +43,7 @@ exports.preview = async ({ params }, res) => {
   }
 }
 
-exports.show = async ({ params, dateFrom, dateTo, dateInterval, currencyRate }, res) => {
+exports.show = async ({ params, dateFrom, dateTo, dateFromTimestamp, dateInterval, currencyRate }, res) => {
   if (params.uid === 'pancakeswap-token') {
     return res.status(401).send({}) // todo: for testing only
   }
@@ -56,7 +56,7 @@ exports.show = async ({ params, dateFrom, dateTo, dateInterval, currencyRate }, 
 
     const stats = await CoinStats.analytics(coin.id)
 
-    const cexVolumes = await CoinPrice.getListByCoin(coin.id, dateInterval, dateFrom)
+    const cexVolumes = await CoinPrice.getListByCoin(coin.id, dateInterval, dateFrom, dateFromTimestamp)
     const dexVolumes = await DexVolume.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
     const dexLiquidity = await DexLiquidity.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
     const addresses = await Address.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)

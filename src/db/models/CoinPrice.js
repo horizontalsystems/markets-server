@@ -77,13 +77,14 @@ class CoinPrice extends SequelizeModel {
           ${dateFrom ? 'AND EXTRACT(epoch from p.date) >= :dateFrom' : ''}
           AND c.uid = :uid
       ) cp
+      WHERE cp.trunc >= :dateFrom
       ORDER BY cp.trunc, cp.date DESC
     `
 
     return CoinPrice.query(query, { dateFrom, uid })
   }
 
-  static async getListByCoin(coinId, interval, dateFrom) {
+  static async getListByCoin(coinId, interval, dateFrom, dateFromTime) {
     const query = `
       SELECT
         DISTINCT ON (cp.trunc)
@@ -97,10 +98,11 @@ class CoinPrice extends SequelizeModel {
         WHERE p.coin_id = :coinId
           AND p.date >= :dateFrom
       ) cp
+      WHERE cp.trunc >= :dateFromTime
       ORDER BY cp.trunc, cp.date DESC
     `
 
-    return CoinPrice.query(query, { dateFrom, coinId })
+    return CoinPrice.query(query, { dateFrom, dateFromTime, coinId })
   }
 
   static async getHistoricalPrice(coinUid, timestamp) {

@@ -26,6 +26,7 @@ const dateInterval = (interval, minInterval) => {
       return {
         dateInterval: '1d',
         dateFrom: utcDate({ month: -1 }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ month: -1 }, null, true),
         dateTo: utcStartOfDay({})
       }
     case '3m':
@@ -108,6 +109,7 @@ exports.setMonthlyInterval = (req, res, next) => {
 
   req.dateInterval = dateParams.dateInterval // eslint-disable-line
   req.dateFrom = dateParams.dateFrom // eslint-disable-line
+  req.dateFromTimestamp = dateParams.dateFromTimestamp // eslint-disable-line
   req.dateTo = dateParams.dateTo // eslint-disable-line
 
   next()
