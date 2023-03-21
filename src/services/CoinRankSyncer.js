@@ -403,10 +403,12 @@ class CoinRankSyncer extends Syncer {
       const bscPlatforms = await this.getPlatforms('binance-smart-chain')
       const bscAddresses = await dune.getMonthlyAddressStats(2035465, bscPlatforms.list)
 
-      const { weekly, monthly } = this.mapCoinAddress(ethAddresses, bscAddresses, {
-        ...ethPlatforms.map,
-        ...bscPlatforms.map,
-      })
+      const { weekly, monthly } = this.mapCoinAddress(
+        ethAddresses,
+        bscAddresses,
+        ethPlatforms.map,
+        bscPlatforms.map
+      )
 
       result.weekly = weekly
       result.monthly = monthly
@@ -488,10 +490,10 @@ class CoinRankSyncer extends Syncer {
     return { list, map }
   }
 
-  mapCoinAddress(ethAddresses, bscAddresses, platforms) {
+  mapCoinAddress(ethAddresses, bscAddresses, ethPlatforms, bscPlatforms) {
     const map = {}
     const set = (platform, data) => {
-      if (!platform || !data) {
+      if (!platform) {
         return
       }
 
@@ -510,14 +512,15 @@ class CoinRankSyncer extends Syncer {
     }
 
     for (let i = 0; i < Math.max(ethAddresses.length, bscAddresses.length); i += 1) {
-      const ethData = ethAddresses[i] || {}
-      const ethPlatform = platforms[ethData.platform]
+      const ethData = ethAddresses[i]
+      if (ethData) {
+        set(ethPlatforms[ethData.platform], ethData)
+      }
 
-      const bscData = bscAddresses[i] || {}
-      const bscPlatform = platforms[ethData.platform]
-
-      set(ethPlatform, ethData)
-      set(bscPlatform, bscData)
+      const bscData = bscAddresses[i]
+      if (bscData) {
+        set(bscPlatforms[bscData.platform], bscData)
+      }
     }
 
     const coins = Object.values(map)
