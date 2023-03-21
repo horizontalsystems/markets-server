@@ -255,7 +255,8 @@ class CoinRankSyncer extends Syncer {
       with platforms as (
         SELECT c.id as coin_id, p.id
         FROM platforms p, coins c
-        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1000000
+        WHERE c.id = p.coin_id
+        AND ((c.market_data->>'market_cap')::numeric > 1000000 or (c.market_data->>'total_volume')::numeric > 100000)
       ),
       records as (
         SELECT p.coin_id AS id, SUM(v.volume) AS volume
@@ -290,7 +291,8 @@ class CoinRankSyncer extends Syncer {
       with platforms as (
         SELECT c.id as coin_id, p.id
         FROM platforms p, coins c
-        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1000000
+        WHERE c.id = p.coin_id
+        AND ((c.market_data->>'market_cap')::numeric > 1000000 or (c.market_data->>'total_volume')::numeric > 100000)
       ),
       records as (
         SELECT
@@ -320,9 +322,10 @@ class CoinRankSyncer extends Syncer {
     console.log('Getting Liquidity Rank')
     const query = `
       with platforms as (
-        SELECT c.id as coin_id, p.id
+        SELECT p.coin_id, p.id
         FROM platforms p, coins c
-        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1000000
+        WHERE c.id = p.coin_id
+        AND ((c.market_data->>'market_cap')::numeric > 1000000 or (c.market_data->>'total_volume')::numeric > 100000)
       ),
       liquidity as (
         SELECT t1.platform_id, t1.volume
@@ -373,7 +376,8 @@ class CoinRankSyncer extends Syncer {
       with top_platforms as (
         SELECT p.id, p.coin_id, p.type, p.address
         FROM platforms p, coins c
-        WHERE c.id = p.coin_id AND (c.market_data->>'market_cap')::numeric > 1000000
+        WHERE c.id = p.coin_id
+        AND ((c.market_data->>'market_cap')::numeric > 1000000 or (c.market_data->>'total_volume')::numeric > 100000)
       ),
       records as (
         SELECT
@@ -473,7 +477,7 @@ class CoinRankSyncer extends Syncer {
       SELECT p.id, p.coin_id, p.type, p.address
       FROM platforms p, coins c
       WHERE c.id = p.coin_id
-        AND (c.market_data->>'market_cap')::numeric > 1000000
+        AND ((c.market_data->>'market_cap')::numeric > 1000000 or (c.market_data->>'total_volume')::numeric > 100000)
         AND p.chain_uid = :chain
     `, { chain })
 
