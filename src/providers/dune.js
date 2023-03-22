@@ -270,7 +270,7 @@ class DuneAnalytics {
 
   async getDexLiquidity(dateFrom) {
     const params = [{ key: 'date_from', type: 'text', value: dateFrom }]
-    return this.getQueryResults(1840723, params)
+    return this.getQueryResults(2248169, params)
   }
 
 }
