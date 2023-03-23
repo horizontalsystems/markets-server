@@ -86,7 +86,7 @@ class TransactionSyncer extends Syncer {
     const chunks = chunk(platforms.list, chunkSize)
     const dateFrom = dateParams.dateFrom.slice(0, 10)
     const storeData = async recs => {
-      if (isHourly && records.length) {
+      if (isHourly && recs.length) {
         await this.adjustHourlyData(recs, dateFrom, dateParams.dateFrom, chain)
       } else {
         await this.bulkCreate(recs, chain)
