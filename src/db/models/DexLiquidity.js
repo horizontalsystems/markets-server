@@ -55,14 +55,15 @@ class DexLiquidity extends SequelizeModel {
       JOIN (
         SELECT
           ${this.truncateDateWindow('date', window)} as trunc,
-          max(id) as max_id,
-          max(date) as max_date
+          exchange,
+          platform_id,
+          max(id) as max_id
          FROM dex_liquidities
         WHERE platform_id IN(:platformIds)
           AND date >= :dateFrom
           AND date < :dateTo
           ${showAll ? '' : 'AND (exchange = \'uniswap-v2\' OR exchange = \'uniswap-v3\' OR exchange = \'pancakeswap\')'}
-        GROUP by trunc, exchange
+        GROUP by trunc, exchange, platform_id
       ) t2 ON (t1.id = t2.max_id)
       GROUP by 1
       ORDER BY date

@@ -321,26 +321,25 @@ class CoinRankSyncer extends Syncer {
   async getDexLiquidityRank() {
     console.log('Getting Liquidity Rank')
     const query = `
-      with platforms as (
+      with top_platforms as (
         SELECT p.coin_id, p.id
         FROM platforms p, coins c
         WHERE c.id = p.coin_id
         AND ((c.market_data->>'market_cap')::numeric > 1000000 or (c.market_data->>'total_volume')::numeric > 100000)
       ),
       liquidity as (
-        SELECT t1.platform_id, t1.volume
-        FROM dex_liquidities t1
-        JOIN (
-          SELECT platform_id, max(id) as max_id
-          FROM dex_liquidities
-          GROUP by 1
-        ) t2 on t2.platform_id = t1.platform_id and t2.max_id = t1.id
+        SELECT
+          DISTINCT ON(l.exchange, l.platform_id) l.exchange, l.platform_id, l.date, l.volume, p.coin_id 
+        FROM dex_liquidities l, top_platforms p 
+        WHERE platform_id = p.id
+          AND volume > 0
+          AND date >= NOW() - interval '3 days'
+          ORDER BY exchange, platform_id, date desc
       ),
       records as (
         SELECT
-          p.coin_id as id, sum(l.volume) as volume
-        FROM platforms p, liquidity l
-        WHERE l.platform_id = p.id
+          coin_id as id, sum(volume) as volume
+        FROM liquidity
         GROUP by 1
       )
       SELECT *, RANK() over (ORDER BY volume DESC)

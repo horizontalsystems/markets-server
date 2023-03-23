@@ -53,7 +53,7 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async syncDailyStats(dateParams) {
-    await this.syncFromDune(utcStartOfDay({ days: -1 }))
+    await this.syncFromDune(utcDate({ days: -2 }, 'yyyy-MM-dd'))
     await this.adjustData(dateParams)
   }
 
@@ -158,7 +158,7 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async upsertLiquidity(records) {
-    const items = records.filter(item => item.platform_id)
+    const items = records.filter(item => item.platform_id && item.volume > 0)
     if (!items.length) {
       return
     }
