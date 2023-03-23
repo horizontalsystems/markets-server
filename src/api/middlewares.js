@@ -48,7 +48,7 @@ const dateInterval = (interval, minInterval) => {
       }
     case '2y':
       return {
-        dateInterval: '1d',
+        dateInterval: '1w',
         dateFrom: utcDate({ month: -24 }, 'yyyy-MM-dd'),
         dateTo: utcStartOfDay({})
       }
