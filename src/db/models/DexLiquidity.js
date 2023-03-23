@@ -40,12 +40,11 @@ class DexLiquidity extends SequelizeModel {
     return !!await DexLiquidity.findOne()
   }
 
-  static async getByCoin(uid, chain, window, dateFrom, dateTo) {
+  static async getByCoin(uid, chain, window, dateFrom, dateTo, showAll) {
     const platforms = await Platform.findByCoinUID(uid, chain)
     if (!platforms.length) {
       return {}
     }
-    const showAll = window === '1d' || window === '1w'
 
     const query = `
       SELECT

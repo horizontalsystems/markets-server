@@ -14,7 +14,10 @@ exports.dexVolume = async ({ query, dateFrom, dateTo, dateInterval, currencyRate
   res.send(serializer.serializeDexVolumes(dexVolume, currencyRate))
 }
 
-exports.dexLiquidity = async ({ query, dateFrom, dateInterval, currencyRate }, res) => {
-  const dexLiquidity = await DexLiquidity.getByCoin(query.coin_uid, query.platform, dateInterval, dateFrom, utcDate({}))
+exports.dexLiquidity = async ({ query, dateFrom, dateTo, dateInterval, currencyRate }, res) => {
+  const showAll = (dateInterval === '1d' || dateInterval === '1w')
+  const date = showAll ? dateTo : utcDate({})
+
+  const dexLiquidity = await DexLiquidity.getByCoin(query.coin_uid, query.platform, dateInterval, dateFrom, date, showAll)
   res.send(serializer.serializeDexLiquidity(dexLiquidity, currencyRate))
 }
