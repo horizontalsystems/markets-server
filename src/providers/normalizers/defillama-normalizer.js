@@ -15,6 +15,20 @@ exports.normalize = data => {
         return 'ethereum-classic'
       case 'TomoChain':
         return 'tomochain'
+      case 'Kardia':
+        return 'kardiachain'
+      case 'OKExChain':
+        return 'okex-chain'
+      case 'metis':
+        return 'metis-andromeda'
+      case 'Arbitrum Nova':
+        return 'arbitrum-nova'
+      case 'Klaytn':
+        return 'klay-token'
+      case 'harmony':
+        return 'harmony-shard-0'
+      case 'near':
+        return 'near-protocol'
       default:
         return chain.toLowerCase()
     }

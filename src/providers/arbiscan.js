@@ -3,7 +3,7 @@ const { stringify } = require('querystring')
 const { scanURL } = require('../utils')
 
 const web = create({ baseURL: scanURL('arbitrum') || 'https://arbiscan.io', timeout: 180000 })
-const api = create({ baseURL: 'https://api.arbiscan.io/api', timeout: 180000 })
+const api = create({ baseURL: scanURL('arbitrum') || 'https://api.arbiscan.io/api', timeout: 180000 })
 
 exports.getHolders = address => {
   return web.get(`/token/tokenholderchart/${address}?range=10`).then(res => res.data)
