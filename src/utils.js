@@ -8,10 +8,10 @@ exports.sleep = (timeout = 1000) => {
   })
 }
 
-exports.utcDate = (duration = {}, format = 'yyyy-MM-dd HH:mm:00Z') => {
-  return DateTime.utc()
-    .plus(duration)
-    .toFormat(format)
+exports.utcDate = (duration = {}, format = 'yyyy-MM-dd HH:mm:00Z', inSeconds = false) => {
+  const dateTime = DateTime.utc().plus(duration)
+
+  return inSeconds ? dateTime.toSeconds() : dateTime.toFormat(format)
 }
 
 exports.utcStartOfDay = (duration = {}, inSeconds = false) => {

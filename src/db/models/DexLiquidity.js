@@ -78,7 +78,7 @@ class DexLiquidity extends SequelizeModel {
     return { liquidity, platforms }
   }
 
-  static async getByPlatform(platformIds, window, dateFrom, dateTo) {
+  static async getByPlatform(platformIds, window, dateFrom, dateFromInt, dateTo) {
     const query = `
       SELECT
         t2.trunc AS timestamp,
@@ -96,12 +96,14 @@ class DexLiquidity extends SequelizeModel {
           AND (exchange = 'uniswap-v2' OR exchange = 'uniswap-v3' OR exchange = 'pancakeswap')
         GROUP by trunc, exchange
       ) t2 ON (t1.id = t2.max_id)
+      WHERE t2.trunc >= :dateFromInt
       GROUP by 1
       ORDER BY timestamp
     `
 
     return DexLiquidity.query(query, {
       dateFrom,
+      dateFromInt,
       dateTo,
       platformIds
     })

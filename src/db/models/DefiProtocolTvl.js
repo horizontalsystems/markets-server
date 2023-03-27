@@ -69,7 +69,7 @@ class DefiProtocolTvl extends SequelizeModel {
     return DefiProtocolTvl.query(query, { defi_protocol_id: defiProtocol.id, dateFrom })
   }
 
-  static getByDefiProtocol(defiProtocolId, dateFrom, window) {
+  static getByDefiProtocol(defiProtocolId, dateFrom, dateFromInt, window) {
     const query = (`
       SELECT
         t2.time AS timestamp,
@@ -85,10 +85,11 @@ class DefiProtocolTvl extends SequelizeModel {
           AND date >= :dateFrom
         GROUP by time
       ) t2 ON (t1.id = t2.max_id AND t1.date = t2.max_date)
+      WHERE t2.time >= :dateFromInt
       ORDER BY timestamp
     `)
 
-    return DefiProtocolTvl.query(query, { defi_protocol_id: defiProtocolId, dateFrom })
+    return DefiProtocolTvl.query(query, { defi_protocol_id: defiProtocolId, dateFrom, dateFromInt })
   }
 
   static getListByDate(dateTo, slugs, interval = '1 day') {

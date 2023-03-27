@@ -43,7 +43,7 @@ exports.preview = async ({ params }, res) => {
   }
 }
 
-exports.show = async ({ params, dateFrom, dateTo, dateInterval, currencyRate }, res) => {
+exports.show = async ({ params, dateFrom, dateFromTimestamp, dateTo, dateInterval, currencyRate }, res) => {
   if (params.uid === 'pancakeswap-token') {
     return res.status(401).send({}) // todo: for testing only
   }
@@ -56,17 +56,17 @@ exports.show = async ({ params, dateFrom, dateTo, dateInterval, currencyRate }, 
 
     const stats = await CoinStats.analytics(coin.id)
 
-    const cexVolumes = await CoinPrice.getListByCoin(coin.id, dateInterval, dateFrom)
-    const dexVolumes = await DexVolume.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
-    const dexLiquidity = await DexLiquidity.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
-    const addresses = await Address.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
-    const transactions = await Transaction.getByPlatform(coin.platforms, dateInterval, dateFrom, dateTo)
+    const cexVolumes = await CoinPrice.getListByCoin(coin.id, dateInterval, dateFrom, dateFromTimestamp)
+    const dexVolumes = await DexVolume.getByPlatform(coin.platforms, dateInterval, dateFrom, dateFromTimestamp, dateTo)
+    const dexLiquidity = await DexLiquidity.getByPlatform(coin.platforms, dateInterval, dateFrom, dateFromTimestamp, dateTo)
+    const addresses = await Address.getByPlatform(coin.platforms, dateInterval, dateFrom, dateFromTimestamp, dateTo)
+    const transactions = await Transaction.getByPlatform(coin.platforms, dateInterval, dateFrom, dateFromTimestamp, dateTo)
     const holders = await CoinHolderStats.getTotalByPlatforms(coin.platforms)
 
     const defiProtocolData = {}
     const defiProtocol = await DefiProtocol.findOne({ where: { coin_id: coin.id } })
     if (defiProtocol) {
-      defiProtocolData.tvls = await DefiProtocolTvl.getByDefiProtocol(defiProtocol.id, dateFrom, dateInterval)
+      defiProtocolData.tvls = await DefiProtocolTvl.getByDefiProtocol(defiProtocol.id, dateFrom, dateFromTimestamp, dateInterval)
       defiProtocolData.ratio = parseFloat(coin.market_cap) / parseFloat(defiProtocol.tvl)
     }
 
