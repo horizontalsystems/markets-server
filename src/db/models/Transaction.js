@@ -94,7 +94,7 @@ class Transaction extends SequelizeModel {
         GROUP by 1
         ORDER by timestamp
       )
-      SELECT * FROM recs WHERE timestamp >= :dateFromInt
+      SELECT *, count::text AS count FROM recs WHERE timestamp >= :dateFromInt
     `
 
     return Transaction.query(query, { dateFrom, dateFromInt, dateTo, platformIds })

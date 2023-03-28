@@ -119,7 +119,7 @@ const dailyInterval = interval => {
       return {
         dateInterval: '1d',
         dateFrom: utcDate({ month: -12 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ month: -12 }, true, null),
+        dateFromTimestamp: utcDate({ month: -12 }, true, true),
         dateTo: utcStartOfDay({})
       }
     case '2y':

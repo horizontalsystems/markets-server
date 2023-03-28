@@ -217,7 +217,7 @@ module.exports = {
       const data = { timestamp: item.timestamp }
 
       if (isTx) {
-        data.count = parseInt(item.count, 10)
+        data.count = nullOrString(item.count)
         data.volume = valueInCurrency(item.volume, rate)
         result.push(data)
         continue
@@ -227,7 +227,7 @@ module.exports = {
       if (rate) {
         value = valueInCurrency(item[field], rate)
       } else {
-        value = parseInt(item[field], 10)
+        value = nullOrString(item[field])
       }
 
       data[field] = value

@@ -77,7 +77,7 @@ class CoinPrice extends SequelizeModel {
           ${dateFrom ? 'AND EXTRACT(epoch from p.date) >= :dateFrom' : ''}
           AND c.uid = :uid
       ) cp
-      WHERE cp.trunc >= :dateFrom
+      ${dateFrom ? 'WHERE cp.trunc >= :dateFrom' : ''}
       ORDER BY cp.trunc, cp.date DESC
     `
 

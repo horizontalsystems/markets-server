@@ -101,7 +101,7 @@ class Address extends SequelizeModel {
         GROUP BY 1
         ORDER BY timestamp
       )
-      select * from recs where timestamp >= :dateFromInt
+      select *, count::text as count from recs where timestamp >= :dateFromInt
     `)
 
     return Address.query(query, { dateFrom, dateFromInt, dateTo, platformIds })
