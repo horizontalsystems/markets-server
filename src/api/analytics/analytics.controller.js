@@ -119,3 +119,39 @@ exports.ranks = async ({ query }, res) => {
     res.send({ error: 'Internal server error' })
   }
 }
+
+exports.addresses = async (req, res, next) => {
+  try {
+    const data = await Address.getByPlatform(req.coin.platforms, req.dateInterval, req.dateFrom, req.dateFromTimestamp, req.dateTo)
+    res.send(serializer.serialize(data, 'count'))
+  } catch (e) {
+    next(e)
+  }
+}
+
+exports.transactions = async (req, res, next) => {
+  try {
+    const data = await Transaction.getByPlatform(req.coin.platforms, req.dateInterval, req.dateFrom, req.dateFromTimestamp, req.dateTo, true)
+    res.send(serializer.serialize(data, 'count', req.currencyRate, true))
+  } catch (e) {
+    next(e)
+  }
+}
+
+exports.dexVolumes = async (req, res, next) => {
+  try {
+    const data = await DexVolume.getByPlatform(req.coin.platforms, req.dateInterval, req.dateFrom, req.dateFromTimestamp, req.dateTo)
+    res.send(serializer.serialize(data, 'volume', req.currencyRate))
+  } catch (e) {
+    next(e)
+  }
+}
+
+exports.dexLiquidity = async (req, res, next) => {
+  try {
+    const data = await DexLiquidity.getByPlatform(req.coin.platforms, req.dateInterval, req.dateFrom, req.dateFromTimestamp, req.dateTo)
+    res.send(serializer.serialize(data, 'volume', req.currencyRate))
+  } catch (e) {
+    next(e)
+  }
+}

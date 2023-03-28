@@ -43,4 +43,16 @@ module.exports = {
       blockchain_uid: Joi.string().required()
     })
   }),
+
+  // GET /v1/analytics/:uid/[transactions/address/dex-volumes/dex-liquidity]
+  validateDexData: validate({
+    params: Joi.object({
+      uid: Joi.string().required()
+    }),
+    query: Joi.object({
+      currency: Joi.string(),
+      interval: Joi.string().valid('1w', '2w', '1m', '3m', '6m', '1y', 'all')
+    })
+  }),
+
 }

@@ -207,5 +207,33 @@ module.exports = {
     }
 
     return items
-  }
+  },
+
+  serialize(items, field, rate, isTx) {
+    const result = []
+
+    for (let i = 0; i < items.length; i += 1) {
+      const item = items[i];
+      const data = { timestamp: item.timestamp }
+
+      if (isTx) {
+        data.count = parseInt(item.count, 10)
+        data.volume = valueInCurrency(item.volume, rate)
+        result.push(data)
+        continue
+      }
+
+      let value
+      if (rate) {
+        value = valueInCurrency(item[field], rate)
+      } else {
+        value = parseInt(item[field], 10)
+      }
+
+      data[field] = value
+      result.push(data)
+    }
+
+    return result
+  },
 }
