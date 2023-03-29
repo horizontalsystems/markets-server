@@ -97,36 +97,36 @@ const dailyInterval = interval => {
     case '1m':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ month: -1 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ month: -1 }, null, true),
+        dateFrom: utcDate({ days: -30 }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: -30 }, null, true),
         dateTo: utcStartOfDay({})
       }
     case '3m':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ month: -3 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ month: -3 }, null, true),
+        dateFrom: utcDate({ days: -90 }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: -90 }, null, true),
         dateTo: utcStartOfDay({})
       }
     case '6m':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ month: -6 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ month: -6 }, null, true),
+        dateFrom: utcDate({ days: -180 }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: -180 }, null, true),
         dateTo: utcStartOfDay({})
       }
     case '1y':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ month: -12 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ month: -12 }, true, true),
+        dateFrom: utcDate({ days: -365 }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: -365 }, true, true),
         dateTo: utcStartOfDay({})
       }
     case '2y':
       return {
         dateInterval: '1w',
-        dateFrom: utcDate({ month: -24 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ month: -24 }, null, true),
+        dateFrom: utcDate({ days: -24 * 30 }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: -24 * 30 }, null, true),
         dateTo: utcStartOfDay({})
       }
     case 'all':
@@ -139,8 +139,8 @@ const dailyInterval = interval => {
     default:
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ month: -1 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ month: -1 }, null, true),
+        dateFrom: utcDate({ days: -30 }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: -30 }, null, true),
         dateTo: utcStartOfDay({})
       }
   }
