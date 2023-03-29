@@ -16,8 +16,10 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
     this.prices = {}
   }
 
-  async start() {
-    this.cron('10m', this.syncHistoricalPrices)
+  async start(syncHistorical) {
+    if (syncHistorical) {
+      this.cron('10m', this.syncHistoricalPrices)
+    }
 
     const running = true
     while (running) {
@@ -30,13 +32,17 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
     }
   }
 
-  async syncCoins(uid) {
+  async syncCoins(uid, syncHistorical) {
     const coins = await this.getCoins(uid)
     const chunk = 2000
     const chunks = Array(5).fill(chunk)
 
     for (let i = 0; i < chunks.length; i += 1) {
       await this.fetchStats(chunk * i, chunk, coins)
+    }
+
+    if (syncHistorical) {
+      await this.syncHistoricalPrices()
     }
   }
 
