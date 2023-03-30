@@ -145,33 +145,6 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
     return { uids, map }
   }
-
-  chunk(array) {
-    const chunkList = []
-    const chunkSize = 6000 // to fit header buffers
-
-    let size = 0
-    let index = 0
-
-    for (let i = 0; i < array.length; i += 1) {
-      const item = array[i]
-
-      if (size > chunkSize) {
-        size = 0
-        index += 1
-      }
-
-      if (!chunkList[index]) {
-        chunkList[index] = []
-      }
-
-      chunkList[index].push(item)
-      size += item.length
-    }
-
-    return chunkList
-  }
-
 }
 
 module.exports = CoinPriceSyncer
