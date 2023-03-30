@@ -8,20 +8,19 @@ const program = new Command()
   .option('-c --coins <coins>', 'sync given coins')
   .option('-h --history', 'sync historical data')
   .option('-a --all', 'sync all historical data')
-  .option('-f --force', 'force sync data')
   .parse(process.argv)
 
-async function start({ coins, history, force, all }) {
+async function start({ coins, history, all }) {
   await sequelize.sync()
   const syncer = new CoinPriceSyncer()
   const uids = coins ? coins.split(',') : null
 
-  if (history) {
+  if (coins && history) {
     return syncer.syncHistory(uids, all)
   }
 
-  return force
-    ? syncer.syncFromCoingecko(uids)
+  return coins
+    ? syncer.sync(uids)
     : syncer.start()
 }
 

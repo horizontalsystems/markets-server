@@ -12,9 +12,15 @@ const debug = msg => {
 
 class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
+  constructor() {
+    super()
+    this.prices = {}
+  }
+
   async start() {
     this.adjustHistoryGaps()
     this.cron('0 0 */3 * *', this.syncUids)
+    this.cron('10m', this.storeCoinPrices)
 
     await this.schedule()
   }
@@ -74,18 +80,34 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
       .set({ minute: 10 * parseInt(minutes / 10) })
       .toFormat('yyyy-MM-dd HH:mm')
 
-    const mapData = (id, item) => [
+    const mapMarket = (id, item) => [
       id,
       item.price,
       JSON.stringify(item.price_change),
       JSON.stringify(item.market_data),
-      item.last_updated,
-      minutesRounded
+      item.last_updated
     ]
 
-    const values = coins
-      .filter(c => c.price && idsMap[c.coingecko_id])
-      .flatMap(c => idsMap[c.coingecko_id].map(id => mapData(id, c)))
+    const mapPrice = (id, coin) => ({
+      coin_id: id,
+      price: coin.price,
+      date: minutesRounded,
+      volume: coin.market_data.total_volume
+    })
+
+    const values = []
+
+    for (let i = 0; i < coins.length; i += 1) {
+      const coin = coins[i];
+      const coinIds = idsMap[coin.coingecko_id]
+
+      if (coinIds && coin.price) {
+        coinIds.forEach(id => {
+          values.push(mapMarket(id, coin))
+          this.prices[id] = mapPrice(id, coin)
+        })
+      }
+    }
 
     if (!values.length) {
       return
@@ -93,7 +115,6 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
     try {
       await Coin.updateCoins(values)
-      await CoinPrice.insertMarkets(values)
       debug(`Synced coins ${values.length}`)
     } catch (e) {
       debug(e)
@@ -120,6 +141,16 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
       { coingecko_id: null },
       { where: { id: depCoins.map(c => c.id) } }
     )
+  }
+
+  async storeCoinPrices() {
+    const records = Object.values(this.prices)
+    if (!records.length) {
+      return
+    }
+    console.log('Syncing historical prices', records.length)
+    this.prices = {}
+    return CoinPrice.bulkCreate(records, { updateOnDuplicate: ['price'] })
   }
 
   async getCoins(uid) {

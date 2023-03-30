@@ -6,7 +6,7 @@ const CoinStatsSyncer = require('../src/services/CoinStatsSyncer')
 
 const program = new Command()
   .option('-c --coins <coins>', 'sync market data for given coin')
-  .option('-k --keep <keep>', 'keep price and volume history')
+  .option('-k --keep', 'keep price and volume history')
   .parse(process.argv)
 
 async function start({ coins, keep }) {
