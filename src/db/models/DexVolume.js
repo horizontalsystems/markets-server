@@ -77,7 +77,7 @@ class DexVolume extends SequelizeModel {
         FROM dex_volumes
         WHERE platform_id IN (:platformIds)
           AND date >= :dateFrom
-          AND date < :dateTo
+          AND date <= :dateTo
         GROUP BY 1
         ORDER BY timestamp
       )
