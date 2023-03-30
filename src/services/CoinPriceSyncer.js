@@ -2,7 +2,6 @@ const { parseInt, chunk } = require('lodash')
 const { DateTime } = require('luxon')
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
-const defillama = require('../providers/defillama')
 const Coin = require('../db/models/Coin')
 const CoinPrice = require('../db/models/CoinPrice')
 const CoinPriceHistorySyncer = require('./CoinPriceHistorySyncer')
@@ -17,14 +16,14 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     this.adjustHistoryGaps()
     this.cron('0 0 */3 * *', this.syncUids)
 
-    await this.sync()
+    await this.schedule()
   }
 
-  async sync(fromDefillama) {
+  async schedule() {
     const running = true
     while (running) {
       try {
-        await (fromDefillama ? this.syncFromDefillama() : this.syncFromCoingecko())
+        await this.sync()
       } catch (e) {
         debug(e)
         process.exit(1)
@@ -32,21 +31,12 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     }
   }
 
-  async syncFromCoingecko(uid) {
+  async sync(uid) {
     const coins = await this.getCoins(uid)
     const chunks = chunk(Array.from(coins.uids), 250)
 
     for (let i = 0; i < chunks.length; i += 1) {
       await this.fetchFromCoingecko(chunks[i], coins.map)
-    }
-  }
-
-  async syncFromDefillama(uid) {
-    const coins = await this.getCoins(uid)
-    const chunks = this.chunk(Array.from(coins.uids).map(i => `coingecko:${i}`))
-
-    for (let i = 0; i < chunks.length; i += 1) {
-      await this.fetchFromDefillama(chunks[i], coins.map)
     }
   }
 
@@ -75,39 +65,6 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
         await utils.sleep(50000)
       }
     }
-  }
-
-  async fetchFromDefillama(coinUids, idsMap) {
-    debug(`Syncing coins ${coinUids.length}`)
-
-    let data = {}
-    try {
-      data = await defillama.getPrices(coinUids)
-    } catch (e) {
-      console.error(e)
-    }
-
-    const prices = {}
-    Object.entries(data).forEach(([key, value]) => {
-      const [, address] = key.split(':')
-      const coinIds = idsMap[address] || []
-      const now = DateTime.now()
-
-      coinIds.forEach(coinId => {
-        const updateTime = new Date(value.timestamp * 1000)
-        const updatedAt = new Date(updateTime - 60 * 1000)
-
-        let timestamp = updateTime
-        if (timestamp >= now.plus({ minutes: -30 })) {
-          timestamp = new Date()
-        }
-
-        prices[coinId] = { timestamp, updatedAt, price: value.price }
-      })
-    })
-
-    await this.updateCoinPrices(Object.entries(prices))
-    await utils.sleep(1000)
   }
 
   async updateCoins(coins, idsMap) {
@@ -163,35 +120,6 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
       { coingecko_id: null },
       { where: { id: depCoins.map(c => c.id) } }
     )
-  }
-
-  updateCoinPrices(entries) {
-    const records = entries
-      .map(([id, value]) => {
-        if (!id || !value || !value.price || !value.timestamp) {
-          return null
-        }
-
-        return [
-          parseInt(id),
-          value.price,
-          value.timestamp,
-          value.updatedAt
-        ]
-      })
-      .filter(i => i)
-
-    if (!records.length) {
-      return
-    }
-
-    return Coin.updatePricesIfExpired(records)
-      .then(([, updated]) => {
-        console.log('Updated coins', updated)
-      })
-      .catch(e => {
-        console.log(e)
-      })
   }
 
   async getCoins(uid) {
