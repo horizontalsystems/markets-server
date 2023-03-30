@@ -79,54 +79,56 @@ const dateInterval = (interval, minInterval) => {
 }
 
 const dailyInterval = interval => {
+  const daysToSecs = days => (days * 24 * 60 * 60)
+
   switch (interval) {
     case '1w':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ days: -7 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ days: -7 }, null, true),
+        dateFrom: utcDate({ days: daysToSecs(-7) }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: daysToSecs(-7) }, null, true),
         dateTo: utcStartOfDay({})
       }
     case '2w':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ days: -14 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ days: -14 }, null, true),
+        dateFrom: utcDate({ days: daysToSecs(-14) }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: daysToSecs(-14) }, null, true),
         dateTo: utcStartOfDay({})
       }
     case '1m':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ days: -30 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ days: -30 }, null, true),
+        dateFrom: utcDate({ days: daysToSecs(-30) }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: daysToSecs(-30) }, null, true),
         dateTo: utcStartOfDay({})
       }
     case '3m':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ days: -90 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ days: -90 }, null, true),
+        dateFrom: utcDate({ days: daysToSecs(-90) }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: daysToSecs(-90) }, null, true),
         dateTo: utcStartOfDay({})
       }
     case '6m':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ days: -180 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ days: -180 }, null, true),
+        dateFrom: utcDate({ days: daysToSecs(-180) }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: daysToSecs(-180) }, null, true),
         dateTo: utcStartOfDay({})
       }
     case '1y':
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ days: -365 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ days: -365 }, true, true),
+        dateFrom: utcDate({ days: daysToSecs(-365) }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: daysToSecs(-365) }, true, true),
         dateTo: utcStartOfDay({})
       }
     case '2y':
       return {
         dateInterval: '1w',
-        dateFrom: utcDate({ days: -24 * 30 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ days: -24 * 30 }, null, true),
+        dateFrom: utcDate({ days: daysToSecs(-24 * 30) }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: daysToSecs(-24 * 30) }, null, true),
         dateTo: utcStartOfDay({})
       }
     case 'all':
@@ -139,8 +141,8 @@ const dailyInterval = interval => {
     default:
       return {
         dateInterval: '1d',
-        dateFrom: utcDate({ days: -30 }, 'yyyy-MM-dd'),
-        dateFromTimestamp: utcDate({ days: -30 }, null, true),
+        dateFrom: utcDate({ days: daysToSecs(-30) }, 'yyyy-MM-dd'),
+        dateFromTimestamp: utcDate({ days: daysToSecs(-30) }, null, true),
         dateTo: utcStartOfDay({})
       }
   }
