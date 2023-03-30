@@ -90,7 +90,7 @@ class Transaction extends SequelizeModel {
         FROM transactions
         WHERE platform_id IN(:platformIds)
           AND date >= :dateFrom
-          AND date <= :dateTo
+          AND date < :dateTo
         GROUP by 1
         ORDER by timestamp
       )
