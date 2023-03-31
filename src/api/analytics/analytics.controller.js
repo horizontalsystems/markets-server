@@ -44,10 +44,6 @@ exports.preview = async ({ params }, res) => {
 }
 
 exports.show = async ({ params, dateFrom, dateFromTimestamp, dateTo, dateInterval, currencyRate }, res) => {
-  if (params.uid === 'pancakeswap-token') {
-    return res.status(401).send({}) // todo: for testing only
-  }
-
   try {
     const coin = await Coin.getPlatforms(params.uid)
     if (!coin) {
