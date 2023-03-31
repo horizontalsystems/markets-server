@@ -4,7 +4,7 @@ const createAxios = require('axios').create
 const apiKey = process.env.COINGECKO_KEY
 const axios = createAxios({
   baseURL: `https://${apiKey ? 'pro-' : ''}api.coingecko.com/api/v3`,
-  timeout: 180000,
+  timeout: 180000 * 3,
   params: {
     ...(apiKey && { x_cg_pro_api_key: apiKey })
   }
@@ -12,7 +12,7 @@ const axios = createAxios({
 
 const axiosNonAPI = createAxios({
   baseURL: 'https://www.coingecko.com',
-  timeout: 180000
+  timeout: 180000 * 3
 })
 
 const {
@@ -119,6 +119,24 @@ exports.getMarkets = function getMarkets(coinIds, page, perPage) {
   return axios
     .get(`/coins/markets?${querystring.stringify(params)}`)
     .then(resp => normalizeMarkets(resp.data))
+}
+
+exports.getSimplePrices = (coinIds) => {
+  const params = {
+    vs_currencies: 'usd',
+    include_market_cap: true,
+    include_24hr_vol: true,
+    include_24hr_change: true,
+    include_last_updated_at: true
+  }
+
+  if (coinIds) {
+    params.ids = coinIds.join(',')
+  }
+
+  return axios
+    .get(`/simple/price?${querystring.stringify(params)}`)
+    .then(resp => resp.data)
 }
 
 exports.getCoinList = function getCoinList() {

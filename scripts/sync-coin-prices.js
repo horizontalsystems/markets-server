@@ -8,11 +8,12 @@ const program = new Command()
   .option('-c --coins <coins>', 'sync given coins')
   .option('-h --history', 'sync historical data')
   .option('-a --all', 'sync all historical data')
+  .option('-s --simple', 'sync simple price')
   .parse(process.argv)
 
-async function start({ coins, history, all }) {
+async function start({ coins, history, all, simple }) {
   await sequelize.sync()
-  const syncer = new CoinPriceSyncer()
+  const syncer = new CoinPriceSyncer(simple)
   const uids = coins ? coins.split(',') : null
 
   if (coins && history) {

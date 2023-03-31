@@ -12,20 +12,17 @@ const debug = msg => {
 
 class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
-  constructor() {
+  constructor(isSimple) {
     super()
     this.prices = {}
-  }
+    this.isSimple = isSimple
 
-  async start() {
     this.adjustHistoryGaps()
     this.cron('0 0 */3 * *', this.syncUids)
     this.cron('10m', this.storeCoinPrices)
-
-    await this.schedule()
   }
 
-  async schedule() {
+  async start() {
     const running = true
     while (running) {
       try {
@@ -39,37 +36,22 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
   async sync(uid) {
     const coins = await this.getCoins(uid)
-    const chunks = chunk(Array.from(coins.uids), 250)
+    const chunks = this.chunk(Array.from(coins.uids))
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await this.fetchFromCoingecko(chunks[i], coins.map)
+      await (this.isSimple ? this.syncSimplePrices(chunks[i], coins.map) : this.syncPrices(chunks[i], coins.map))
     }
   }
 
-  async fetchFromCoingecko(coinUids, idsMap) {
+  async syncPrices(coinUids, idsMap) {
     debug(`Syncing coins ${coinUids.length}`)
 
     try {
       const coins = await coingecko.getMarkets(coinUids, 1, 250)
       await this.updateCoins(coins, idsMap)
       await utils.sleep(20000)
-    } catch ({ message, response = {} }) {
-      if (message) {
-        console.error(message)
-      }
-
-      if (response.status === 429) {
-        debug(`Sleeping 1min; Status ${response.status}`)
-        await utils.sleep(60000)
-      } else if (response.status >= 502 && response.status <= 504) {
-        debug(`Sleeping 30s; Status ${response.status}`)
-        await utils.sleep(30000)
-      } else if (response.status >= 400 && response.status <= 403) {
-        debug(`Sleeping 30s; Status ${response.status}`)
-        await utils.sleep(30000)
-      } else {
-        await utils.sleep(50000)
-      }
+    } catch (e) {
+      await this.handleHttpError(e)
     }
   }
 
@@ -115,6 +97,59 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
     try {
       await Coin.updateCoins(values)
+      debug(`Synced coins ${values.length}`)
+    } catch (e) {
+      debug(e)
+    }
+  }
+
+  async syncSimplePrices(uids, idsMap) {
+    debug(`Syncing simple prices ${uids.length}`)
+
+    try {
+      const data = await coingecko.getSimplePrices(uids)
+      await this.updateSimplePrices(Object.entries(data), idsMap)
+      await utils.sleep(20000)
+    } catch (e) {
+      await this.handleHttpError(e)
+    }
+  }
+
+  async updateSimplePrices(coins, idsMap) {
+    const dt = DateTime.now()
+    const dtStr = dt.toSQL()
+    const minutes = dt.get('minute')
+    const minutesRounded = dt
+      .set({ minute: 10 * parseInt(minutes / 10) })
+      .toFormat('yyyy-MM-dd HH:mm')
+
+    const mapPrice = (id, coin) => ({
+      coin_id: id,
+      price: coin.usd,
+      date: minutesRounded,
+      volume: coin.usd_24h_vol
+    })
+
+    const values = []
+
+    for (let i = 0; i < coins.length; i += 1) {
+      const [uid, coin] = coins[i];
+      const coinIds = idsMap[uid]
+
+      if (coinIds && coin.usd) {
+        coinIds.forEach(id => {
+          values.push([id, coin.usd, dtStr])
+          this.prices[id] = mapPrice(id, coin)
+        })
+      }
+    }
+
+    if (!values.length) {
+      return
+    }
+
+    try {
+      await Coin.updatePrices(values)
       debug(`Synced coins ${values.length}`)
     } catch (e) {
       debug(e)
@@ -175,6 +210,55 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     }
 
     return { uids, map }
+  }
+
+  async handleHttpError({ message, response = {} }) {
+    if (message) {
+      console.error(message)
+    }
+
+    if (response.status === 429) {
+      debug(`Sleeping 1min; Status ${response.status}`)
+      await utils.sleep(60000)
+    } else if (response.status >= 502 && response.status <= 504) {
+      debug(`Sleeping 30s; Status ${response.status}`)
+      await utils.sleep(30000)
+    } else if (response.status >= 400 && response.status <= 403) {
+      debug(`Sleeping 30s; Status ${response.status}`)
+      await utils.sleep(30000)
+    } else {
+      await utils.sleep(50000)
+    }
+  }
+
+  chunk(array) {
+    if (this.isSimple) {
+      return chunk(array, 250)
+    }
+
+    const chunkList = []
+    const chunkSize = 6000 // to fit header buffers
+
+    let size = 0
+    let index = 0
+
+    for (let i = 0; i < array.length; i += 1) {
+      const item = array[i]
+
+      if (size > chunkSize) {
+        size = 0
+        index += 1
+      }
+
+      if (!chunkList[index]) {
+        chunkList[index] = []
+      }
+
+      chunkList[index].push(item)
+      size += item.length
+    }
+
+    return chunkList
   }
 }
 
