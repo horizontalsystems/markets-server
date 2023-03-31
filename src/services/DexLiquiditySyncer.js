@@ -177,7 +177,7 @@ class DexLiquiditySyncer extends Syncer {
   }
 
   async upsertVolumes(records) {
-    const items = records.filter(item => item.platform_id)
+    const items = records.filter(item => item.platform_id && item.volume > 0)
     if (!items.length) {
       return
     }

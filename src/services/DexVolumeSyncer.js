@@ -119,7 +119,7 @@ class DexVolumeSyncer extends Syncer {
   }
 
   async bulkCreate(records) {
-    const items = records.filter(item => item.platform_id)
+    const items = records.filter(item => item.platform_id && item.volume > 0)
     if (!items.length) {
       return
     }
