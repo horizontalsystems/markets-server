@@ -70,7 +70,7 @@ class DefiProtocol extends SequelizeModel {
         D.*
       FROM defi_protocols D
       LEFT JOIN coins C on C.id = D.coin_id
-      WHERE D.tvl_rank IS NOT NULL
+      WHERE D.tvl_rank IS NOT NULL and D.tvl > 0
       ORDER BY D.tvl_rank
     `)
   }

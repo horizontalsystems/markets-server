@@ -143,6 +143,10 @@ class DefiProtocolSyncer extends Syncer {
       const coinId = ids[protocol.gecko_id]
       const prevTvl = prevTvlMap[protocol.slug] || {}
 
+      if (protocol.tvl <= 0) {
+        continue
+      }
+
       const values = {
         name: protocol.name,
         logo: protocol.logo,
