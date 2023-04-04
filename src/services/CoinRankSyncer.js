@@ -221,11 +221,12 @@ class CoinRankSyncer extends Syncer {
             coin_id, DATE_TRUNC('day', date) as trunc, max(id) as max_id
            FROM coin_prices
           WHERE date > NOW() - INTERVAL :dateFrom
+            AND coin_id != 11644 --// binance-peg-ethereum
           GROUP BY 1,2
         ) t2 ON (t1.id = t2.max_id and t1.coin_id = t2.coin_id)
         GROUP BY t1.coin_id
       )
-      SELECT *, RANK() over (ORDER BY volume DESC)
+      SELECT *, ROW_NUMBER() over (ORDER BY volume DESC) as rank
       FROM records where volume > 1
     `
     result.daily = await Coin.query(`

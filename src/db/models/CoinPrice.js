@@ -96,6 +96,7 @@ class CoinPrice extends SequelizeModel {
           ${this.truncateDateWindow('date', interval)} AS trunc
         FROM coin_prices p
         WHERE p.coin_id = :coinId
+          AND p.coin_id != 11644 --// binance-peg-ethereum
           AND p.date >= :dateFrom
       ) cp
       WHERE cp.trunc >= :dateFromInt
