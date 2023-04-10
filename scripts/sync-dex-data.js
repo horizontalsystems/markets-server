@@ -14,9 +14,10 @@ const program = new Command()
   .option('-a --address', 'sync addresses only')
   .option('-c --coins <coins>', 'sync historical data for the given coins')
   .option('-s --source <source>', 'sync historical data for the given coins')
+  .option('-p --print <chain>', 'just print information')
   .parse(process.argv)
 
-async function start({ tx, volume, liquidity, address, coins, source }) {
+async function start({ tx, volume, liquidity, address, coins, source, print }) {
   await sequelize.sync()
   const transactionSyncer = new TransactionSyncer()
   const dexVolumeSyncer = new DexVolumeSyncer()
@@ -33,11 +34,19 @@ async function start({ tx, volume, liquidity, address, coins, source }) {
     syncers.push(transactionSyncer, dexVolumeSyncer, dexLiquiditySyncer, addressSyncer)
   }
 
-  const promise = coins
-    ? syncers.map(s => s.syncHistorical(coins.split(','), source))
-    : syncers.map(s => s.start())
+  const mapper = s => {
+    if (coins) {
+      return s.syncHistorical(coins.split(','), source)
+    }
 
-  await Promise.all(promise).catch(e => {
+    if (print) {
+      return s.showPlatforms(print)
+    }
+
+    return s.start()
+  }
+
+  await Promise.all(syncers.map(mapper)).catch(e => {
     throw e
   })
 }
