@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const { chunk } = require('lodash')
 const { utcDate, stringToHex } = require('../utils')
-const dune = require('../providers/dune')
+const flipsidecrypto = require('../providers/flipsidecrypto')
 const bigquery = require('../providers/bigquery')
 const Platform = require('../db/models/Platform')
 const Address = require('../db/models/Address')
@@ -62,13 +62,13 @@ class AddressSyncer extends Syncer {
 
       if (chain === 'ethereum') {
         platforms = await this.getPlatforms(chain, true, false)
-        addressStats = await dune.getAddressStats(1925970, platforms.list, dateFrom)
+        addressStats = await flipsidecrypto.getActiveAddresses('999954b1-cb9c-4db0-817a-9316a46a9d84')
       } else if (chain === 'bitcoin') {
         platforms = await this.getPlatforms(['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash'], true, false)
         addressStats = await bigquery.getAddressStatsBtcBased(dateFrom)
       } else if (chain === 'binance-smart-chain') {
         platforms = await this.getPlatforms(chain, true, false)
-        addressStats = await dune.getAddressStats(1922534, platforms.list, dateFrom)
+        addressStats = await flipsidecrypto.getActiveAddresses('3dda0c7d-041e-45a2-ab70-bf646c74f617')
       }
 
       const chunks = chunk(addressStats, 200000)

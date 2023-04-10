@@ -4,7 +4,6 @@ const CoinStats = require('../db/models/CoinStats')
 const Platform = require('../db/models/Platform')
 const tokenterminal = require('../providers/tokenterminal')
 const flipsidecrypto = require('../providers/flipsidecrypto')
-const dune = require('../providers/dune')
 const { stringToHex } = require('../utils')
 
 class CoinRankSyncer extends Syncer {
@@ -403,16 +402,14 @@ class CoinRankSyncer extends Syncer {
 
     if (isFull) {
       const ethPlatforms = await this.getPlatforms('ethereum')
-      const ethAddresses = await dune.getMonthlyAddressStats(2032018, ethPlatforms.list)
+      const ethAddresses = await flipsidecrypto.getMonthlyAddressStats('938fee7b-5b2c-4961-a026-3df6694445f4')
 
       const bscPlatforms = await this.getPlatforms('binance-smart-chain')
-      const bscAddresses = await dune.getMonthlyAddressStats(2035465, bscPlatforms.list)
-      const bnbAddresses = await flipsidecrypto.getBnbActiveStats()
+      const bscAddresses = await flipsidecrypto.getMonthlyAddressStats('f76359bb-e5eb-4eee-91b6-6632974501d2')
 
       const { weekly, monthly } = this.mapCoinAddress(
         ethAddresses,
         bscAddresses,
-        bnbAddresses,
         ethPlatforms.map,
         bscPlatforms.map
       )
@@ -499,7 +496,7 @@ class CoinRankSyncer extends Syncer {
     return { list, map }
   }
 
-  mapCoinAddress(ethAddresses, bscAddresses, bnbAddresses, ethPlatforms, bscPlatforms) {
+  mapCoinAddress(ethAddresses, bscAddresses, ethPlatforms, bscPlatforms) {
     const map = {}
     const set = (platform, data) => {
       if (!platform) {
@@ -520,7 +517,7 @@ class CoinRankSyncer extends Syncer {
       }
     }
 
-    for (let i = 0; i < Math.max(ethAddresses.length, bscAddresses.length, bnbAddresses.length); i += 1) {
+    for (let i = 0; i < Math.max(ethAddresses.length, bscAddresses.length); i += 1) {
       const ethData = ethAddresses[i]
       if (ethData) {
         set(ethPlatforms[ethData.platform], ethData)
@@ -529,11 +526,6 @@ class CoinRankSyncer extends Syncer {
       const bscData = bscAddresses[i]
       if (bscData) {
         set(bscPlatforms[bscData.platform], bscData)
-      }
-
-      const bnbData = bnbAddresses[i]
-      if (bnbData) {
-        set(bscPlatforms[bnbData.platform], bnbData)
       }
     }
 

@@ -20,3 +20,34 @@ exports.getBnbActiveStats = () => {
       return []
     })
 }
+
+exports.getMonthlyAddressStats = queryId => {
+  const mapper = item => ({
+    platform: item.PLATFORM,
+    period: item.PERIOD,
+    address_count: item.ADDRESS_COUNT
+  })
+
+  return axios.get(`v2/queries/${queryId}/data/latest`)
+    .then(({ data }) => data.map(mapper))
+    .catch(e => {
+      console.log(e.message)
+      return []
+    })
+}
+
+exports.getActiveAddresses = queryId => {
+  const mapper = item => ({
+    platform: item.PLATFORM,
+    period: item.PERIOD,
+    block_date: item.BLOCK_DATE,
+    address_count: item.ADDRESS_COUNT
+  })
+
+  return axios.get(`v2/queries/${queryId}/data/latest`)
+    .then(({ data }) => data.map(mapper))
+    .catch(e => {
+      console.log(e.message)
+      return []
+    })
+}
