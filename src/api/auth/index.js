@@ -23,7 +23,7 @@ const router = express.Router()
 router.get('/get-key', validateAuthKey, controller.generateKey)
 
 /**
- * @api {post} /v1/auth/authenticate Get auth key
+ * @api {post} /v1/auth/authenticate Authenticate
  * @apiDescription authenticate
  * @apiVersion 1.0.0
  * @apiGroup Auth
@@ -31,7 +31,7 @@ router.get('/get-key', validateAuthKey, controller.generateKey)
  * @apiBody {String}  signature Signature
  * @apiBody {String}  address   Wallet address
  *
- * @apiSuccess  {String}  key   Random key
+ * @apiSuccess  {String}  token JSON Web Token
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK

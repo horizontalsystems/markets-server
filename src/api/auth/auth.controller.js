@@ -2,8 +2,8 @@ const jwt = require('jsonwebtoken')
 const util = require('ethereumjs-util')
 const crypto = require('crypto')
 const AuthKey = require('../../db/models/AuthKey')
+const Subscription = require('../../db/models/Subscription')
 const { utcDate } = require('../../utils')
-const NftHolder = require('../../db/models/NftHolder')
 
 function handleError(res, code, message) {
   res.status(code)
@@ -36,9 +36,12 @@ exports.authenticate = async ({ body }, res) => {
   }
 
   try {
-    const nft = await NftHolder.findOne({ where: { address } })
-    if (!nft) {
-      return handleError(res, 400, 'Not an NFT owner')
+    const currentDate = new Date()
+    const subscription = await Subscription.findOne({ where: { address } })
+    const expireIn = subscription ? (subscription.expire_date - currentDate) / 1000 / 60 / 60 / 24 : 0
+
+    if (expireIn <= 0) {
+      return handleError(res, 400, 'Expired or not subscribed yet')
     }
 
     const hash = util.hashPersonalMessage(Buffer.from(authKey.key))
@@ -50,7 +53,11 @@ exports.authenticate = async ({ body }, res) => {
       return handleError(res, 400, 'Invalid signature')
     }
 
-    const token = jwt.sign({ address }, process.env.SECRET)
+    const token = jwt.sign({ address, loginDate: currentDate.getTime() }, process.env.SECRET, {
+      expiresIn: `${parseInt(expireIn, 10)}d`
+    })
+
+    await subscription.update({ login_date: currentDate })
     await authKey.destroy()
 
     res.send({ token })
@@ -68,14 +75,23 @@ exports.requireAuth = (req, res, next) => {
     return handleError(res, 401, 'Unauthorized')
   }
 
-  jwt.verify(token, process.env.SECRET, (err, payload) => {
+  jwt.verify(token, process.env.SECRET, async (err, payload) => {
     if (err) {
       console.log(err)
       return handleError(res, 403)
     }
 
-    if (!payload || !payload.address) {
+    if (!payload || !payload.address || !payload.loginDate) {
       return handleError(res, 403)
+    }
+
+    const subscription = await Subscription.findOne({ where: { address: payload.address } })
+    if (!subscription) {
+      return handleError(res, 403)
+    }
+
+    if (subscription.login_date.getTime() > payload.loginDate) {
+      return handleError(res, 401, 'Logged in on another device')
     }
 
     next()
