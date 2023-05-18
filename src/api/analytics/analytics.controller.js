@@ -9,12 +9,26 @@ const DefiProtocol = require('../../db/models/DefiProtocol')
 const DefiProtocolTvl = require('../../db/models/DefiProtocolTvl')
 const CoinPrice = require('../../db/models/CoinPrice')
 const CoinHolderStats = require('../../db/models/CoinHolderStats')
+const Subscription = require('../../db/models/Subscription')
 
-exports.preview = async ({ params }, res) => {
+exports.preview = async ({ params, query }, res) => {
   try {
     const coin = await Coin.getPlatforms(params.uid)
     if (!coin) {
       return res.status(404).send({ error: 'Coin not found' })
+    }
+
+    const subscriptions = []
+    if (query.address) {
+      const address = query.address.split(',')
+      const subscrs = await Subscription.findAll({ where: { address } })
+      if (subscrs.length) {
+        const data = subscrs.map(item => ({
+          address: item.address,
+          deadline: item.expire_date.getTime() / 1000
+        }))
+        subscriptions.push(...data)
+      }
     }
 
     const stats = await CoinStats.analytics(coin.id)
@@ -35,7 +49,7 @@ exports.preview = async ({ params }, res) => {
       preview.other = stats.other || {}
     }
 
-    res.send(serializer.preview(preview))
+    res.send(serializer.preview(preview, subscriptions))
   } catch (e) {
     console.log(e)
     res.status(500)

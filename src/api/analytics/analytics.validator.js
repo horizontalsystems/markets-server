@@ -31,6 +31,9 @@ module.exports = {
   validatePreview: validate({
     params: Joi.object({
       uid: Joi.string().required()
+    }),
+    query: Joi.object({
+      address: Joi.string()
     })
   }),
 

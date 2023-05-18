@@ -89,7 +89,7 @@ module.exports = {
     return data
   },
 
-  preview: ({ cexvolumes, dexvolumes, dexliquidity, addresses, transactions, ranks, other, defiProtocol, holders }) => {
+  preview: ({ cexvolumes, dexvolumes, dexliquidity, addresses, transactions, ranks, other, defiProtocol, holders }, subscriptions) => {
     const data = {}
 
     if (cexvolumes) {
@@ -142,6 +142,10 @@ module.exports = {
         rank_30d: !!ranks.revenue_month_rank,
         value_30d: !!ranks.revenue_month
       }
+    }
+
+    if (subscriptions.length) {
+      data.subscriptions = subscriptions
     }
 
     data.reports = !!other.reports
