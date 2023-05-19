@@ -10,12 +10,17 @@ function handleError(res, code, message) {
   res.send({ message })
 }
 
-exports.generateKey = async ({ query }, res) => {
+exports.generateKey = async ({ query: { address } }, res) => {
   try {
+    const subscription = await Subscription.findOne({ where: { address } })
+    if (!subscription) {
+      return handleError(res, 403, 'Not subscribed yet')
+    }
+
     const randomKey = crypto.randomBytes(10).toString('base64')
     const expiresAt = utcDate({ minutes: 5 })
     await AuthKey.upsert({
-      address: query.address,
+      address,
       key: randomKey,
       expires_at: expiresAt
     })
@@ -23,7 +28,7 @@ exports.generateKey = async ({ query }, res) => {
     res.send({ key: randomKey })
   } catch (e) {
     console.log(e)
-    res.send({ message: 'Something went wrong' })
+    return handleError(res, 500, 'Something went wrong')
   }
 }
 
