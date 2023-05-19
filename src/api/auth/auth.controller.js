@@ -73,9 +73,8 @@ exports.authenticate = async ({ body }, res) => {
 }
 
 exports.requireAuth = (req, res, next) => {
-  const { authorization } = req.headers
+  const { authorization: token } = req.headers
 
-  const token = authorization && authorization.split(' ')[1]
   if (!token) {
     return handleError(res, 401, 'Unauthorized')
   }
