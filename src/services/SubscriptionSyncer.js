@@ -27,7 +27,7 @@ class SubscriptionSyncer extends Syncer {
 
       if (deadline) {
         await Subscription.upsert({
-          address: decoded.subscriber,
+          address: decoded.subscriber.toLowerCase(),
           expire_date: new Date(deadline * 1000),
           block_number: blockNumber
         })
