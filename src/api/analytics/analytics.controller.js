@@ -25,7 +25,7 @@ exports.preview = async ({ params, query }, res) => {
       if (subscrs.length) {
         const data = subscrs.map(item => ({
           address: item.address,
-          deadline: item.expire_date.getTime() / 1000
+          deadline: parseInt(item.expire_date.getTime() / 1000, 10)
         }))
         subscriptions.push(...data)
       }
