@@ -58,7 +58,7 @@ router.get('/ranks', validateRanks, controller.ranks)
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/:uid', validateShow, setCurrencyRate, setDailyInterval, controller.show)
+router.get('/:uid', validateShow, requireAuth, setCurrencyRate, setDailyInterval, controller.show)
 
 /**
  * @api {get} /v1/analytics/:uid/preview Analytics preview
@@ -89,7 +89,7 @@ router.get('/:uid', validateShow, setCurrencyRate, setDailyInterval, controller.
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/:uid/preview', validatePreview, requireAuth, controller.preview)
+router.get('/:uid/preview', validatePreview, controller.preview)
 
 /**
  * @api {get} /v1/analytics/:uid/holders Address holders
