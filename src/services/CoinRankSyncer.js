@@ -52,6 +52,8 @@ class CoinRankSyncer extends Syncer {
         pickIfExists(item, rank, [
           // 'tvl_rank',
           'tvl',
+          // 'holders_rank',
+          'holders',
           // 'liquidity_rank',
           'liquidity',
           // 'tx_day',
@@ -100,6 +102,7 @@ class CoinRankSyncer extends Syncer {
     const transactions = await this.getTransactionRank(isFull)
     const dexLiquidity = await this.getDexLiquidityRank()
     const tvls = await this.getTvlRank()
+    const holders = await this.getHoldersRank()
     const address = await this.getAddressRank(isFull)
     const revenue = await this.getRevenue()
 
@@ -120,6 +123,7 @@ class CoinRankSyncer extends Syncer {
       revenue.weekly.length,
       revenue.monthly.length,
       tvls.length,
+      holders.length,
       dexLiquidity.length,
     )
 
@@ -156,6 +160,7 @@ class CoinRankSyncer extends Syncer {
       setRank('tx_month', transactions.monthly[i], true)
 
       setRank('tvl', tvls[i])
+      setRank('holders', holders[i])
       setRank('address_day', address.daily[i])
       setRank('address_week', address.weekly[i])
       setRank('address_month', address.monthly[i])
@@ -362,6 +367,29 @@ class CoinRankSyncer extends Syncer {
       WHERE tvl_rank IS NOT NULL
       ORDER by tvl_rank
     `)
+  }
+
+  async getHoldersRank() {
+    console.log('Getting Holders Rank')
+
+    const query = (`
+      with platforms as (
+        SELECT c.id as coin_id, p.id
+        FROM platforms p, coins c
+        WHERE c.id = p.coin_id
+        AND ((c.market_data->>'market_cap')::numeric > 1000000 or (c.market_data->>'total_volume')::numeric > 100000)
+      ),
+      records as (
+        SELECT p.coin_id AS id, SUM(v.total::int) AS volume
+        FROM platforms p
+        LEFT JOIN coin_holder_stats v ON v.platform_id = p.id
+        GROUP BY 1
+      )
+      SELECT *, RANK() over (ORDER BY volume DESC) as rank
+      FROM records where volume > 0
+    `)
+
+    return Coin.query(query)
   }
 
   async getAddressRank(isFull) {

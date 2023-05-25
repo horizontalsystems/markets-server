@@ -11,8 +11,8 @@ const router = express.Router()
  * @apiVersion 1.0.0
  * @apiGroup Analytics
  *
- * @apiParam    {String}                                                              uid   Coin's uid
- * @apiParam    {String=cex_volume,dex_volume,dex_liquidity,tx_count,revenue,address} type  Rank type
+ * @apiParam    {String}                                                                      uid   Coin's uid
+ * @apiParam    {String=cex_volume,dex_volume,dex_liquidity,tx_count,revenue,address,holders} type  Rank type
  * @apiUse      Currencies
  *
  * @apiSuccessExample {json} Success-Response:
@@ -47,12 +47,16 @@ router.get('/ranks', validateRanks, controller.ranks)
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
  *  {
+ *    cex_volume: {
+ *      rank_30d: 1,
+ *      points: [{
+ *        "timestamp": 1682467200,
+ *        "volume": "101328876"
+ *      }]
+ *    },
  *    reports: 1,
- *    funds_invested: 1,
- *    holders: [{
- *      "blockchain_uid": "optimistic-ethereum",
- *      "holders_count": "11524"
- *    }]
+ *    funds_invested: "123",
+ *    holders_rank: 1
  *  }
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values

@@ -82,7 +82,7 @@ exports.show = async ({ params, dateFrom, dateFromTimestamp, dateTo, dateInterva
 
     if (stats) {
       res.send(
-        serializer.overview({
+        serializer.show({
           cexVolumes,
           dexVolumes,
           dexLiquidity,
