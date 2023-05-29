@@ -43,7 +43,7 @@ exports.authenticate = async ({ body }, res) => {
   try {
     const currentDate = new Date()
     const subscription = await Subscription.findOne({ where: { address } })
-    const expireIn = subscription ? (subscription.expire_date - currentDate) / 1000 / 60 / 60 / 24 : 0
+    const expireIn = parseInt(subscription ? (subscription.expire_date - currentDate) / 1000 / 60 : 0, 10)
 
     if (expireIn <= 0) {
       return handleError(res, 400, 'Expired or not subscribed yet')
@@ -59,7 +59,7 @@ exports.authenticate = async ({ body }, res) => {
     }
 
     const token = jwt.sign({ address, loginDate: currentDate.getTime() }, process.env.SECRET, {
-      expiresIn: `${parseInt(expireIn, 10)}d`
+      expiresIn: `${expireIn}m`
     })
 
     await subscription.update({ login_date: currentDate })
