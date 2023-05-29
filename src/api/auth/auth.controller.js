@@ -12,8 +12,8 @@ function handleError(res, code, message) {
 
 exports.generateKey = async ({ query: { address } }, res) => {
   try {
-    const subscription = await Subscription.findOne({ where: { address } })
-    if (!subscription) {
+    const subscription = await Subscription.getActive([address])
+    if (!subscription.length) {
       return handleError(res, 403, 'Not subscribed yet')
     }
 

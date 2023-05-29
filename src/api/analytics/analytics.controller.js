@@ -21,7 +21,7 @@ exports.preview = async ({ params, query }, res) => {
     const subscriptions = []
     if (query.address) {
       const address = query.address.split(',')
-      const subscrs = await Subscription.findAll({ where: { address } })
+      const subscrs = await Subscription.getActive(address)
       if (subscrs.length) {
         const data = subscrs.map(item => ({
           address: item.address,

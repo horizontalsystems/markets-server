@@ -30,6 +30,11 @@ class Subscription extends SequelizeModel {
     )
   }
 
+  static getActive(address) {
+    const query = 'SELECT * FROM subscriptions where address IN (:address) and expire_date > NOW()'
+    return Subscription.query(query, { address })
+  }
+
 }
 
 module.exports = Subscription
