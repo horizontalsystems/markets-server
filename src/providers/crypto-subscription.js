@@ -2,10 +2,11 @@ const Web3 = require('web3')
 const abi = require('./abi/crypto-subscription.json')
 
 class CryptoSubscription {
-  constructor(rpc) {
+  constructor(rpc, fromBlock) {
     const { eth } = new Web3(rpc)
     const { methods } = new eth.Contract(abi, process.env.CRYPTO_SUBSCRIPTION_CONTRACT)
 
+    this.fromBlock = fromBlock
     this.eth = eth
     this.methods = methods
   }
@@ -15,11 +16,12 @@ class CryptoSubscription {
   }
 
   subscribe(fromBlock, eventName) {
-    console.log(`Subscribed from block ${fromBlock}`)
+    const blockNumber = fromBlock || this.fromBlock
+    console.log(`Subscribed from block ${blockNumber}`)
     const event = abi.find(item => item.name === eventName)
 
     const options = {
-      fromBlock,
+      fromBlock: blockNumber,
       address: process.env.CRYPTO_SUBSCRIPTION_CONTRACT,
       topics: [event.signature]
     }

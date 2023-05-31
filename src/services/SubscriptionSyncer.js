@@ -2,7 +2,7 @@ const Syncer = require('./Syncer')
 const CryptoSubscription = require('../providers/crypto-subscription')
 const Subscription = require('../db/models/Subscription')
 
-const web3 = new CryptoSubscription(process.env.ETH_SOCKET_URL)
+const web3 = new CryptoSubscription(process.env.ETH_SOCKET_URL, 3595469)
 
 class SubscriptionSyncer extends Syncer {
 
@@ -43,7 +43,7 @@ class SubscriptionSyncer extends Syncer {
       order: [['block_number', 'desc']]
     })
 
-    return subscription ? subscription.block_number : 0
+    return subscription ? subscription.block_number : null
   }
 }
 
