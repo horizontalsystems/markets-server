@@ -112,6 +112,7 @@ class SetupCoins {
         console.log(`Failed to fetch decimals for ${platform.address}; i: ${i + 1}`)
         console.log(message)
 
+        if (!message) continue
         if (message.match(/^Returned values aren't valid/) || message.match(/^Provided address [\s\S]+ is invalid/)) {
           await platform.destroy()
           console.log('Platform removed')

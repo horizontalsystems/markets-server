@@ -1,5 +1,6 @@
 const Web3EvmProvider = require('./Web3EvmProvider')
 const Web3SolanaProvider = require('./Web3SolanaProvider')
+const Web3TronProvider = require('./Web3TronProvider')
 
 const ethereum = new Web3EvmProvider('https://mainnet.infura.io/v3/d13bc12e6f5a4d3bad8d80291c74c1d3')
 const ethereumGoerli = new Web3EvmProvider('https://goerli.infura.io/v3/d13bc12e6f5a4d3bad8d80291c74c1d3')
@@ -13,6 +14,7 @@ const fantom = new Web3EvmProvider('https://rpc.ankr.com/fantom')
 const solana = new Web3SolanaProvider('https://rpc.ankr.com/solana') // SPL
 const celo = new Web3EvmProvider('https://rpc.ankr.com/celo')
 const gnosis = new Web3EvmProvider('https://rpc.ankr.com/gnosis')
+const tron = new Web3TronProvider('https://api.trongrid.io')
 
 const getProvider = chainOrType => {
   switch (chainOrType) {
@@ -45,6 +47,8 @@ const getProvider = chainOrType => {
       return gnosis
     case 'solana':
       return solana
+    case 'tron':
+      return tron
     default:
       return null
   }
