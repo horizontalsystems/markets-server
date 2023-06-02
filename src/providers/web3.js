@@ -14,7 +14,7 @@ const fantom = new Web3EvmProvider('https://rpc.ankr.com/fantom')
 const solana = new Web3SolanaProvider('https://rpc.ankr.com/solana') // SPL
 const celo = new Web3EvmProvider('https://rpc.ankr.com/celo')
 const gnosis = new Web3EvmProvider('https://rpc.ankr.com/gnosis')
-const tron = new Web3TronProvider('https://api.trongrid.io')
+const tron = new Web3TronProvider('https://rpc.ankr.com/tron_jsonrpc')
 
 const getProvider = chainOrType => {
   switch (chainOrType) {

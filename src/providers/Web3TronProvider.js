@@ -1,29 +1,34 @@
-const TronWeb = require('tronweb')
-
+const Web3 = require('web3')
+const bs58 = require('bs58')
 const abi = require('./abi/trc20-abi.json')
 
 class Web3TronProvider {
   constructor(url) {
-    this.tronWeb = new TronWeb({
-      fullHost: url,
-      headers: { 'TRON-PRO-API-KEY': process.env.TRONGRID_API_KEY }
-    })
-    this.tronWeb.setAddress('TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t')
+    this.abi = abi
+    this.web3 = new Web3(url)
+    this.Contract = this.web3.eth.Contract
   }
 
-  async getDecimals(address) {
-    const instance = await this.tronWeb.contract(abi, address)
-    return instance.decimals().call()
+  getDecimals(address) {
+    const contract = new this.Contract(abi, this.convertAddress(address))
+    return contract.methods.decimals().call()
   }
 
-  async getName(address) {
-    const contract = await this.tronWeb.contract(abi, address)
+  getName(address) {
+    const contract = new this.Contract(abi, this.convertAddress(address))
     return contract.methods.name().call()
   }
 
-  async getSymbol(address) {
-    const contract = await this.tronWeb.contract(abi, address)
+  getSymbol(address) {
+    const contract = new this.Contract(abi, this.convertAddress(address))
     return contract.methods.symbol().call()
+  }
+
+  convertAddress(addressBase58) {
+    const addressDecoded = bs58.decode(addressBase58)
+    const addressBytes = addressDecoded.subarray(1, addressDecoded.length - 4)
+
+    return Web3.utils.toHex(Buffer.from(addressBytes))
   }
 }
 
