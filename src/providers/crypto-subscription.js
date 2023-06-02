@@ -34,7 +34,7 @@ class CryptoSubscription {
     const decoded = this.eth.abi.decodeLog(event.inputs, hex, topics)
 
     return {
-      subscriber: decoded.subscriber,
+      subscriber: decoded.subscriber || decoded._address,
       promoCode: decoded.promoCode,
       duration: decoded.duration,
       paymentToken: decoded.paymentToken,

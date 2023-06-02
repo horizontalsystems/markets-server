@@ -16,6 +16,7 @@ class SubscriptionSyncer extends Syncer {
 
     subscribe(web3.subscribe(fromBlock, 'SubscriptionWithPromoCode'), 'SubscriptionWithPromoCode')
     subscribe(web3.subscribe(fromBlock, 'Subscription'), 'Subscription')
+    subscribe(web3.subscribe(fromBlock, 'UpdateSubscription'), 'UpdateSubscription')
   }
 
   async onData(eventName, { data, topics, blockNumber }) {

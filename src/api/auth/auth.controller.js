@@ -94,7 +94,7 @@ exports.requireAuth = (req, res, next) => {
       return handleError(res, 403)
     }
 
-    if (subscription.login_date.getTime() > payload.loginDate) {
+    if (subscription.login_date && subscription.login_date.getTime() > payload.loginDate) {
       return handleError(res, 401, 'Logged in on another device')
     }
 
