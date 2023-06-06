@@ -1,3 +1,4 @@
+const { spawn } = require('child_process')
 const { stringify } = require('querystring')
 const { create } = require('axios')
 const {
@@ -12,12 +13,6 @@ const api = create({
   baseURL: 'https://api.opensea.io/api/v1',
   timeout: 180000,
   headers: { 'X-API-KEY': process.env.OPENSEA_KEY }
-})
-
-const apiPro = create({
-  baseURL: 'https://api.pro.opensea.io',
-  timeout: 180000,
-  headers: { 'User-Agent': 'Unstoppable' }
 })
 
 class Opensea {
@@ -151,9 +146,26 @@ class Opensea {
       'filters[trending.top_one_day]=true'
     ].join('&')
 
-    return apiPro
-      .get(`/collections?offset=${offset}&limit=50&${fields}`)
-      .then(({ data }) => data.data)
+    return new Promise((resolve, reject) => {
+      const {
+        stderr,
+        stdout
+      } = spawn('w3m', ['-dump', `https://api.pro.opensea.io/collections?offset=${offset}&limit=50&${fields}`])
+
+      let res = ''
+
+      stdout.on('data', data => {
+        res += data
+      })
+
+      stdout.on('close', () => {
+        resolve(JSON.parse(res))
+      })
+
+      stderr.on('error', code => {
+        reject(code)
+      })
+    })
   }
 }
 

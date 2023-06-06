@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const opensea = require('../providers/opensea')
 const Syncer = require('./Syncer')
 const { sequelize, NftCollection } = require('../db/sequelize')
@@ -20,9 +19,11 @@ class NftMarketSyncer extends Syncer {
 
   async syncTopCollections() {
     try {
+      const res1 = await opensea.getTopCollections(0)
+      const res2 = await opensea.getTopCollections(50)
       const nftCollections = [
-        ...await opensea.getTopCollections(0),
-        ...await opensea.getTopCollections(50)
+        ...res1.data,
+        ...res2.data
       ]
       await this.upsertNftCollections(nftCollections)
     } catch (e) {
