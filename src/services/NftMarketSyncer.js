@@ -1,12 +1,7 @@
 /* eslint-disable no-param-reassign */
-const { utcDate } = require('../utils')
 const opensea = require('../providers/opensea')
-const dune = require('../providers/dune')
-const NftMarket = require('../db/models/NftMarket')
-const NftCollection = require('../db/models/NftCollection')
 const Syncer = require('./Syncer')
-const logger = require('../config/logger')
-const { sleep } = require('../utils')
+const { sequelize, NftCollection } = require('../db/sequelize')
 
 class NftMarketSyncer extends Syncer {
 
@@ -16,122 +11,59 @@ class NftMarketSyncer extends Syncer {
   }
 
   async syncHistorical() {
-    await this.syncMarkets(utcDate())
+    await this.syncTopCollections()
   }
 
   async syncLatest() {
-    this.cron('30m', this.syncDailyStats)
-    this.cron('2h', this.fetchTopNftCollections)
-    this.cron('1d', this.syncMonthlyStats)
+    this.cron('2h', this.syncTopCollections)
   }
 
-  async syncDailyStats({ dateTo }) {
-    await this.syncMarkets(dateTo)
-  }
-
-  async syncMonthlyStats({ dateFrom, dateTo }) {
-    await NftMarket.deleteExpired(dateFrom, dateTo)
-  }
-
-  async syncMarkets(dateTo) {
+  async syncTopCollections() {
     try {
-      if (!this.topNftCollections) {
-        await this.fetchTopNftCollections()
-      }
-      const nftCollections = await this.syncCollections()
-      await this.syncNftMarkets(nftCollections, dateTo)
+      const nftCollections = [
+        ...await opensea.getTopCollections(0),
+        ...await opensea.getTopCollections(50)
+      ]
+      await this.upsertNftCollections(nftCollections)
     } catch (e) {
       console.error(e)
     }
   }
 
-  async fetchTopNftCollections() {
-    try {
-      this.topNftCollections = await dune.getTopNftCollections()
-      logger.info(`Fetched new Top NFT collections: ${this.topNftCollections.length}`)
-    } catch (e) {
-      logger.error(`Error fetching Top Nft collections: ${e.message}`)
-    }
-  }
-
-  async syncCollections() {
-    const collections = []
-    try {
-
-      for (let i = 0; i < this.topNftCollections.length; i += 1) {
-        const nftCollection = this.topNftCollections[i]
-        logger.info(`Getting: ${nftCollection.collection_uid}`)
-        const collection = await opensea.getCollection(nftCollection.collection_uid)
-        if (collection) {
-          collections.push(collection)
-        }
-
-        await sleep(4500) // wait to bypass API limits
+  async upsertNftCollections(collections) {
+    const records = collections.map(item => {
+      return {
+        uid: item.slug,
+        name: item.name,
+        asset_contracts: item.addresses,
+        image_data: {
+          image_url: item.imageUrl
+        },
+        stats: item.stats,
+        last_updated: new Date()
       }
+    })
 
-      await this.upsertNftCollections(collections)
-      logger.info(`Successfully synced collections: ${collections.length}`)
-
-    } catch (e) {
-      logger.error(`Error syncing NFT collections: ${e}`)
+    if (records.length < 50) {
+      return
     }
 
-    return collections
-  }
-
-  async syncNftMarkets(nftCollections, dateTo) {
+    let transaction
     try {
+      transaction = await sequelize.transaction()
 
-      const collectionsData = await this.getCollections(nftCollections.map(c => c.uid))
-      const markets = nftCollections.map(data => ({
-        volume24h: data.stats.one_day_volume,
-        total_volume: data.stats.total_volume,
-        sales24h: data.stats.one_day_sales,
-        total_sales: data.stats.total_sales,
-        floor_price: data.stats.floor_price,
-        avg_price: data.stats.average_price,
-        owners: data.stats.num_owners,
-        collection_id: collectionsData.map[data.uid],
-        date: dateTo
-      }))
+      await NftCollection.destroy({ where: {} })
+      await NftCollection.bulkCreate(records, { updateOnDuplicate: ['stats', 'image_data'] })
 
-      this.upsertNftMarkets(markets)
-      logger.info('Successfully synced NFT markets !!!')
+      await transaction.commit()
+      console.log('Sync top NFT collections')
+    } catch (err) {
+      console.log(err)
 
-    } catch (e) {
-      logger.error(`Error syncing NFT markets: ${e}`)
+      if (transaction) {
+        await transaction.rollback()
+      }
     }
-  }
-
-  async getCollections(collectionUids) {
-    const collections = await NftCollection.getByUids(collectionUids)
-    const list = []
-    const map = {}
-
-    collections.forEach(({ id, uid }) => {
-      map[uid] = id
-      list.push({ uid })
-    })
-
-    return { list, map }
-  }
-
-  upsertNftMarkets(markets) {
-    NftMarket.bulkCreate(markets, {
-      updateOnDuplicate: ['volume24h', 'total_volume', 'floor_price', 'avg_price', 'owners']
-    })
-      .catch(err => {
-        console.error('Error inserting NFT markets', err.message)
-      })
-  }
-
-  upsertNftCollections(collections) {
-    NftCollection.bulkCreate(collections, {
-      updateOnDuplicate: ['stats', 'asset_contracts', 'image_data']
-    })
-      .catch(err => {
-        console.error('Error inserting NFT collections', err.message)
-      })
   }
 }
 

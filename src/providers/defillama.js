@@ -3,7 +3,7 @@ const createAxios = require('axios').create
 const api = createAxios({ baseURL: 'https://api.llama.fi', timeout: 180000 * 3 })
 const coinsApi = createAxios({ baseURL: 'https://coins.llama.fi', timeout: 180000 * 3 })
 const stablecoinsApi = createAxios({ baseURL: 'https://stablecoins.llama.fi', timeout: 180000 * 3 })
-const nftApi = createAxios({ baseURL: 'https://ybrjmu6r60.execute-api.eu-west-2.amazonaws.com/prod', timeout: 180000 * 3 })
+const nftApi = createAxios({ baseURL: 'https://nft.llama.fi', timeout: 180000 * 3 })
 
 const { normalize } = require('./normalizers/defillama-normalizer')
 
