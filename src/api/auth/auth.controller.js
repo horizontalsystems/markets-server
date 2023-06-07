@@ -1,44 +1,40 @@
 const jwt = require('jsonwebtoken')
-const util = require('ethereumjs-util')
-const crypto = require('crypto')
-const AuthKey = require('../../db/models/AuthKey')
+const util = require('@metamask/eth-sig-util')
 const Subscription = require('../../db/models/Subscription')
-const { utcDate } = require('../../utils')
 
 function handleError(res, code, message) {
   res.status(code)
   res.send({ message })
 }
 
-exports.generateKey = async ({ query: { address } }, res) => {
-  try {
-    const subscription = await Subscription.getActive([address])
-    if (!subscription.length) {
-      return handleError(res, 403, 'Not subscribed yet')
-    }
-
-    const randomKey = crypto.randomBytes(10).toString('base64')
-    const expiresAt = utcDate({ minutes: 5 })
-    await AuthKey.upsert({
-      address,
-      key: randomKey,
-      expires_at: expiresAt
-    })
-
-    res.send({ key: randomKey })
-  } catch (e) {
-    console.log(e)
-    return handleError(res, 500, 'Something went wrong')
+const eip712 = {
+  types: {
+    EIP712Domain: [
+      { name: 'name', type: 'string' },
+      { name: 'version', type: 'string' },
+      { name: 'verifyingContract', type: 'address' }
+    ],
+    Activation: [
+      { name: 'action', type: 'string' }
+    ]
+  },
+  domain: {
+    name: 'Unstoppable Wallet',
+    version: '1',
+    verifyingContract: process.env.CRYPTO_SUBSCRIPTION_CONTRACT
+  },
+  primaryType: 'Activation',
+  message: {
+    action: 'Activate Subscription'
   }
+}
+
+exports.getEip712Data = async (req, res) => {
+  res.send(eip712)
 }
 
 exports.authenticate = async ({ body }, res) => {
   const { signature, address } = body
-
-  const authKey = await AuthKey.getValidKey(address)
-  if (!authKey) {
-    return handleError(res, 400, 'Invalid address or expired key')
-  }
 
   try {
     const currentDate = new Date()
@@ -49,10 +45,11 @@ exports.authenticate = async ({ body }, res) => {
       return handleError(res, 400, 'Expired or not subscribed yet')
     }
 
-    const hash = util.hashPersonalMessage(Buffer.from(authKey.key))
-    const sig = util.fromRpcSig(signature)
-    const sigPubKey = util.ecrecover(hash, sig.v, sig.r, sig.s)
-    const sigAddress = util.bufferToHex(util.publicToAddress(sigPubKey))
+    const sigAddress = util.recoverTypedSignature({
+      data: eip712,
+      signature,
+      version: 'V4'
+    })
 
     if (address !== sigAddress) {
       return handleError(res, 400, 'Invalid signature')
@@ -63,7 +60,6 @@ exports.authenticate = async ({ body }, res) => {
     })
 
     await subscription.update({ login_date: currentDate })
-    await authKey.destroy()
 
     res.send({ token })
   } catch (err) {
