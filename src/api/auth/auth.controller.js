@@ -1,23 +1,23 @@
 const jwt = require('jsonwebtoken')
 const util = require('ethereumjs-util')
-const crypto = require('crypto')
+const { v4: uuidv4 } = require('uuid')
 const AuthKey = require('../../db/models/AuthKey')
 const Subscription = require('../../db/models/Subscription')
-const { utcDate } = require('../../utils')
+const { utcDate, signingMessage } = require('../../utils')
 
 function handleError(res, code, message) {
   res.status(code)
   res.send({ message })
 }
 
-exports.generateKey = async ({ query: { address } }, res) => {
+exports.generateMessage = async ({ query: { address } }, res) => {
   try {
     const subscription = await Subscription.getActive([address])
     if (!subscription.length) {
       return handleError(res, 403, 'Not subscribed yet')
     }
 
-    const randomKey = crypto.randomBytes(10).toString('base64')
+    const randomKey = uuidv4()
     const expiresAt = utcDate({ minutes: 5 })
     await AuthKey.upsert({
       address,
@@ -25,7 +25,7 @@ exports.generateKey = async ({ query: { address } }, res) => {
       expires_at: expiresAt
     })
 
-    res.send({ key: randomKey })
+    res.send({ message: signingMessage(address, randomKey) })
   } catch (e) {
     console.log(e)
     return handleError(res, 500, 'Something went wrong')
@@ -49,7 +49,7 @@ exports.authenticate = async ({ body }, res) => {
       return handleError(res, 400, 'Expired or not subscribed yet')
     }
 
-    const hash = util.hashPersonalMessage(Buffer.from(authKey.key))
+    const hash = util.hashPersonalMessage(Buffer.from(signingMessage(address, authKey.key)))
     const sig = util.fromRpcSig(signature)
     const sigPubKey = util.ecrecover(hash, sig.v, sig.r, sig.s)
     const sigAddress = util.bufferToHex(util.publicToAddress(sigPubKey))

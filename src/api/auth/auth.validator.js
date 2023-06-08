@@ -5,8 +5,8 @@ const options = {
 }
 
 module.exports = {
-  // GET /v1/auth/get-key
-  validateAuthKey: validate({
+  // GET /v1/auth/get-sign-message
+  validateSignMessage: validate({
     query: Joi.object({
       address: Joi.string().required()
     })

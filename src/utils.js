@@ -92,3 +92,21 @@ exports.stringToHex = str => {
 exports.scanURL = chain => (
   process.env.SCAN_URL ? `${process.env.SCAN_URL}/${chain}` : null
 )
+
+exports.signingMessage = (address, salt) => {
+  return (`Welcome to Unstoppable Wallet Premium Features!
+
+You'll be able to access pro analytics data 
+
+--------
+
+This is only a signature request to verify you are the owner of the address.
+There are no blockchain transactions, gas fees or approvals associated with this.
+
+--------
+
+Wallet:
+${address}
+Salt:
+${salt}`)
+}
