@@ -2,13 +2,23 @@ const Web3 = require('web3')
 const abi = require('./abi/crypto-subscription.json')
 
 class CryptoSubscription {
-  constructor(rpc, fromBlock) {
-    const { eth } = new Web3(rpc)
-    const { methods } = new eth.Contract(abi, process.env.CRYPTO_SUBSCRIPTION_CONTRACT)
+  constructor(chain) {
+    if (chain === 'ethereum') {
+      this.rpc = process.env.ETH_SOCKET_URL
+      this.contract = process.env.ETH_SUBSCRIPTION_CONTRACT
+    } else if (chain === 'bsc') {
+      this.rpc = process.env.BSC_SOCKET_URL
+      this.contract = process.env.BSC_SUBSCRIPTION_CONTRACT
+    } else {
+      throw new Error(`Invalid chain ${chain}`)
+    }
 
-    this.fromBlock = fromBlock
+    const { eth } = new Web3(this.rpc)
+    const { methods } = new eth.Contract(abi, this.contract)
+
     this.eth = eth
     this.methods = methods
+    this.chain = chain
   }
 
   getSubscriptionDeadline(address) {
@@ -16,7 +26,7 @@ class CryptoSubscription {
   }
 
   subscribe(fromBlock, eventName) {
-    const blockNumber = fromBlock || this.fromBlock
+    const blockNumber = fromBlock
     console.log(`Subscribed from block ${blockNumber}`)
     const event = abi.find(item => item.name === eventName)
 

@@ -3,6 +3,7 @@ const util = require('ethereumjs-util')
 const { v4: uuidv4 } = require('uuid')
 const AuthKey = require('../../db/models/AuthKey')
 const Subscription = require('../../db/models/Subscription')
+const CryptoSubscription = require('../../providers/crypto-subscription')
 const { utcDate, signingMessage } = require('../../utils')
 
 function handleError(res, code, message) {
@@ -100,4 +101,34 @@ exports.requireAuth = (req, res, next) => {
 
     next()
   })
+}
+
+exports.subscribed = async ({ query }, res) => {
+  if (!query.address || !query.chain) {
+    return res.status(400)
+  }
+
+  try {
+    const address = query.address.toLowerCase()
+    const subscription = new CryptoSubscription(query.chain)
+    const deadline = parseInt(await subscription.getSubscriptionDeadline(address), 10)
+    console.log(`Subscribed ${address} with deadline ${deadline}`)
+
+    const record = {
+      address,
+      chain: query.chain
+    }
+
+    if (deadline) {
+      record.expire_date = new Date(deadline * 1000)
+    }
+
+    await Subscription.upsert(record)
+
+    res.send({})
+  } catch (e) {
+    console.log(e)
+    res.status(500)
+    res.send({ error: 'Internal server error' })
+  }
 }

@@ -41,5 +41,7 @@ router.get('/get-sign-message', validateSignMessage, controller.generateMessage)
  */
 router.post('/authenticate', validateAuthenticate, controller.authenticate)
 
+router.get('/subscribed', controller.subscribed)
+
 module.exports = router
 module.exports.requireAuth = controller.requireAuth

@@ -22,7 +22,7 @@
     "no-continue": "off",
     "no-param-reassign": ["error", {
       "props": true,
-      "ignorePropertyModificationsFor": ["memo"]
+      "ignorePropertyModificationsFor": ["memo", "map"]
     }]
   },
   "env": {

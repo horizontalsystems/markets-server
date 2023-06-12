@@ -10,13 +10,12 @@ class Subscription extends SequelizeModel {
           allowNull: false,
           unique: true
         },
-        expire_date: {
-          type: DataTypes.DATE,
+        chain: {
+          type: DataTypes.STRING(50),
           allowNull: false
         },
-        block_number: {
-          type: DataTypes.INTEGER,
-          allowNull: false
+        expire_date: {
+          type: DataTypes.DATE
         },
         login_date: {
           type: DataTypes.DATE
@@ -25,14 +24,28 @@ class Subscription extends SequelizeModel {
       {
         timestamps: false,
         tableName: 'subscriptions',
-        sequelize
+        sequelize,
+        indexes: [{
+          unique: true,
+          fields: ['address', 'chain']
+        }]
       }
     )
   }
 
   static getActive(address) {
-    const query = 'SELECT * FROM subscriptions where address IN (:address) and expire_date > NOW()'
+    const query = `
+      SELECT *
+      FROM subscriptions
+      WHERE address IN (:address)
+        AND expire_date IS NOT NULL
+        AND expire_date > NOW()
+    `
     return Subscription.query(query, { address })
+  }
+
+  static getInactive() {
+    return Subscription.query('SELECT * FROM subscriptions WHERE expire_date IS NULL')
   }
 
 }
