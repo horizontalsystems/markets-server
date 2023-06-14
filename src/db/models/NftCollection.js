@@ -124,7 +124,7 @@ class NftCollection extends SequelizeModel {
       ) as data
     `)
 
-    if (!stats) {
+    if (!stats || !stats.data.one_day || !stats.data.seven_day || !stats.data.thirty_day) {
       return {
         one_day: [],
         seven_day: [],
