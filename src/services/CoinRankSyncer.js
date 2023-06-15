@@ -50,6 +50,7 @@ class CoinRankSyncer extends Syncer {
       // These fields should be kept
       if (!isFull) {
         pickIfExists(item, rank, [
+          'rating',
           // 'tvl_rank',
           'tvl',
           // 'holders_rank',
@@ -140,6 +141,10 @@ class CoinRankSyncer extends Syncer {
 
       if (isTx && record.count) {
         item[`${key}_count`] = record.count
+      }
+
+      if (record.rating) {
+        item.rating = record.rating
       }
 
       map[record.id] = item
@@ -596,6 +601,33 @@ class CoinRankSyncer extends Syncer {
       .catch(e => {
         console.log(e)
       })
+  }
+
+  setRatings(records, ratings) {
+    const ranges = this.getRatingRanges(records.length, ratings)
+
+    for (let i = 0; i < records.length; i += 1) {
+      const record = records[i];
+
+      if (record.rank <= ranges.excellent) {
+        record.rating = 'excellent'
+      } else if (record.rank <= ranges.good) {
+        record.rating = 'good'
+      } else if (record.rank <= ranges.fair) {
+        record.rating = 'fair'
+      } else {
+        record.rating = 'poor'
+      }
+    }
+  }
+
+  getRatingRanges(size, ratings = { excellent: 10, good: 20, fair: 40, poor: 100 }) {
+    const mapping = (map, [rating, percentage]) => {
+      map[rating] = (size * percentage) / 100
+      return map
+    }
+
+    return Object.entries(ratings).reduce(mapping, {})
   }
 }
 
