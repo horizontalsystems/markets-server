@@ -106,12 +106,13 @@ class SetupCoins {
         console.log(`Fetched decimals (${decimals}) for ${platform.address} ${i + 1}`)
 
         if (decimals > 0) {
-          await platform.update({ decimals })
+          await platform.update({ decimals, type: 'eip20' })
         }
       } catch ({ message }) {
         console.log(`Failed to fetch decimals for ${platform.address}; i: ${i + 1}`)
         console.log(message)
 
+        if (!message) continue
         if (message.match(/^Returned values aren't valid/) || message.match(/^Provided address [\s\S]+ is invalid/)) {
           await platform.destroy()
           console.log('Platform removed')

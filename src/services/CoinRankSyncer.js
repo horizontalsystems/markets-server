@@ -2,7 +2,7 @@ const Syncer = require('./Syncer')
 const Coin = require('../db/models/Coin')
 const CoinStats = require('../db/models/CoinStats')
 const Platform = require('../db/models/Platform')
-const tokenterminal = require('../providers/tokenterminal')
+const defillama = require('../providers/defillama')
 const flipsidecrypto = require('../providers/flipsidecrypto')
 const { stringToHex } = require('../utils')
 
@@ -463,7 +463,7 @@ class CoinRankSyncer extends Syncer {
     }
 
     const map = {}
-    const data = await tokenterminal.getProjects()
+    const data = await defillama.getRevenue()
     const coins = await Coin.findAll({
       attributes: ['id', 'uid'],
       where: {
@@ -476,26 +476,26 @@ class CoinRankSyncer extends Syncer {
       map[coin.uid] = coin.id
     }
 
-    result.daily = data.sort((a, b) => b.revenue['1d'] - a.revenue['1d'])
+    result.daily = data.sort((a, b) => b.total24h - a.total24h)
       .map((item, index) => ({
         id: map[item.uid],
-        volume: item.revenue['1d'],
+        volume: item.total24h,
         rank: index + 1
       }))
       .filter(item => item.id && item.volume)
 
-    result.weekly = data.sort((a, b) => b.revenue['7d'] - a.revenue['7d'])
+    result.weekly = data.sort((a, b) => b.total7d - a.total7d)
       .map((item, index) => ({
         id: map[item.uid],
-        volume: item.revenue['7d'],
+        volume: item.total7d,
         rank: index + 1
       }))
       .filter(item => item.id && item.volume)
 
-    result.monthly = data.sort((a, b) => b.revenue['30d'] - a.revenue['30d'])
+    result.monthly = data.sort((a, b) => b.total30d - a.total30d)
       .map((item, index) => ({
         id: map[item.uid],
-        volume: item.revenue['30d'],
+        volume: item.total30d,
         rank: index + 1
       }))
       .filter(item => item.id && item.volume)

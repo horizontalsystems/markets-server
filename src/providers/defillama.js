@@ -3,9 +3,9 @@ const createAxios = require('axios').create
 const api = createAxios({ baseURL: 'https://api.llama.fi', timeout: 180000 * 3 })
 const coinsApi = createAxios({ baseURL: 'https://coins.llama.fi', timeout: 180000 * 3 })
 const stablecoinsApi = createAxios({ baseURL: 'https://stablecoins.llama.fi', timeout: 180000 * 3 })
-const nftApi = createAxios({ baseURL: 'https://ybrjmu6r60.execute-api.eu-west-2.amazonaws.com/prod', timeout: 180000 * 3 })
+const nftApi = createAxios({ baseURL: 'https://nft.llama.fi', timeout: 180000 * 3 })
 
-const { normalize } = require('./normalizers/defillama-normalizer')
+const { normalize, normalizeRevenue } = require('./normalizers/defillama-normalizer')
 
 exports.getCharts = (chain) => {
   const url = chain
@@ -47,7 +47,7 @@ exports.getProtocol = id => {
   console.log(`Fetching defi protocol info ${id}`)
 
   return api.get(`/protocol/${id}`)
-    .then(resp => resp.data)
+    .then(resp => resp.data.gecko_id)
 }
 
 exports.getPrices = coins => {
@@ -83,4 +83,21 @@ exports.getNftCollections = (limit = 100) => {
 
   return nftApi.get(`/collections?limit=${limit}`)
     .then(resp => resp.data.data)
+}
+
+exports.getRevenue = () => {
+  console.log('Fetching revenue')
+
+  return api.get('/overview/fees?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true&dataType=dailyRevenue')
+    .then(({ data }) => {
+      if (!data || !data.protocols) {
+        return []
+      }
+
+      return normalizeRevenue(data.protocols)
+    })
+    .catch(e => {
+      console.error(e)
+      return []
+    })
 }

@@ -1,3 +1,4 @@
+const { spawn } = require('child_process')
 const { stringify } = require('querystring')
 const { create } = require('axios')
 const {
@@ -8,7 +9,7 @@ const {
   normalizeAsset
 } = require('./normalizers/opensea-normalizer')
 
-const axios = create({
+const api = create({
   baseURL: 'https://api.opensea.io/api/v1',
   timeout: 180000,
   headers: { 'X-API-KEY': process.env.OPENSEA_KEY }
@@ -17,7 +18,7 @@ const axios = create({
 class Opensea {
 
   proxyEvents(params) {
-    return axios.get(`/events?${stringify(params)}`)
+    return api.get(`/events?${stringify(params)}`)
   }
 
   getEvents(eventType, accountAddress, collectionUid, assetContract, tokenId, occuredBefore, cursor) {
@@ -51,7 +52,7 @@ class Opensea {
       ...cursor && { cursor }
     }
 
-    return axios
+    return api
       .get(`/events?${stringify(params)}`)
       .then(({ data }) => normalizeEvents(data))
   }
@@ -63,13 +64,13 @@ class Opensea {
       ...assetOwner && { asset_owner: assetOwner }
     }
 
-    return axios
+    return api
       .get(`/collections?${stringify(params)}`)
       .then(({ data }) => normalizeCollections(data.collections || data))
   }
 
   getCollection(collectionUid) {
-    return axios
+    return api
       .get(`/collection/${collectionUid}`)
       .then(({ data }) => normalizeCollection(data.collection || data))
       .catch(e => {
@@ -79,7 +80,7 @@ class Opensea {
   }
 
   getCollectionStats(collectionUid) {
-    return axios
+    return api
       .get(`/collection/${collectionUid}/stats`)
       .then(resp => resp.data.stats)
       .catch(e => {
@@ -101,7 +102,7 @@ class Opensea {
       ...contractAddresses && { asset_contract_addresses: contractAddresses.split(',') }
     }
 
-    return axios
+    return api
       .get(`/assets?${stringify(params)}`)
       .then(({ data }) => {
         const result = normalizeAssets(data)
@@ -115,11 +116,57 @@ class Opensea {
       ...accountAddress && { account_address: accountAddress }
     }
 
-    return axios
+    return api
       .get(`/asset/${contractAddress}/${tokenId}?${stringify(params)}`)
       .then(({ data }) => normalizeAsset(data))
   }
 
+  getTopCollections(offset = 0) {
+    console.log('Fetching top NFT collections', offset)
+
+    const fields = [
+      'fields[slug]=1',
+      'fields[name]=1',
+      'fields[imageUrl]=1',
+      'fields[address]=1',
+      'fields[addresses]=1',
+      'fields[createdDate]=1',
+      'fields[createdAt]=1',
+
+      'fields[stats.floor_price]=1',
+      'fields[stats.total_supply]=1',
+      'fields[stats.one_day_volume]=1',
+      'fields[stats.one_day_change]=1',
+      'fields[stats.seven_day_volume]=1',
+      'fields[stats.seven_day_change]=1',
+      'fields[stats.thirty_day_volume]=1',
+      'fields[stats.thirty_day_change]=1',
+
+      'sort[stats.one_day_volume]=-1',
+      'filters[trending.top_one_day]=true'
+    ].join('&')
+
+    return new Promise((resolve, reject) => {
+      const {
+        stderr,
+        stdout
+      } = spawn('w3m', ['-dump', `https://api.pro.opensea.io/collections?offset=${offset}&limit=50&${fields}`])
+
+      let res = ''
+
+      stdout.on('data', data => {
+        res += data
+      })
+
+      stdout.on('close', () => {
+        resolve(JSON.parse(res))
+      })
+
+      stderr.on('error', code => {
+        reject(code)
+      })
+    })
+  }
 }
 
 module.exports = new Opensea()
