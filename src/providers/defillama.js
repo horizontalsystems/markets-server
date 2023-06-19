@@ -1,4 +1,5 @@
-const createAxios = require('axios').create
+const { create: createAxios } = require('axios')
+const { stringify } = require('querystring')
 
 const api = createAxios({ baseURL: 'https://api.llama.fi', timeout: 180000 * 3 })
 const coinsApi = createAxios({ baseURL: 'https://coins.llama.fi', timeout: 180000 * 3 })
@@ -85,10 +86,16 @@ exports.getNftCollections = (limit = 100) => {
     .then(resp => resp.data.data)
 }
 
-exports.getRevenue = () => {
-  console.log('Fetching revenue')
+exports.getRevenue = isFee => {
+  console.log('Fetching', isFee ? 'fee' : 'revenue')
 
-  return api.get('/overview/fees?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true&dataType=dailyRevenue')
+  const params = stringify({
+    excludeTotalDataChart: true,
+    excludeTotalDataChartBreakdown: true,
+    dataType: isFee ? 'dailyFees' : 'dailyRevenue'
+  })
+
+  return api.get(`/overview/fees?${params}`)
     .then(({ data }) => {
       if (!data || !data.protocols) {
         return []

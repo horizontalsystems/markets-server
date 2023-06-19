@@ -89,7 +89,13 @@ class CoinRankSyncer extends Syncer {
           'revenue_week',
           'revenue_week_rank',
           'revenue_month',
-          'revenue_month_rank'
+          'revenue_month_rank',
+          // 'fee_day',
+          // 'fee_day_rank',
+          'fee_week',
+          'fee_week_rank',
+          'fee_month',
+          'fee_month_rank'
         ])
       }
 
@@ -105,7 +111,8 @@ class CoinRankSyncer extends Syncer {
     const tvls = await this.getTvlRank()
     const holders = await this.getHoldersRank()
     const address = await this.getAddressRank(isFull)
-    const revenue = await this.getRevenue()
+    const revenue = await this.getRevenue(false)
+    const fee = await this.getRevenue(true)
 
     const lengths = Math.max(
       cexVolumes.daily.length,
@@ -123,6 +130,9 @@ class CoinRankSyncer extends Syncer {
       revenue.daily.length,
       revenue.weekly.length,
       revenue.monthly.length,
+      fee.daily.length,
+      fee.weekly.length,
+      fee.monthly.length,
       tvls.length,
       holders.length,
       dexLiquidity.length,
@@ -173,6 +183,10 @@ class CoinRankSyncer extends Syncer {
       setRank('revenue_day', revenue.daily[i])
       setRank('revenue_week', revenue.weekly[i])
       setRank('revenue_month', revenue.monthly[i])
+
+      setRank('fee_day', fee.daily[i])
+      setRank('fee_week', fee.weekly[i])
+      setRank('fee_month', fee.monthly[i])
     }
 
     await this.storeStats(map)
@@ -454,7 +468,7 @@ class CoinRankSyncer extends Syncer {
     return result
   }
 
-  async getRevenue() {
+  async getRevenue(isFee) {
     console.log('Getting Revenue Rank')
     const result = {
       daily: [],
@@ -463,7 +477,7 @@ class CoinRankSyncer extends Syncer {
     }
 
     const map = {}
-    const data = await defillama.getRevenue()
+    const data = await defillama.getRevenue(isFee)
     const coins = await Coin.findAll({
       attributes: ['id', 'uid'],
       where: {
