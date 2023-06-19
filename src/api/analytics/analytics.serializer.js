@@ -71,6 +71,12 @@ module.exports = {
         value_30d: nullOrString(ranks.revenue_month)
       }
     }
+    if (ranks.fee_day_rank || ranks.fee_week_rank || ranks.fee_month_rank) {
+      data.fee = {
+        rank_30d: nullOrInteger(ranks.fee_month_rank),
+        value_30d: nullOrString(ranks.fee_month)
+      }
+    }
 
     if (other.reports) {
       data.reports = nullOrInteger(other.reports)
@@ -145,6 +151,13 @@ module.exports = {
       data.revenue = {
         rank_30d: !!ranks.revenue_month_rank,
         value_30d: !!ranks.revenue_month
+      }
+    }
+
+    if (ranks.fee_month_rank) {
+      data.fee = {
+        rank_30d: !!ranks.fee_month_rank,
+        value_30d: !!ranks.fee_month
       }
     }
 
