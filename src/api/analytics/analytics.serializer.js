@@ -77,6 +77,9 @@ module.exports = {
         value_30d: nullOrString(ranks.fee_month)
       }
     }
+    if (ranks.rating) {
+      data.rating = nullOrString(ranks.rating)
+    }
 
     if (other.reports) {
       data.reports = nullOrInteger(other.reports)
@@ -201,6 +204,12 @@ module.exports = {
       if (type === 'holders') {
         return {
           value: rank.holders
+        }
+      }
+
+      if (type === 'rating') {
+        return {
+          value: rank.rating
         }
       }
 

@@ -107,12 +107,12 @@ class CoinRankSyncer extends Syncer {
     const cexVolumes = await this.getCexVolumesRank(isFull)
     const dexVolumes = await this.getDexVolumesRank(isFull)
     const transactions = await this.getTransactionRank(isFull)
-    const dexLiquidity = await this.getDexLiquidityRank()
-    const tvls = await this.getTvlRank()
-    const holders = await this.getHoldersRank()
+    const dexLiquidity = await this.getDexLiquidityRank(isFull)
+    const tvls = await this.getTvlRank(isFull)
+    const holders = await this.getHoldersRank(isFull)
     const address = await this.getAddressRank(isFull)
-    const revenue = await this.getRevenue(false)
-    const fee = await this.getRevenue(true)
+    const revenue = await this.getRevenue(isFull, false)
+    const fee = await this.getRevenue(isFull, true)
 
     const lengths = Math.max(
       cexVolumes.daily.length,
@@ -263,6 +263,8 @@ class CoinRankSyncer extends Syncer {
     if (isFull) {
       result.weekly = await Coin.query(query, { dateFrom: '7 days' })
       result.monthly = await Coin.query(query, { dateFrom: '30 days' })
+
+      this.setRatings(result.monthly)
     }
 
     return result
@@ -299,6 +301,8 @@ class CoinRankSyncer extends Syncer {
     if (isFull) {
       result.weekly = await Coin.query(query, { dateFrom: '7 days' })
       result.monthly = await Coin.query(query, { dateFrom: '30 days' })
+
+      this.setRatings(result.monthly)
     }
 
     return result
@@ -338,14 +342,16 @@ class CoinRankSyncer extends Syncer {
     if (isFull) {
       result.weekly = await Coin.query(query, { dateFrom: '7 days' })
       result.monthly = await Coin.query(query, { dateFrom: '30 days' })
+
+      this.setRatings(result.monthly)
     }
 
     return result
   }
 
-  async getDexLiquidityRank() {
+  async getDexLiquidityRank(isFull) {
     console.log('Getting Liquidity Rank')
-    const query = `
+    const data = await Coin.query(`
       with top_platforms as (
         SELECT p.coin_id, p.id
         FROM platforms p, coins c
@@ -369,15 +375,19 @@ class CoinRankSyncer extends Syncer {
       )
       SELECT *, RANK() over (ORDER BY volume DESC)
       FROM records where volume > 1
-    `
+    `)
 
-    return Coin.query(query)
+    if (isFull) {
+      this.setRatings(data)
+    }
+
+    return data
   }
 
-  async getTvlRank() {
+  async getTvlRank(isFull) {
     console.log('Getting TVL Rank')
 
-    return Coin.query(`
+    const data = await Coin.query(`
       SELECT
         coin_id as id,
         tvl as volume,
@@ -386,12 +396,18 @@ class CoinRankSyncer extends Syncer {
       WHERE tvl_rank IS NOT NULL
       ORDER by tvl_rank
     `)
+
+    if (isFull) {
+      this.setRatings(data)
+    }
+
+    return data
   }
 
-  async getHoldersRank() {
+  async getHoldersRank(isFull) {
     console.log('Getting Holders Rank')
 
-    const query = (`
+    const data = await Coin.query(`
       with platforms as (
         SELECT c.id as coin_id, p.id
         FROM platforms p, coins c
@@ -408,7 +424,11 @@ class CoinRankSyncer extends Syncer {
       FROM records where volume > 0
     `)
 
-    return Coin.query(query)
+    if (isFull) {
+      this.setRatings(data)
+    }
+
+    return data
   }
 
   async getAddressRank(isFull) {
@@ -463,12 +483,14 @@ class CoinRankSyncer extends Syncer {
 
       result.weekly = weekly
       result.monthly = monthly
+
+      this.setRatings(result.monthly)
     }
 
     return result
   }
 
-  async getRevenue(isFee) {
+  async getRevenue(isFull, isFee) {
     console.log('Getting Revenue Rank')
     const result = {
       daily: [],
@@ -498,21 +520,25 @@ class CoinRankSyncer extends Syncer {
       }))
       .filter(item => item.id && item.volume)
 
-    result.weekly = data.sort((a, b) => b.total7d - a.total7d)
-      .map((item, index) => ({
-        id: map[item.uid],
-        volume: item.total7d,
-        rank: index + 1
-      }))
-      .filter(item => item.id && item.volume)
+    if (isFull) {
+      result.weekly = data.sort((a, b) => b.total7d - a.total7d)
+        .map((item, index) => ({
+          id: map[item.uid],
+          volume: item.total7d,
+          rank: index + 1
+        }))
+        .filter(item => item.id && item.volume)
 
-    result.monthly = data.sort((a, b) => b.total30d - a.total30d)
-      .map((item, index) => ({
-        id: map[item.uid],
-        volume: item.total30d,
-        rank: index + 1
-      }))
-      .filter(item => item.id && item.volume)
+      result.monthly = data.sort((a, b) => b.total30d - a.total30d)
+        .map((item, index) => ({
+          id: map[item.uid],
+          volume: item.total30d,
+          rank: index + 1
+        }))
+        .filter(item => item.id && item.volume)
+
+      this.setRatings(result.monthly)
+    }
 
     return result
   }
@@ -618,6 +644,7 @@ class CoinRankSyncer extends Syncer {
   }
 
   setRatings(records, ratings) {
+    return // todo: implement correclt calculation
     const ranges = this.getRatingRanges(records.length, ratings)
 
     for (let i = 0; i < records.length; i += 1) {
@@ -635,7 +662,7 @@ class CoinRankSyncer extends Syncer {
     }
   }
 
-  getRatingRanges(size, ratings = { excellent: 10, good: 20, fair: 40, poor: 100 }) {
+  getRatingRanges(size, ratings = { excellent: 5, good: 20, fair: 40, poor: 100 }) {
     const mapping = (map, [rating, percentage]) => {
       map[rating] = (size * percentage) / 100
       return map

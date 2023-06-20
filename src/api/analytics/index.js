@@ -11,8 +11,8 @@ const router = express.Router()
  * @apiVersion 1.0.0
  * @apiGroup Analytics
  *
- * @apiParam    {String}                                                                      uid   Coin's uid
- * @apiParam    {String=cex_volume,dex_volume,dex_liquidity,tx_count,revenue,address,holders} type  Rank type
+ * @apiParam    {String}                                                                                  uid   Coin's uid
+ * @apiParam    {String=cex_volume,dex_volume,dex_liquidity,tx_count,revenue,fee,address,holders,rating}  type  Rank type
  * @apiUse      Currencies
  *
  * @apiSuccessExample {json} Success-Response:
@@ -47,16 +47,47 @@ router.get('/ranks', validateRanks, requireAuth, controller.ranks)
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
  *  {
- *    cex_volume: {
- *      rank_30d: 1,
- *      points: [{
- *        "timestamp": 1682467200,
- *        "volume": "101328876"
+ *    "cex_volume": {
+ *      "rank_30d": 4,
+ *      "points": [{
+ *        "timestamp": 1684713600,
+ *        "volume": "5027162372"
  *      }]
  *    },
- *    reports: 1,
- *    funds_invested: "123",
- *    holders_rank: 1
+ *    "addresses": {
+ *      "rank_30d": 4,
+ *      "count_30d": 773949,
+ *      "points": [{
+ *        "timestamp": 1684713600,
+ *        "count": "38206"
+ *      }]
+ *    },
+ *    "transactions": {
+ *      "rank_30d": 3,
+ *      "volume_30d": "30616819.049246748625",
+ *      "points": [{
+ *        "timestamp": 1684713600,
+ *        "count": "397596"
+ *      }]
+ *    },
+ *    "revenue": {
+ *      "rank_30d": 1,
+ *      "value_30d": "64166548.951023415"
+ *    },
+ *    "fee": {
+ *      "rank_30d": 1,
+ *      "value_30d": "205234313.29572377"
+ *    },
+ *    "rating": "excellent",
+ *    "reports": 20,
+ *    "funds_invested": "18400000",
+ *    "holders_rank": 2,
+ *    "holders": [
+ *      {
+ *        "blockchain_uid": "ethereum",
+ *        "holders_count": "224890554"
+ *      }
+ *    ]
  *  }
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values

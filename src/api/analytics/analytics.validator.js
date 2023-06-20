@@ -12,8 +12,10 @@ module.exports = {
           'dex_liquidity',
           'tx_count',
           'revenue',
+          'fee',
           'address',
           'holders',
+          'rating'
         )
     })
   }),
