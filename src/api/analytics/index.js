@@ -33,7 +33,7 @@ const router = express.Router()
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/ranks', validateRanks, controller.ranks)
+router.get('/ranks', validateRanks, requireAuth, controller.ranks)
 
 /**
  * @api {get} /v1/analytics/:uid Analytics data
