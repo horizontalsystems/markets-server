@@ -2,6 +2,7 @@ const Syncer = require('./Syncer')
 const CryptoSubscription = require('../providers/crypto-subscription')
 const Subscription = require('../db/models/Subscription')
 const abi = require('../providers/abi/crypto-subscription.json')
+const flipsidecrypto = require('../providers/flipsidecrypto')
 
 const subscriptionEth = new CryptoSubscription('ethereum')
 const subscriptionBsc = new CryptoSubscription('bsc')
@@ -10,6 +11,16 @@ class SubscriptionSyncer extends Syncer {
 
   async start() {
     this.cron('*/1 * * * *', this.sync)
+    this.cron('2h', this.syncHistorical)
+  }
+
+  async syncHistorical() {
+    try {
+      await this.syncFromApi(subscriptionBsc)
+      await this.syncFromApi(subscriptionEth)
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   async sync() {
@@ -32,6 +43,60 @@ class SubscriptionSyncer extends Syncer {
     }
   }
 
+  async syncFromApi({ eth, chain }) {
+    const allLogs = await flipsidecrypto.getLogs(chain)
+    const logsMap = await this.decodeLogHistory(eth, allLogs)
+    const records = Object.keys(logsMap).map(item => {
+      return {
+        chain,
+        address: item.toLowerCase()
+      }
+    })
+
+    console.log(allLogs.length)
+
+    if (!records.length) {
+      return
+    }
+
+    await Subscription.bulkCreate(records, { ignoreDuplicates: true })
+      .then(res => {
+        console.log(`Updated ${res.length} subscriptions`)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  async decodeLogHistory(eth, allLogs) {
+    const events = abi.reduce((map, item) => {
+      map[item.signature] = {
+        name: item.name,
+        inputs: item.inputs
+      }
+      return map
+    }, {})
+
+    const subscriptions = {}
+
+    for (let i = 0; i < allLogs.length; i += 1) {
+      const log = allLogs[i]
+      const event = events[log.TOPICS[0]]
+
+      const data = eth.abi.decodeLog(event.inputs, log.DATA, log.TOPICS.slice(1))
+
+      if (event.name === 'PromoCodeAddition' || event.name === 'UpdateSubscription') {
+        subscriptions[data._address] = data.deadline
+      }
+
+      if (event.name === 'SubscriptionWithPromoCode' || event.name === 'Subscription') {
+        subscriptions[data.subscriber] = data.deadline
+      }
+    }
+
+    return subscriptions
+  }
+
   async syncEvents() {
     const events = [
       'Subscription',
@@ -49,7 +114,6 @@ class SubscriptionSyncer extends Syncer {
 
     for (let i = 0; i < events.length; i += 1) {
       const data = await this.getSubscriptions(subscription.eth, lastBlock, events[i])
-      console.log(data)
 
       data.forEach(item => {
         subscriptions[item.subscriber] = item

@@ -13,7 +13,7 @@ exports.getBnbActiveStats = () => {
     address_count: item.ADDRESS_COUNT
   })
 
-  return axios.get('v2/queries/615a678a-7355-438a-8e42-7e36ab7a99fc/data/latest')
+  return axios.get('/v2/queries/615a678a-7355-438a-8e42-7e36ab7a99fc/data/latest')
     .then(({ data }) => data.map(mapper))
     .catch(e => {
       console.log(e.message)
@@ -28,7 +28,7 @@ exports.getMonthlyAddressStats = queryId => {
     address_count: item.ADDRESS_COUNT
   })
 
-  return axios.get(`v2/queries/${queryId}/data/latest`)
+  return axios.get(`/v2/queries/${queryId}/data/latest`)
     .then(({ data }) => data.map(mapper))
     .catch(e => {
       console.log(e.message)
@@ -44,8 +44,23 @@ exports.getActiveAddresses = queryId => {
     address_count: item.ADDRESS_COUNT
   })
 
-  return axios.get(`v2/queries/${queryId}/data/latest`)
+  return axios.get(`/v2/queries/${queryId}/data/latest`)
     .then(({ data }) => data.map(mapper))
+    .catch(e => {
+      console.log(e.message)
+      return []
+    })
+}
+
+exports.getLogs = chain => {
+  const queryId = chain === 'ethereum'
+    ? '452a82bd-8eec-4f7a-bfb6-e4a9c1cde9d7'
+    : '709154d0-20e8-4d73-b6bb-6ff7070ccc27'
+
+  console.log('Fetching logs for', chain)
+
+  return axios.get(`/v2/queries/${queryId}/data/latest`)
+    .then(({ data }) => data)
     .catch(e => {
       console.log(e.message)
       return []
