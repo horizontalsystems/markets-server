@@ -7,9 +7,9 @@
         "type": "address"
       },
       {
-        "internalType": "uint16[]",
+        "internalType": "uint256[]",
         "name": "planDurations",
-        "type": "uint16[]"
+        "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
@@ -39,9 +39,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "duration",
-        "type": "uint16"
+        "type": "uint256"
       }
     ],
     "name": "InvalidPlan",
@@ -115,21 +115,21 @@
       },
       {
         "indexed": false,
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "commissionRate",
-        "type": "uint16"
+        "type": "uint256"
       },
       {
         "indexed": false,
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "discountRate",
-        "type": "uint16"
+        "type": "uint256"
       },
       {
         "indexed": false,
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "deadline",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
     "name": "PromoCodeAddition",
@@ -221,9 +221,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "duration",
-        "type": "uint16"
+        "type": "uint256"
       },
       {
         "indexed": false,
@@ -239,9 +239,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "deadline",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
     "name": "Subscription",
@@ -264,9 +264,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "duration",
-        "type": "uint16"
+        "type": "uint256"
       },
       {
         "indexed": false,
@@ -282,9 +282,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "deadline",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
     "name": "SubscriptionWithPromoCode",
@@ -301,9 +301,9 @@
       },
       {
         "indexed": false,
-        "internalType": "int16",
+        "internalType": "int256",
         "name": "duration",
-        "type": "int16"
+        "type": "int256"
       },
       {
         "indexed": false,
@@ -349,9 +349,9 @@
         "type": "address"
       },
       {
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "duration",
-        "type": "uint16"
+        "type": "uint256"
       }
     ],
     "name": "addSubscription",
@@ -380,9 +380,9 @@
         "type": "bool"
       },
       {
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "",
-        "type": "uint32"
+        "type": "uint256"
       },
       {
         "internalType": "uint256",
@@ -506,9 +506,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "duration",
-        "type": "uint16"
+        "type": "uint256"
       }
     ],
     "name": "planCost",
@@ -540,19 +540,19 @@
             "type": "address"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint256",
             "name": "commissionRate",
-            "type": "uint16"
+            "type": "uint256"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint256",
             "name": "discountRate",
-            "type": "uint16"
+            "type": "uint256"
           },
           {
-            "internalType": "uint32",
+            "internalType": "uint256",
             "name": "deadline",
-            "type": "uint32"
+            "type": "uint256"
           }
         ],
         "internalType": "struct CryptoSubscription.PromoCode",
@@ -631,19 +631,19 @@
         "type": "string"
       },
       {
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "commissionRate",
-        "type": "uint16"
+        "type": "uint256"
       },
       {
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "discountRate",
-        "type": "uint16"
+        "type": "uint256"
       },
       {
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "duration",
-        "type": "uint16"
+        "type": "uint256"
       }
     ],
     "name": "setPromoCode",
@@ -654,9 +654,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "duration",
-        "type": "uint16"
+        "type": "uint256"
       }
     ],
     "name": "subscribe",
@@ -667,9 +667,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "duration",
-        "type": "uint16"
+        "type": "uint256"
       },
       {
         "internalType": "string",
@@ -693,9 +693,9 @@
     "name": "subscriptionDeadline",
     "outputs": [
       {
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -709,9 +709,9 @@
         "type": "address"
       },
       {
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "duration",
-        "type": "uint16"
+        "type": "uint256"
       }
     ],
     "name": "subtractSubscription",
@@ -754,9 +754,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint16[]",
+        "internalType": "uint256[]",
         "name": "durations",
-        "type": "uint16[]"
+        "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
