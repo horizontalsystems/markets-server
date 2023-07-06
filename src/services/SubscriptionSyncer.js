@@ -1,7 +1,6 @@
 const Syncer = require('./Syncer')
 const CryptoSubscription = require('../providers/crypto-subscription')
 const Subscription = require('../db/models/Subscription')
-const abi = require('../providers/abi/crypto-subscription.json')
 const flipsidecrypto = require('../providers/flipsidecrypto')
 
 const subscriptionEth = new CryptoSubscription('ethereum')
@@ -43,17 +42,17 @@ class SubscriptionSyncer extends Syncer {
     }
   }
 
-  async syncFromApi({ eth, chain }) {
-    const allLogs = await flipsidecrypto.getLogs(chain)
-    const logsMap = await this.decodeLogHistory(eth, allLogs)
+  async syncFromApi(web3) {
+    const allLogs = await flipsidecrypto.getLogs(web3.chain)
+    const logsMap = await this.decodeLogHistory(web3, allLogs)
     const records = Object.keys(logsMap).map(item => {
       return {
-        chain,
+        chain: web3.chain,
         address: item.toLowerCase()
       }
     })
 
-    console.log(allLogs.length)
+    console.log('Fetched logs', allLogs.length)
 
     if (!records.length) {
       return
@@ -68,8 +67,8 @@ class SubscriptionSyncer extends Syncer {
       })
   }
 
-  async decodeLogHistory(eth, allLogs) {
-    const events = abi.reduce((map, item) => {
+  async decodeLogHistory(web3, allLogs) {
+    const events = web3.abi.reduce((map, item) => {
       map[item.signature] = {
         name: item.name,
         inputs: item.inputs
@@ -83,7 +82,7 @@ class SubscriptionSyncer extends Syncer {
       const log = allLogs[i]
       const event = events[log.TOPICS[0]]
 
-      const data = eth.abi.decodeLog(event.inputs, log.DATA, log.TOPICS.slice(1))
+      const data = web3.eth.abi.decodeLog(event.inputs, log.DATA, log.TOPICS.slice(1))
 
       if (event.name === 'PromoCodeAddition' || event.name === 'UpdateSubscription') {
         subscriptions[data._address] = data.deadline
@@ -113,7 +112,7 @@ class SubscriptionSyncer extends Syncer {
     const subscriptions = {}
 
     for (let i = 0; i < events.length; i += 1) {
-      const data = await this.getSubscriptions(subscription.eth, lastBlock, events[i])
+      const data = await this.getSubscriptions(subscription, lastBlock, events[i])
 
       data.forEach(item => {
         subscriptions[item.subscriber] = item
@@ -128,13 +127,13 @@ class SubscriptionSyncer extends Syncer {
     }
   }
 
-  async updateSubscription(subscription, { subscriber } = {}) {
+  async updateSubscription(web3, { subscriber } = {}) {
     if (!subscriber) {
       return
     }
 
     try {
-      const deadline = parseInt(await subscription.getSubscriptionDeadline(subscriber), 10)
+      const deadline = parseInt(await web3.getSubscriptionDeadline(subscriber), 10)
       console.log(`Fetched subscription ${subscriber} with deadline ${deadline}`)
 
       if (!deadline) {
@@ -142,7 +141,7 @@ class SubscriptionSyncer extends Syncer {
       }
 
       await Subscription.upsert({
-        chain: subscription.chain,
+        chain: web3.chain,
         address: subscriber.toLowerCase(),
         expire_date: new Date(deadline * 1000)
       })
@@ -151,15 +150,15 @@ class SubscriptionSyncer extends Syncer {
     }
   }
 
-  getSubscriptions(eth, fromBlock, eventName) {
-    const event = abi.find(item => item.name === eventName)
+  getSubscriptions(web3, fromBlock, eventName) {
+    const event = web3.abi.find(item => item.name === eventName)
     const topics = [
       event.signature
     ]
 
-    return eth.getPastLogs({ fromBlock, topics }).then(
+    return web3.eth.getPastLogs({ fromBlock, topics }).then(
       res => res.map(item => {
-        const data = eth.abi.decodeLog(event.inputs, item.data, item.topics.slice(1))
+        const data = web3.eth.abi.decodeLog(event.inputs, item.data, item.topics.slice(1))
         const subs = {
           blockNumber: item.blockNumber,
           subscriber: data.subscriber || data._address,
