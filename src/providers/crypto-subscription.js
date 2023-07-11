@@ -22,11 +22,73 @@ class CryptoSubscription {
     this.eth = eth
     this.methods = methods
     this.chain = chain
+
+    this.eventSubscriptionWithPromoCode = this.abi.find(item => item.name === 'SubscriptionWithPromoCode')
+    this.eventUpdateSubscription = this.abi.find(item => item.name === 'UpdateSubscription')
+    this.eventSubscription = this.abi.find(item => item.name === 'Subscription')
+  }
+
+  setBlockNumber(number) {
+    this.blockNumber = number
   }
 
   getSubscriptionDeadline(address) {
     return this.methods.subscriptionDeadline(address).call()
   }
+
+  async getSubscriptions() {
+    return [
+      ...await this.getLogs(this.eventSubscriptionWithPromoCode),
+      ...await this.getLogs(this.eventUpdateSubscription),
+      ...await this.getLogs(this.eventSubscription)
+    ]
+  }
+
+  getLogs(event) {
+    if (!event) {
+      console.log('Event is required')
+      return []
+    }
+
+    return this.eth.getPastLogs({ fromBlock: this.blockNumber, topics: [event.signature] })
+      .then(res => res.map(item => {
+        const data = this.eth.abi.decodeLog(event.inputs, item.data, item.topics.slice(1))
+
+        return {
+          name: event.name,
+          address: data.subscriber || data._address,
+          duration: data.duration,
+          deadline: data.deadline,
+          blockNumber: item.blockNumber
+        }
+      }))
+      .catch(e => {
+        console.log(e.message)
+        return []
+      })
+  }
+
+  async syncLatestBlock() {
+    try {
+      let blockNumber = await this.eth.getBlockNumber()
+      if (!this.blockNumber) {
+        blockNumber -= (this.chain === 'ethereum' ? 1000 : 3000)
+      } else {
+        blockNumber -= 100
+      }
+
+      if (!blockNumber) {
+        return
+      }
+
+      console.log(`Setting new block number ${blockNumber}; chain ${this.chain}`)
+
+      this.blockNumber = blockNumber
+    } catch (e) {
+      console.error(e.message)
+    }
+  }
+
 }
 
 module.exports = CryptoSubscription

@@ -9,7 +9,8 @@ const subscriptionBsc = new CryptoSubscription('bsc')
 class SubscriptionSyncer extends Syncer {
 
   async start() {
-    this.cron('*/1 * * * *', this.sync)
+    this.cron('*/5 * * * *', this.syncLatest)
+    this.cron('*/1 * * * *', this.syncInactive)
     this.cron('2h', this.syncHistorical)
   }
 
@@ -22,7 +23,62 @@ class SubscriptionSyncer extends Syncer {
     }
   }
 
-  async sync() {
+  async syncLatest() {
+    try {
+      await this.sync(subscriptionBsc)
+      await this.sync(subscriptionEth)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  async sync(web3) {
+    await web3.syncLatestBlock()
+
+    const subscriptionsMap = {}
+    const subscriptions = await web3.getSubscriptions()
+    const dateNow = new Date()
+
+    for (let i = 0; i < subscriptions.length; i += 1) {
+      const subscription = subscriptions[i]
+      const isSubscribed = subscription.name !== 'UpdateSubscription'
+      const subscriptionDate = new Date(subscription.deadline * 1000)
+
+      if (!subscription.deadline || !subscriptionDate) {
+        continue
+      }
+
+      if (web3.blockNumber < subscription.blockNumber) {
+        web3.setBlockNumber(subscription.blockNumber)
+      }
+
+      if (isSubscribed) {
+        if (dateNow > subscriptionDate) {
+          continue
+        }
+
+        const record = await Subscription.findOne({ where: { address: subscription.address } })
+        if (record && record.expire_date > subscriptionDate) {
+          continue
+        }
+      }
+
+      subscriptionsMap[subscription.address] = subscription
+    }
+
+    const newSubscribers = Object.keys(subscriptionsMap)
+
+    for (let i = 0; i < newSubscribers.length; i += 1) {
+      const subscriber = newSubscribers[i];
+      await this.updateSubscription(web3, { subscriber })
+    }
+
+    if (!newSubscribers.length) {
+      await web3.syncLatestBlock()
+    }
+  }
+
+  async syncInactive() {
     const subscriptions = await Subscription.getInactive()
     console.log('Sync subscriptions', subscriptions.length)
 
@@ -96,37 +152,6 @@ class SubscriptionSyncer extends Syncer {
     return subscriptions
   }
 
-  async syncEvents() {
-    const events = [
-      'Subscription',
-      'SubscriptionWithPromoCode',
-      'PromoCodeAddition',
-      'UpdateSubscription'
-    ]
-
-    await this.syncSubscriptions(subscriptionEth, events, 3595469)
-    await this.syncSubscriptions(subscriptionBsc, events, 29063199)
-  }
-
-  async syncSubscriptions(subscription, events, lastBlock) {
-    const subscriptions = {}
-
-    for (let i = 0; i < events.length; i += 1) {
-      const data = await this.getSubscriptions(subscription, lastBlock, events[i])
-
-      data.forEach(item => {
-        subscriptions[item.subscriber] = item
-      })
-    }
-
-    const subscribers = Object.keys(subscriptions)
-
-    for (let i = 0; i < subscribers.length; i += 1) {
-      const item = subscribers[i]
-      await this.updateSubscription(subscriptionEth, subscriptions[item])
-    }
-  }
-
   async updateSubscription(web3, { subscriber } = {}) {
     if (!subscriber) {
       return
@@ -140,11 +165,13 @@ class SubscriptionSyncer extends Syncer {
         return
       }
 
-      await Subscription.upsert({
+      const record = {
         chain: web3.chain,
         address: subscriber.toLowerCase(),
         expire_date: new Date(deadline * 1000)
-      })
+      }
+
+      await Subscription.bulkCreate([record], { updateOnDuplicate: ['expire_date'] })
     } catch (e) {
       console.error(e)
     }

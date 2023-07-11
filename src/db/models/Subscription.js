@@ -8,7 +8,6 @@ class Subscription extends SequelizeModel {
         address: {
           type: DataTypes.STRING(50),
           allowNull: false,
-          unique: true
         },
         chain: {
           type: DataTypes.STRING(50),
