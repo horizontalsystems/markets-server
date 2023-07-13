@@ -18,7 +18,8 @@ class Subscription extends SequelizeModel {
         },
         login_date: {
           type: DataTypes.DATE
-        }
+        },
+        chat_started: DataTypes.BOOLEAN
       },
       {
         timestamps: false,

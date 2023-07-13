@@ -12,6 +12,11 @@ logs
 *.log
 npm-debug.log*
 
+# Telagram
+/_td_database
+_td_files
+
+
 # Coverage directory used by tools like istanbul
 coverage
 

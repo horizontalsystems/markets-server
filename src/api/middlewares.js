@@ -242,3 +242,8 @@ exports.error500 = (err, req, res, next) => {
     res.json({ message: 'Interval Server error' })
   }
 }
+
+exports.handleError = (res, code, message) => {
+  res.status(code)
+  res.send({ message })
+}

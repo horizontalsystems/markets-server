@@ -5,11 +5,7 @@ const AuthKey = require('../../db/models/AuthKey')
 const Subscription = require('../../db/models/Subscription')
 const CryptoSubscription = require('../../providers/crypto-subscription')
 const { utcDate, signingMessage } = require('../../utils')
-
-function handleError(res, code, message) {
-  res.status(code)
-  res.send({ message })
-}
+const { handleError } = require('../middlewares')
 
 exports.generateMessage = async ({ query: { address } }, res) => {
   try {
@@ -98,6 +94,9 @@ exports.requireAuth = (req, res, next) => {
     if (subscription.login_date && subscription.login_date.getTime() > payload.loginDate) {
       return handleError(res, 401, 'Logged in on another device')
     }
+
+    // eslint-disable-next-line no-param-reassign
+    req.address = payload.address
 
     next()
   })
