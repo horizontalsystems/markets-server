@@ -14,8 +14,7 @@ module.exports = {
           'revenue',
           'fee',
           'address',
-          'holders',
-          'rating'
+          'holders'
         )
     })
   }),

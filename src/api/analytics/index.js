@@ -11,8 +11,8 @@ const router = express.Router()
  * @apiVersion 1.0.0
  * @apiGroup Analytics
  *
- * @apiParam    {String}                                                                                  uid   Coin's uid
- * @apiParam    {String=cex_volume,dex_volume,dex_liquidity,tx_count,revenue,fee,address,holders,rating}  type  Rank type
+ * @apiParam    {String}                                                                           uid   Coin's uid
+ * @apiParam    {String=cex_volume,dex_volume,dex_liquidity,tx_count,revenue,fee,address,holders}  type  Rank type
  * @apiUse      Currencies
  *
  * @apiSuccessExample {json} Success-Response:
@@ -49,6 +49,7 @@ router.get('/ranks', validateRanks, requireAuth, controller.ranks)
  *  {
  *    "cex_volume": {
  *      "rank_30d": 4,
+ *      "rating": "excellent",
  *      "points": [{
  *        "timestamp": 1684713600,
  *        "volume": "5027162372"
@@ -57,6 +58,7 @@ router.get('/ranks', validateRanks, requireAuth, controller.ranks)
  *    "addresses": {
  *      "rank_30d": 4,
  *      "count_30d": 773949,
+ *      "rating": "excellent",
  *      "points": [{
  *        "timestamp": 1684713600,
  *        "count": "38206"
@@ -65,6 +67,7 @@ router.get('/ranks', validateRanks, requireAuth, controller.ranks)
  *    "transactions": {
  *      "rank_30d": 3,
  *      "volume_30d": "30616819.049246748625",
+ *      "rating": "excellent",
  *      "points": [{
  *        "timestamp": 1684713600,
  *        "count": "397596"
@@ -78,10 +81,10 @@ router.get('/ranks', validateRanks, requireAuth, controller.ranks)
  *      "rank_30d": 1,
  *      "value_30d": "205234313.29572377"
  *    },
- *    "rating": "excellent",
  *    "reports": 20,
  *    "funds_invested": "18400000",
  *    "holders_rank": 2,
+ *    "holders_rating": "good",
  *    "holders": [
  *      {
  *        "blockchain_uid": "ethereum",
@@ -113,10 +116,12 @@ router.get('/:uid', validateShow, requireAuth, setCurrencyRate, setDailyInterval
  *    }]
  *    cex_volume: {
  *      rank_30d: true,
+ *      rating: true,
  *      points: true
  *    },
  *    dex_volume: {
  *      rank_30d: true,
+ *      rating: true,
  *      points: true
  *    }
  *  }

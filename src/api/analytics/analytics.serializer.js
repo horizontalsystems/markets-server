@@ -29,18 +29,21 @@ module.exports = {
     if (cexVolumes.length) {
       data.cex_volume = {
         rank_30d: nullOrInteger(ranks.cex_volume_month_rank),
+        rating: nullOrString(ranks.cex_volume_week_rating),
         points: mapRates(cexVolumes)
       }
     }
     if (dexVolumes.length) {
       data.dex_volume = {
         rank_30d: nullOrInteger(ranks.dex_volume_month_rank),
+        rating: nullOrString(ranks.dex_volume_week_rating),
         points: mapRates(dexVolumes)
       }
     }
     if (dexLiquidity.length) {
       data.dex_liquidity = {
         rank: nullOrInteger(ranks.liquidity_rank),
+        rating: nullOrString(ranks.liquidity_rating),
         points: mapRates(dexLiquidity)
       }
     }
@@ -48,6 +51,7 @@ module.exports = {
       data.addresses = {
         rank_30d: nullOrInteger(ranks.address_month_rank),
         count_30d: nullOrInteger(ranks.address_month),
+        rating: nullOrString(ranks.address_week_rating),
         points: addresses
       }
     }
@@ -55,6 +59,7 @@ module.exports = {
       data.transactions = {
         rank_30d: nullOrInteger(ranks.tx_month_rank),
         volume_30d: nullOrString(ranks.tx_month),
+        rating: nullOrString(ranks.tx_week_rating),
         points: transactions
       }
     }
@@ -62,6 +67,7 @@ module.exports = {
       data.tvl = {
         rank: nullOrInteger(ranks.tvl_rank),
         ratio: nullOrString(defiProtocolData.ratio),
+        rating: nullOrString(ranks.tvl_rating),
         points: mapRates(defiProtocolData.tvls, true)
       }
     }
@@ -76,9 +82,6 @@ module.exports = {
         rank_30d: nullOrInteger(ranks.fee_month_rank),
         value_30d: nullOrString(ranks.fee_month)
       }
-    }
-    if (ranks.rating) {
-      data.rating = nullOrString(ranks.rating)
     }
 
     if (other.reports) {
@@ -97,6 +100,10 @@ module.exports = {
       data.holders_rank = nullOrInteger(ranks.holders_rank)
     }
 
+    if (ranks.holders_rating) {
+      data.holders_rating = nullOrString(ranks.holders_rating)
+    }
+
     data.holders = holders
 
     return data
@@ -108,6 +115,7 @@ module.exports = {
     if (cexvolumes) {
       data.cex_volume = {
         rank_30d: !!ranks.cex_volume_month_rank,
+        rating: !!ranks.cex_volume_week_rating,
         points: true
       }
     }
@@ -115,6 +123,7 @@ module.exports = {
     if (dexvolumes) {
       data.dex_volume = {
         rank_30d: !!ranks.dex_volume_month_rank,
+        rating: !!ranks.dex_volume_week_rating,
         points: true
       }
     }
@@ -122,6 +131,7 @@ module.exports = {
     if (dexliquidity) {
       data.dex_liquidity = {
         rank: !!ranks.liquidity_rank,
+        rating: !!ranks.liquidity_rating,
         points: true
       }
     }
@@ -130,6 +140,7 @@ module.exports = {
       data.addresses = {
         rank_30d: !!ranks.address_month_rank,
         count_30d: !!ranks.address_month,
+        rating: !!ranks.address_week_rating,
         points: true
       }
     }
@@ -138,6 +149,7 @@ module.exports = {
       data.transactions = {
         rank_30d: !!ranks.tx_month_count_rank,
         volume_30d: !!ranks.tx_month,
+        rating: !!ranks.tx_week_rating,
         points: true
       }
     }
@@ -145,6 +157,7 @@ module.exports = {
     if (defiProtocol) {
       data.tvl = {
         rank: !!defiProtocol.tvl_rank,
+        rating: !!ranks.tvl_rating,
         ratio: true,
         points: true
       }
@@ -173,6 +186,7 @@ module.exports = {
     data.treasuries = !!other.treasuries
 
     data.holders = !!holders
+    data.holders_rating = !!ranks.holders_rating
     data.holders_rank = !!ranks.holders_rank
 
     return data
@@ -204,12 +218,6 @@ module.exports = {
       if (type === 'holders') {
         return {
           value: rank.holders
-        }
-      }
-
-      if (type === 'rating') {
-        return {
-          value: rank.rating
         }
       }
 

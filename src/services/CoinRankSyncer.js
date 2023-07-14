@@ -50,13 +50,15 @@ class CoinRankSyncer extends Syncer {
       // These fields should be kept
       if (!isFull) {
         pickIfExists(item, rank, [
-          'rating',
           // 'tvl_rank',
           'tvl',
+          'tvl_rating',
           // 'holders_rank',
           'holders',
+          'holders_rating',
           // 'liquidity_rank',
           'liquidity',
+          'liquidity_rating',
           // 'tx_day',
           // 'tx_day_rank',
           // 'tx_day_count',
@@ -69,18 +71,21 @@ class CoinRankSyncer extends Syncer {
           // 'cex_volume_day',
           // 'cex_volume_day_rank',
           'cex_volume_week',
+          'cex_volume_week_rating',
           'cex_volume_week_rank',
           'cex_volume_month',
           'cex_volume_month_rank',
           // 'dex_volume_day',
           // 'dex_volume_day_rank',
           'dex_volume_week',
+          'dex_volume_week_rating',
           'dex_volume_week_rank',
           'dex_volume_month',
           'dex_volume_month_rank',
           // 'address_day',
           // 'address_day_rank',
           'address_week',
+          'address_week_rating',
           'address_week_rank',
           'address_month',
           'address_month_rank',
@@ -154,7 +159,7 @@ class CoinRankSyncer extends Syncer {
       }
 
       if (record.rating) {
-        item.rating = record.rating
+        item[`${key}_rating`] = record.rating
       }
 
       map[record.id] = item
@@ -264,7 +269,12 @@ class CoinRankSyncer extends Syncer {
       result.weekly = await Coin.query(query, { dateFrom: '7 days' })
       result.monthly = await Coin.query(query, { dateFrom: '30 days' })
 
-      this.setRatings(result.monthly)
+      this.setRatings(result.weekly, {
+        excellent: 10000000,
+        good: 5000000,
+        fair: 1000000
+      })
+
     }
 
     return result
@@ -302,7 +312,11 @@ class CoinRankSyncer extends Syncer {
       result.weekly = await Coin.query(query, { dateFrom: '7 days' })
       result.monthly = await Coin.query(query, { dateFrom: '30 days' })
 
-      this.setRatings(result.monthly)
+      this.setRatings(result.weekly, {
+        excellent: 1000000,
+        good: 500000,
+        fair: 100000
+      })
     }
 
     return result
@@ -343,7 +357,11 @@ class CoinRankSyncer extends Syncer {
       result.weekly = await Coin.query(query, { dateFrom: '7 days' })
       result.monthly = await Coin.query(query, { dateFrom: '30 days' })
 
-      this.setRatings(result.monthly)
+      this.setRatings(result.weekly, {
+        excellent: 10000,
+        good: 5000,
+        fair: 1000
+      })
     }
 
     return result
@@ -378,7 +396,11 @@ class CoinRankSyncer extends Syncer {
     `)
 
     if (isFull) {
-      this.setRatings(data)
+      this.setRatings(data, {
+        excellent: 2000000,
+        good: 1000000,
+        fair: 500000
+      })
     }
 
     return data
@@ -398,7 +420,11 @@ class CoinRankSyncer extends Syncer {
     `)
 
     if (isFull) {
-      this.setRatings(data)
+      this.setRatings(data, {
+        excellent: 200000000,
+        good: 100000000,
+        fair: 50000000
+      })
     }
 
     return data
@@ -425,7 +451,11 @@ class CoinRankSyncer extends Syncer {
     `)
 
     if (isFull) {
-      this.setRatings(data)
+      this.setRatings(data, {
+        excellent: 100000,
+        good: 500000,
+        fair: 300000
+      })
     }
 
     return data
@@ -484,7 +514,11 @@ class CoinRankSyncer extends Syncer {
       result.weekly = weekly
       result.monthly = monthly
 
-      this.setRatings(result.monthly)
+      this.setRatings(result.weekly, {
+        excellent: 500,
+        good: 200,
+        fair: 100
+      })
     }
 
     return result
@@ -536,8 +570,6 @@ class CoinRankSyncer extends Syncer {
           rank: index + 1
         }))
         .filter(item => item.id && item.volume)
-
-      this.setRatings(result.monthly)
     }
 
     return result
@@ -644,17 +676,14 @@ class CoinRankSyncer extends Syncer {
   }
 
   setRatings(records, ratings) {
-    return // todo: implement correclt calculation
-    const ranges = this.getRatingRanges(records.length, ratings)
-
     for (let i = 0; i < records.length; i += 1) {
-      const record = records[i];
+      const record = records[i]
 
-      if (record.rank <= ranges.excellent) {
+      if (record.volume >= ratings.excellent) {
         record.rating = 'excellent'
-      } else if (record.rank <= ranges.good) {
+      } else if (record.volume >= ratings.good) {
         record.rating = 'good'
-      } else if (record.rank <= ranges.fair) {
+      } else if (record.volume >= ratings.fair) {
         record.rating = 'fair'
       } else {
         record.rating = 'poor'
