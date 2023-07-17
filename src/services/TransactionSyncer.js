@@ -15,13 +15,11 @@ class TransactionSyncer extends Syncer {
 
   async syncHistorical() {
     if (!await Transaction.existsForPlatforms('ethereum')) {
-      await this.syncFromBigquery(this.syncParamsHistorical('1y', { days: -30 }), '1d')
-      await this.syncFromBigquery(this.syncParamsHistorical('1M'), '1h')
+      await this.syncFromBigquery(this.syncParamsHistorical('1y'), '1d')
     }
 
     if (!await Transaction.existsForPlatforms('bitcoin')) {
-      await this.syncFromBigquery(this.syncParamsHistorical('1y', { days: -30 }), '1d', true)
-      await this.syncFromBigquery(this.syncParamsHistorical('1M'), '1h', true)
+      await this.syncFromBigquery(this.syncParamsHistorical('1y'), '1d', true)
     }
 
     if (!await Transaction.existsForPlatforms('binance-smart-chain')) {
@@ -36,30 +34,23 @@ class TransactionSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('1h', this.syncHourlyStats)
     this.cron('1d', this.syncDailyStats)
-  }
-
-  async syncHourlyStats(dateParams) {
-    const params = {
-      dateFrom: utcDate({ hours: -2 }, 'yyyy-MM-dd HH:00:00Z'),
-      dateTo: dateParams.dateTo
-    }
-    await this.syncFromBigquery(params, '1h')
-    await this.syncFromBigquery(params, '1h', true)
-    await this.syncFromBitquery(dateParams, 'binance-smart-chain', true)
-    // await this.syncFromBitquery(dateParams, 'solana', true, 30)
-
-    console.log('Completed syncing daily transactions stats')
+    this.cron('01:00', this.syncDailyStats)
   }
 
   async syncDailyStats({ dateFrom, dateTo }) {
-    await this.adjustData({ dateFrom, dateTo })
-  }
+    const params = {
+      dateFrom: utcDate({ days: -1 }, 'yyyy-MM-dd'),
+      dateTo
+    }
 
-  async adjustData({ dateFrom, dateTo }) {
-    await Transaction.updatePoints(dateFrom, dateTo)
+    await this.syncFromBigquery(params, '1d')
+    await this.syncFromBigquery(params, '1d', true)
+    await this.syncFromBitquery(params, 'binance-smart-chain', false)
+
     await Transaction.deleteExpired(dateFrom, dateTo)
+
+    console.log('Completed syncing daily transactions stats')
   }
 
   async syncFromBigquery({ dateFrom, dateTo }, datePeriod, isBtcBaseCoins = false) {

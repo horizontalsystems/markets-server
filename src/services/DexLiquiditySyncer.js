@@ -1,5 +1,5 @@
 const { chunk } = require('lodash')
-const { utcDate, utcStartOfDay } = require('../utils')
+const { utcStartOfDay } = require('../utils')
 const DexLiquidity = require('../db/models/DexLiquidity')
 const DexVolume = require('../db/models/DexVolume')
 const dune = require('../providers/dune')
@@ -31,29 +31,25 @@ class DexLiquiditySyncer extends Syncer {
     if (source === 'pancakeswap') {
       return this.syncPancakeswap(dateFrom, true, uids)
     }
-    if (source === 'dune') {
-      return this.syncFromDune(utcDate({ month: -1 }, 'yyyy-MM-dd'))
-    }
 
-    await this.syncFromDune(utcDate({ month: -1 }, 'yyyy-MM-dd'))
     await this.syncUniswap(dateFrom, true, true, uids)
     await this.syncUniswap(dateFrom, false, true, uids)
     await this.syncPancakeswap(dateFrom, true, uids)
   }
 
   async syncLatest() {
-    this.cron('1h', this.syncHourlyStats)
     this.cron('1d', this.syncDailyStats)
-  }
-
-  async syncHourlyStats({ dateTo }) {
-    await this.syncUniswap(dateTo, true, false)
-    await this.syncUniswap(dateTo, false, false)
-    await this.syncPancakeswap(dateTo, false)
+    this.cron('01:00', this.syncDailyStats)
   }
 
   async syncDailyStats(dateParams) {
-    await this.syncFromDune(utcDate({ days: -2 }, 'yyyy-MM-dd'))
+    const dateFrom = utcStartOfDay({ days: -2 }, true)
+
+    await this.syncUniswap(dateFrom, true, true, null)
+    await this.syncUniswap(dateFrom, false, true, null)
+    await this.syncPancakeswap(dateFrom, true, null)
+    // await this.syncFromDune(utcDate({ days: -2 }, 'yyyy-MM-dd'))
+
     await this.adjustData(dateParams)
   }
 

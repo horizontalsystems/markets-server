@@ -28,6 +28,8 @@ class Syncer {
         return '0 */4 * * *'
       case '1d':
         return '0 0 * * *'
+      case '01:00':
+        return '0 1 * * *'
       case '10d':
         return '0 0 */10 * *'
       default:
@@ -47,6 +49,7 @@ class Syncer {
           dateFrom: utcDate({ hours: -1 }, 'yyyy-MM-dd HH:00:00Z'),
           dateTo: utcDate({}, 'yyyy-MM-dd HH:00:00Z')
         }
+      case '01:00':
       case '1d':
         return {
           dateFrom: utcDate({ days: -31 }, 'yyyy-MM-dd'),

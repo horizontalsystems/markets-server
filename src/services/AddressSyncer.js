@@ -34,7 +34,8 @@ class AddressSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('4h', this.syncDailyStats)
+    this.cron('1d', this.syncDailyStats)
+    this.cron('01:00', this.syncDailyStats)
     this.cron('1d', this.adjustData) // todo: should be removed
   }
 
