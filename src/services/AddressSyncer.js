@@ -34,20 +34,15 @@ class AddressSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('1h', this.syncHourlyStats)
-    this.cron('1d', this.syncDailyStats)
-  }
-
-  async syncHourlyStats() {
-    const dateFrom = utcDate({}, 'yyyy-MM-dd')
-
-    await this.syncStats('ethereum', { dateFrom })
-    await this.syncStats('bitcoin', { dateFrom })
-    await this.syncStats('binance-smart-chain', { dateFrom })
+    this.cron('4h', this.syncDailyStats)
+    this.cron('1d', this.adjustData) // todo: should be removed
   }
 
   async syncDailyStats() {
-    await this.adjustData()
+    const dateFrom = utcDate({ days: -1 }, 'yyyy-MM-dd')
+    await this.syncStats('bitcoin', { dateFrom })
+    await this.syncStats('ethereum', {})
+    await this.syncStats('binance-smart-chain', {})
   }
 
   async adjustData() {
