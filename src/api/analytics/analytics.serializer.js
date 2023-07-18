@@ -74,13 +74,15 @@ module.exports = {
     if (ranks.revenue_day_rank || ranks.revenue_week_rank || ranks.revenue_month_rank) {
       data.revenue = {
         rank_30d: nullOrInteger(ranks.revenue_month_rank),
-        value_30d: nullOrString(ranks.revenue_month)
+        value_30d: nullOrString(ranks.revenue_month),
+        description: nullOrString(ranks.revenue_month_desc)
       }
     }
     if (ranks.fee_day_rank || ranks.fee_week_rank || ranks.fee_month_rank) {
       data.fee = {
         rank_30d: nullOrInteger(ranks.fee_month_rank),
-        value_30d: nullOrString(ranks.fee_month)
+        value_30d: nullOrString(ranks.fee_month),
+        description: nullOrString(ranks.fee_month_desc)
       }
     }
 

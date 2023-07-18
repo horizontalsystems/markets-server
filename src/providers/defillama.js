@@ -101,7 +101,7 @@ exports.getRevenue = isFee => {
         return []
       }
 
-      return normalizeRevenue(data.protocols)
+      return normalizeRevenue(data.protocols, isFee)
     })
     .catch(e => {
       console.error(e)

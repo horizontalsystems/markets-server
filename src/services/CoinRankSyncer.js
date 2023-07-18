@@ -96,12 +96,14 @@ class CoinRankSyncer extends Syncer {
           'revenue_week_rank',
           'revenue_month',
           'revenue_month_rank',
+          'revenue_month_desc',
           // 'fee_day',
           // 'fee_day_rank',
           'fee_week',
           'fee_week_rank',
           'fee_month',
-          'fee_month_rank'
+          'fee_month_rank',
+          'fee_month_desc'
         ])
       }
 
@@ -161,6 +163,10 @@ class CoinRankSyncer extends Syncer {
 
       if (record.rating) {
         item[`${key}_rating`] = record.rating
+      }
+
+      if (record.desc) {
+        item[`${key}_desc`] = record.desc
       }
 
       map[record.id] = item
@@ -568,7 +574,8 @@ class CoinRankSyncer extends Syncer {
         .map((item, index) => ({
           id: map[item.uid],
           volume: item.total30d,
-          rank: index + 1
+          rank: index + 1,
+          desc: item.desc
         }))
         .filter(item => item.id && item.volume)
     }

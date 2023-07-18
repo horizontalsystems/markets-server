@@ -49,7 +49,7 @@ exports.normalize = data => {
   }, {})
 }
 
-exports.normalizeRevenue = items => {
+exports.normalizeRevenue = (items, isFee) => {
   const mapUid = uid => {
     const map = {
       polygon: 'matic-network',
@@ -98,19 +98,24 @@ exports.normalizeRevenue = items => {
   const result = {}
   const setData = (uid, data) => {
     const prev = result[uid]
+    const methodology = data.methodology || {}
+    const desc = isFee ? methodology.Fees : methodology.Revenue
+
     if (prev) {
       result[uid] = {
         uid: mapUid(uid),
         total24h: prev.total24h + data.total24h,
         total7d: prev.total7d + data.total7d,
-        total30d: prev.total30d + data.total30d
+        total30d: prev.total30d + data.total30d,
+        desc
       }
     } else {
       result[uid] = {
         uid: mapUid(uid),
         total24h: data.total24h,
         total7d: data.total7d,
-        total30d: data.total30d
+        total30d: data.total30d,
+        desc
       }
     }
   }

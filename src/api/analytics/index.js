@@ -75,11 +75,13 @@ router.get('/ranks', validateRanks, requireAuth, controller.ranks)
  *    },
  *    "revenue": {
  *      "rank_30d": 1,
- *      "value_30d": "64166548.951023415"
+ *      "value_30d": "64166548.951023415",
+ *      "description": "Percentage of swap fees going to treasury and/or token holders"
  *    },
  *    "fee": {
  *      "rank_30d": 1,
- *      "value_30d": "205234313.29572377"
+ *      "value_30d": "205234313.29572377",
+ *      "description": "Fees collected by sequencer paid by users"
  *    },
  *    "reports": 20,
  *    "funds_invested": "18400000",
