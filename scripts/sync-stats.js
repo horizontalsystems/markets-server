@@ -4,7 +4,6 @@ const { Command } = require('commander')
 const sequelize = require('../src/db/sequelize')
 const CategoryMarketCapSyncer = require('../src/services/CategoryMarketCapSyncer')
 const TopPlatformsSyncer = require('../src/services/TopPlatformsSyncer')
-const CoinRatingSyncer = require('../src/services/CoinRatingSyncer')
 const CoinRankSyncer = require('../src/services/CoinRankSyncer')
 
 const program = new Command()
@@ -15,10 +14,9 @@ const program = new Command()
   .option('-f --force', 'force sync')
   .parse(process.argv)
 
-async function start({ category, rating, platforms, rank, force }) {
+async function start({ category, platforms, rank, force }) {
   await sequelize.sync()
   const categoryMarketCapSyncer = new CategoryMarketCapSyncer()
-  const coinRatingSyncer = new CoinRatingSyncer()
   const coinRankSyncer = new CoinRankSyncer()
   const topPlatformsSyncer = new TopPlatformsSyncer()
   const syncers = []
@@ -26,7 +24,6 @@ async function start({ category, rating, platforms, rank, force }) {
   try {
 
     if (category) syncers.push(categoryMarketCapSyncer)
-    if (rating) syncers.push(coinRatingSyncer)
     if (rank) syncers.push(coinRankSyncer)
     if (platforms) syncers.push(topPlatformsSyncer)
 
