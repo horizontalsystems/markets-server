@@ -30,7 +30,7 @@ class DexVolumeSyncer extends Syncer {
   async syncDailyStats({ dateFrom, dateTo }) {
     const params = {
       dateFrom: utcDate({ days: -1 }, 'yyyy-MM-dd'),
-      dateTo
+      dateTo: utcDate()
     }
 
     await this.syncFromBigquery(null, params, '1d')
