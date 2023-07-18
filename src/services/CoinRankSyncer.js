@@ -65,6 +65,7 @@ class CoinRankSyncer extends Syncer {
           'tx_week',
           'tx_week_rank',
           'tx_week_count',
+          'tx_week_rating',
           'tx_month',
           'tx_month_rank',
           'tx_month_count',
@@ -361,7 +362,7 @@ class CoinRankSyncer extends Syncer {
         excellent: 10000,
         good: 5000,
         fair: 1000
-      })
+      }, 'count')
     }
 
     return result
@@ -675,15 +676,15 @@ class CoinRankSyncer extends Syncer {
       })
   }
 
-  setRatings(records, ratings) {
+  setRatings(records, ratings, field = 'volume') {
     for (let i = 0; i < records.length; i += 1) {
       const record = records[i]
 
-      if (record.volume >= ratings.excellent) {
+      if (record[field] >= ratings.excellent) {
         record.rating = 'excellent'
-      } else if (record.volume >= ratings.good) {
+      } else if (record[field] >= ratings.good) {
         record.rating = 'good'
-      } else if (record.volume >= ratings.fair) {
+      } else if (record[field] >= ratings.fair) {
         record.rating = 'fair'
       } else {
         record.rating = 'poor'
