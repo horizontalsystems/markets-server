@@ -1,5 +1,6 @@
 const { configure, createClient } = require('tdl')
 const { getTdjson } = require('prebuilt-tdlib')
+const { telegramMessage } = require('../utils')
 
 configure({ tdjson: getTdjson() })
 
@@ -44,7 +45,7 @@ class Telegram {
         _: 'inputMessageText',
         text: {
           _: 'formattedText',
-          text: 'Premium Tech Support'
+          text: telegramMessage()
         }
       }
     })

@@ -13,7 +13,7 @@ exports.startChat = async ({ body, address }, res) => {
     }
 
     if (subscription.chat_started) {
-      return handleError(res, 403, 'Already sent a message')
+      // return handleError(res, 403, 'Already sent a message')
     }
 
     await telegram.sendMessage(body.username)

@@ -110,3 +110,8 @@ ${address}
 Salt:
 ${salt}`)
 }
+
+exports.telegramMessage = () => {
+  return (`Hi, this is Unstoppable wallet support chat. 
+What would you like to know?`)
+}
