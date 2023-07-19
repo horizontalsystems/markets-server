@@ -96,12 +96,16 @@ class DefiProtocolSyncer extends Syncer {
   }
 
   async syncProtocols(protocols, dateTo, prevTvlMap = {}) {
-    const coins = await Coin.findAll({
-      attributes: ['id', 'coingecko_id'],
-      where: {
-        coingecko_id: protocols.map(item => item.gecko_id).filter(id => id)
+    const protocolIds = protocols.map(memo => {
+      if (memo.gecko_id) return memo.gecko_id
+      if (memo.name === 'Uniswap V3') {
+        memo.gecko_id = 'uniswap'
       }
-    })
+
+      return memo.gecko_id
+    }).filter(id => id)
+
+    const coins = await Coin.query('select id, coingecko_id from coins where coingecko_id in (:protocolIds)', { protocolIds })
 
     const protocolsList = []
     const parentProtocols = {}
