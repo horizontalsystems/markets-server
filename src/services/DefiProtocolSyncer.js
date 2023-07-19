@@ -96,16 +96,8 @@ class DefiProtocolSyncer extends Syncer {
   }
 
   async syncProtocols(protocols, dateTo, prevTvlMap = {}) {
-    const protocolIds = protocols.map(memo => {
-      if (memo.gecko_id) return memo.gecko_id
-      if (memo.name === 'Uniswap V3') {
-        memo.gecko_id = 'uniswap'
-      }
-
-      return memo.gecko_id
-    }).filter(id => id)
-
-    const coins = await Coin.query('select id, coingecko_id from coins where coingecko_id in (:protocolIds)', { protocolIds })
+    const protocolIds = protocols.map(item => item.gecko_id).filter(id => id)
+    const coins = await Coin.query('select id, coingecko_id from coins where coingecko_id in (:ids)', { ids: protocolIds })
 
     const protocolsList = []
     const parentProtocols = {}
@@ -212,9 +204,22 @@ class DefiProtocolSyncer extends Syncer {
   }
 
   async fetchProtocols() {
+    const parents = await defillama.getParentProtocols()
     let protocols = []
     try {
-      protocols = await defillama.getProtocols()
+      protocols = (await defillama.getProtocols()).map(memo => {
+        const parent = parents[memo.parentProtocol]
+
+        if (parent) {
+          memo.name = parent.name
+        }
+
+        if (parent && !memo.gecko_id) {
+          memo.gecko_id = parent.gecko_id
+        }
+
+        return memo
+      })
       console.log(`Fetched new protocols ${protocols.length}`)
     } catch (e) {
       console.log(`Error syncing protocols ${e.message}`)

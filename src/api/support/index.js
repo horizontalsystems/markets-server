@@ -6,7 +6,7 @@ const { requireAuth } = require('../auth')
 const router = express.Router()
 
 /**
- * @api {post} /v1/support/chat Start chat
+ * @api {post} /v1/support/start-chat Start chat
  * @apiVersion 1.0.0
  * @apiGroup Support
  *

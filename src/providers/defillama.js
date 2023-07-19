@@ -31,6 +31,19 @@ exports.getProtocols = () => {
   })
 }
 
+exports.getParentProtocols = () => {
+  console.log('Fetching DeFi protocols parents')
+
+  return api.get('/lite/protocols2').then(({ data = [] }) => {
+    const parents = data.parentProtocols || []
+
+    return parents.reduce((map, curr) => {
+      map[curr.id] = curr
+      return map
+    }, {})
+  })
+}
+
 exports.getChains = () => {
   console.log('Fetching DeFi chains')
 
