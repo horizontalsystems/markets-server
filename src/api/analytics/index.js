@@ -1,8 +1,15 @@
 const express = require('express')
 const controller = require('./analytics.controller')
 const { setCurrencyRate, requireCoin, setDailyInterval } = require('../middlewares')
-const { validateRanks, validateShow, validatePreview, validateHolders, validateDexData } = require('./analytics.validator')
 const { requireAuth } = require('../auth')
+const {
+  validateRanks,
+  validateShow,
+  validatePreview,
+  validateHolders,
+  validateDexData,
+  validateSubscriptions
+} = require('./analytics.validator')
 
 const router = express.Router()
 
@@ -34,6 +41,25 @@ const router = express.Router()
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
 router.get('/ranks', validateRanks, requireAuth, controller.ranks)
+
+/**
+ * @api {get} /v1/analytics/subscriptions Get active subscriptions
+ * @apiVersion 1.0.0
+ * @apiGroup Analytics
+ *
+ * @apiParam  {String}  address Address/list of addresses separated by ","
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [{
+ *    "address": "0xcd3b766ccdd6ae721141f452c550ca635964ce71",
+ *    "deadline": 1703321010
+ *  }]
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ * @apiError (Not Found 404)    NotFound          Coin does not exist
+ */
+router.get('/subscriptions', validateSubscriptions, controller.subscriptions)
 
 /**
  * @api {get} /v1/analytics/:uid Analytics data

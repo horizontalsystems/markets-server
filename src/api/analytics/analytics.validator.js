@@ -19,6 +19,13 @@ module.exports = {
     })
   }),
 
+  // GET /v1/analytics/subscriptions
+  validateSubscriptions: validate({
+    query: Joi.object({
+      address: Joi.string().required()
+    })
+  }),
+
   // GET /v1/analytics/:uid
   validateShow: validate({
     params: Joi.object({

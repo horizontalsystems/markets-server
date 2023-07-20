@@ -11,6 +11,24 @@ const CoinPrice = require('../../db/models/CoinPrice')
 const CoinHolderStats = require('../../db/models/CoinHolderStats')
 const Subscription = require('../../db/models/Subscription')
 
+exports.subscriptions = async ({ query }, res) => {
+  try {
+    const address = query.address.split(',')
+    const subscrs = await Subscription.getActive(address)
+
+    const subscriptions = subscrs.map(item => ({
+      address: item.address,
+      deadline: parseInt(item.expire_date.getTime() / 1000, 10)
+    }))
+
+    res.send(subscriptions)
+  } catch (e) {
+    console.log(e)
+    res.status(500)
+    res.send({ error: 'Internal server error' })
+  }
+}
+
 exports.preview = async ({ params, query }, res) => {
   try {
     const coin = await Coin.getPlatforms(params.uid)
