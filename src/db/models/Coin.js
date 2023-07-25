@@ -238,10 +238,10 @@ class Coin extends SequelizeModel {
         c.id,
         c.market_data->'market_cap' as market_cap,
         array_agg(p.id) as platforms
-       FROM coins c, platforms p
-       WHERE c.id = p.coin_id
-         AND c.uid = :uid
-       GROUP BY 1;
+      FROM coins c
+      LEFT JOIN platforms p on p.coin_id = c.id
+      WHERE c.uid = :uid
+      GROUP BY 1
     `, { uid })
 
     return coin
