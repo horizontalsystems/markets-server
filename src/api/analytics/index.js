@@ -57,7 +57,6 @@ router.get('/ranks', validateRanks, requireAuth, controller.ranks)
  *  }]
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
- * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
 router.get('/subscriptions', validateSubscriptions, controller.subscriptions)
 

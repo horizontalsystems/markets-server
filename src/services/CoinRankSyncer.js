@@ -686,12 +686,13 @@ class CoinRankSyncer extends Syncer {
   setRatings(records, ratings, field = 'volume') {
     for (let i = 0; i < records.length; i += 1) {
       const record = records[i]
+      const volume = record[field] / 7
 
-      if (record[field] >= ratings.excellent) {
+      if (volume >= ratings.excellent) {
         record.rating = 'excellent'
-      } else if (record[field] >= ratings.good) {
+      } else if (volume >= ratings.good) {
         record.rating = 'good'
-      } else if (record[field] >= ratings.fair) {
+      } else if (volume >= ratings.fair) {
         record.rating = 'fair'
       } else {
         record.rating = 'poor'
