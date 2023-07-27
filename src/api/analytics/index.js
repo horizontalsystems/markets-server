@@ -1,7 +1,6 @@
 const express = require('express')
 const controller = require('./analytics.controller')
 const { setCurrencyRate, requireCoin, setDailyInterval } = require('../middlewares')
-const { requireAuth } = require('../auth')
 const {
   validateRanks,
   validateShow,
@@ -40,7 +39,7 @@ const router = express.Router()
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/ranks', validateRanks, requireAuth, controller.ranks)
+router.get('/ranks', validateRanks, controller.ranks)
 
 /**
  * @api {get} /v1/analytics/subscriptions Get active subscriptions
@@ -123,7 +122,7 @@ router.get('/subscriptions', validateSubscriptions, controller.subscriptions)
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/:uid', validateShow, requireAuth, setCurrencyRate, setDailyInterval, controller.show)
+router.get('/:uid', validateShow, setCurrencyRate, setDailyInterval, controller.show)
 
 /**
  * @api {get} /v1/analytics/:uid/preview Analytics preview
@@ -184,7 +183,7 @@ router.get('/:uid/preview', validatePreview, controller.preview)
  * @apiError (Not Found 401)    Unauthorized      Unauthorized
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/:uid/holders', validateHolders, requireAuth, controller.holders)
+router.get('/:uid/holders', validateHolders, controller.holders)
 
 /**
  * @api {get} /v1/analytics/:uid/addresses Address stats
@@ -206,7 +205,7 @@ router.get('/:uid/holders', validateHolders, requireAuth, controller.holders)
  * @apiError (Not Found 401)    Unauthorized      Invalid JWT
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/:uid/addresses', validateDexData, requireAuth, requireCoin, setCurrencyRate, setDailyInterval, controller.addresses)
+router.get('/:uid/addresses', validateDexData, requireCoin, setCurrencyRate, setDailyInterval, controller.addresses)
 
 /**
  * @api {get} /v1/analytics/:uid/transactions Transactions stats
@@ -229,7 +228,7 @@ router.get('/:uid/addresses', validateDexData, requireAuth, requireCoin, setCurr
  * @apiError (Not Found 401)    Unauthorized      Invalid JWT
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/:uid/transactions', validateDexData, requireAuth, requireCoin, setCurrencyRate, setDailyInterval, controller.transactions)
+router.get('/:uid/transactions', validateDexData, requireCoin, setCurrencyRate, setDailyInterval, controller.transactions)
 
 /**
  * @api {get} /v1/analytics/:uid/dex-volumes Dex volumes
@@ -251,7 +250,7 @@ router.get('/:uid/transactions', validateDexData, requireAuth, requireCoin, setC
  * @apiError (Not Found 401)    Unauthorized      Invalid JWT
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/:uid/dex-volumes', validateDexData, requireAuth, requireCoin, setCurrencyRate, setDailyInterval, controller.dexVolumes)
+router.get('/:uid/dex-volumes', validateDexData, requireCoin, setCurrencyRate, setDailyInterval, controller.dexVolumes)
 
 /**
  * @api {get} /v1/analytics/:uid/dex-liquidity Dex liquidity stats
@@ -273,6 +272,6 @@ router.get('/:uid/dex-volumes', validateDexData, requireAuth, requireCoin, setCu
  * @apiError (Not Found 401)    Unauthorized      Invalid JWT
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
-router.get('/:uid/dex-liquidity', validateDexData, requireAuth, requireCoin, setCurrencyRate, setDailyInterval, controller.dexLiquidity)
+router.get('/:uid/dex-liquidity', validateDexData, requireCoin, setCurrencyRate, setDailyInterval, controller.dexLiquidity)
 
 module.exports = router
