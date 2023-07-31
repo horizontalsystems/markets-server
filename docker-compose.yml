@@ -37,6 +37,18 @@ services:
     ports:
       - "5050:80"
 
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27017:27017"
+    restart: always
+    volumes:
+      - markets-mongodb-data:/data/mongodb
+
 volumes:
   markets-postgres-data:
   markets-mongodb-data:

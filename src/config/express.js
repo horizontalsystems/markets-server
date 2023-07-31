@@ -6,14 +6,16 @@ const cors = require('cors')
 const helmet = require('helmet')
 const middlewares = require('../api/middlewares')
 const routes = require('./routes')
+const logger = require('./express-logger')
 
 // create an express application
 const app = express()
 
 // request logging. dev: console | production: file
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'))
+app.use(logger())
 
-// parse body params and attache them to req.body
+// parse body params and attach them to req.body
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
