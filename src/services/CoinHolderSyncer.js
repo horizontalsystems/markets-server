@@ -19,7 +19,6 @@ const NftHolder = require('../db/models/NftHolder')
 const CoinHolderStats = require('../db/models/CoinHolderStats')
 const Syncer = require('./Syncer')
 const utils = require('../utils')
-const logger = require('../config/logger')
 
 class CoinHolderSyncer extends Syncer {
   async start() {
@@ -155,7 +154,7 @@ class CoinHolderSyncer extends Syncer {
           }
 
           if (response && response.status === 429) {
-            logger.error('Sleeping 15sec')
+            console.error('Sleeping 15sec')
             return utils.sleep(15000)
           }
         })

@@ -1,5 +1,4 @@
 const { DateTime } = require('luxon')
-const logger = require('../config/logger')
 const coingecko = require('../providers/coingecko')
 const CurrencyRate = require('../db/models/CurrencyRate')
 const Currency = require('../db/models/Currency')
@@ -21,7 +20,7 @@ class CurrencyRateSyncer extends Syncer {
 
     await this.syncHistoricalRates(currencyCodes, '10m')
     await this.syncHistoricalRates(currencyCodes, '90d')
-    logger.info('Successfully synced histo rates !!!')
+    console.log('Successfully synced histo rates !!!')
   }
 
   async syncLatest() {
@@ -73,7 +72,7 @@ class CurrencyRateSyncer extends Syncer {
 
     const currencies = await this.getCurrencies(currencyCodes)
 
-    logger.info(`Started syncing histo rates for period: ${period}, for codes: ${currencyCodes || 'all'}`)
+    console.log(`Started syncing histo rates for period: ${period}, for codes: ${currencyCodes || 'all'}`)
 
     const dateParams = period === '10m' ? {
       dateFrom: DateTime.utc().plus({ hours: -24 }),
@@ -106,7 +105,7 @@ class CurrencyRateSyncer extends Syncer {
     }
 
     this.upsertCurrencyRates(rates)
-    logger.info(`Successfully synced histo rates for period: ${period}, for codes: ${currencyCodes || 'all'}`)
+    console.log(`Successfully synced histo rates for period: ${period}, for codes: ${currencyCodes || 'all'}`)
   }
 
   async getCurrencies(currencyCodes) {

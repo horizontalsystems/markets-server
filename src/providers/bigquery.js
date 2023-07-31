@@ -1,6 +1,5 @@
 const { BigQuery } = require('@google-cloud/bigquery')
 const { requireFile } = require('../utils')
-const logger = require('../config/logger')
 
 const transactionStatsSQL = requireFile('providers/bigquery-sql/transaction_stats.sql')
 const transactionStatsBtcBasedSQL = requireFile('providers/bigquery-sql/transaction_stats_btc.sql')
@@ -28,7 +27,7 @@ class BigQueryClient extends BigQuery {
 
   async createQuery(query, params) {
     const [job] = await this.createQueryJob({ query, params, location: 'US' })
-    logger.info(`Job ${job.id} started.`)
+    console.log(`Job ${job.id} started.`)
 
     const [rows] = await job.getQueryResults()
     return rows
