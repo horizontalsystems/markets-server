@@ -231,6 +231,24 @@ module.exports = {
         }
       }
 
+      if (type === 'rating') {
+        const rating = {
+          tx: rank.tx_week_rating,
+          tvl: rank.tvl_rating,
+          holders: rank.holders_rating,
+          liquidity: rank.liquidity_rating,
+          cex_volume: rank.cex_volume_week_rating,
+          dex_volume: rank.dex_volume_week_rating,
+          address: rank.address_week_rating
+        }
+
+        if (rating.tx || rating.tvl || rating.holders || rating.liquidity || rating.cex_volume || rating.dex_volume || rating.address) {
+          return { rating }
+        }
+
+        return {}
+      }
+
       return {
         value_1d: rank[`${type}_day`],
         value_7d: rank[`${type}_week`],
@@ -247,8 +265,9 @@ module.exports = {
       if (item.value_7d) data.value_7d = nullOrString(item.value_7d)
       if (item.value_30d) data.value_30d = nullOrString(item.value_30d)
       if (item.value) data.value = nullOrString(item.value)
+      if (item.rating) data.rating = item.rating
 
-      if (item.value_1d || item.value_7d || item.value_30d || item.value) {
+      if (item.value_1d || item.value_7d || item.value_30d || item.value || item.rating) {
         items.push(data)
       }
     }
