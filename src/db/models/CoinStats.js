@@ -44,7 +44,7 @@ class CoinStats extends SequelizeModel {
   }
 
   static getList() {
-    return CoinStats.query('select c.uid, s.rank from coins c, coin_stats s where c.id = s.coin_id and s.rank is not null')
+    return CoinStats.query('select c.uid, s.rank from coins c, coin_stats s where c.id = s.coin_id and s.rank is not null ORDER BY c.market_data->\'market_cap\' desc nulls last')
   }
 
   static getOtherStats() {

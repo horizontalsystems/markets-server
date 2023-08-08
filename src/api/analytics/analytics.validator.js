@@ -10,6 +10,7 @@ module.exports = {
           'cex_volume',
           'dex_volume',
           'dex_liquidity',
+          'tvl',
           'tx_count',
           'revenue',
           'fee',

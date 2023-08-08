@@ -223,6 +223,12 @@ module.exports = {
         }
       }
 
+      if (type === 'tvl') {
+        return {
+          value: rank.tvl
+        }
+      }
+
       if (type === 'tx_count') {
         return {
           value_1d: rank.tx_day_count,
