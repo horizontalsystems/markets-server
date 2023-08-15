@@ -28,6 +28,16 @@ exports.normalizeMarkets = markets => {
   }))
 }
 
+exports.normalizeFiatRates = rates => {
+  return rates.reduce((res, item) => {
+    const name = item.name.toLowerCase()
+    return {
+      ...res,
+      [name]: item.rate
+    }
+  }, {})
+}
+
 exports.normalizeCoin = coin => {
   const market = coin.market_data
 

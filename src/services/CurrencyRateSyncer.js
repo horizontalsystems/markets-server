@@ -1,9 +1,10 @@
 const { DateTime } = require('luxon')
+const { sleep, utcDate } = require('../utils')
 const coingecko = require('../providers/coingecko')
+const coinstats = require('../providers/coinstats')
 const CurrencyRate = require('../db/models/CurrencyRate')
 const Currency = require('../db/models/Currency')
 const Syncer = require('./Syncer')
-const { sleep, utcDate } = require('../utils')
 
 class CurrencyRateSyncer extends Syncer {
 
@@ -25,8 +26,8 @@ class CurrencyRateSyncer extends Syncer {
 
   async syncLatest() {
     this.cron('10m', this.syncDailyRates)
-    this.cron('1h', this.syncNinetyDaysRates)
-    this.cron('1d', this.syncQuarterRates)
+    this.cron('1h', this.adjustPrevDayPoints)
+    this.cron('1d', this.adjustQuarterPoints)
   }
 
   async syncDailyRates() {
@@ -34,14 +35,14 @@ class CurrencyRateSyncer extends Syncer {
     await this.syncRates(date)
   }
 
-  async syncNinetyDaysRates() {
+  async adjustPrevDayPoints() {
     const dateFrom = utcDate({ days: -1, hours: -1 })
     const dateTo = utcDate({ days: -1 })
 
     await this.adjustPoints(dateFrom, dateTo)
   }
 
-  async syncQuarterRates() {
+  async adjustQuarterPoints() {
     const dateFrom = utcDate({ days: -91 }, 'yyyy-MM-dd')
     const dateTo = utcDate({ days: -90 }, 'yyyy-MM-dd')
 
@@ -55,13 +56,18 @@ class CurrencyRateSyncer extends Syncer {
   async syncRates(date) {
     const sourceCoin = 'tether'
     const currencies = await this.getCurrencies()
-    const pricesResponse = await coingecko.getLatestCoinPrice([sourceCoin], currencies.codes)
+    const coingeckoRates = await coingecko.getLatestCoinPrice([sourceCoin], currencies.codes)
+    const coinstatsRates = await coinstats.getFiatRates()
+    const fiatRates = coingeckoRates[sourceCoin]
+    const rates = []
 
-    const rates = currencies.codes.map(code => ({
-      date,
-      currencyId: currencies.idsMap[code],
-      rate: pricesResponse[sourceCoin][code]
-    }))
+    for (let i = 0; i < currencies.codes.length; i += 1) {
+      const code = currencies.codes[i]
+      const currencyId = currencies.idsMap[code]
+      const rate = fiatRates[code] || coinstatsRates[code]
+
+      rates.push({ date, currencyId, rate })
+    }
 
     this.upsertCurrencyRates(rates)
   }
@@ -91,7 +97,6 @@ class CurrencyRateSyncer extends Syncer {
       )
 
       marketsChart.prices.forEach(([timestamp, value]) => {
-
         const date = DateTime.fromMillis(timestamp)
 
         rates.push({

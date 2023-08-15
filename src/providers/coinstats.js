@@ -1,6 +1,6 @@
 const querystring = require('querystring')
 const createAxios = require('axios').create
-const { normalizeMarkets } = require('./normalizers/coinstats-normalizer')
+const { normalizeMarkets, normalizeFiatRates } = require('./normalizers/coinstats-normalizer')
 
 const axios = createAxios({
   baseURL: 'https://api.coinstats.app/public/v1',
@@ -38,5 +38,12 @@ exports.getMarkets = (skip, limit) => {
   return axios.get(`/coins?${querystring.stringify(params)}`)
     .then(({ data = {} }) => {
       return normalizeMarkets(data.coins)
+    })
+}
+
+exports.getFiatRates = () => {
+  return axios.get('/fiats')
+    .then(({ data = {} }) => {
+      return normalizeFiatRates(data)
     })
 }

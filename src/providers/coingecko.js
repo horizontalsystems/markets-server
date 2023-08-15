@@ -86,6 +86,14 @@ exports.getMarketsChart = function getMarketsChart(coinId, timestampFrom, timest
   return axios
     .get(`/coins/${coinId}/market_chart/range?${query}`)
     .then(resp => resp.data)
+    .catch(e => {
+      console.log(e.message)
+
+      return {
+        prices: [],
+        total_volumes: []
+      }
+    })
 }
 
 exports.getLatestCoinPrice = function getLatestCoinPrice(coinIds, currencies) {
