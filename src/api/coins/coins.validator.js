@@ -9,6 +9,7 @@ module.exports = {
   validateCoins: validate({
     query: Joi.object({
       uids: Joi.string(),
+      enabled_uids: Joi.string(),
       fields: Joi.string(),
       limit: Joi.number()
         .min(1)

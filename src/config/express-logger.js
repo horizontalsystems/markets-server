@@ -9,6 +9,11 @@ const logger = () => {
   return (req, res, next) => {
     const referrer = morgan.referrer(req, res)
     const realIp = req.headers['x-real-ip'] || morgan['remote-addr'](req, res)
+    const appId = req.headers.appid
+    const appPlatform = req.headers.app_platform
+    const appVersion = req.headers.app_version
+
+    const { query } = req
 
     const doc = {
       method: morgan.method(req, res),
@@ -17,6 +22,22 @@ const logger = () => {
       remoteAddr: realIp,
       userAgent: morgan['user-agent'](req, res),
       date: new Date()
+    }
+
+    if (appPlatform) {
+      doc.appPlatform = appPlatform
+    }
+
+    if (appVersion) {
+      doc.appVersion = appVersion
+    }
+
+    if (query.enabled_uids) {
+      doc.enabled_coins = query.enabled_uids.split(',')
+    }
+
+    if (appId) {
+      doc.appId = appId
     }
 
     if (referrer) {
