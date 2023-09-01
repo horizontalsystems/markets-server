@@ -9,7 +9,7 @@ const logger = () => {
   return (req, res, next) => {
     const referrer = morgan.referrer(req, res)
     const realIp = req.headers['x-real-ip'] || morgan['remote-addr'](req, res)
-    const appId = req.headers.appid
+    const appId = req.headers.app_id
     const appPlatform = req.headers.app_platform
     const appVersion = req.headers.app_version
 
