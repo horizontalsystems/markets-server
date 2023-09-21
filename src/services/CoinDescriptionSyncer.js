@@ -30,7 +30,7 @@ class CoinDescriptionSyncer {
   }
 
   async syncDescription(uid, coin) {
-    console.log(`Syncing descriptions for ${uid}`, coin)
+    console.log(`Syncing descriptions for ${uid}`)
 
     const palmDesc = await this.getDescriptionFromPalm(JSON.stringify({ [uid]: coin.overview }))
     const gptDesc = await this.getDescriptionFromGPT(JSON.stringify({ [uid]: palmDesc || coin.overview }))
