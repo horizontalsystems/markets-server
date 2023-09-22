@@ -41,7 +41,7 @@ class CoinDescriptionSyncer {
     console.log('Fetching data from GPT')
 
     const { choices = [] } = await chat.completions.create({
-      model: 'gpt-3.5-turbo-16k',
+      model: 'gpt-4',
       messages: [
         { role: 'system', content: utils.getGptPrompt() },
         { role: 'user', content }
