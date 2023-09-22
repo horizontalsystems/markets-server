@@ -32,21 +32,21 @@ class CoinDescriptionSyncer {
   async syncDescription(uid, coin) {
     console.log(`Syncing descriptions for ${uid}`)
 
-    const palmDesc = await this.getDescriptionFromPalm(JSON.stringify({ [uid]: coin.overview }))
-    const gptDesc = await this.getDescriptionFromGPT(JSON.stringify({ [uid]: palmDesc || coin.overview }))
+    const coinDesc = await this.getDescriptionFromGPT(JSON.stringify({ [coin.code]: coin.name }))
 
-    await this.updateDescription(coin, gptDesc)
+    await this.updateDescription(coin, coinDesc)
   }
 
   async getDescriptionFromGPT(content) {
     console.log('Fetching data from GPT')
 
     const { choices = [] } = await chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-3.5-turbo-16k',
       messages: [
         { role: 'system', content: utils.getGptPrompt() },
         { role: 'user', content }
-      ]
+      ],
+      temperature: 0.2
     })
 
     const { message = {} } = choices[0] || {}
@@ -92,7 +92,7 @@ class CoinDescriptionSyncer {
 
   async getCoins(uid) {
     const coins = await Coin.findAll({
-      attributes: ['id', 'uid', 'name', 'description'],
+      attributes: ['id', 'uid', 'name', 'code', 'description'],
       where: {
         ...(uid && { uid }),
         coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
@@ -103,18 +103,13 @@ class CoinDescriptionSyncer {
 
     for (let i = 0; i < coins.length; i += 1) {
       const coin = coins[i]
-      const item = {
+
+      map[coin.uid] = {
         id: coin.id,
         name: coin.name,
-        description: coin.description,
-        overview: (coin.description || {}).en
+        code: coin.code,
+        description: coin.description
       }
-
-      if (!item.overview) {
-        item.overview = item.name
-      }
-
-      map[coin.uid] = item
     }
 
     return {
