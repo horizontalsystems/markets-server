@@ -85,6 +85,10 @@ class CoinDescriptionSyncer {
       en: content
     }
 
+    if (coin.description && coin.description.en) {
+      description.en_gecko = coin.description.en
+    }
+
     await Coin.update({ description }, { where: { id: coin.id } })
       .then(() => console.log(`Updated information for the coin ${coin.name}`))
       .catch(e => console.error(e))
