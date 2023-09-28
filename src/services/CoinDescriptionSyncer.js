@@ -32,7 +32,8 @@ class CoinDescriptionSyncer {
   async syncDescription(uid, coin) {
     console.log(`Syncing descriptions for ${uid}`)
 
-    const coinDesc = await this.getDescriptionFromGPT(JSON.stringify({ [coin.code]: coin.name }))
+    const content = JSON.stringify({ [coin.code]: coin.descEn || coin.name })
+    const coinDesc = await this.getDescriptionFromGPT(content)
 
     await this.updateDescription(coin, coinDesc)
   }
@@ -41,12 +42,11 @@ class CoinDescriptionSyncer {
     console.log('Fetching data from GPT')
 
     const { choices = [] } = await chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-3.5-turbo-16k',
       messages: [
         { role: 'system', content: utils.getGptPrompt() },
         { role: 'user', content }
-      ],
-      temperature: 0.2
+      ]
     })
 
     const { message = {} } = choices[0] || {}
@@ -108,7 +108,8 @@ class CoinDescriptionSyncer {
         id: coin.id,
         name: coin.name,
         code: coin.code,
-        description: coin.description
+        description: coin.description,
+        descEn: (coin.description || {}).en
       }
     }
 
