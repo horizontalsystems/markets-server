@@ -32,7 +32,7 @@ class CoinDescriptionSyncer {
   async syncDescription(uid, coin) {
     console.log(`Syncing descriptions for ${uid}`)
 
-    const content = JSON.stringify({ [coin.code]: coin.descEn || coin.name })
+    const content = JSON.stringify({ [coin.code]: coin.overview })
     const coinDesc = await this.getDescriptionFromGPT(content)
 
     await this.updateDescription(coin, coinDesc)
@@ -106,15 +106,21 @@ class CoinDescriptionSyncer {
     const map = {}
 
     for (let i = 0; i < coins.length; i += 1) {
-      const coin = coins[i]
-
-      map[coin.uid] = {
-        id: coin.id,
-        name: coin.name,
-        code: coin.code,
-        description: coin.description,
-        descEn: (coin.description || {}).en
+      const item = coins[i]
+      const desc = item.description || {}
+      const coin = {
+        id: item.id,
+        name: item.name,
+        code: item.code,
+        description: item.description,
+        overview: desc.en_gecko || desc.en || item.name
       }
+
+      if (coin.overview.length > 2500) {
+        coin.overview = item.name
+      }
+
+      map[item.uid] = coin
     }
 
     return {
