@@ -25,7 +25,7 @@ class CoinDescriptionSyncer {
     for (let i = 0; i < coins.ids.length; i += 1) {
       const uid = coins.ids[i]
       await this.syncDescription(uid, coins.map[uid])
-      await utils.sleep(500)
+      await utils.sleep(300)
     }
   }
 
