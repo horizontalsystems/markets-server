@@ -100,8 +100,7 @@ class CoinDescriptionSyncer {
       attributes: ['id', 'uid', 'name', 'code', 'description', 'market_data'],
       where: {
         ...(uid && { uid }),
-        coingecko_id: Coin.literal('coingecko_id IS NOT NULL'),
-        description: Coin.literal('description->\'en_gecko\' IS NULL')
+        coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
       }
     })
 
@@ -109,10 +108,6 @@ class CoinDescriptionSyncer {
 
     for (let i = 0; i < coins.length; i += 1) {
       const item = coins[i]
-
-      if (item.market_data && item.market_data.market_cap_rank < 2000) {
-        continue
-      }
 
       const desc = item.description || {}
       const coin = {
