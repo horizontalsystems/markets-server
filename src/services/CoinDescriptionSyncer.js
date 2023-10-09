@@ -15,37 +15,39 @@ const palm = new TextServiceClient({
 
 class CoinDescriptionSyncer {
 
-  async start() {
-    await this.sync()
+  async start(language) {
+    await this.sync(null, language)
   }
 
-  async sync(uids) {
+  async sync(uids, language) {
     const coins = await this.getCoins(uids)
     console.log(`Syncing ${coins.ids.length} coins`)
 
     for (let i = 0; i < coins.ids.length; i += 1) {
       const uid = coins.ids[i]
-      await this.syncDescription(uid, coins.map[uid])
+      await this.syncDescription(uid, coins.map[uid], language)
       await utils.sleep(300)
     }
   }
 
-  async syncDescription(uid, coin) {
+  async syncDescription(uid, coin, language) {
     console.log(`Syncing descriptions for ${uid}`)
 
     const content = JSON.stringify({ [coin.code]: coin.overview })
-    const coinDesc = await this.getDescriptionFromGPT(content)
+    const coinDesc = await this.getDescriptionFromGPT(content, language)
 
-    await this.updateDescription(coin, coinDesc)
+    await this.updateDescription(coin, coinDesc, language)
   }
 
-  async getDescriptionFromGPT(content) {
+  async getDescriptionFromGPT(content, language) {
     console.log('Fetching data from GPT')
+
+    const prompt = utils.getGptPrompt(language)
 
     const { choices = [] } = await chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
-        { role: 'system', content: utils.getGptPrompt() },
+        { role: 'system', content: prompt },
         { role: 'user', content }
       ]
     })
@@ -76,18 +78,17 @@ class CoinDescriptionSyncer {
     return candidate.output
   }
 
-  async updateDescription(coin, { content }) {
+  async updateDescription(coin, { content }, language) {
     if (!content) {
       return
     }
 
-    const description = {
-      ...coin.description,
-      en: content
-    }
+    const description = { ...coin.description }
 
-    if (coin.description && coin.description.en) {
-      description.en_gecko = coin.description.en
+    if (language) {
+      description[language.code] = content
+    } else {
+      description.en = content
     }
 
     await Coin.update({ description }, { where: { id: coin.id } })
@@ -115,7 +116,7 @@ class CoinDescriptionSyncer {
         name: item.name,
         code: item.code,
         description: item.description,
-        overview: desc.en_gecko || desc.en || item.name
+        overview: desc.en || item.name
       }
 
       if (coin.overview.length > 2500) {
