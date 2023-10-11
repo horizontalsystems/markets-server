@@ -20,7 +20,7 @@ class CoinDescriptionSyncer {
   }
 
   async sync(uids, language) {
-    const coins = await this.getCoins(uids)
+    const coins = await this.getCoins(uids, language)
     console.log(`Syncing ${coins.ids.length} coins`)
 
     for (let i = 0; i < coins.ids.length; i += 1) {
@@ -96,7 +96,7 @@ class CoinDescriptionSyncer {
       .catch(e => console.error(e))
   }
 
-  async getCoins(uid) {
+  async getCoins(uid, language) {
     const coins = await Coin.findAll({
       attributes: ['id', 'uid', 'name', 'code', 'description', 'market_data'],
       where: {
@@ -111,6 +111,12 @@ class CoinDescriptionSyncer {
       const item = coins[i]
 
       const desc = item.description || {}
+
+      // Skip if synced already
+      if (language && desc[language.code]) {
+        continue
+      }
+
       const coin = {
         id: item.id,
         name: item.name,
