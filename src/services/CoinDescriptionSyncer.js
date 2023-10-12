@@ -15,7 +15,7 @@ const palm = new TextServiceClient({
 
 class CoinDescriptionSyncer {
 
-  async start(language) {
+  async start(language, force) {
     await this.sync(null, language, force)
   }
 
@@ -31,7 +31,7 @@ class CoinDescriptionSyncer {
   }
 
   async syncDescription(uid, coin, language) {
-    console.log(`Syncing descriptions for ${uid}`)
+    console.log(`Syncing descriptions for ${uid}`, language ? language.name : null)
 
     const content = JSON.stringify({ [coin.code]: coin.overview })
     const coinDesc = await this.getDescriptionFromGPT(content, language)
