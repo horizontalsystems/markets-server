@@ -16,11 +16,11 @@ const palm = new TextServiceClient({
 class CoinDescriptionSyncer {
 
   async start(language) {
-    await this.sync(null, language)
+    await this.sync(null, language, force)
   }
 
-  async sync(uids, language) {
-    const coins = await this.getCoins(uids, language)
+  async sync(uids, language, force) {
+    const coins = await this.getCoins(uids, language, force)
     console.log(`Syncing ${coins.ids.length} coins`)
 
     for (let i = 0; i < coins.ids.length; i += 1) {
@@ -96,7 +96,7 @@ class CoinDescriptionSyncer {
       .catch(e => console.error(e))
   }
 
-  async getCoins(uid, language) {
+  async getCoins(uid, language, force) {
     const coins = await Coin.findAll({
       attributes: ['id', 'uid', 'name', 'code', 'description', 'market_data'],
       where: {
@@ -113,7 +113,7 @@ class CoinDescriptionSyncer {
       const desc = item.description || {}
 
       // Skip if synced already
-      if (language && desc[language.code]) {
+      if (language && desc[language.code] && !force) {
         continue
       }
 
