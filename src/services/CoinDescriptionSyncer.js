@@ -125,7 +125,7 @@ class CoinDescriptionSyncer {
         overview: desc.en || item.name
       }
 
-      if (coin.overview.length > 2500) {
+      if (coin.overview.length > 3500) {
         coin.overview = item.name
       }
 
