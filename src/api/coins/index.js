@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./coins.controller')
-const { validateCoins, validateShow, validateChart, validatePriceHistory } = require('./coins.validator')
+const { validateCoins, validateShow, validateChart, validatePriceHistory, validateGainers } = require('./coins.validator')
 const { setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
@@ -80,6 +80,29 @@ router.get('/list', setCurrencyRate, controller.list)
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
 router.get('/top-movers', setCurrencyRate, controller.movers)
+
+/**
+ * @api {get} /v1/coins/top-movers/overview Get top gainers/movers
+ * @apiDescription Get top gainers/movers
+ * @apiVersion 1.0.0
+ * @apiGroup Coin
+ * @apiParam  {String=bitcoin,ethereum,...}   [uids]               Coin uids separated by comma
+ * @apiParam  {String=asc,desc}               [order]              Sorting order
+ * @apiParam  {Number{5-20}}                  [limit=5]            Limit
+ *
+ * @apiUse      Currencies
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "price": [],
+ *    "volume": [],
+ *    "mcap": []
+ *  }
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ */
+router.get('/top-gainers', validateGainers, setCurrencyRate, controller.gainers)
 
 /**
  * @api {get} /v1/coins/:uid Get coin

@@ -52,4 +52,15 @@ module.exports = {
       currency: Joi.string()
     })
   }, options),
+
+  validateGainers: validate({
+    query: Joi.object({
+      uids: Joi.string(),
+      limit: Joi.number()
+        .min(5)
+        .max(20),
+      order: Joi.string().valid('asc', 'desc'),
+      currency: Joi.string()
+    })
+  }, options),
 }

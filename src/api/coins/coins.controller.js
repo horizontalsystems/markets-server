@@ -77,6 +77,16 @@ exports.movers = async (req, res, next) => {
   }
 }
 
+exports.gainers = async ({ query, currencyRate }, res, next) => {
+  try {
+    const uids = query.uids ? query.uids.split(',') : null
+    const movers = await Coin.getTopGainers(uids, query.order, query.limit)
+    res.send(serializer.serializeGainers(movers, currencyRate))
+  } catch (e) {
+    next(e)
+  }
+}
+
 exports.twitter = async ({ params }, res) => {
   const [coin] = await Coin.query('SELECT links->\'twitter\' as twitter FROM coins WHERE uid = :uid', {
     uid: params.uid

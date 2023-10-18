@@ -210,6 +210,23 @@ exports.serializeMovers = (data, currencyRate) => {
   }
 }
 
+exports.serializeGainers = (data, currencyRate) => {
+  const mapper = items => items.map(item => ({
+    uid: item.uid,
+    name: item.name,
+    code: item.code,
+    market_cap_rank: item.market_cap_rank,
+    price: valueInCurrency(item.price, currencyRate),
+    price_change_24h: nullOrString(item.price_change_24h)
+  }))
+
+  return {
+    price: mapper(data.price),
+    volume: mapper(data.volume),
+    mcap: mapper(data.mcap)
+  }
+}
+
 exports.serializePriceChart = (priceChart, currencyRate) => {
   return priceChart.map(item => ({
     timestamp: item.timestamp,
