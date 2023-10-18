@@ -61,8 +61,8 @@ router.get('/', validateCoins, setCurrencyRate, controller.index)
 router.get('/list', setCurrencyRate, controller.list)
 
 /**
- * @api {get} /v1/coins/top-movers Get top gainers/movers
- * @apiDescription Get top gainers/movers
+ * @api {get} /v1/coins/top-movers Get top movers
+ * @apiDescription Get top movers
  * @apiVersion 1.0.0
  * @apiGroup Coin
  *
@@ -82,8 +82,8 @@ router.get('/list', setCurrencyRate, controller.list)
 router.get('/top-movers', setCurrencyRate, controller.movers)
 
 /**
- * @api {get} /v1/coins/top-gainers Get top gainers/movers
- * @apiDescription Get top gainers/movers
+ * @api {get} /v1/coins/top-gainers Get top gainers
+ * @apiDescription Get top gainers
  * @apiVersion 1.0.0
  * @apiGroup Coin
  * @apiParam  {String=bitcoin,ethereum,...}   [uids]               Coin uids separated by comma
