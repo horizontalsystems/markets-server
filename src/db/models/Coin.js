@@ -257,8 +257,6 @@ class Coin extends SequelizeModel {
       SELECT * FROM top_coins ORDER BY ${orderField} ${order} nulls last LIMIT :limit
     `, { uids, limit })
 
-    console.log(result)
-
     if (!result) {
       return []
     }
