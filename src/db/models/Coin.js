@@ -232,7 +232,7 @@ class Coin extends SequelizeModel {
     return movers.data
   }
 
-  static async getTopMoversBy(field, uids, order = 'desc', limit = 5) {
+  static async getTopMoversBy(field, uids, order = 'desc', limit = 3) {
     let orderField = 'price_change_24h'
     if (field === 'volume') {
       orderField = 'total_volume'

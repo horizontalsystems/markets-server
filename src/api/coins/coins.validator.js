@@ -60,8 +60,8 @@ module.exports = {
     query: Joi.object({
       uids: Joi.string(),
       limit: Joi.number()
-        .min(5)
-        .max(20),
+        .min(3)
+        .max(10),
       order: Joi.string().valid('asc', 'desc'),
       currency: Joi.string()
     })

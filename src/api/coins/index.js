@@ -86,9 +86,10 @@ router.get('/top-movers', setCurrencyRate, controller.movers)
  * @apiDescription Get top gainers by field
  * @apiVersion 1.0.0
  * @apiGroup Coin
+ * @apiParam  {String=price,volume,mcap}      field                Sorting field
  * @apiParam  {String=bitcoin,ethereum,...}   [uids]               Coin uids separated by comma
  * @apiParam  {String=asc,desc}               [order]              Sorting order
- * @apiParam  {Number{5-20}}                  [limit=5]            Limit
+ * @apiParam  {Number{3-10}}                  [limit=3]            Limit
  *
  * @apiUse      Currencies
  *
