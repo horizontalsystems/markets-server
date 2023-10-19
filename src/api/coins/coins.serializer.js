@@ -220,11 +220,7 @@ exports.serializeGainers = (data, currencyRate) => {
     price_change_24h: nullOrString(item.price_change_24h)
   }))
 
-  return {
-    price: mapper(data.price),
-    volume: mapper(data.volume),
-    mcap: mapper(data.mcap)
-  }
+  return mapper(data)
 }
 
 exports.serializePriceChart = (priceChart, currencyRate) => {

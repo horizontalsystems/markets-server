@@ -77,11 +77,11 @@ exports.movers = async (req, res, next) => {
   }
 }
 
-exports.gainers = async ({ query, currencyRate }, res, next) => {
+exports.moversBy = async ({ params, query, currencyRate }, res, next) => {
   try {
     const uids = query.uids ? query.uids.split(',') : null
-    const movers = await Coin.getTopGainers(uids, query.order, query.limit)
-    res.send(serializer.serializeGainers(movers, currencyRate))
+    const data = await Coin.getTopMoversBy(params.field, uids, query.order, query.limit)
+    res.send(serializer.serializeGainers(data, currencyRate))
   } catch (e) {
     next(e)
   }

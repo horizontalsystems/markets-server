@@ -54,6 +54,9 @@ module.exports = {
   }, options),
 
   validateGainers: validate({
+    params: Joi.object({
+      field: Joi.string().valid('price', 'volume', 'mcap').required(),
+    }),
     query: Joi.object({
       uids: Joi.string(),
       limit: Joi.number()

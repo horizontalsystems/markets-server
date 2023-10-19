@@ -82,8 +82,8 @@ router.get('/list', setCurrencyRate, controller.list)
 router.get('/top-movers', setCurrencyRate, controller.movers)
 
 /**
- * @api {get} /v1/coins/top-gainers Get top gainers
- * @apiDescription Get top gainers
+ * @api {get} /v1/coins/top-movers-by/:field Get top movers by given field
+ * @apiDescription Get top gainers by field
  * @apiVersion 1.0.0
  * @apiGroup Coin
  * @apiParam  {String=bitcoin,ethereum,...}   [uids]               Coin uids separated by comma
@@ -94,15 +94,17 @@ router.get('/top-movers', setCurrencyRate, controller.movers)
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
- *  {
- *    "price": [],
- *    "volume": [],
- *    "mcap": []
- *  }
+ *  [{
+ *     "uid": "radix",
+ *     "name": "Radix",
+ *     "code": "xrd",
+ *     "price": "0.04033021",
+ *     "price_change_24h": "-8.63228"
+ *  }]
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  */
-router.get('/top-gainers', validateGainers, setCurrencyRate, controller.gainers)
+router.get('/top-movers-by/:field', validateGainers, setCurrencyRate, controller.moversBy)
 
 /**
  * @api {get} /v1/coins/:uid Get coin

@@ -232,8 +232,15 @@ class Coin extends SequelizeModel {
     return movers.data
   }
 
-  static async getTopGainers(uids, order = 'desc', limit = 5) {
-    const [movers] = await Coin.query(`
+  static async getTopMoversBy(field, uids, order = 'desc', limit = 5) {
+    let orderField = 'price_change_24h'
+    if (field === 'volume') {
+      orderField = 'total_volume'
+    } else if (field === 'mcap') {
+      orderField = 'market_cap'
+    }
+
+    const result = await Coin.query(`
       with top_coins as (
         SELECT
           uid,
@@ -246,26 +253,17 @@ class Coin extends SequelizeModel {
         FROM coins ${uids ? 'where uid in(:uids)' : ''}
         ORDER BY market_data->'market_cap' desc nulls last
         LIMIT 100
-      ),
-      price as  (SELECT * FROM (select * FROM top_coins) t1 ORDER BY t1.price_change_24h ${order} nulls last LIMIT :limit),
-      volume as (SELECT * FROM (select * FROM top_coins) t1 order by t1.total_volume ${order} nulls last LIMIT :limit),
-      mcap as   (SELECT * FROM (select * FROM top_coins) t1 order by t1.market_cap ${order} nulls last LIMIT :limit)
-      SELECT jsonb_build_object(
-        'price', (select json_agg(price.*) from price),
-        'volume', (select json_agg(volume.*) from volume),
-        'mcap', (select json_agg(mcap.*) from mcap)
-      ) as data
+      )
+      SELECT * FROM top_coins ORDER BY ${orderField} ${order} nulls last LIMIT :limit
     `, { uids, limit })
 
-    if (!movers || !movers.data || !movers.data.price || !movers.data.volume || !movers.data.mcap) {
-      return {
-        price: [],
-        volume: [],
-        mcap: []
-      }
+    console.log(result)
+
+    if (!result) {
+      return []
     }
 
-    return movers.data
+    return result
   }
 
   static async getPlatforms(uid) {
