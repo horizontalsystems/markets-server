@@ -247,16 +247,21 @@ class CoinRankSyncer extends Syncer {
     }
 
     const query = `
-      with records as (
+      with all_coins as (
+        SELECT p.id, p.coin_id, p.volume
+        FROM coins c, coin_prices p
+        WHERE c.id = p.coin_id 
+          AND NULLIF((market_data->>'market_cap')::numeric, 0) > 0
+      ),
+      records as (
         SELECT
           t1.coin_id as id, sum(t1.volume) as volume
-        FROM coin_prices t1
+        FROM all_coins t1
         JOIN (
           SELECT
             coin_id, DATE_TRUNC('day', date) as trunc, max(id) as max_id
            FROM coin_prices
           WHERE date > NOW() - INTERVAL :dateFrom
-            AND coin_id != 11644 --// binance-peg-ethereum
           GROUP BY 1,2
         ) t2 ON (t1.id = t2.max_id and t1.coin_id = t2.coin_id)
         GROUP BY t1.coin_id
@@ -266,10 +271,14 @@ class CoinRankSyncer extends Syncer {
     `
     result.daily = await Coin.query(`
       with list as (
-        SELECT id, NULLIF((market_data->>'total_volume')::numeric, 0) volume FROM coins
+        SELECT
+          id, uid,
+          NULLIF((market_data->>'total_volume')::numeric, 0) volume,
+          NULLIF((market_data->>'market_cap')::numeric, 0) market_cap
+        FROM coins
       )
-      SELECT id, volume, RANK() over (ORDER BY volume DESC) as rank
-      FROM list WHERE volume > 1
+      SELECT id, volume, RANK() over (ORDER BY volume DESC) as rank, uid
+      FROM list WHERE volume > 1 AND market_cap > 0
     `)
 
     if (isFull) {
