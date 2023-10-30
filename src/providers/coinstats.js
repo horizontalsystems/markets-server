@@ -3,7 +3,7 @@ const createAxios = require('axios').create
 const { normalizeMarkets, normalizeFiatRates } = require('./normalizers/coinstats-normalizer')
 
 const axios = createAxios({
-  baseURL: 'https://api.coinstats.app/public/v1',
+  baseURL: 'https://api.coin-stats.com/v4',
   timeout: 180000
 })
 
@@ -22,9 +22,17 @@ exports.getCoins = (skip, limit) => {
     limit
   }
 
+  const normalize = data => {
+    return {
+      id: data.i,
+      price: data.pu,
+      volume: data.v
+    }
+  }
+
   return axios.get(`/coins?${querystring.stringify(params)}`)
-    .then(({ data = {} }) => {
-      return data.coins
+    .then(({ data = { coins: [] } }) => {
+      return data.coins.map(normalize)
     })
 }
 

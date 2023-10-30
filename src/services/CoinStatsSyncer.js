@@ -34,8 +34,9 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
 
   async syncCoins(uid, storePrices) {
     const coins = await this.getCoins(uid)
-    const chunk = 2000
-    const chunks = Array(5).fill(chunk)
+    const chunk = 1000
+    const array = Object.keys(coins).length / 1000
+    const chunks = Array(Math.ceil(array)).fill(chunk)
 
     for (let i = 0; i < chunks.length; i += 1) {
       await this.fetchStats(chunk * i, chunk, coins)
