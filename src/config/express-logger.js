@@ -10,6 +10,7 @@ const logger = () => {
     const referrer = morgan.referrer(req, res)
     const realIp = req.headers['x-real-ip'] || morgan['remote-addr'](req, res)
     const appId = req.headers.app_id
+    const appResource = req.headers.app_resource
     const appPlatform = req.headers.app_platform
     const appVersion = req.headers.app_version
 
@@ -38,6 +39,10 @@ const logger = () => {
 
     if (appId) {
       doc.appId = appId
+    }
+
+    if (appResource) {
+      doc.resource = appResource
     }
 
     if (referrer) {

@@ -18,6 +18,10 @@ const router = express.Router()
  * @apiParam  {Number}                        [page=1]                Page number
  * @apiParam  {Boolean}                       [defi=false]            Filter DeFi coins
  * @apiParam  {Boolean}                       [order_by_rank=false]   Filter DeFi coins
+ * @apiHeader {String}                        [app_resource]          The resource name of the App
+ * @apiHeader {String}                        [app_id]                App id
+ * @apiHeader {String}                        [app_platform]          App platform
+ * @apiHeader {String}                        [app_version]           App version
  * @apiUse    Currencies
  * @apiUse    Languages
  *
