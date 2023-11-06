@@ -28,6 +28,7 @@ class Telegram {
       if (msg._ === 'updateNewMessage') {
         if (String(msg.message.chat_id) === chatId && msg.message.content._ === 'messageChatAddMembers') {
           this.sendMessage(telegramScamMessage('Unstoppable Wallet | BE UNSTOPPABLE!'), null, msg.message.sender_id.user_id)
+          console.log('Sent message to user', msg.message.sender_id.user_id)
         }
       }
     }
