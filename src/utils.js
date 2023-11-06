@@ -117,7 +117,7 @@ What would you like to know?`)
 }
 
 exports.telegramScamMessage = chatName => {
-  return (`Do not share your secret keys or mnemonic phrases with any member of the '${chatName}' group, as it is a fraud group`)
+  return `The '${chatName}' group is fraudulent. Never share your private keys or seed phrases, and avoid clicking on suspicious links. For secure information, always refer to the official website's communication channels.`
 }
 
 exports.getGptPrompt = language => {
