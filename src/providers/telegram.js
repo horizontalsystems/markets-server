@@ -12,11 +12,6 @@ class Telegram {
         retry
           ? Promise.reject(Error('Invalid phone number'))
           : Promise.resolve(process.env.TELEGRAM_PHONE)
-      ),
-      getPassword: (passwordHint, retry) => (
-        retry
-          ? Promise.reject(Error('Invalid password'))
-          : Promise.resolve(process.env.TELEGRAM_PASSWORD)
       )
     }))
 
