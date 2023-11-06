@@ -1,5 +1,6 @@
 const telegram = require('../../providers/telegram')
 const { handleError } = require('../middlewares')
+const { telegramMessage } = require('../../utils')
 
 exports.startChat = async ({ body }, res) => {
   try {
@@ -7,7 +8,7 @@ exports.startChat = async ({ body }, res) => {
       return handleError(res, 403, 'Username is required')
     }
 
-    await telegram.sendMessage(body.username)
+    await telegram.sendMessage(telegramMessage(), body.username)
     res.send({})
   } catch (e) {
     console.log(e)

@@ -1,6 +1,6 @@
 const { configure, createClient } = require('tdl')
 const { getTdjson } = require('prebuilt-tdlib')
-const { telegramMessage } = require('../utils')
+const { telegramScamMessage } = require('../utils')
 
 configure({ tdjson: getTdjson() })
 
@@ -23,19 +23,40 @@ class Telegram {
     this.client = client
   }
 
-  async sendMessage(username) {
+  async monitor() {
     if (!this.client) {
       await this.login()
     }
 
-    const result = await this.client.invoke({
-      _: 'searchPublicChat',
-      username,
-    })
+    const chatId = process.env.TELEGRAM_CHANNEL_ID
+    const onUpdate = msg => {
+      if (msg._ === 'updateNewMessage') {
+        if (String(msg.message.chat_id) === chatId && msg.message.content._ === 'messageChatAddMembers') {
+          this.sendMessage(telegramScamMessage('Unstoppable Wallet | BE UNSTOPPABLE!'), null, msg.message.sender_id.user_id)
+        }
+      }
+    }
+
+    this.client.on('update', onUpdate)
+  }
+
+  async sendMessage(message, username, userId) {
+    if (!this.client) {
+      await this.login()
+    }
+
+    let id = userId
+    if (!userId) {
+      const result = await this.client.invoke({
+        _: 'searchPublicChat',
+        username,
+      })
+      id = result.id
+    }
 
     const newChat = await this.client.invoke({
       _: 'createPrivateChat',
-      user_id: result.id,
+      user_id: id,
     })
 
     await this.client.invoke({
@@ -45,7 +66,7 @@ class Telegram {
         _: 'inputMessageText',
         text: {
           _: 'formattedText',
-          text: telegramMessage()
+          text: message
         }
       }
     })

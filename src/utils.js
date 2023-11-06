@@ -116,6 +116,10 @@ exports.telegramMessage = () => {
 What would you like to know?`)
 }
 
+exports.telegramScamMessage = chatName => {
+  return (`Do not share your secret keys or mnemonic phrases with any member of the '${chatName}' group, as it is a fraud group`)
+}
+
 exports.getGptPrompt = language => {
   if (language) {
     return (`You're an educator and expert with in-depth knowledge of cryptocurrency and blockchain fields. Your core strength lies in your ability to break down complex subjects into simple concepts that people without specialized knowledge can understand. You also specialize in translating texts from English to ${language.name}. Your core strength lies in the ability to preserve the correct context rather than plain word-to-word machine-style translation.
