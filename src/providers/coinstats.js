@@ -7,6 +7,14 @@ const axios = createAxios({
   timeout: 180000
 })
 
+const openapi = createAxios({
+  baseURL: 'https://openapiv1.coinstats.app',
+  timeout: 180000,
+  headers: {
+    'X-API-KEY': process.env.COINSTATS_KEY
+  }
+})
+
 exports.getGlobalMarkets = function getGlobalMarkets() {
   console.log('Fetching global markets data')
 
@@ -50,7 +58,7 @@ exports.getMarkets = (skip, limit) => {
 }
 
 exports.getFiatRates = () => {
-  return axios.get('/fiats')
+  return openapi.get('/fiats')
     .then(({ data = {} }) => {
       return normalizeFiatRates(data)
     })
