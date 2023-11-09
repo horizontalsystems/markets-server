@@ -25,6 +25,7 @@ router.use('/global-markets', require('../api/global-markets'))
 router.use('/evm-method-labels', require('../api/evm-method-labels'))
 router.use('/analytics', require('../api/analytics'))
 router.use('/support', require('../api/support'))
+router.use('/exchanges', require('../api/exchange'))
 router.use('/status', require('../api/status'))
 
 module.exports = router
