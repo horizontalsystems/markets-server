@@ -4,7 +4,8 @@ const controller = require('./exchange.controller')
 const router = express.Router()
 
 /**
- * @api {post} /v1/exchanges
+ * @api {get} /v1/exchanges List of exchanges
+ * @apiDescription Get a list of exchanges
  * @apiVersion 1.0.0
  * @apiGroup Exchange
  *
@@ -19,7 +20,6 @@ const router = express.Router()
  *  }]
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
- * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
 router.get('/', controller.index)
 
