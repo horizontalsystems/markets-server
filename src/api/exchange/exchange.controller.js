@@ -5,3 +5,8 @@ exports.index = async (req, res) => {
   const exchanges = await Exchange.findAll()
   res.send(serializer.serialize(exchanges))
 }
+
+exports.whitelist = async (req, res) => {
+  const exchanges = await Exchange.findAll()
+  res.send(serializer.serializeWhitelist(exchanges))
+}

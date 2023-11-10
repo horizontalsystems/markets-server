@@ -6,3 +6,7 @@ exports.serialize = exchanges => {
     }
   })
 }
+
+exports.serializeWhitelist = exchanges => {
+  return exchanges.map(item => item.uid)
+}
