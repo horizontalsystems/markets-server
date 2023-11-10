@@ -24,7 +24,7 @@ const router = express.Router()
 router.get('/', controller.index)
 
 /**
- * @api {get} /v1/exchanges List of whitelisted exchanges
+ * @api {get} /v1/exchanges/whitelist List of whitelisted exchanges
  * @apiDescription Get a list of whitelisted exchanges
  * @apiVersion 1.0.0
  * @apiGroup Exchange
