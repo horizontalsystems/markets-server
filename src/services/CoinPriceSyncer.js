@@ -2,6 +2,7 @@ const { parseInt, chunk } = require('lodash')
 const { DateTime } = require('luxon')
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
+const Platform = require('../db/models/Platform')
 const Coin = require('../db/models/Coin')
 const CoinPrice = require('../db/models/CoinPrice')
 const CoinPriceHistorySyncer = require('./CoinPriceHistorySyncer')
@@ -172,10 +173,17 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
       return
     }
 
-    return Coin.update(
-      { coingecko_id: null },
-      { where: { id: depCoins.map(c => c.id) } }
-    )
+    const ids = depCoins.map(c => c.id)
+
+    if (depCoins.length > 100) {
+      return Coin.update(
+        { coingecko_id: null },
+        { where: { id: ids } }
+      )
+    }
+
+    await Coin.destroy({ where: { id: ids } })
+    await Platform.destroy({ where: { coin_id: Platform.literal('coin_id IS NULL') } })
   }
 
   async storeCoinPrices() {
