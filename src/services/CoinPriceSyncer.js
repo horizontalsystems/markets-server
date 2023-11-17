@@ -17,13 +17,13 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     super()
     this.prices = {}
     this.isSimple = isSimple
-
-    this.adjustHistoryGaps()
-    this.cron('0 0 */3 * *', this.syncUids)
-    this.cron('10m', this.storeCoinPrices)
   }
 
   async start() {
+    this.adjustHistoryGaps()
+    this.cron('0 0 */3 * *', this.syncUids)
+    this.cron('10m', this.storeCoinPrices)
+
     const running = true
     while (running) {
       try {
@@ -37,7 +37,7 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
   async sync(uid) {
     const coins = await this.getCoins(uid)
-    const chunks = this.chunk(Array.from(coins.uids))
+    const chunks = chunk(Array.from(coins.uids))
 
     for (let i = 0; i < chunks.length; i += 1) {
       await (this.isSimple ? this.syncSimplePrices(chunks[i], coins.map) : this.syncPrices(chunks[i], coins.map))
