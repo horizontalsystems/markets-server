@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 
 exports.sleep = (timeout = 1000) => {
+  console.log('Sleeping', timeout)
   return new Promise(resolve => {
     setTimeout(resolve, timeout)
   })
