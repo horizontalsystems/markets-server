@@ -22,8 +22,8 @@ class UniversalSyncer extends Syncer {
     })
 
     this.cron('1d', globalMarketsSyncer.syncMonthlyStats)
-    this.cron('1h', currencyRateSyncer.adjustPrevDayPoints)
-    this.cron('1d', currencyRateSyncer.adjustQuarterPoints)
+    this.cron('1h', () => currencyRateSyncer.adjustPrevDayPoints())
+    this.cron('1d', () => currencyRateSyncer.adjustQuarterPoints())
   }
 
   async start() {
