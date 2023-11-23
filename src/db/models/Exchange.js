@@ -1,6 +1,6 @@
 const SequelizeModel = require('./SequelizeModel')
 
-class Chain extends SequelizeModel {
+class Exchange extends SequelizeModel {
 
   static init(sequelize, DataTypes) {
     return super.init(
@@ -25,4 +25,4 @@ class Chain extends SequelizeModel {
 
 }
 
-module.exports = Chain
+module.exports = Exchange
