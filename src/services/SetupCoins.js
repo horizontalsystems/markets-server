@@ -5,6 +5,7 @@ const Coin = require('../db/models/Coin')
 const Chain = require('../db/models/Chain')
 const UpdateState = require('../db/models/UpdateState')
 const Platform = require('../db/models/Platform')
+const Exchange = require('../db/models/Exchange')
 const Language = require('../db/models/Language')
 const coingecko = require('../providers/coingecko')
 const binanceDex = require('../providers/binance-dex')
@@ -15,6 +16,10 @@ const coinsJoin = require('../db/seeders/coins.json')
 class SetupCoins {
 
   constructor() {
+    this.MIN_24_VOLUME = 100000
+    this.MIN_24_VOLUME_TRUSTED = 200000
+    this.MIN_MCAP = 10000000
+
     this.ignorePlatforms = ['ankr-reward-earning-staked-eth', 'binance-peg-ethereum']
     this.coinsCache = coinsJoin.reduce((result, item) => ({ ...result, [item.uid]: item }), {})
     this.turndownService = new TurndownService()
@@ -24,7 +29,7 @@ class SetupCoins {
       })
   }
 
-  async fetchCoins(minVolume, minMCap) {
+  async fetchCoins() {
     const allCoins = await coingecko.getCoinList()
     const oldCoins = await Coin.findAll({ attributes: ['coingecko_id'] })
     const newCoins = difference(allCoins.map(coin => coin.id), oldCoins.map(coin => coin.coingecko_id))
@@ -45,10 +50,10 @@ class SetupCoins {
         return false
       }
 
-      return coin.market_data.total_volume >= minVolume && coin.market_data.market_cap >= minMCap
+      return coin.market_data.total_volume >= this.MIN_24_VOLUME && coin.market_data.market_cap >= this.MIN_MCAP
     })
 
-    console.log(`Coins with market data ${coins.length}; ${filtered.length} coins with volume >= ${minVolume}`)
+    console.log(`Coins with market data ${coins.length}; ${filtered.length} coins with volume >= ${this.MIN_24_VOLUME}`)
     console.log(filtered.map(coin => coin.uid).join(','))
   }
 
@@ -64,6 +69,7 @@ class SetupCoins {
   }
 
   async setupCoins(ids) {
+    const exchanges = await Exchange.getUids()
     const languages = await Language.findAll()
     const bep2tokens = await binanceDex.getBep2Tokens()
     const coinIds = ids || (await coingecko.getCoinList()).map(coin => coin.id)
@@ -72,7 +78,7 @@ class SetupCoins {
     console.log(`Synced new coins ${coins.length}`)
 
     for (let i = 0; i < coins.length; i += 1) {
-      await this.syncCoinInfo(coins[i], languages, bep2tokens)
+      await this.syncCoinInfo(coins[i], languages, bep2tokens, exchanges)
       await sleep(10000)
     }
 
@@ -269,7 +275,7 @@ class SetupCoins {
     }
   }
 
-  async syncCoinInfo(coin, languages, bep2tokens) {
+  async syncCoinInfo(coin, languages, bep2tokens, exchanges) {
     try {
       console.log('Fetching info for', coin.uid)
 
@@ -291,8 +297,19 @@ class SetupCoins {
         security: cached.security || coin.security
       }
 
-      await coin.update(values)
-      await this.syncPlatforms(coin, Object.entries(coinInfo.platforms), bep2tokens)
+      let volume = 0
+      for (let i = 0; i < coinInfo.tickers.length; i++) {
+        const ticker = coinInfo.tickers[i];
+        console.log(ticker.market.identifier, exchanges[ticker.market.identifier])
+        if (exchanges[ticker.market.identifier]) {
+          volume += ticker.converted_volume.usd
+        }
+      }
+
+      if (volume >= this.MIN_24_VOLUME_TRUSTED) {
+        await coin.update(values)
+        await this.syncPlatforms(coin, Object.entries(coinInfo.platforms), bep2tokens)
+      }
     } catch (err) {
       await this.handleError(err)
     }

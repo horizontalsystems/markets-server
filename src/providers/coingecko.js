@@ -165,7 +165,7 @@ exports.getChainList = function getCoinList() {
 
 exports.getCoinInfo = function getMarketInfo(id, options = {}) {
   const query = querystring.stringify({
-    tickers: false,
+    tickers: true,
     market_data: true,
     community_data: false,
     developer_data: false,

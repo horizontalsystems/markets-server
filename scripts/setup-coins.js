@@ -23,7 +23,7 @@ async function start({ all, fetch, coins, tokenTypeDecimals, addressDecimals, ch
 
   try {
     if (fetch) {
-      await setupCoins.fetchCoins(200000, 10000000)
+      await setupCoins.fetchCoins()
     } else if (coins) {
       await setupCoins.setupCoins(coins.split(','))
     } else if (addressDecimals) {

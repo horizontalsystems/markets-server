@@ -1,4 +1,5 @@
 const SequelizeModel = require('./SequelizeModel')
+const { reduceMap } = require('../../utils')
 
 class Exchange extends SequelizeModel {
 
@@ -21,6 +22,11 @@ class Exchange extends SequelizeModel {
         sequelize
       }
     )
+  }
+
+  static async getUids() {
+    const records = await Exchange.query('select id, uid from exchanges')
+    return reduceMap(records, 'uid', 'id')
   }
 
 }
