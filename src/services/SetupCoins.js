@@ -11,6 +11,7 @@ const coingecko = require('../providers/coingecko')
 const binanceDex = require('../providers/binance-dex')
 const web3Provider = require('../providers/web3')
 const solscan = require('../providers/solscan')
+const gpt = require('../providers/chat-gpt')
 const coinsJoin = require('../db/seeders/coins.json')
 
 class SetupCoins {
@@ -70,10 +71,12 @@ class SetupCoins {
 
   async setupCoins(ids) {
     const exchanges = await Exchange.getUids()
-    const languages = await Language.findAll()
     const bep2tokens = await binanceDex.getBep2Tokens()
     const coinIds = ids || (await coingecko.getCoinList()).map(coin => coin.id)
     const coins = await this.syncCoins(coinIds, !ids)
+    const languages = await Language.findAll({
+      where: { code: ['en', 'de', 'ru'] }
+    })
 
     console.log(`Synced new coins ${coins.length}`)
 
@@ -275,24 +278,39 @@ class SetupCoins {
     }
   }
 
+  async syncDescriptions(coin, descriptions, languages) {
+    const result = {}
+    for (let i = 0; i < languages.length; i += 1) {
+      const language = languages[i];
+      const message = await gpt.getCoinDescription(descriptions[language.code] || coin, language)
+
+      let description
+      if (message) {
+        description = message.content
+      }
+
+      if (!description && descriptions[language.code]) {
+        description = this.turndownService.turndown(descriptions[language.code])
+      }
+
+      if (description) {
+        result[language.code] = description
+      }
+    }
+
+    return result
+  }
+
   async syncCoinInfo(coin, languages, bep2tokens, exchanges) {
     try {
       console.log('Fetching info for', coin.uid)
-
-      const mapDescriptions = descriptions => languages.reduce((result, { code }) => {
-        if (!descriptions[code]) {
-          return result
-        }
-
-        return { ...result, [code]: this.turndownService.turndown(descriptions[code]) }
-      }, {})
 
       const coinInfo = await coingecko.getCoinInfo(coin.uid)
       const cached = this.coinsCache[coin.uid] || {}
       const values = {
         links: coinInfo.links,
         is_defi: coinInfo.is_defi,
-        description: cached.description || mapDescriptions(coinInfo.description, languages),
+        description: cached.description || await this.syncDescriptions(coin.name, coinInfo.description, languages),
         genesis_date: cached.genesis_date || coin.genesis_date,
         security: cached.security || coin.security
       }
