@@ -1,17 +1,6 @@
-const { TextServiceClient } = require('@google-ai/generativelanguage').v1beta2
-const { GoogleAuth } = require('google-auth-library')
-const OpenAI = require('openai')
 const utils = require('../utils')
+const gpt = require('../providers/chat-gpt')
 const Coin = require('../db/models/Coin')
-
-const { chat } = new OpenAI({
-  organization: process.env.CHAT_GPT_ORG,
-  apiKey: process.env.CHAT_GPT_KEY
-})
-
-const palm = new TextServiceClient({
-  authClient: new GoogleAuth().fromAPIKey(process.env.PALM_KEY),
-})
 
 class CoinDescriptionSyncer {
 
@@ -34,48 +23,9 @@ class CoinDescriptionSyncer {
     console.log(`Syncing descriptions for ${uid}`, language ? language.name : null)
 
     const content = JSON.stringify({ [coin.code]: coin.overview })
-    const coinDesc = await this.getDescriptionFromGPT(content, language)
+    const coinDesc = await gpt.getCoinDescription(content, language)
 
     await this.updateDescription(coin, coinDesc, language)
-  }
-
-  async getDescriptionFromGPT(content, language) {
-    console.log('Fetching data from GPT')
-
-    const prompt = utils.getGptPrompt(language)
-
-    const { choices = [] } = await chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        { role: 'system', content: prompt },
-        { role: 'user', content }
-      ]
-    })
-
-    const { message = {} } = choices[0] || {}
-
-    return message
-  }
-
-  async getDescriptionFromPalm(prompt) {
-    console.log('Fetching data from PaLM')
-
-    const text = `
-      ${utils.getGptPrompt()}
-      ${prompt}`
-
-    const [result] = await palm.generateText({
-      model: 'models/text-bison-001',
-      prompt: { text }
-    })
-
-    if (!result || !result.candidates || !result.candidates.length) {
-      return null
-    }
-
-    const candidate = result.candidates[0]
-
-    return candidate.output
   }
 
   async updateDescription(coin, { content }, language) {
