@@ -4,13 +4,13 @@ const mongo = require('../db/mongo')
 const logger = () => {
   const db = mongo.db(process.env.MONGO_DB)
   const logs = db.collection('logs')
-  const write = doc => logs.insertOne(doc).catch(e => console.log(e.message))
+  const write = doc => logs.insertOne(doc).catch(e => console.log(e))
 
   return (req, res, next) => {
     const referrer = morgan.referrer(req, res)
     const realIp = req.headers['x-real-ip'] || morgan['remote-addr'](req, res)
     const appId = req.headers.app_id
-    const appResource = req.headers.app_resource
+    const appTag = req.headers.app_tag
     const appPlatform = req.headers.app_platform
     const appVersion = req.headers.app_version
 
@@ -41,8 +41,8 @@ const logger = () => {
       doc.appId = appId
     }
 
-    if (appResource) {
-      doc.resource = appResource
+    if (appTag) {
+      doc.resource = appTag
     }
 
     if (referrer) {
