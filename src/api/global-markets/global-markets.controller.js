@@ -18,7 +18,7 @@ exports.overview = async ({ currencyRate, query }, res, next) => {
     const dateFrom = utcDate({ hours: -24 })
     const nft = await NftCollection.getTopMovers()
     const global = await GlobalMarket.getList(dateFrom, '30m')
-    const categories = await Category.getTopMovers()
+    const categories = await Category.getTopMovers(['blockchains', 'stablecoins', 'exchange_tokens', 'dexes', 'lending'])
     const platforms = await Chain.getList(5)
 
     res.status(200)

@@ -80,7 +80,15 @@ class Category extends SequelizeModel {
     return Category.queryUpdate(query, { values })
   }
 
-  static getTopMovers() {
+  static getTopMovers(uids) {
+    if (uids) {
+      return Category.findAll({
+        attributes: ['uid', 'name', 'market_cap', 'description'],
+        where: { uid: uids },
+        limit: 5
+      })
+    }
+
     return Category.query(`
       SELECT
         uid,
