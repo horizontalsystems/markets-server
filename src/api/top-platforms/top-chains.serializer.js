@@ -16,9 +16,11 @@ module.exports = {
           rank_1d: nullOrString(stats.rank_1d),
           rank_1w: nullOrString(stats.rank_1w),
           rank_1m: nullOrString(stats.rank_1m),
+          rank_3m: nullOrString(stats.rank_3m),
           change_1d: nullOrString(stats.change_1d),
+          change_1w: nullOrString(stats.change_1w),
           change_1m: nullOrString(stats.change_1m),
-          change_1w: nullOrString(stats.change_1w)
+          change_3m: nullOrString(stats.change_3m)
         },
       }
     })

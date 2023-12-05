@@ -44,6 +44,7 @@ class TopPlatformsSyncer extends Syncer {
       const prevMCap1d = prevMCap['1d'] || {}
       const prevMCap1w = prevMCap['1w'] || {}
       const prevMCap1m = prevMCap['1m'] || {}
+      const prevMCap3m = prevMCap['3m'] || {}
 
       if (!data.uid) {
         continue
@@ -63,9 +64,11 @@ class TopPlatformsSyncer extends Syncer {
           rank_1d: prevMCap1d.rank,
           rank_1w: prevMCap1w.rank,
           rank_1m: prevMCap1m.rank,
+          rank_3m: prevMCap1m.rank,
           change_1d: percentageChange(prevMCap1d.mcap, data.mcap),
           change_1w: percentageChange(prevMCap1w.mcap, data.mcap),
-          change_1m: percentageChange(prevMCap1m.mcap, data.mcap)
+          change_1m: percentageChange(prevMCap1m.mcap, data.mcap),
+          change_3m: percentageChange(prevMCap3m.mcap, data.mcap)
         })
       ])
     }
@@ -92,14 +95,15 @@ class TopPlatformsSyncer extends Syncer {
       }
     }
 
-    const format = 'yyyy-MM-dd HH:00:00Z'
-    const history1d = await ChainMarketCap.getByDate(utcDate({ days: -1 }, format))
-    const history1w = await ChainMarketCap.getByDate(utcDate({ days: -7 }, format))
-    const history1m = await ChainMarketCap.getByDate(utcDate({ days: -30 }, format))
+    const history1d = await ChainMarketCap.getByDate(utcDate({ days: -1 }, 'yyyy-MM-dd HH:00:00Z'))
+    const history1w = await ChainMarketCap.getByDate(utcDate({ days: -7 }, 'yyyy-MM-dd HH:00:00Z'))
+    const history1m = await ChainMarketCap.getByDate(utcDate({ days: -30 }, 'yyyy-MM-dd'))
+    const history3m = await ChainMarketCap.getByDate(utcDate({ days: -90 }, 'yyyy-MM-dd'))
 
     mapBy(history1d, '1d')
     mapBy(history1w, '1w')
     mapBy(history1m, '1m')
+    mapBy(history3m, '3m')
 
     return mapped
   }

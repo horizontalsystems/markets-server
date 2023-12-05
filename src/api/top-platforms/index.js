@@ -58,8 +58,8 @@ router.get('/:chain/list', setCurrencyRate, controller.protocols)
  * @apiVersion 1.0.1
  * @apiGroup Platform
  *
- * @apiParam    {String}            chain       Chain
- * @apiParam    {String=1d,1w,1m}   [interval]  Date interval
+ * @apiParam    {String}              chain       Chain
+ * @apiParam    {String=1d,1w,1m,3m}  [interval]  Date interval
  * @apiUse  Currencies
  *
  * @apiSuccessExample {json} Success-Response:
