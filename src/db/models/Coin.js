@@ -35,6 +35,7 @@ class Coin extends SequelizeModel {
         //  }
 
         price: DataTypes.DECIMAL,
+        price_change_24h: DataTypes.DECIMAL,
         price_change: DataTypes.JSONB,
         //  {
         //    1y:   345.8,

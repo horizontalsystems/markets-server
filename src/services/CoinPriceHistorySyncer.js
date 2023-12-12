@@ -5,6 +5,10 @@ const Coin = require('../db/models/Coin')
 const CoinPrice = require('../db/models/CoinPrice')
 const Syncer = require('./Syncer')
 
+const debug = msg => {
+  console.log(new Date(), msg)
+}
+
 class CoinPriceHistorySyncer extends Syncer {
 
   adjustHistoryGaps() {
@@ -15,6 +19,30 @@ class CoinPriceHistorySyncer extends Syncer {
 
   deleteExpired({ dateFrom, dateTo }) {
     return CoinPrice.deleteExpired(dateFrom, dateTo)
+  }
+
+  async getCoins(uid) {
+    const coins = await Coin.findAll({
+      attributes: ['id', 'coingecko_id'],
+      where: {
+        ...(uid && { uid }),
+        coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
+      }
+    })
+
+    const uids = new Set()
+    const map = {}
+
+    for (let i = 0; i < coins.length; i += 1) {
+      const coin = coins[i]
+      const cid = coin.coingecko_id
+      const ids = map[cid] || (map[cid] = [])
+
+      uids.add(encodeURIComponent(cid))
+      ids.push(coin.id)
+    }
+
+    return { uids, map }
   }
 
   async syncHistory(uid, all) {
@@ -142,6 +170,25 @@ class CoinPriceHistorySyncer extends Syncer {
       .catch(err => {
         console.log(`Error inserting coin prices ${err.message}`)
       })
+  }
+
+  async handleHttpError({ message, response = {} }) {
+    if (message) {
+      console.error(message)
+    }
+
+    if (response.status === 429) {
+      debug(`Sleeping 1min; Status ${response.status}`)
+      await utils.sleep(60000)
+    } else if (response.status >= 502 && response.status <= 504) {
+      debug(`Sleeping 30s; Status ${response.status}`)
+      await utils.sleep(30000)
+    } else if (response.status >= 400 && response.status <= 403) {
+      debug(`Sleeping 30s; Status ${response.status}`)
+      await utils.sleep(30000)
+    } else {
+      await utils.sleep(50000)
+    }
   }
 }
 

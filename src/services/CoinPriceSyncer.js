@@ -37,7 +37,7 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
   async sync(uid) {
     const coins = await this.getCoins(uid)
-    const chunks = this.chunk(Array.from(coins.uids))
+    const chunks = chunk(Array.from(coins.uids), 250)
 
     for (let i = 0; i < chunks.length; i += 1) {
       await (this.isSimple ? this.syncSimplePrices(chunks[i], coins.map) : this.syncPrices(chunks[i], coins.map))
@@ -194,79 +194,6 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     console.log('Syncing historical prices', records.length)
     this.prices = {}
     return CoinPrice.bulkCreate(records, { updateOnDuplicate: ['price'] })
-  }
-
-  async getCoins(uid) {
-    const coins = await Coin.findAll({
-      attributes: ['id', 'coingecko_id'],
-      where: {
-        ...(uid && { uid }),
-        coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
-      }
-    })
-
-    const uids = new Set()
-    const map = {}
-
-    for (let i = 0; i < coins.length; i += 1) {
-      const coin = coins[i]
-      const cid = coin.coingecko_id
-      const ids = map[cid] || (map[cid] = [])
-
-      uids.add(encodeURIComponent(cid))
-      ids.push(coin.id)
-    }
-
-    return { uids, map }
-  }
-
-  async handleHttpError({ message, response = {} }) {
-    if (message) {
-      console.error(message)
-    }
-
-    if (response.status === 429) {
-      debug(`Sleeping 1min; Status ${response.status}`)
-      await utils.sleep(60000)
-    } else if (response.status >= 502 && response.status <= 504) {
-      debug(`Sleeping 30s; Status ${response.status}`)
-      await utils.sleep(30000)
-    } else if (response.status >= 400 && response.status <= 403) {
-      debug(`Sleeping 30s; Status ${response.status}`)
-      await utils.sleep(30000)
-    } else {
-      await utils.sleep(50000)
-    }
-  }
-
-  chunk(array) {
-    if (!this.isSimple) {
-      return chunk(array, 250)
-    }
-
-    const chunkList = []
-    const chunkSize = 6000 // to fit header buffers
-
-    let size = 0
-    let index = 0
-
-    for (let i = 0; i < array.length; i += 1) {
-      const item = array[i]
-
-      if (size > chunkSize) {
-        size = 0
-        index += 1
-      }
-
-      if (!chunkList[index]) {
-        chunkList[index] = []
-      }
-
-      chunkList[index].push(item)
-      size += item.length
-    }
-
-    return chunkList
   }
 }
 
