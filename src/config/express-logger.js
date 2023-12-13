@@ -37,6 +37,10 @@ const logger = () => {
       doc.enabled_coins = query.enabled_uids.split(',')
     }
 
+    if (query.interval) {
+      doc.interval = query.interval
+    }
+
     if (appId) {
       doc.appId = appId
     }
