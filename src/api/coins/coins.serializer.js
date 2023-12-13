@@ -65,7 +65,7 @@ function mapCoinAttribute(coin, field, currencyRate) {
     case 'price':
       return valueInCurrency(coin.price, currencyRate)
     case 'price_change_24h':
-      return nullOrString(priceChange['24h'])
+      return nullOrString(coin.price_change_24h || priceChange['24h'])
     case 'price_change_7d':
       return nullOrString(priceChange['7d'])
     case 'price_change_14d':

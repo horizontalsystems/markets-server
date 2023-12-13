@@ -77,8 +77,7 @@ class Chain extends SequelizeModel {
       SELECT
         c.uid,
         c.price,
-        c.price,
-        c.price_change->'24h' price_change_24h,
+        c.price_change_24h,
         c.market_data->'total_volume' total_volume,
         sum(least((p.circulating_supply * c.price), (c.market_data->>'market_cap')::numeric)) mcap
       FROM platforms p, coins c
