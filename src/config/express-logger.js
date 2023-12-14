@@ -2,8 +2,8 @@ const morgan = require('morgan')
 const mongo = require('../db/mongo')
 
 const logger = () => {
-  const db = mongo.db(process.env.MONGO_DB)
-  const logs = db.collection('logs')
+  const logs = mongo.collection('logs')
+
   const write = doc => logs.insertOne(doc).catch(e => console.log(e))
 
   return (req, res, next) => {
@@ -17,7 +17,6 @@ const logger = () => {
     const { query } = req
 
     const doc = {
-      method: morgan.method(req, res),
       path: req.path,
       url: morgan.url(req, res),
       remoteAddr: realIp,

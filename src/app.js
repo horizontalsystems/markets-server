@@ -5,7 +5,7 @@ const mongo = require('./db/mongo')
 const app = require('./config/express')
 
 async function start() {
-  await mongo.connect()
+  await mongo.init()
   await sequelize.sync()
   const port = process.env.PORT || 3000
 
