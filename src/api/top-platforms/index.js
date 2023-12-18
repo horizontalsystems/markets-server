@@ -1,5 +1,6 @@
 const express = require('express')
 const controller = require('./top-chains.controller')
+const { validateChart } = require('./top-chains.validator')
 const { setDateInterval, setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
@@ -53,12 +54,12 @@ router.get('/', setCurrencyRate, controller.index)
 router.get('/:chain/list', setCurrencyRate, controller.protocols)
 
 /**
- * @api {get} /v1/top-platforms/:chain/chart List market cap chart
- * @apiDescription Get a list of market cap chart
+ * @api {get} /v1/top-platforms/:chain/chart Platform's chart
+ * @apiDescription Get platform's chart
  * @apiVersion 1.0.1
  * @apiGroup Platform
  *
- * @apiParam    {String}              chain       Chain
+ * @apiParam    {String}              chain       Uid of Chain
  * @apiParam    {String=1d,1w,1m,3m}  [interval]  Date interval
  * @apiUse  Currencies
  *
@@ -71,5 +72,26 @@ router.get('/:chain/list', setCurrencyRate, controller.protocols)
  *
  */
 router.get('/:chain/chart', setCurrencyRate, setDateInterval, controller.chart)
+
+/**
+ * @api {get} /v1/top-platforms/:chain/market_cap_chart Platform's market cap chart
+ * @apiDescription Get platform's market cap chart
+ * @apiVersion 1.0.1
+ * @apiGroup Platform
+ *
+ * @apiParam    {String}                  chain           Uid of Chain
+ * @apiParam    {Number}                  from_timestamp  Timestamp
+ * @apiParam    {String=30m,1h,4h,8h,1d}  [interval]      Date interval
+ * @apiUse      Currencies
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [{
+ *    "timestamp": 1700265600,
+ *    "market_cap": "164604366159.14374"
+ *  }]
+ */
+
+router.get('/:chain/market_cap_chart', validateChart, setCurrencyRate, setDateInterval, controller.marketCapChart)
 
 module.exports = router

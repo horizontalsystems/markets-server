@@ -75,6 +75,29 @@ class ChainMarketCap extends SequelizeModel {
     return ChainMarketCap.query(query, { dateFrom, chain })
   }
 
+  static getMarketChart(chain, dateFrom, window) {
+    const query = `
+      SELECT
+        t2.time AS timestamp,
+        t1.market_cap
+      FROM chain_market_caps t1
+      JOIN (
+        SELECT
+          ${this.truncateDateWindow('date', window)} as time,
+          max(id) as max_id,
+          max(date) as max_date,
+          chain_uid
+         FROM chain_market_caps
+        WHERE chain_uid = :chain
+          AND EXTRACT(epoch from date) >= :dateFrom
+        GROUP by time, chain_uid
+      ) t2 ON (t1.id = t2.max_id AND t1.date = t2.max_date)
+      ORDER BY date
+    `
+
+    return ChainMarketCap.query(query, { dateFrom, chain })
+  }
+
   static deleteExpired(dateFrom, dateTo) {
     return ChainMarketCap.query('DELETE FROM chain_market_caps WHERE date > :dateFrom AND date < :dateTo', {
       dateFrom,
