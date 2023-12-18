@@ -98,6 +98,17 @@ class ChainMarketCap extends SequelizeModel {
     return ChainMarketCap.query(query, { dateFrom, chain })
   }
 
+  static async getFirstPoint(uid) {
+    const [price] = await ChainMarketCap.query(`
+      SELECT EXTRACT(epoch FROM date)::int AS timestamp
+      FROM chain_market_caps
+      WHERE chain_uid = :uid
+      ORDER BY date ASC
+      limit 1`, { uid })
+
+    return price
+  }
+
   static deleteExpired(dateFrom, dateTo) {
     return ChainMarketCap.query('DELETE FROM chain_market_caps WHERE date > :dateFrom AND date < :dateTo', {
       dateFrom,

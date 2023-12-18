@@ -54,7 +54,7 @@ router.get('/', setCurrencyRate, controller.index)
 router.get('/:chain/list', setCurrencyRate, controller.protocols)
 
 /**
- * @api {get} /v1/top-platforms/:chain/chart Platform's chart
+ * @api {get} /v1/top-platforms/:chain/chart Platforms market chart
  * @apiDescription Get platform's chart
  * @apiVersion 1.0.1
  * @apiGroup Platform
@@ -74,7 +74,7 @@ router.get('/:chain/list', setCurrencyRate, controller.protocols)
 router.get('/:chain/chart', setCurrencyRate, setDateInterval, controller.chart)
 
 /**
- * @api {get} /v1/top-platforms/:chain/market_cap_chart Platform's market cap chart
+ * @api {get} /v1/top-platforms/:chain/market_chart Platforms market cap chart
  * @apiDescription Get platform's market cap chart
  * @apiVersion 1.0.1
  * @apiGroup Platform
@@ -91,7 +91,24 @@ router.get('/:chain/chart', setCurrencyRate, setDateInterval, controller.chart)
  *    "market_cap": "164604366159.14374"
  *  }]
  */
+router.get('/:chain/market_chart', validateChart, setCurrencyRate, setDateInterval, controller.marketChart)
 
-router.get('/:chain/market_cap_chart', validateChart, setCurrencyRate, setDateInterval, controller.marketCapChart)
+/**
+ * @api {get} /v1/top-platforms/:chain/market_chart_start Get the date of the first point.
+ * @apiDescription Get the date of the first point.
+ * @apiVersion 1.0.0
+ * @apiGroup Platform
+ *
+ * @apiParam    {String}                   uid             Coin's uid
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "timestamp": 1641945600
+ *  }
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ */
+router.get('/:chain/market_chart_start', controller.marketChartStart)
 
 module.exports = router

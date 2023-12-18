@@ -48,4 +48,7 @@ module.exports = {
     })
   },
 
+  serializeFirstPoints: (data = {}) => ({
+    timestamp: data.timestamp
+  })
 }
