@@ -89,7 +89,7 @@ class ChainMarketCap extends SequelizeModel {
           chain_uid
          FROM chain_market_caps
         WHERE chain_uid = :chain
-          AND EXTRACT(epoch from date) >= :dateFrom
+          ${dateFrom ? 'AND EXTRACT(epoch from date) >= :dateFrom' : ''}
         GROUP by time, chain_uid
       ) t2 ON (t1.id = t2.max_id AND t1.date = t2.max_date)
       ORDER BY date

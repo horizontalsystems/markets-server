@@ -6,8 +6,8 @@ module.exports = {
       chain: Joi.string().required()
     }),
     query: Joi.object({
-      from_timestamp: Joi.number().required(),
-      interval: Joi.string().valid('30m', '1h', '4h', '8h', '1d', '1w').required(),
+      from_timestamp: Joi.number(),
+      interval: Joi.string().valid('30m', '1h', '4h', '8h', '1d', '1w'),
       currency: Joi.string()
     })
   }),

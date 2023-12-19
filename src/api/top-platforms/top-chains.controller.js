@@ -27,8 +27,6 @@ exports.marketChart = async ({ params, query, currencyRate }, res) => {
 
   if (fromTimestamp) {
     fromTimestamp = parseInt(fromTimestamp, 10)
-  } else {
-    fromTimestamp = utils.utcDate({ day: -1 }, null, true)
   }
 
   const stats = await ChainMarketCap.getMarketChart(params.chain, fromTimestamp, interval)
