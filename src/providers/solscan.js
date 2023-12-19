@@ -1,6 +1,6 @@
 const querystring = require('querystring')
 const axios = require('axios').create({
-  baseURL: 'https://api.solscan.io',
+  baseURL: 'https://api.solscan.io/v2',
   timeout: 180000
 })
 
