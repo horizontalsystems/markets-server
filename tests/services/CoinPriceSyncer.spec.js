@@ -3,11 +3,11 @@ const sinon = require('sinon')
 const utils = require('../../src/utils')
 const coingecko = require('../../src/providers/coingecko')
 const Coin = require('../../src/db/models/Coin')
-const Syncer = require('../../src/services/CoinPriceSyncer')
+const Syncer = require('../../src/services/CoinRateSyncer')
 
 describe('CoinPriceSyncer', () => {
 
-  /** @type CoinPriceSyncer */
+  /** @type CoinRateSyncer */
   let syncer
   let clock
 

@@ -1,10 +1,10 @@
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
-const Syncer = require('./Syncer')
 const Coin = require('../db/models/Coin')
 const CoinMarket = require('../db/models/CoinMarket')
+const CoinPriceHistorySyncer = require('./CoinPriceHistorySyncer')
 
-class CoinMarketSyncer extends Syncer {
+class CoinExchangeSyncer extends CoinPriceHistorySyncer {
 
   async start() {
     const running = true
@@ -40,28 +40,9 @@ class CoinMarketSyncer extends Syncer {
     try {
       const data = await coingecko.getCoinInfo(coin.coingecko_id, { tickers: true })
       await this.updateCoinInfo(data.tickers, coin.id)
-      await utils.sleep(3000)
-    } catch ({ message, response = {} }) {
-      if (message) {
-        console.log(message)
-      }
-
-      if (response.status === 429) {
-        console.log(`Sleeping 1min; Status ${response.status}`)
-        await utils.sleep(60000)
-      }
-
-      if (response.status >= 502 && response.status <= 504) {
-        console.log(`Sleeping 30s; Status ${response.status}`)
-        await utils.sleep(30000)
-      }
-
-      if (response.status === 404) {
-        await Coin.update(
-          { coingecko_id: null },
-          { where: { id: coin.id } }
-        )
-      }
+      await utils.sleep(20000)
+    } catch (e) {
+      await this.handleHttpError(e)
     }
   }
 
@@ -91,4 +72,4 @@ class CoinMarketSyncer extends Syncer {
 
 }
 
-module.exports = CoinMarketSyncer
+module.exports = CoinExchangeSyncer

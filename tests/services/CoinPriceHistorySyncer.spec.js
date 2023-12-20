@@ -1,6 +1,6 @@
 const sinon = require('sinon')
 const { DateTime } = require('luxon')
-const CoinPriceSyncer = require('../../src/services/CoinPriceSyncer')
+const CoinPriceSyncer = require('../../src/services/CoinPriceHistorySyncer')
 const CoinPrice = require('../../src/db/models/CoinPrice')
 
 describe('CoinPriceHistorySyncer', async () => {
