@@ -9,7 +9,7 @@ const debug = msg => {
   console.log(new Date(), msg)
 }
 
-class CoinRateSyncer extends CoinPriceHistorySyncer {
+class CoinPriceSyncer extends CoinPriceHistorySyncer {
 
   constructor() {
     super()
@@ -139,4 +139,4 @@ class CoinRateSyncer extends CoinPriceHistorySyncer {
   }
 }
 
-module.exports = CoinRateSyncer
+module.exports = CoinPriceSyncer

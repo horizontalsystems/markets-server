@@ -9,7 +9,7 @@ const debug = msg => {
   console.log(new Date(), msg)
 }
 
-class CoinVolumeSyncer extends CoinPriceHistorySyncer {
+class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
 
   async start() {
     this.adjustHistoryGaps()
@@ -117,4 +117,4 @@ class CoinVolumeSyncer extends CoinPriceHistorySyncer {
   }
 }
 
-module.exports = CoinVolumeSyncer
+module.exports = CoinMarketDataSyncer

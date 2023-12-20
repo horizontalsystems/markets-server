@@ -2,7 +2,7 @@ require('dotenv/config')
 
 const { Command } = require('commander')
 const sequelize = require('../src/db/sequelize')
-const CoinRateSyncer = require('../src/services/CoinRateSyncer')
+const CoinMarketDataSyncer = require('../src/services/CoinMarketDataSyncer')
 
 const program = new Command()
   .option('-c --coins <coins>', 'sync given coins')
@@ -12,7 +12,7 @@ const program = new Command()
 
 async function start({ coins, history, all }) {
   await sequelize.sync()
-  const syncer = new CoinRateSyncer()
+  const syncer = new CoinMarketDataSyncer()
   const uids = coins ? coins.split(',') : null
 
   if (coins && history) {
