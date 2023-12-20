@@ -38,15 +38,26 @@ class CoinExchangeSyncer extends CoinPriceHistorySyncer {
 
   async syncCoinInfo(coin) {
     try {
-      const data = await coingecko.getCoinInfo(coin.coingecko_id, { tickers: true })
-      await this.updateCoinInfo(data.tickers, coin.id)
-      await utils.sleep(20000)
+      const data = await this.fetchExchanges(coin.coingecko_id)
+      await this.updateCoinInfo(data, coin.id, coin.coingecko_id)
     } catch (e) {
       await this.handleHttpError(e)
     }
   }
 
-  async updateCoinInfo(tickers, coinId) {
+  async fetchExchanges(uid, page = 1) {
+    const data = await coingecko.getTickers(uid, page)
+    console.log(`Fetched ${data.length} tickers for ${uid}`)
+
+    if (data.length < 100) {
+      return data
+    }
+
+    await utils.sleep(20000)
+    return data.concat(await this.fetchExchanges(uid, page + 1))
+  }
+
+  async updateCoinInfo(tickers, coinId, uid) {
     const markets = tickers.map(ticker => {
       return {
         base: ticker.base,
@@ -60,10 +71,14 @@ class CoinExchangeSyncer extends CoinPriceHistorySyncer {
       }
     })
 
+    if (!markets.length) {
+      return
+    }
+
     await CoinMarket.deleteAll(coinId)
     await CoinMarket.bulkCreate(markets)
       .then(records => {
-        console.log(`Inserted tickers ${records.length}`)
+        console.log(`Inserted tickers ${records.length} for coin ${uid}`)
       })
       .catch(err => {
         console.log(err)

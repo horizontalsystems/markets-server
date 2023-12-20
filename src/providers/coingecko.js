@@ -177,3 +177,21 @@ exports.getCoinInfo = function getMarketInfo(id, options = {}) {
     .get(`/coins/${id}?${query}`)
     .then(resp => normalizeCoin(resp.data))
 }
+
+exports.getTickers = function getTickers(id, page = 1) {
+  const query = querystring.stringify({
+    include_exchange_logo: true,
+    order: 'volume_desc',
+    page,
+  })
+
+  return axios
+    .get(`/coins/${id}/tickers?${query}`)
+    .then(({ data }) => {
+      if (!data || !data.tickers) {
+        return []
+      }
+
+      return data.tickers
+    })
+}
