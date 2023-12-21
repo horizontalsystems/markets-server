@@ -1,5 +1,6 @@
 const express = require('express')
 const controller = require('./exchange.controller')
+const { requireCoin } = require('../middlewares')
 
 const router = express.Router()
 
@@ -21,7 +22,29 @@ const router = express.Router()
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  */
+
 router.get('/', controller.index)
+
+/**
+ * @api {get} /v1/exchanges/coin-tickers/:uid Get coin tickers
+ * @apiDescription Get coin tickers
+ * @apiVersion 1.0.0
+ * @apiGroup Exchange
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [{
+ *    "base": "UNI",
+ *    "target": "BUSD",
+ *    "price": "5.961",
+ *    "volume": "34712774",
+ *    "market_uid": "bw",
+ *    "market_name": "BW.com"
+ *  }]
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ */
+router.get('/tickers/:uid', requireCoin, controller.tickers)
 
 /**
  * @api {get} /v1/exchanges/whitelist List of whitelisted exchanges
