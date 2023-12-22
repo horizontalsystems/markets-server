@@ -48,12 +48,12 @@ class CoinExchangeSyncer extends CoinPriceHistorySyncer {
   async fetchExchanges(uid, page = 1) {
     const data = await coingecko.getTickers(uid, page)
     console.log(`Fetched ${data.length} tickers for ${uid}`)
+    await utils.sleep(20000)
 
     if (data.length < 100) {
       return data
     }
 
-    await utils.sleep(20000)
     return data.concat(await this.fetchExchanges(uid, page + 1))
   }
 
