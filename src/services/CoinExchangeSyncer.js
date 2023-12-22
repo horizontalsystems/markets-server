@@ -66,6 +66,7 @@ class CoinExchangeSyncer extends CoinPriceHistorySyncer {
         volume: ticker.volume,
         volume_usd: ticker.converted_volume.usd,
         market_uid: ticker.market.identifier,
+        market_logo: ticker.market.logo,
         market_name: ticker.market.name,
         coin_id: coinId,
       }

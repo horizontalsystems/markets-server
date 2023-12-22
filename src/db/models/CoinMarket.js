@@ -18,6 +18,7 @@ class CoinMarket extends SequelizeModel {
         volume_usd: DataTypes.DECIMAL,
         market_uid: DataTypes.STRING(50),
         market_name: DataTypes.STRING(50),
+        market_logo: DataTypes.STRING,
       },
       {
         sequelize,
