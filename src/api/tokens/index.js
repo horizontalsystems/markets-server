@@ -11,12 +11,12 @@ const router = express.Router()
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
- *  {[
+ *  [{
  *    "type": "native",
  *    "coin_uid": "bitcoin",
  *    "blockchain_uid": "bitcoin",
  *    "decimals": 8
- *  ]}
+ *  }]
  */
 router.get('/list', controller.list)
 

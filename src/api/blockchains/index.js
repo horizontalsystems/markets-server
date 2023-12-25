@@ -12,10 +12,10 @@ const router = express.Router()
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
- *  {[
+ *  [{
  *    "uid": "bitcoin",
  *    "name: "Bitcoin"
- *  ]}
+ *  }]
  */
 router.get('/list', controller.list)
 
@@ -27,13 +27,13 @@ router.get('/list', controller.list)
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
- *  {[
+ *  [{
  *    "name: "Ethereum"
  *    "uid": "ethereum",
  *    "decimals": 18,
  *    "is_testnet": false,
  *    "coin_uid": "ethereum"
- *  ]}
+ *  }]
  */
 router.get('/list-evm', controller.listEvm)
 
@@ -62,12 +62,10 @@ if (process.env.NODE_ENV === 'production') {
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
- *  [
- *    {
- *      "number": 604338,
- *      "hash": "0000000000000000000238670cb83a52d833baeab18bb5173e77d8c1fd0cb0c1"
- *    }
- *  ]
+ *  [{
+ *    "number": 604338,
+ *    "hash": "0000000000000000000238670cb83a52d833baeab18bb5173e77d8c1fd0cb0c1"
+ *  }]
  */
 router.get('/:blockchain/hashes', validateHashes, controller.blockHashes)
 
