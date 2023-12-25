@@ -50,7 +50,7 @@ class CoinExchangeSyncer extends CoinPriceHistorySyncer {
     console.log(`Fetched ${data.length} tickers for ${uid}`)
     await utils.sleep(20000)
 
-    if (data.length < 100) {
+    if (data.length < 100 || page > 5) {
       return data
     }
 
