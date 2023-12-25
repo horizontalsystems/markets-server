@@ -11,7 +11,7 @@ exports.serializeWhitelist = exchanges => {
   return exchanges.map(item => item.uid)
 }
 
-exports.serializeTickers = exchanges => {
+exports.serializeTickers = (exchanges, whitelist) => {
   return exchanges.map(item => {
     return {
       base: item.base,
@@ -21,7 +21,8 @@ exports.serializeTickers = exchanges => {
       volume_usd: item.volume_usd,
       market_uid: item.market_uid,
       market_name: item.market_name,
-      market_logo: item.market_logo
+      market_logo: item.market_logo,
+      is_verified: !!whitelist[item.market_uid]
     }
   })
 }

@@ -21,9 +21,10 @@ exports.tickers = async ({ query, coin }, res) => {
     options.offset = limit * (page - 1)
   }
 
+  const whitelist = await Exchange.getUids()
   const tickers = await CoinMarket.findAll(options)
 
-  res.send(serializer.serializeTickers(tickers))
+  res.send(serializer.serializeTickers(tickers, whitelist))
 }
 
 exports.whitelist = async (req, res) => {
