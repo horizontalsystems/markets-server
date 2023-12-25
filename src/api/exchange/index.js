@@ -41,7 +41,8 @@ router.get('/', controller.index)
  *    "base": "UNI",
  *    "target": "BUSD",
  *    "price": "5.961",
- *    "volume": "34712774",
+ *    "volume": "3471277",
+ *    "volume_usd": "34712774",
  *    "market_uid": "bw",
  *    "market_name": "BW.com",
  *    "market_logo": "https://assets.coingecko.com/markets/images/326/small/bw.com.jpg?1548664400"
