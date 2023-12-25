@@ -26,10 +26,14 @@ const router = express.Router()
 router.get('/', controller.index)
 
 /**
- * @api {get} /v1/exchanges/coin-tickers/:uid Get coin tickers
+ * @api {get} /v1/exchanges/tickers/:uid Get coin tickers
  * @apiDescription Get coin tickers
  * @apiVersion 1.0.0
  * @apiGroup Exchange
+ *
+ * @apiParam    {String}  uid           Coin's uid
+ * @apiParam    {Number}  [limit=100]   Tickers per page
+ * @apiParam    {Number}  [page=1]      Page number
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
@@ -39,7 +43,8 @@ router.get('/', controller.index)
  *    "price": "5.961",
  *    "volume": "34712774",
  *    "market_uid": "bw",
- *    "market_name": "BW.com"
+ *    "market_name": "BW.com",
+ *    "market_logo": "https://assets.coingecko.com/markets/images/326/small/bw.com.jpg?1548664400"
  *  }]
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values

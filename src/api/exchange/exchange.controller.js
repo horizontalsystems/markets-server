@@ -7,12 +7,21 @@ exports.index = async (req, res) => {
   res.send(serializer.serialize(exchanges))
 }
 
-exports.tickers = async (req, res) => {
-  const tickers = await CoinMarket.findAll({
+exports.tickers = async ({ query, coin }, res) => {
+  const { limit = 100, page = 1 } = query
+  const options = {
     where: {
-      coin_id: req.coin.id
-    }
-  })
+      coin_id: coin.id
+    },
+    order: [['volume_usd', 'desc']]
+  }
+
+  if (limit) {
+    options.limit = limit
+    options.offset = limit * (page - 1)
+  }
+
+  const tickers = await CoinMarket.findAll(options)
 
   res.send(serializer.serializeTickers(tickers))
 }
