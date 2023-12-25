@@ -45,7 +45,8 @@ router.get('/', controller.index)
  *    "volume_usd": "34712774",
  *    "market_uid": "bw",
  *    "market_name": "BW.com",
- *    "market_logo": "https://assets.coingecko.com/markets/images/326/small/bw.com.jpg?1548664400"
+ *    "market_logo": "https://assets.coingecko.com/markets/images/326/small/bw.com.jpg?1548664400",
+ *    "whitelisted": true
  *  }]
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
