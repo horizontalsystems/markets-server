@@ -1,3 +1,5 @@
+const { nullOrInteger } = require('../../utils')
+
 exports.serialize = platforms => {
   return platforms.map(item => {
     const platform = {
@@ -10,8 +12,8 @@ exports.serialize = platforms => {
       platform.address = item.address
     }
 
-    if (item.decimals) {
-      platform.decimals = item.decimals
+    if (item.decimals || item.decimals === 0) {
+      platform.decimals = nullOrInteger(item.decimals)
     }
 
     if (item.symbol) {
