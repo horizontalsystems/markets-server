@@ -22,6 +22,7 @@ exports.serializeTickers = (exchanges, whitelist) => {
       market_uid: item.market_uid,
       market_name: item.market_name,
       market_logo: item.market_logo,
+      trade_url: item.trade_url,
       whitelisted: !!whitelist[item.market_uid]
     }
   })
