@@ -11,6 +11,20 @@ exports.serializeWhitelist = exchanges => {
   return exchanges.map(item => item.uid)
 }
 
+exports.serializeTopPairs = exchanges => {
+  return exchanges.map((item, index) => {
+    return {
+      rank: index + 1,
+      base: item.base,
+      target: item.target,
+      price: item.price,
+      volume: item.volume_usd,
+      market_name: item.market_name,
+      market_logo: item.market_logo
+    }
+  })
+}
+
 exports.serializeTickers = (exchanges, whitelist) => {
   return exchanges.map(item => {
     return {

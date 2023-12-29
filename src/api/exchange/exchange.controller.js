@@ -27,6 +27,21 @@ exports.tickers = async ({ query, coin }, res) => {
   res.send(serializer.serializeTickers(tickers, whitelist))
 }
 
+exports.topPairs = async ({ query }, res) => {
+  const { limit = 100, page = 1 } = query
+  const options = {
+    order: [['volume_usd', 'desc']]
+  }
+
+  if (limit) {
+    options.limit = limit
+    options.offset = limit * (page - 1)
+  }
+
+  const exchanges = await CoinMarket.findAll(options)
+  res.send(serializer.serializeTopPairs(exchanges))
+}
+
 exports.whitelist = async (req, res) => {
   const exchanges = await Exchange.findAll()
   res.send(serializer.serializeWhitelist(exchanges))

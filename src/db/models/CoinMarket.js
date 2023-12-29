@@ -39,6 +39,13 @@ class CoinMarket extends SequelizeModel {
     return !!await CoinMarket.findOne()
   }
 
+  static getTop(limit) {
+    return CoinMarket.findAll({
+      order: [['volume_usd', 'desc']],
+      limit
+    })
+  }
+
   static deleteAll(coinId) {
     return CoinMarket.query('DELETE FROM coin_markets where coin_id = :coinId', { coinId })
   }

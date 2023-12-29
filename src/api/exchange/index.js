@@ -67,4 +67,27 @@ router.get('/tickers/:uid', requireCoin, controller.tickers)
  */
 router.get('/whitelist', controller.whitelist)
 
+/**
+ * @api {get} /v1/exchanges/top-pairs List top pairs
+ * @apiDescription Get top pairs list
+ * @apiVersion 1.0.0
+ * @apiGroup Exchange
+ *
+ * @apiParam    {Number}  [limit=100]   Pairs per page
+ * @apiParam    {Number}  [page=1]      Page number
+ *
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ *  [{
+ *    "base": "UNI",
+ *    "target": "BUSD",
+ *    "price": "7.21",
+ *    "volume": "189979704",
+ *    "market_name": "BW.com",
+ *    "market_logo": "https://assets.coingecko.com/markets/images/326/small/bw.com.jpg?1548664400"
+ *  }]
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ */
+router.get('/top-pairs', controller.topPairs)
+
 module.exports = router

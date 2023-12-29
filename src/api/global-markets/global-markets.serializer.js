@@ -2,6 +2,7 @@ const { valueInCurrency } = require('../../utils')
 const { serialize: serializePlatforms } = require('../top-platforms/top-chains.serializer')
 const { serialize: serializeCategories } = require('../categories/categories.serializer')
 const { serialize: serializeNft } = require('../nft/nft.serializer')
+const { serializeTopPairs } = require('../exchange/exchange.serializer')
 
 const serializeList = (coins, currencyRate) => {
   return coins.map(item => {
@@ -25,12 +26,13 @@ const serializeTvls = (tvls, currencyRate) => {
   })
 }
 
-const serializeOverview = ({ global, categories, nft, platforms, simplified }, currencyRate) => {
+const serializeOverview = ({ global, categories, nft, platforms, pairs, simplified }, currencyRate) => {
   return {
     global: serializeList(global, currencyRate),
     sectors: serializeCategories(categories, currencyRate),
     platforms: serializePlatforms(platforms, currencyRate),
-    nft: serializeNft(nft, simplified)
+    nft: serializeNft(nft, simplified),
+    pairs: serializeTopPairs(pairs)
   }
 }
 
