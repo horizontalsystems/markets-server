@@ -20,7 +20,8 @@ exports.serializeTopPairs = exchanges => {
       price: item.price,
       volume: item.volume_usd,
       market_name: item.market_name,
-      market_logo: item.market_logo
+      market_logo: item.market_logo,
+      trade_url: item.trade_url
     }
   })
 }
