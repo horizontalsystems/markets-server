@@ -42,7 +42,7 @@ class SetupCoins {
 
     for (let i = 0; i < chunks.length; i += 1) {
       const data = await coingecko.getMarkets(chunks[i])
-      await sleep(10000)
+      await sleep(20000)
       coins.push(...data)
     }
 
@@ -82,7 +82,7 @@ class SetupCoins {
 
     for (let i = 0; i < coins.length; i += 1) {
       await this.syncCoinInfo(coins[i], languages, bep2tokens, exchanges)
-      await sleep(10000)
+      await sleep(20000)
     }
 
     if (coins.length) {
