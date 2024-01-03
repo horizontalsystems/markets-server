@@ -1,3 +1,5 @@
+const { valueInCurrency, nullOrString } = require('../../utils')
+
 exports.serialize = exchanges => {
   return exchanges.map(item => {
     return {
@@ -11,14 +13,14 @@ exports.serializeWhitelist = exchanges => {
   return exchanges.map(item => item.uid)
 }
 
-exports.serializeTopPairs = exchanges => {
+exports.serializeTopPairs = (exchanges, currencyRate) => {
   return exchanges.map((item, index) => {
     return {
       rank: index + 1,
       base: item.base,
       target: item.target,
-      price: item.price,
-      volume: item.volume_usd,
+      price: nullOrString(item.price),
+      volume: valueInCurrency(item.volume_usd, currencyRate),
       market_name: item.market_name,
       market_logo: item.market_logo,
       trade_url: item.trade_url

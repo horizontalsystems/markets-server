@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./exchange.controller')
-const { requireCoin } = require('../middlewares')
+const { requireCoin, setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
 
@@ -88,6 +88,6 @@ router.get('/whitelist', controller.whitelist)
  *  }]
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  */
-router.get('/top-pairs', controller.topPairs)
+router.get('/top-pairs', setCurrencyRate, controller.topPairs)
 
 module.exports = router
