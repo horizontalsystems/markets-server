@@ -21,7 +21,7 @@ exports.overview = async ({ currencyRate, query }, res, next) => {
     const global = await GlobalMarket.getList(dateFrom, '30m')
     const categories = await Category.getTopMovers(['blockchains', 'stablecoins', 'exchange_tokens', 'dexes', 'lending'])
     const platforms = await Chain.getList(5)
-    const pairs = await CoinMarket.getTop(5)
+    const pairs = await CoinMarket.getTopPairs(5)
 
     res.status(200)
     res.json(serializeOverview({ global, categories, nft, platforms, pairs, simplified: query.simplified }, currencyRate))

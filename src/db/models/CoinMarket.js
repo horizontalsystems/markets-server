@@ -39,11 +39,15 @@ class CoinMarket extends SequelizeModel {
     return !!await CoinMarket.findOne()
   }
 
-  static getTop(limit) {
-    return CoinMarket.findAll({
-      order: [['volume_usd', 'desc']],
-      limit
-    })
+  static getTopPairs(limit, offset = 0) {
+    return CoinMarket.query(`
+      SELECT m.*
+        FROM coin_markets m, exchanges e
+       WHERE m.market_uid = e.uid
+       ORDER by m.volume_usd desc
+       LIMIT :limit
+      OFFSET :offset
+    `, { limit, offset })
   }
 
   static deleteAll(coinId) {

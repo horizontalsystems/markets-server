@@ -13,8 +13,8 @@ exports.serializeWhitelist = exchanges => {
   return exchanges.map(item => item.uid)
 }
 
-exports.serializeTopPairs = (exchanges, currencyRate) => {
-  return exchanges.map((item, index) => {
+exports.serializeTopPairs = (markets, currencyRate) => {
+  return markets.map((item, index) => {
     return {
       rank: index + 1,
       base: item.base,
