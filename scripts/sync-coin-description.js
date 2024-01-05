@@ -9,11 +9,13 @@ const program = new Command()
   .option('-c --coins <coins>', 'get coin overview from GPT')
   .option('-l --language <language>', 'get coin overview from GPT for the specified coin')
   .option('-f --force', 'force sync')
+  .option('-b --bard', 'force from bard')
+  .option('-r --ref', 'description reference')
   .parse(process.argv)
 
-async function start({ coins, language, force }) {
+async function start({ coins, language, force, bard, ref }) {
   await sequelize.sync()
-  const syncer = new CoinDescriptionSyncer()
+  const syncer = new CoinDescriptionSyncer(bard, ref, force)
 
   let lang = null
   if (language) {
@@ -29,7 +31,13 @@ async function start({ coins, language, force }) {
   }
 
   if (coins) {
-    await syncer.sync(coins.split(','), lang, force)
+    const uids = coins.split(',')
+
+    if (uids.length > 0 && ref) {
+      throw new Error('Sync coins one by one with reference')
+    }
+
+    await syncer.sync(uids, lang, force)
   } else {
     await syncer.start(lang, force)
   }

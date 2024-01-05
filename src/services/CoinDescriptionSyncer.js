@@ -1,15 +1,22 @@
 const utils = require('../utils')
 const gpt = require('../providers/chat-gpt')
+const bard = require('../providers/palm')
 const Coin = require('../db/models/Coin')
 
 class CoinDescriptionSyncer {
 
-  async start(language, force) {
-    await this.sync(null, language, force)
+  constructor(syncFromBard, reference, force) {
+    this.bard = syncFromBard
+    this.ref = reference
+    this.force = force
   }
 
-  async sync(uids, language, force) {
-    const coins = await this.getCoins(uids, language, force)
+  async start(language) {
+    await this.sync(null, language)
+  }
+
+  async sync(uids, language) {
+    const coins = await this.getCoins(uids, language)
     console.log(`Syncing ${coins.ids.length} coins`)
 
     for (let i = 0; i < coins.ids.length; i += 1) {
@@ -22,8 +29,20 @@ class CoinDescriptionSyncer {
   async syncDescription(uid, coin, language) {
     console.log(`Syncing descriptions for ${uid}`, language ? language.name : null)
 
-    const content = JSON.stringify({ [coin.code]: coin.overview })
-    const coinDesc = await gpt.getCoinDescription(content, language)
+    const content = JSON.stringify({ [coin.code]: coin.descriptionReference })
+
+    let coinDesc
+    if (!this.bard) {
+      coinDesc = await gpt.getCoinDescription(content, language)
+    }
+
+    if (!coinDesc) {
+      coinDesc = await bard.getCoinDescription(content, language)
+    }
+
+    if (this.force) {
+      console.log(coinDesc)
+    }
 
     await this.updateDescription(coin, coinDesc, language)
   }
@@ -46,7 +65,7 @@ class CoinDescriptionSyncer {
       .catch(e => console.error(e))
   }
 
-  async getCoins(uid, language, force) {
+  async getCoins(uid, language) {
     const coins = await Coin.findAll({
       attributes: ['id', 'uid', 'name', 'code', 'description', 'market_data'],
       where: {
@@ -63,7 +82,7 @@ class CoinDescriptionSyncer {
       const desc = item.description || {}
 
       // Skip if synced already
-      if (language && desc[language.code] && !force) {
+      if (language && desc[language.code] && !this.force) {
         continue
       }
 
@@ -72,11 +91,15 @@ class CoinDescriptionSyncer {
         name: item.name,
         code: item.code,
         description: item.description,
-        overview: desc.en || item.name
+        descriptionReference: desc.en || item.name
       }
 
-      if (coin.overview.length > 3500) {
-        coin.overview = item.name
+      if (coin.descriptionReference.length > 3500) {
+        coin.descriptionReference = item.name
+      }
+
+      if (this.ref) {
+        coin.descriptionReference = this.ref
       }
 
       map[item.uid] = coin
