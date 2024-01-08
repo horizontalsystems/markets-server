@@ -10,7 +10,7 @@ const program = new Command()
   .option('-l --language <language>', 'get coin overview from GPT for the specified coin')
   .option('-f --force', 'force sync')
   .option('-b --bard', 'force from bard')
-  .option('-r --ref', 'description reference')
+  .option('-r --ref <description>', 'description reference')
   .parse(process.argv)
 
 async function start({ coins, language, force, bard, ref }) {
@@ -33,7 +33,7 @@ async function start({ coins, language, force, bard, ref }) {
   if (coins) {
     const uids = coins.split(',')
 
-    if (uids.length > 0 && ref) {
+    if (uids.length > 1 && ref) {
       throw new Error('Sync coins one by one with reference')
     }
 
