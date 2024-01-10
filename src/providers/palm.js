@@ -24,5 +24,5 @@ exports.getCoinDescription = async (prompt) => {
 
   const candidate = result.candidates[0]
 
-  return candidate.output
+  return { content: candidate.output }
 }
