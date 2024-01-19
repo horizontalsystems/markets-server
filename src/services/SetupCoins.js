@@ -17,8 +17,8 @@ const coinsJoin = require('../db/seeders/coins.json')
 class SetupCoins {
 
   constructor() {
-    this.MIN_24_VOLUME = 100000
-    this.MIN_24_VOLUME_TRUSTED = 400000
+    this.MIN_24_VOLUME = 200000
+    this.MIN_24_VOLUME_TRUSTED = 500000
     this.MIN_MCAP = 10000000
 
     this.ignorePlatforms = ['ankr-reward-earning-staked-eth', 'binance-peg-ethereum']
