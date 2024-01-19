@@ -75,7 +75,7 @@ class SetupCoins {
     const coinIds = ids || (await coingecko.getCoinList()).map(coin => coin.id)
     const coins = await this.syncCoins(coinIds, !ids)
     const languages = await Language.findAll({
-      where: { code: ['en', 'de', 'ru'] }
+      where: { code: ['en'] }
     })
 
     console.log(`Synced new coins ${coins.length}`)
