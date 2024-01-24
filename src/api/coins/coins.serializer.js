@@ -51,6 +51,15 @@ function mapPlatforms(platforms, legacy) {
   })
 }
 
+function mapStats(data = []) {
+  const stats = data[0]
+  if (!stats) {
+    return {}
+  }
+
+  return stats.rank
+}
+
 function mapCoinAttribute(coin, field, currencyRate) {
   const priceChange = coin.price_change || {}
   const marketData = coin.market_data || {}
@@ -92,6 +101,8 @@ function mapCoinAttribute(coin, field, currencyRate) {
       return mapPlatforms(coin.Platforms, true)
     case 'all_platforms':
       return mapPlatforms(coin.Platforms)
+    case 'stats':
+      return mapStats(coin.CoinStats)
 
     default:
       return undefined

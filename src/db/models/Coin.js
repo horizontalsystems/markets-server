@@ -88,6 +88,7 @@ class Coin extends SequelizeModel {
     Coin.hasMany(models.FundsInvested)
     Coin.hasMany(models.CoinPrice)
     Coin.hasMany(models.CoinStats)
+    Coin.hasMany(models.CoinMarket)
   }
 
   static getList() {

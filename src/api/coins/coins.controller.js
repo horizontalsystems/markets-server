@@ -1,7 +1,11 @@
+const { Op } = require('sequelize')
 const Coin = require('../../db/models/Coin')
 const Platform = require('../../db/models/Platform')
+const CoinStats = require('../../db/models/CoinStats')
 const CoinPrice = require('../../db/models/CoinPrice')
 const serializer = require('./coins.serializer')
+const Exchange = require('../../db/models/Exchange')
+const CoinMarket = require('../../db/models/CoinMarket')
 
 exports.index = async ({ query, currencyRate }, res) => {
   const { limit = 1500, page = 1 } = query
@@ -30,6 +34,56 @@ exports.index = async ({ query, currencyRate }, res) => {
   if (query.order_by_rank === 'true') {
     options.where.coingecko_id = Coin.literal('coingecko_id IS NOT NULL')
     options.order = [Coin.literal('market_data->\'market_cap\' DESC')]
+  }
+
+  const coins = await Coin.findAll(options)
+
+  res.send(serializer.serializeCoins(coins, fields, currencyRate))
+}
+
+exports.filter = async ({ query, currencyRate }, res) => {
+  const { limit = 1500, page = 1 } = query
+  const options = {
+    where: {},
+    order: ['id'],
+    include: []
+  }
+
+  let fields = []
+  if (query.fields) {
+    fields = query.fields.split(',').slice(0, 100)
+  }
+  if (fields.includes('platforms') || fields.includes('all_platforms')) {
+    options.include.push(Platform)
+  }
+  if (limit) {
+    options.limit = limit
+    options.offset = limit * (page - 1)
+  }
+  if (query.uids) {
+    options.where.uid = query.uids.split(',')
+  }
+  if (query.defi === 'true') {
+    options.where.is_defi = true
+  }
+  if (query.order_by_rank === 'true') {
+    options.where.coingecko_id = Coin.literal('coingecko_id IS NOT NULL')
+    options.order = [Coin.literal('market_data->\'market_cap\' DESC')]
+  }
+
+  if (query.onTopExchanges) {
+    options.include.push({
+      model: CoinMarket,
+      where: {
+        market_uid: {
+          [Op.in]: Exchange.literal('(SELECT uid FROM exchanges)')
+        }
+      }
+    })
+  }
+
+  if (fields.includes('stats')) {
+    options.include.push(CoinStats)
   }
 
   const coins = await Coin.findAll(options)
