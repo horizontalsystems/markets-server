@@ -38,6 +38,7 @@ class Platform extends SequelizeModel {
   }
 
   static associate(models) {
+    Platform.hasMany(models.ContractIssue)
     Platform.belongsTo(models.Coin, {
       foreignKey: 'coin_id'
     })

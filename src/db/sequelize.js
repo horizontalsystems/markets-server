@@ -15,6 +15,7 @@ const CategoryMarketCap = require('./models/CategoryMarketCap')
 const Chain = require('./models/Chain')
 const ChainMarketCap = require('./models/ChainMarketCap')
 const Platform = require('./models/Platform')
+const ContractIssue = require('./models/ContractIssue')
 const Fund = require('./models/Fund')
 const FundsInvested = require('./models/FundsInvested')
 const Treasury = require('./models/Treasury')
@@ -64,6 +65,7 @@ const db = {
   DefiProtocolTvl: DefiProtocolTvl.init(sequelize, Sequelize),
   Language: Language.init(sequelize, Sequelize),
   Platform: Platform.init(sequelize, Sequelize),
+  ContractIssue: ContractIssue.init(sequelize, Sequelize),
   Fund: Fund.init(sequelize, Sequelize),
   FundsInvested: FundsInvested.init(sequelize, Sequelize),
   TreasuryEntity: TreasuryEntity.init(sequelize, Sequelize),

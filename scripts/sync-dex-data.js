@@ -6,22 +6,25 @@ const AddressSyncer = require('../src/services/AddressSyncer')
 const TransactionSyncer = require('../src/services/TransactionSyncer')
 const DexVolumeSyncer = require('../src/services/DexVolumeSyncer')
 const DexLiquiditySyncer = require('../src/services/DexLiquiditySyncer')
+const DefiyieldSyncer = require('../src/services/DefiyieldSyncer')
 
 const program = new Command()
   .option('-t --tx', 'sync transactions only')
   .option('-v --volume', 'sync dex volumes only')
   .option('-l --liquidity', 'sync dex liquidity only')
   .option('-a --address', 'sync addresses only')
+  .option('-d --defiyield', 'sync defiyield data only')
   .option('-c --coins <coins>', 'sync historical data for the given coins')
   .option('-s --source <source>', 'sync historical data for the given coins')
   .option('-p --print <chain>', 'just print information')
   .option('--subscriptions', 'sync crypto subscriptions')
   .parse(process.argv)
 
-async function start({ tx, volume, liquidity, address, coins, source, print }) {
+async function start({ tx, volume, liquidity, address, coins, source, print, defiyield }) {
   await sequelize.sync()
   const transactionSyncer = new TransactionSyncer()
   const dexVolumeSyncer = new DexVolumeSyncer()
+  const defiyieldSyncer = new DefiyieldSyncer()
   const dexLiquiditySyncer = new DexLiquiditySyncer()
   const addressSyncer = new AddressSyncer()
   const syncers = []
@@ -30,9 +33,10 @@ async function start({ tx, volume, liquidity, address, coins, source, print }) {
   if (address) syncers.push(addressSyncer)
   if (liquidity) syncers.push(dexLiquiditySyncer)
   if (volume) syncers.push(dexVolumeSyncer)
+  if (defiyield) syncers.push(defiyieldSyncer)
 
   if (!syncers.length) {
-    syncers.push(transactionSyncer, dexVolumeSyncer, dexLiquiditySyncer, addressSyncer)
+    syncers.push(transactionSyncer, dexVolumeSyncer, dexLiquiditySyncer, addressSyncer, defiyieldSyncer)
   }
 
   const mapper = s => {
