@@ -58,6 +58,13 @@ module.exports = {
     })
   }),
 
+  // GET /v1/analytics/:uid/issues
+  validateIssues: validate({
+    params: Joi.object({
+      uid: Joi.string().required()
+    })
+  }),
+
   // GET /v1/analytics/:uid/[transactions/address/dex-volumes/dex-liquidity]
   validateDexData: validate({
     params: Joi.object({

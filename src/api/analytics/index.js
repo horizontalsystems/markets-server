@@ -6,6 +6,7 @@ const {
   validateShow,
   validatePreview,
   validateHolders,
+  validateIssues,
   validateDexData,
   validateSubscriptions
 } = require('./analytics.validator')
@@ -184,6 +185,29 @@ router.get('/:uid/preview', validatePreview, controller.preview)
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
 router.get('/:uid/holders', validateHolders, controller.holders)
+
+/**
+ * @api {get} /v1/analytics/:uid/issues Address issues
+ * @apiDescription Major issues
+ * @apiVersion 1.0.0
+ * @apiGroup Analytics
+ *
+ * @apiParam    {String}    uid               Coin's uid
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [{
+ *    "chain": "binance-smart-chain",
+ *    "issues": [{
+ *       "issue": "core",
+ *       "description": "No vulnerable withdrawal functions found"
+ *    }]
+ *  }]
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ * @apiError (Not Found 404)    NotFound          Coin does not exist
+ */
+router.get('/:uid/issues', validateIssues, controller.issues)
 
 /**
  * @api {get} /v1/analytics/:uid/addresses Address stats

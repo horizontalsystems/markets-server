@@ -208,6 +208,15 @@ module.exports = {
     }
   },
 
+  issues: (issues) => {
+    return issues.map(item => {
+      return {
+        chain: item.chain,
+        issues: item.issues
+      }
+    })
+  },
+
   ranks: (ranks, type) => {
     const items = []
     const getRank = rank => {

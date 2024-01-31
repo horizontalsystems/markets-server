@@ -10,6 +10,7 @@ const DefiProtocolTvl = require('../../db/models/DefiProtocolTvl')
 const CoinPrice = require('../../db/models/CoinPrice')
 const CoinHolderStats = require('../../db/models/CoinHolderStats')
 const Subscription = require('../../db/models/Subscription')
+const ContractIssue = require('../../db/models/ContractIssue')
 
 exports.subscriptions = async ({ query }, res) => {
   try {
@@ -130,6 +131,22 @@ exports.holders = async ({ params, query }, res) => {
       return
     }
     res.send(serializer.holders(holders, query.blockchain_uid, params.uid, holders.type === 'native'))
+  } catch (e) {
+    console.log(e)
+    res.status(500)
+    res.send({ error: 'Internal server error' })
+  }
+}
+
+exports.issues = async ({ params }, res) => {
+  try {
+    const issues = await ContractIssue.getIssues(params.uid)
+    if (!issues) {
+      res.status(404).send({})
+      return
+    }
+
+    res.send(serializer.issues(issues))
   } catch (e) {
     console.log(e)
     res.status(500)
