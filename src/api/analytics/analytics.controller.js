@@ -91,6 +91,7 @@ exports.show = async ({ params, dateFrom, dateFromTimestamp, dateTo, dateInterva
     const addresses = await Address.getByPlatform(coin.platforms, dateInterval, dateFrom, dateFromTimestamp, dateTo)
     const transactions = await Transaction.getByPlatform(coin.platforms, dateInterval, dateFrom, dateFromTimestamp, dateTo)
     const holders = await CoinHolderStats.getTotalByPlatforms(coin.platforms)
+    const issues = await ContractIssue.getIssuesByCoin(coin.id)
 
     const defiProtocolData = {}
     const defiProtocol = await DefiProtocol.findOne({ where: { coin_id: coin.id } })
@@ -109,6 +110,7 @@ exports.show = async ({ params, dateFrom, dateFromTimestamp, dateTo, dateInterva
           transactions,
           defiProtocolData,
           holders,
+          issues,
           ranks: stats.rank || {},
           other: stats.other || {}
         }, currencyRate)

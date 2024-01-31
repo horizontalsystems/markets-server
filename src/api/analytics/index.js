@@ -117,7 +117,18 @@ router.get('/subscriptions', validateSubscriptions, controller.subscriptions)
  *        "blockchain_uid": "ethereum",
  *        "holders_count": "224890554"
  *      }
- *    ]
+ *    ],
+ *    "issues": {
+ *      "blockchain": "binance-smart-chain",
+ *      "issues": [{
+ *        "issue": "core",
+ *        "description": "No vulnerable withdrawal functions found",
+ *        "issues": [{
+ *          "impact": "Informational",
+ *          "description": "..."
+ *        }]
+ *      }]
+ *    }
  *  }
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values

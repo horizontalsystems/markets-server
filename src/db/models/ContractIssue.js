@@ -29,6 +29,19 @@ class ContractIssue extends SequelizeModel {
     })
   }
 
+  static getIssuesByCoin(id) {
+    const query = (`
+      SELECT
+        i.*,
+        p.chain_uid as chain
+      FROM platforms p, contract_issues i
+      WHERE p.coin_id = :id
+        AND p.id = i.platform_id
+    `)
+
+    return ContractIssue.query(query, { id })
+  }
+
   static getIssues(uid) {
     const query = (`
       SELECT
