@@ -24,6 +24,20 @@ module.exports = {
     })
   }, options),
 
+  // GET /v1/coins/filter
+  validateFilter: validate({
+    query: Joi.object({
+      limit: Joi.number()
+        .min(1)
+        .max(1500),
+      page: Joi.number()
+        .min(1),
+      order_by_rank: Joi.boolean()
+        .sensitive(true),
+      currency: Joi.string()
+    })
+  }, options),
+
   // GET /v1/coins/:uid
   validateShow: validate({
     query: Joi.object({

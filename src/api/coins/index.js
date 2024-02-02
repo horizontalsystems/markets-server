@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./coins.controller')
-const { validateCoins, validateShow, validateChart, validatePriceHistory, validateGainers } = require('./coins.validator')
+const { validateCoins, validateShow, validateChart, validatePriceHistory, validateGainers, validateFilter } = require('./coins.validator')
 const { setCurrencyRate } = require('../middlewares')
 
 const router = express.Router()
@@ -41,7 +41,43 @@ const router = express.Router()
  */
 router.get('/', validateCoins, setCurrencyRate, controller.index)
 
-router.get('/filter', setCurrencyRate, controller.filter)
+/**
+ * @api {get} /v1/coins/filter List coins
+ * @apiDescription Get a list of coins
+ * @apiVersion 1.0.0
+ * @apiGroup Coin
+ *
+ * @apiParam  {Number{1-1500}}                [limit=1500]            Coins per page
+ * @apiParam  {Number}                        [page=1]                Page number
+ * @apiParam  {Boolean}                       [order_by_rank=false]   Filter DeFi coins
+ * @apiUse    Currencies
+ * @apiUse    Languages
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [{
+ *    "uid": "tether",
+ *    "is_listed_on_top_exchange": false,
+ *    "solid_cex": true,
+ *    "solid_dex": true,
+ *    "good_distribution": true,
+ *    "price": "0.999363",
+ *    "market_cap": "91098448260",
+ *    "market_cap_rank": 3,
+ *    "total_volume": "36665809244",
+ *    "price_change_24h": "0.019148302593650718",
+ *    "price_change_7d": "-0.05913957684399797",
+ *    "price_change_14d": "-0.1624767611860633",
+ *    "price_change_30d": "-0.15759086529524444",
+ *    "price_change_200d": "-0.12591627186560053",
+ *    "price_change_1y": "-0.1492893697449219",
+ *    "ath_percentage": "-24.28061",
+ *    "atl_percentage": "74.98742"
+ *  }]
+ *
+ * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
+ */
+router.get('/filter', validateFilter, setCurrencyRate, controller.filter)
 
 /**
  * @api {get} /v1/coins/list Get coins list

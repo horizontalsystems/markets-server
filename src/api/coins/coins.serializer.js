@@ -51,15 +51,6 @@ function mapPlatforms(platforms, legacy) {
   })
 }
 
-function mapStats(data = []) {
-  const stats = data[0]
-  if (!stats) {
-    return {}
-  }
-
-  return stats.rank
-}
-
 function mapCoinAttribute(coin, field, currencyRate) {
   const priceChange = coin.price_change || {}
   const marketData = coin.market_data || {}
@@ -101,8 +92,6 @@ function mapCoinAttribute(coin, field, currencyRate) {
       return mapPlatforms(coin.Platforms, true)
     case 'all_platforms':
       return mapPlatforms(coin.Platforms)
-    case 'stats':
-      return mapStats(coin.CoinStats)
 
     default:
       return undefined
@@ -117,6 +106,54 @@ exports.serializeCoins = (coins, fields, currencyRate) => {
   return coins.map(item => {
     const coin = {
       uid: item.uid
+    }
+
+    for (let i = 0; i < fields.length; i += 1) {
+      const attribute = fields[i]
+      coin[attribute] = mapCoinAttribute(item, attribute, currencyRate)
+    }
+
+    return coin
+  })
+}
+
+exports.serializeFilter = (coins, currencyRate, whitelisted) => {
+  const fields = [
+    'price',
+    'market_cap',
+    'market_cap_rank',
+    'total_volume',
+    'price_change_24h',
+    'price_change_7d',
+    'price_change_14d',
+    'price_change_30d',
+    'price_change_200d',
+    'price_change_1y',
+    'ath_percentage',
+    'atl_percentage'
+  ]
+
+  const isListedOnTopExchange = tickers => {
+    let isListed = false
+    for (let i = 0; i < tickers.length; i += 1) {
+      const exchange = tickers[i]
+      if (whitelisted[exchange.market_uid]) {
+        isListed = true
+        break
+      }
+    }
+
+    return isListed
+  }
+
+  return coins.map(item => {
+    const { rank } = item.CoinStats[0] || { rank: {} }
+    const coin = {
+      uid: item.uid,
+      listed_on_top_exchange: isListedOnTopExchange(item.CoinMarkets),
+      solid_cex: rank.cex_volume_week_rating === 'excellent',
+      solid_dex: rank.dex_volume_week_rating === 'excellent',
+      good_distribution: rank.holders_rating === 'excellent'
     }
 
     for (let i = 0; i < fields.length; i += 1) {
