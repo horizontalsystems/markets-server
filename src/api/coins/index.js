@@ -57,7 +57,7 @@ router.get('/', validateCoins, setCurrencyRate, controller.index)
  *  HTTP/1.1 200 OK
  *  [{
  *    "uid": "tether",
- *    "is_listed_on_top_exchange": false,
+ *    "listed_on_top_exchanges": false,
  *    "solid_cex": true,
  *    "solid_dex": true,
  *    "good_distribution": true,
