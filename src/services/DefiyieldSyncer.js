@@ -11,8 +11,7 @@ class DefiyieldSyncer extends Syncer {
   }
 
   async start() {
-    const platforms = await Platform.getByChain(this.chains, true)
-    await this.sync(platforms)
+    this.cron('1d', this.syncLatest)
   }
 
   async syncHistorical(uids) {
@@ -31,7 +30,8 @@ class DefiyieldSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('1d', this.sync)
+    const platforms = await Platform.getByChain(this.chains, true)
+    await this.sync(platforms)
   }
 
   async sync(platforms) {
