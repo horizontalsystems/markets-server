@@ -42,8 +42,8 @@ const router = express.Router()
 router.get('/', validateCoins, setCurrencyRate, controller.index)
 
 /**
- * @api {get} /v1/coins/filter List coins
- * @apiDescription Get a list of coins
+ * @api {get} /v1/coins/filter Filter coins
+ * @apiDescription Filter list of coins
  * @apiVersion 1.0.0
  * @apiGroup Coin
  *
