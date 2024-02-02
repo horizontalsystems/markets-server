@@ -51,7 +51,6 @@ router.get('/', validateCoins, setCurrencyRate, controller.index)
  * @apiParam  {Number}                        [page=1]                Page number
  * @apiParam  {Boolean}                       [order_by_rank=false]   Filter DeFi coins
  * @apiUse    Currencies
- * @apiUse    Languages
  *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK

@@ -35,6 +35,8 @@ class SequelizeModel extends Sequelize.Model {
           return `DATE_TRUNC('day', ${field})`
         case '1w':
           return `DATE_TRUNC('week', ${field})`
+        case '1M':
+          return `DATE_TRUNC('month', ${field})`
         default:
           return field
       }

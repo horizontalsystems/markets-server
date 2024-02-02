@@ -52,7 +52,7 @@ module.exports = {
     }),
     query: Joi.object({
       from_timestamp: Joi.number(),
-      interval: Joi.string().valid('30m', '1h', '4h', '8h', '1d', '1w'),
+      interval: Joi.string().valid('30m', '1h', '4h', '8h', '1d', '1w', '1M'),
       currency: Joi.string()
     })
   }, options),
