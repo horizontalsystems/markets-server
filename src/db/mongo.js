@@ -30,6 +30,27 @@ mongo.getPopularResources = async () => {
   return resources
 }
 
+mongo.storeStats = async (items, collectionName) => {
+  if (!items.length) {
+    return
+  }
+
+  const collection = mongo.collection(collectionName)
+  await collection.drop()
+  await collection.insertMany(items)
+}
+
+mongo.getStats = async (collectionName) => {
+  const collection = mongo.collection(collectionName)
+  const items = await collection.find().toArray()
+
+  if (!items || !items.length) {
+    return []
+  }
+
+  return items
+}
+
 mongo.collection = (name) => {
   const client = mongo.client()
   const conn = client.db(process.env.MONGO_DB)
