@@ -7,6 +7,10 @@ const logger = () => {
   const write = doc => logs.insertOne(doc).catch(e => console.log(e))
 
   return (req, res, next) => {
+    if (process.env.SKIP_STATS) {
+      return next()
+    }
+
     const referrer = morgan.referrer(req, res)
     const realIp = req.headers['x-real-ip'] || morgan['remote-addr'](req, res)
     const appId = req.headers.app_id
