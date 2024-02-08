@@ -21,7 +21,8 @@ class CoinPrice extends SequelizeModel {
         volume: {
           type: DataTypes.DECIMAL,
           defaultValue: 0
-        }
+        },
+        volume_normalized: DataTypes.DECIMAL,
       },
       {
         sequelize,
