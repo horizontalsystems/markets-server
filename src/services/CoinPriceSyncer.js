@@ -76,7 +76,6 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     }
 
     await this.upsert(values)
-    await this.storePriceHistory()
   }
 
   storePriceHistory() {
