@@ -125,22 +125,6 @@ class DefiyieldSyncer extends Syncer {
       })
       .catch(console.error)
   }
-
-  async getPlatforms(chains) {
-    const platforms = await Platform.getByChain(chains, true)
-    console.log(platforms.length)
-    return []
-    const list = []
-
-    platforms.forEach(({ id, chain_uid: chain, address }) => {
-      if (address) {
-        list.push({ address, chain, id })
-      }
-    })
-
-    return list
-  }
-
 }
 
 module.exports = DefiyieldSyncer
