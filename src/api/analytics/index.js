@@ -128,7 +128,17 @@ router.get('/subscriptions', validateSubscriptions, controller.subscriptions)
  *          "description": "..."
  *        }]
  *      }]
- *    }
+ *    },
+ *    "audits": [
+ *      "date": "2021-10-11",
+ *      "name": "Smart contracts",
+ *      "audit_url": "https://files.safe.de.fi/safe/files/audit/pdf/Afrostar_Full_Smart_Contract_Security_Audit_1.pdf",
+ *      "audit_link": "safe/files/audit/pdf/Afrostar_Full_Smart_Contract_Security_Audit_1.pdf",
+ *      "tech_issues": 2,
+ *      "tech_issues_low": null,
+ *      "tech_issues_high": null,
+ *      "tech_issues_medium": null
+ *    ]
  *  }
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values

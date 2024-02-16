@@ -11,6 +11,7 @@ const CoinPrice = require('../../db/models/CoinPrice')
 const CoinHolderStats = require('../../db/models/CoinHolderStats')
 const Subscription = require('../../db/models/Subscription')
 const ContractIssue = require('../../db/models/ContractIssue')
+const CoinAudit = require('../../db/models/CoinAudit')
 
 exports.subscriptions = async ({ query }, res) => {
   try {
@@ -92,6 +93,7 @@ exports.show = async ({ params, dateFrom, dateFromTimestamp, dateTo, dateInterva
     const transactions = await Transaction.getByPlatform(coin.platforms, dateInterval, dateFrom, dateFromTimestamp, dateTo)
     const holders = await CoinHolderStats.getTotalByPlatforms(coin.platforms)
     const issues = await ContractIssue.getIssuesByCoin(coin.id)
+    const audits = await CoinAudit.getAuditsByCoin(coin.id)
 
     const defiProtocolData = {}
     const defiProtocol = await DefiProtocol.findOne({ where: { coin_id: coin.id } })
@@ -111,6 +113,7 @@ exports.show = async ({ params, dateFrom, dateFromTimestamp, dateTo, dateInterva
           defiProtocolData,
           holders,
           issues,
+          audits,
           ranks: stats.rank || {},
           other: stats.other || {}
         }, currencyRate)

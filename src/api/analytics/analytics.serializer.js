@@ -2,7 +2,7 @@ const CoinHolderSyncer = require('../../services/CoinHolderSyncer')
 const { nullOrInteger, nullOrString, valueInCurrency } = require('../../utils')
 
 module.exports = {
-  show: ({ cexVolumes, dexVolumes, dexLiquidity, addresses, transactions, defiProtocolData, ranks, other, holders, issues }, rate) => {
+  show: ({ cexVolumes, dexVolumes, dexLiquidity, addresses, transactions, defiProtocolData, ranks, other, holders, issues, audits }, rate) => {
     const data = {}
     const mapRates = (records, isTvl) => {
       if (rate === 1) {
@@ -92,6 +92,9 @@ module.exports = {
           issues: item.issues
         }
       })
+    }
+    if (audits.length) {
+      data.audits = audits
     }
     if (other.reports) {
       data.reports = nullOrInteger(other.reports)
