@@ -40,19 +40,16 @@ class AuditSyncer extends Syncer {
       const audits = []
       for (let i = 0; i < items.length; i += 1) {
         const audit = items[i]
-        if (!audit.name || !audit.audit_link) {
+        if (!audit.name || !audit.audit_link || !audit.partner) {
           continue
         }
 
         audits.push({
           name: audit.name,
           tech_issues: audit.tech_issues,
-          tech_issues_low: audit.tech_issues_low,
-          tech_issues_medium: audit.tech_issues_medium,
-          tech_issues_high: audit.tech_issues_high,
           date: audit.date,
-          audit_link: audit.audit_link,
-          audit_url: audit.audit_url
+          audit_url: audit.audit_url,
+          partner_name: audit.partner.name
         })
       }
 
