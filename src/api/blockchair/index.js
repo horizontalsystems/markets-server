@@ -6,8 +6,12 @@ const proxyMiddleware = createProxyMiddleware({
   pathRewrite: {
     '^/v1/blockchair': '',
   },
-  params: {
-    key: process.env.BLOCKCHAIR_KEY,
+  onProxyReq: (proxyReq) => {
+    const baseUrl = `${proxyReq.protocol}//${proxyReq.host}`;
+    const url = new URL(proxyReq.path, baseUrl);
+    url.searchParams.append('key', process.env.BLOCKCHAIR_KEY);
+    // eslint-disable-next-line no-param-reassign
+    proxyReq.path = url.pathname + url.search;
   }
 });
 
