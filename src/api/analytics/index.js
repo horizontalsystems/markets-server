@@ -138,7 +138,18 @@ router.get('/subscriptions', validateSubscriptions, controller.subscriptions)
  *      "tech_issues_low": null,
  *      "tech_issues_high": null,
  *      "tech_issues_medium": null
- *    ]
+ *    ],
+ *    "indicators": {
+ *      "rsi": 76.53,
+ *      "macd": 102.72535365629665,
+ *      "lower": 33384.407100956756,
+ *      "price": 41663,
+ *      "upper": 39520.19289904325,
+ *      "middle": 36452.3,
+ *      "timestamp": 1702339200,
+ *      "state": "overbought",
+ *      "signal_timestamp": null
+ *    }
  *  }
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values

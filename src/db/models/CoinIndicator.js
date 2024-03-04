@@ -30,6 +30,32 @@ class CoinIndicator extends SequelizeModel {
       foreignKey: 'coin_id'
     })
   }
+
+  static async getByCoin(id) {
+    const indicator = await CoinIndicator.findOne({
+      where: {
+        coin_id: id
+      },
+      raw: true
+    })
+
+    if (!indicator) {
+      return null
+    }
+
+    const result = {
+      ...indicator.indicators,
+      state: indicator.result,
+      signal_timestamp: indicator.signal_timestamp
+    }
+
+    if (indicator.signal_timestamp) {
+      result.signal_timestamp = indicator.signal_timestamp
+    }
+
+    return result
+  }
+
 }
 
 module.exports = CoinIndicator
