@@ -14,11 +14,12 @@ const program = new Command()
   .option('-p --platforms', 'sync top platforms only')
   .option('-s --stats', 'sync popular stats')
   .option('-i --indicator', 'sync indicators')
+  .option('--coins <coins>', 'run syncer for the given coins')
   .option('--rank', 'sync coins rank only')
   .option('-f --force', 'force sync')
   .parse(process.argv)
 
-async function start({ category, platforms, rank, force, stats, indicator }) {
+async function start({ category, platforms, rank, force, stats, indicator, coins }) {
   await sequelize.sync()
   const categoryMarketCapSyncer = new CategoryMarketCapSyncer()
   const coinRankSyncer = new CoinRankSyncer()
@@ -38,7 +39,15 @@ async function start({ category, platforms, rank, force, stats, indicator }) {
       syncers.push(categoryMarketCapSyncer, coinRankSyncer, topPlatformsSyncer, popularStatsSyncer, indicatorSyncer)
     }
 
-    await Promise.all(syncers.map(s => s.start(force))).catch(e => {
+    const mapper = s => {
+      if (coins) {
+        return s.syncHistorical(coins.split(','))
+      }
+
+      return s.start(force)
+    }
+
+    await Promise.all(syncers.map(mapper)).catch(e => {
       throw e
     })
   } catch (e) {

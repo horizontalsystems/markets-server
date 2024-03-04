@@ -10,10 +10,17 @@ class IndicatorSyncer extends Syncer {
     this.cron('1d', this.sync)
   }
 
-  async sync() {
+  async syncHistorical(uids) {
+    return this.sync(uids)
+  }
+
+  async sync(uid) {
     const dateFrom = utcDate({ days: -250 }, null, true)
     const coins = await Coin.findAll({
       attributes: ['id', 'uid'],
+      where: {
+        ...(uid && { uid }),
+      },
       raw: true
     })
 
@@ -23,7 +30,7 @@ class IndicatorSyncer extends Syncer {
       const indicators = await this.getIndicators(chart)
 
       const advice = await this.getStrategyAdvice(indicators)
-      await this.storeData(coin.id, advice)
+      await this.storeData(coin, advice)
     }
   }
 
@@ -162,15 +169,15 @@ class IndicatorSyncer extends Syncer {
     return floatChart.reverse()
   }
 
-  async storeData(coinId, advice) {
+  async storeData(coin, advice) {
     await CoinIndicator.upsert({
-      coin_id: coinId,
+      coin_id: coin.id,
       indicators: advice.indicators,
       signal_timestamp: advice.signal_timestamp,
       result: advice.result
-    }, { })
+    }, {})
       .then(() => {
-        console.log('Inserted indicators for coin', coinId)
+        console.log('Inserted indicators for', coin.uid)
       })
       .catch(e => {
         console.error('Error inserting indicators', e.message)
