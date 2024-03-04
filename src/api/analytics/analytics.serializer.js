@@ -94,7 +94,17 @@ module.exports = {
       })
     }
     if (indicators) {
-      data.indicators = indicators
+      data.indicators = {
+        rsi: nullOrString(indicators.rsi),
+        macd: nullOrString(indicators.macd),
+        lower: nullOrString(indicators.lower),
+        price: nullOrString(indicators.price),
+        upper: nullOrString(indicators.upper),
+        middle: nullOrString(indicators.middle),
+        timestamp: indicators.timestamp,
+        state: indicators.result,
+        signal_timestamp: indicators.signal_timestamp
+      }
     }
     if (audits.length) {
       data.audits = audits
