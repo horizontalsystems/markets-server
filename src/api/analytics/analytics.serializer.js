@@ -102,7 +102,7 @@ module.exports = {
         upper: nullOrString(indicators.upper),
         middle: nullOrString(indicators.middle),
         timestamp: indicators.timestamp,
-        state: indicators.result,
+        state: indicators.state,
         signal_timestamp: indicators.signal_timestamp
       }
     }
