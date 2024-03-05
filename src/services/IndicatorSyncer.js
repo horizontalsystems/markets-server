@@ -162,7 +162,7 @@ class IndicatorSyncer extends Syncer {
       period: 200,
     }).reverse()
 
-    for (let j = 0; j < macd.length; j += 1) {
+    for (let j = 0; j < ema.length; j += 1) {
       floatChart[j].ema = ema[j]
     }
 
