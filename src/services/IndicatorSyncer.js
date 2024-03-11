@@ -7,7 +7,7 @@ const { utcDate } = require('../utils')
 
 class IndicatorSyncer extends Syncer {
   async start() {
-    this.cron('1d', this.sync)
+    this.cron('0 1 * * *', this.sync) // Every day at 1am
   }
 
   async syncHistorical(uids) {
