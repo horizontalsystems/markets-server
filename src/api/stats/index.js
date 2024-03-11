@@ -4,8 +4,8 @@ const controller = require('./stats.controller')
 const router = express.Router()
 
 /**
- * @api {head} /v1/stats Pass page stats
- * @apiDescription Pass page stats
+ * @api {head} /v1/stats Page stats
+ * @apiDescription Page stats
  * @apiVersion 1.0.0
  * @apiGroup Stats
  *
@@ -21,7 +21,7 @@ const router = express.Router()
  *  HTTP/1.1 200 OK
  *  {}
  */
-router.head('/', controller.analytics)
+router.head('/', controller.stats)
 
 /**
  * @api {get} /v1/stats/popular-coins Get popular coins

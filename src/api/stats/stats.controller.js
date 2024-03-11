@@ -11,7 +11,7 @@ exports.popularResources = async (req, res) => {
   res.send(serializer.serializeResources(resources))
 }
 
-exports.analytics = async ({ query }, res) => {
+exports.stats = async ({ query }, res) => {
   const stats = {
     tag: query.tag_name,
   }
