@@ -15,7 +15,9 @@ function createInfuraAxios() {
 
 function post(data) {
   const source = sources[currentSourceIndex]
-  const headers = {}
+  const headers = {
+    'Content-Type': 'application/json'
+  }
 
   if (source.secret) {
     headers.Authorization = `Basic ${Buffer.from(`:${source.secret}`).toString('base64')}`
