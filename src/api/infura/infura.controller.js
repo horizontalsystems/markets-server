@@ -1,7 +1,7 @@
 const { create: createAxios } = require('axios')
 
 const sources = [
-  { url: `/v3/${process.env.INFURA_KEY1}`, baseURL: 'https://mainnet.infura.io' },
+  { baseURL: `https://mainnet.infura.io/v3/${process.env.INFURA_1_ID}`, secret: process.env.INFURA_1_SECRET },
 ]
 
 function rotateSource() {
@@ -13,25 +13,34 @@ function createInfuraAxios() {
   return createAxios({ baseURL, timeout: 180000 * 3 })
 }
 
+function post(data) {
+  const source = sources[currentSourceIndex]
+  const headers = {}
+
+  if (source.secret) {
+    headers.Authorization = `Basic ${Buffer.from(`:${source.secret}`).toString('base64')}`
+  }
+
+  return infura.post('', data, { headers }).then(res => res.data)
+}
+
 let currentSourceIndex = 0
 let infura = createInfuraAxios()
 
 exports.proxy = async (req, res) => {
   try {
-    const { data } = await infura.post(sources[currentSourceIndex].url, req.body)
-    res.send(data)
-  } catch ({ response }) {
+    res.send(await post(req.body))
+  } catch ({ response, message }) {
     if (response && response.status === 429) {
       rotateSource()
       try {
         infura = createInfuraAxios()
-        const { data } = await infura.post(sources[currentSourceIndex].url, req.body)
-        res.send(data)
+        res.send(await post(req.body))
       } catch (err) {
         res.status(500).send('Internal server error')
       }
     } else {
-      res.status(500).send('Internal server error')
+      res.status(response.status || 500).send(message || 'Internal server error')
     }
   }
 }
