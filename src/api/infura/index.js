@@ -3,6 +3,7 @@ const controller = require('./infura.controller')
 
 const router = express.Router()
 
-router.post('/', controller.proxy)
+router.post('/mainnet', controller.mainnetProxy)
+router.post('/sepolia', controller.sepoliaProxy)
 
 module.exports = router
