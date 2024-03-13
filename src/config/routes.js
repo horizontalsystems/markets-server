@@ -27,7 +27,7 @@ router.use('/analytics', require('../api/analytics'))
 router.use('/support', require('../api/support'))
 router.use('/exchanges', require('../api/exchange'))
 router.use('/blockchair', require('../api/blockchair'))
-router.use('/rpc', require('../api/infura'))
+router.use('/ethereum-rpc', require('../api/infura'))
 router.use('/stats', require('../api/stats'))
 router.use('/status', require('../api/status'))
 
