@@ -23,26 +23,19 @@ exports.stats = async (req, res) => {
   const appVersion = headers.app_version
 
   const stats = {
-    tag: query.tag_name,
-    addr: ip
+    page: query.page,
+    event: query.event,
+    addr: ip,
   }
 
   if (appId) stats.appId = appId
   if (appPlatform) stats.appPlatform = appPlatform
   if (appVersion) stats.appVersion = appVersion
 
-  if (query.tag_type) stats.type = query.tag_type
-  if (query.tag_parent) stats.parent = query.tag_parent
-  if (query.tag_from) stats.from = query.tag_from
-
-  // indicators
-  if (query.ma) stats.ma = query.ma
-  if (query.oscillators) stats.oscillators = query.oscillators
-
   // coins
   if (query.coin_uid) stats.coin_uid = query.coin_uid
 
-  if (!stats.tag || !appId || !appPlatform || !appVersion) {
+  if (!stats.page || !stats.event || !appId || !appPlatform || !appVersion) {
     res.end()
     return
   }
