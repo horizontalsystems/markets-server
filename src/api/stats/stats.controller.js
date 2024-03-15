@@ -1,5 +1,8 @@
-const mongo = require('../../db/mongo')
+const morgan = require('morgan')
 const serializer = require('./stats.serializer')
+const mongo = require('../../db/mongo')
+
+const logs = mongo.collection('logs')
 
 exports.popularCoins = async (req, res) => {
   const coins = await mongo.getStats('coin_stats')
@@ -11,10 +14,22 @@ exports.popularResources = async (req, res) => {
   res.send(serializer.serializeResources(resources))
 }
 
-exports.stats = async ({ query }, res) => {
+exports.stats = async (req, res) => {
+  const { query, headers } = req
+
+  const ip = headers['x-real-ip'] || morgan['remote-addr'](req, res)
+  const appId = headers.app_id
+  const appPlatform = headers.app_platform
+  const appVersion = headers.app_version
+
   const stats = {
     tag: query.tag_name,
+    addr: ip
   }
+
+  if (appId) stats.appId = appId
+  if (appPlatform) stats.appPlatform = appPlatform
+  if (appVersion) stats.appVersion = appVersion
 
   if (query.tag_type) stats.type = query.tag_type
   if (query.tag_parent) stats.parent = query.tag_parent
@@ -27,8 +42,13 @@ exports.stats = async ({ query }, res) => {
   // coins
   if (query.coin_uid) stats.coin_uid = query.coin_uid
 
+  if (!stats.tag || !appId || !appPlatform || !appVersion) {
+    res.end()
+    return
+  }
+
   try {
-    await mongo.storeStats(stats)
+    logs.insertOne(stats).catch(e => console.log(e))
   } catch (e) {
     console.log(e.message)
   }
