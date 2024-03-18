@@ -2,8 +2,10 @@ const { create: createAxios } = require('axios')
 
 class RpcSource {
   constructor(mode) {
+    const { env } = process
     this.sources = [
-      { baseURL: `https://${mode}.infura.io/v3/${process.env.INFURA_1_ID}`, secret: process.env.INFURA_1_SECRET }
+      { baseURL: `https://${mode}.infura.io/v3/${env.INFURA_1_ID}`, secret: env.INFURA_1_SECRET },
+      { baseURL: `https://${mode}.infura.io/v3/${env.INFURA_2_ID}`, secret: env.INFURA_2_SECRET },
     ]
     this.currentSourceIndex = 0
     this.axios = this.createAxios()
