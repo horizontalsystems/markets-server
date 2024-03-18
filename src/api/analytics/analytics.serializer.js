@@ -95,6 +95,7 @@ module.exports = {
     }
     if (indicators) {
       data.indicators = {
+        ema: nullOrString(indicators.ema),
         rsi: nullOrString(indicators.rsi),
         macd: nullOrString(indicators.macd),
         lower: nullOrString(indicators.lower),
