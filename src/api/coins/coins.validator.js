@@ -32,6 +32,8 @@ module.exports = {
         .max(1500),
       page: Joi.number()
         .min(1),
+      indicator: Joi.string()
+        .valid('neutral', 'buy', 'sell', 'buy_signal', 'sell_signal', 'overbought', 'oversold'),
       order_by_rank: Joi.boolean()
         .sensitive(true),
       currency: Joi.string()

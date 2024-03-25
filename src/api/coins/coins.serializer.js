@@ -147,13 +147,15 @@ exports.serializeFilter = (coins, currencyRate, whitelisted) => {
   }
 
   return coins.map(item => {
+    const { result } = item.CoinIndicators[0] || {}
     const { rank } = item.CoinStats[0] || { rank: {} }
     const coin = {
       uid: item.uid,
       listed_on_top_exchanges: isListedOnTopExchanges(item.CoinMarkets),
       solid_cex: rank.cex_volume_week_rating === 'excellent',
       solid_dex: rank.dex_volume_week_rating === 'excellent',
-      good_distribution: rank.holders_rating === 'excellent'
+      good_distribution: rank.holders_rating === 'excellent',
+      indicators_result: result
     }
 
     for (let i = 0; i < fields.length; i += 1) {

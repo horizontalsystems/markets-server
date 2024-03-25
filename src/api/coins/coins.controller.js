@@ -1,4 +1,3 @@
-const { Op } = require('sequelize')
 const Coin = require('../../db/models/Coin')
 const Platform = require('../../db/models/Platform')
 const CoinStats = require('../../db/models/CoinStats')
@@ -6,6 +5,7 @@ const CoinPrice = require('../../db/models/CoinPrice')
 const serializer = require('./coins.serializer')
 const Exchange = require('../../db/models/Exchange')
 const CoinMarket = require('../../db/models/CoinMarket')
+const CoinIndicator = require('../../db/models/CoinIndicator')
 
 exports.index = async ({ query, currencyRate }, res) => {
   const { limit = 1500, page = 1 } = query
@@ -46,13 +46,14 @@ exports.filter = async ({ query, currencyRate }, res) => {
   const options = {
     where: {},
     order: ['id'],
-    include: [CoinMarket, CoinStats]
+    include: [CoinMarket, CoinStats, CoinIndicator]
   }
 
   if (limit) {
     options.limit = limit
     options.offset = limit * (page - 1)
   }
+
   if (query.order_by_rank === 'true') {
     options.where.coingecko_id = Coin.literal('coingecko_id IS NOT NULL')
     options.order = [Coin.literal('market_data->\'market_cap\' DESC')]
