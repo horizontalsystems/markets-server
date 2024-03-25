@@ -7,7 +7,7 @@ exports.mainnetProxy = async (req, res) => {
   try {
     res.send(await mainnet.post(req.body))
   } catch ({ response, message }) {
-    if (response && response.status === 429) {
+    if (response) {
       mainnet.rotateSource()
       try {
         res.send(await mainnet.post(req.body))
@@ -24,7 +24,7 @@ exports.sepoliaProxy = async (req, res) => {
   try {
     res.send(await sepolia.post(req.body))
   } catch ({ response, message }) {
-    if (response && response.status === 429) {
+    if (response) {
       sepolia.rotateSource()
       try {
         res.send(await sepolia.post(req.body))
