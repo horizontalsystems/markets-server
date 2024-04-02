@@ -42,7 +42,7 @@ exports.stats = async (req, res) => {
   }
 
   if (!records.length) {
-    res.end()
+    res.send({})
     return
   }
 
@@ -52,7 +52,7 @@ exports.stats = async (req, res) => {
     console.log(e.message)
   }
 
-  res.end()
+  res.send({})
 }
 
 exports.logs = async () => {
