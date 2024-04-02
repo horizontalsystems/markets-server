@@ -15,33 +15,39 @@ exports.popularResources = async (req, res) => {
 }
 
 exports.stats = async (req, res) => {
-  const { query, headers } = req
+  const { body, headers } = req
 
   const ip = headers['x-real-ip'] || morgan['remote-addr'](req, res)
   const appId = headers.app_id
   const appPlatform = headers.app_platform
   const appVersion = headers.app_version
+  const records = []
 
-  const stats = {
-    page: query.page,
-    event: query.event,
-    addr: ip,
+  try {
+    for (let i = 0; i < body.length; i += 1) {
+      const item = body[i]
+
+      if (ip) item.ip = ip
+      if (appId) item.appId = appId
+      if (appPlatform) item.appPlatform = appPlatform
+      if (appVersion) item.appVersion = appVersion
+
+      records.push(item)
+    }
+  } catch (e) {
+    console.log(e)
+    res.status(400)
+    res.send({ message: 'Invalid request' })
+    return
   }
 
-  if (appId) stats.appId = appId
-  if (appPlatform) stats.appPlatform = appPlatform
-  if (appVersion) stats.appVersion = appVersion
-
-  // coins
-  if (query.coin_uid) stats.coin_uid = query.coin_uid
-
-  if (!stats.page || !stats.event || !appId || !appPlatform || !appVersion) {
+  if (!records.length) {
     res.end()
     return
   }
 
   try {
-    logs.insertOne(stats).catch(e => console.log(e))
+    logs.insertMany(records).catch(e => console.log(e))
   } catch (e) {
     console.log(e.message)
   }
@@ -94,16 +100,4 @@ exports.logs = async () => {
       filter_value: '$100 - $200'
     }
   })
-
-  const data = {
-    page_name: 'homepage',                // Name or identifier of the page
-    page_category: 'landing',             // Category of the page (optional)
-    event_type: 'page_view',              // Type of event: page_view, button_click, filter_chosen, etc.
-    event_name: 'featured_product_click', // Name or identifier of the event (optional)
-    event_data: {                         // Additional data related to the event (optional)
-      button_id: 'btn_featured_product',
-      filter_type: 'price',
-      filter_value: '$100 - $200'
-    }
-  }
 }
