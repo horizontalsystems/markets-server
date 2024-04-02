@@ -1,17 +1,16 @@
 const morgan = require('morgan')
-const serializer = require('./stats.serializer')
 const mongo = require('../../db/mongo')
 
 const logs = mongo.collection('logs')
 
-exports.popularCoins = async (req, res) => {
-  const coins = await mongo.getStats('coin_stats')
-  res.send(serializer.serializeCoins(coins))
+exports.pages = async (req, res) => {
+  const pages = await mongo.getPages()
+  res.send(pages)
 }
 
-exports.popularResources = async (req, res) => {
-  const resources = await mongo.getStats('resource_stats')
-  res.send(serializer.serializeResources(resources))
+exports.events = async (req, res) => {
+  const events = await mongo.getEvents()
+  res.send(events)
 }
 
 exports.stats = async (req, res) => {
@@ -26,6 +25,10 @@ exports.stats = async (req, res) => {
   try {
     for (let i = 0; i < body.length; i += 1) {
       const item = body[i]
+
+      if (!item.event_page || !item.event) {
+        continue
+      }
 
       if (ip) item.ip = ip
       if (appId) item.appId = appId
@@ -53,51 +56,4 @@ exports.stats = async (req, res) => {
   }
 
   res.send({})
-}
-
-exports.logs = async () => {
-  await mongo.storeStats({
-    tag_name: 'market',
-    tag_type: 'page_view',
-  })
-
-  await mongo.storeStats({
-    tag_name: 'coin_page',
-    tag_type: 'page_view',
-    tag_parent: 'market',
-  })
-
-  await mongo.storeStats({
-    tag_name: 'enable_coin',
-    tag_type: 'click_add_button',
-    tag_parent: 'coin_page',
-    coin_uid: 'uniswap'
-  })
-
-  await mongo.storeStats({
-    tag_name: 'indicators',
-    tag_type: 'page_view',
-    tag_parent: 'coin_page',
-  })
-
-  await mongo.storeStats({
-    tag_name: 'indicators_settings',
-    tag_parent: 'indicators',
-    tag_data: {
-      moving_averages: ['ma1'],
-      oscillators: []
-    },
-  })
-
-  await mongo.storeStats({
-    tag_name: 'indicators',
-    tag_type: 'page_view',
-    tag_parent: 'coin_page',
-    event_name: 'featured_product_click',
-    event_data: {
-      button_id: 'btn_featured_product',
-      filter_type: 'price',
-      filter_value: '$100 - $200'
-    }
-  })
 }

@@ -2,32 +2,28 @@ const { MongoClient } = require('mongodb')
 
 const mongo = {}
 
-mongo.getPopularCoins = async () => {
+mongo.getPages = async () => {
   const logs = mongo.collection('logs')
-  const coins = await logs.aggregate([
-    { $match: { enabled_coins: { $ne: null } } },
-    { $project: { appId: '$appId', coins: '$enabled_coins' } },
-    { $unwind: '$coins' },
-    { $group: { _id: '$coins', requestCount: { $sum: 1 }, uniqueCount: { $addToSet: '$appId' } } },
-    { $project: { requestCount: 1, uniqueCount: { $size: '$uniqueCount' } } },
-    { $sort: { uniqueCount: -1 } },
-    { $limit: 100 },
+  const pages = await logs.aggregate([
+    { $match: { event_page: { $ne: null } } },
+    { $group: { _id: '$event_page', requestCount: { $sum: 1 }, uniqueCount: { $addToSet: '$appId' } } },
+    { $project: { requestCount: 1, uniqueUsers: { $size: '$uniqueCount' } } },
+    { $sort: { requestCount: -1 } }
   ]).toArray()
 
-  return coins
+  return pages
 }
 
-mongo.getPopularResources = async () => {
+mongo.getEvents = async () => {
   const logs = mongo.collection('logs')
-  const resources = await logs.aggregate([
-    { $match: { resource: { $ne: null } } },
-    { $group: { _id: '$resource', requestCount: { $sum: 1 }, uniqueCount: { $addToSet: '$appId' } } },
-    { $project: { requestCount: 1, uniqueCount: { $size: '$uniqueCount' } } },
-    { $sort: { uniqueCount: -1 } },
-    { $limit: 100 },
+  const events = await logs.aggregate([
+    { $match: { event: { $ne: null } } },
+    { $group: { _id: '$event', requestCount: { $sum: 1 }, uniqueCount: { $addToSet: '$appId' } } },
+    { $project: { requestCount: 1, uniqueUsers: { $size: '$uniqueCount' } } },
+    { $sort: { requestCount: -1 } }
   ]).toArray()
 
-  return resources
+  return events
 }
 
 mongo.storeStats = async (items, collectionName) => {
