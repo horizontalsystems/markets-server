@@ -20,8 +20,7 @@ const router = express.Router()
  */
 router.post('/', controller.stats)
 
-router.get('/pages', controller.pages)
-router.get('/events', controller.events)
+router.get('/', controller.getStats)
 
 module.exports = router
 

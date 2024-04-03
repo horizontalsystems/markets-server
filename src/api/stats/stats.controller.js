@@ -3,13 +3,9 @@ const mongo = require('../../db/mongo')
 
 const logs = mongo.collection('logs')
 
-exports.pages = async (req, res) => {
-  const pages = await mongo.getPages()
-  res.send(pages)
-}
-
-exports.events = async (req, res) => {
-  const events = await mongo.getEvents()
+exports.getStats = async ({ query }, res) => {
+  const { group_by: groupBy, ...match } = query
+  const events = await mongo.getStats(match, groupBy)
   res.send(events)
 }
 

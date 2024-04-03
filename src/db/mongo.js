@@ -2,49 +2,17 @@ const { MongoClient } = require('mongodb')
 
 const mongo = {}
 
-mongo.getPages = async () => {
+mongo.getStats = async (match, groupBy) => {
   const logs = mongo.collection('logs')
-  const pages = await logs.aggregate([
-    { $match: { event_page: { $ne: null } } },
-    { $group: { _id: '$event_page', requestCount: { $sum: 1 }, uniqueCount: { $addToSet: '$appId' } } },
+
+  const pipeline = [
+    { $match: match },
+    { $group: { _id: `$${groupBy}`, requestCount: { $sum: 1 }, uniqueCount: { $addToSet: '$appId' } } },
     { $project: { requestCount: 1, uniqueUsers: { $size: '$uniqueCount' } } },
     { $sort: { requestCount: -1 } }
-  ]).toArray()
+  ]
 
-  return pages
-}
-
-mongo.getEvents = async () => {
-  const logs = mongo.collection('logs')
-  const events = await logs.aggregate([
-    { $match: { event: { $ne: null } } },
-    { $group: { _id: '$event', requestCount: { $sum: 1 }, uniqueCount: { $addToSet: '$appId' } } },
-    { $project: { requestCount: 1, uniqueUsers: { $size: '$uniqueCount' } } },
-    { $sort: { requestCount: -1 } }
-  ]).toArray()
-
-  return events
-}
-
-mongo.storeStats = async (items, collectionName) => {
-  if (!items.length) {
-    return
-  }
-
-  const collection = mongo.collection(collectionName)
-  await collection.drop()
-  await collection.insertMany(items)
-}
-
-mongo.getStats = async (collectionName) => {
-  const collection = mongo.collection(collectionName)
-  const items = await collection.find().toArray()
-
-  if (!items || !items.length) {
-    return []
-  }
-
-  return items
+  return logs.aggregate(pipeline).toArray()
 }
 
 mongo.collection = (name) => {
