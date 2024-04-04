@@ -15,6 +15,20 @@ mongo.getStats = async (match, groupBy) => {
   return logs.aggregate(pipeline).toArray()
 }
 
+mongo.getKeys = async () => {
+  const logs = mongo.collection('logs')
+
+  const pipeline = [
+    { $project: { keys: { $objectToArray: "$$ROOT" } } },
+    { $unwind: "$keys" },
+    { $match: { "keys.k": { $ne: "_id" } } },
+    { $group: { _id: null, keys: { $addToSet: "$keys.k" } } },
+    { $project: { _id: 0, keys: 1 } }
+  ]
+
+  return logs.aggregate(pipeline).toArray()
+}
+
 mongo.collection = (name) => {
   const client = mongo.client()
   const conn = client.db(process.env.MONGO_DB)

@@ -1,10 +1,6 @@
-exports.serializeCoins = items => {
-  return items.map(item => {
-    return {
-      uid: item._id,
-      count: item.requestCount,
-      unique: item.uniqueCount
-    }
+exports.serializeKeys = ({ keys }) => {
+  return keys.map(item => {
+    return item
   })
 }
 

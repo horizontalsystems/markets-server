@@ -21,6 +21,7 @@ const router = express.Router()
 router.post('/', controller.stats)
 
 router.get('/', controller.getStats)
+router.get('/keys', controller.getKeys)
 
 module.exports = router
 

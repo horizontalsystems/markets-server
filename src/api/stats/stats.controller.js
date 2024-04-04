@@ -1,5 +1,6 @@
 const morgan = require('morgan')
 const mongo = require('../../db/mongo')
+const serializer = require('./stats.serializer')
 
 const logs = mongo.collection('logs')
 
@@ -7,6 +8,11 @@ exports.getStats = async ({ query }, res) => {
   const { group_by: groupBy, ...match } = query
   const events = await mongo.getStats(match, groupBy)
   res.send(events)
+}
+
+exports.getKeys = async (req, res) => {
+  const [keys] = await mongo.getKeys()
+  res.send(serializer.serializeKeys(keys))
 }
 
 exports.stats = async (req, res) => {
