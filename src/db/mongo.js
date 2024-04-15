@@ -19,10 +19,10 @@ mongo.getKeys = async () => {
   const logs = mongo.collection('logs')
 
   const pipeline = [
-    { $project: { keys: { $objectToArray: "$$ROOT" } } },
-    { $unwind: "$keys" },
-    { $match: { "keys.k": { $ne: "_id" } } },
-    { $group: { _id: null, keys: { $addToSet: "$keys.k" } } },
+    { $project: { keys: { $objectToArray: '$$ROOT' } } },
+    { $unwind: '$keys' },
+    { $match: { 'keys.k': { $ne: '_id' } } },
+    { $group: { _id: null, keys: { $addToSet: '$keys.k' } } },
     { $project: { _id: 0, keys: 1 } }
   ]
 
@@ -42,8 +42,13 @@ mongo.init = async () => {
   const database = client.db(process.env.MONGO_DB)
   const logs = database.collection('logs')
 
-  await logs.createIndex({ path: 1 })
-  await logs.createIndex({ resource: 1 })
+  await logs.createIndex({ page: 1 })
+  await logs.createIndex({ event: 1 })
+  await logs.createIndex({ event_page: 1 })
+  await logs.createIndex({ event_section: 1 })
+  await logs.createIndex({ coin_uid: 1 })
+  await logs.createIndex({ tab: 1 })
+  await logs.createIndex({ time: 1 })
 
   return connect
 }
