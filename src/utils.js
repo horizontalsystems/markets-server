@@ -83,7 +83,8 @@ exports.reduceMap = (items, keyField, valField) => {
 
 exports.mapToField = (items, keyField, valField) => {
   const map = {}
-  for (let i = 0; i < items.length; i++) {
+
+  for (let i = 0; i < items.length; i += 1) {
     const item = items[i]
     const key = item[keyField]
     if (!key) {
