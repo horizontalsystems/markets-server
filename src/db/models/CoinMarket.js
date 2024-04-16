@@ -1,4 +1,5 @@
 const SequelizeModel = require('./SequelizeModel')
+const { mapToField } = require('../../utils')
 
 class CoinMarket extends SequelizeModel {
 
@@ -48,6 +49,11 @@ class CoinMarket extends SequelizeModel {
        LIMIT :limit
       OFFSET :offset
     `, { limit, offset })
+  }
+
+  static async getCoinsListedOnWE() {
+    const records = await CoinMarket.query('SELECT distinct m.coin_id FROM coin_markets m, exchanges e WHERE m.market_uid = e.uid')
+    return mapToField(records, 'coin_id', 'coin_id')
   }
 
   static deleteAll(coinId) {

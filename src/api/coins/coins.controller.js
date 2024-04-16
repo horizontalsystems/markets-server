@@ -46,7 +46,7 @@ exports.filter = async ({ query, currencyRate }, res) => {
   const options = {
     where: {},
     order: ['id'],
-    include: [CoinMarket, CoinStats, CoinIndicator]
+    attributes: ['id', 'uid', 'price', 'price_change_24h', 'price_change', 'market_data']
   }
 
   if (limit) {
@@ -59,10 +59,13 @@ exports.filter = async ({ query, currencyRate }, res) => {
     options.order = [Coin.literal('market_data->\'market_cap\' DESC')]
   }
 
-  const exchanges = await Exchange.getUids()
+  const indicators = await CoinIndicator.getResultsMap()
+  const coinRanks = await CoinStats.getCoinRanksMap()
+  const listedOnWE = await CoinMarket.getCoinsListedOnWE()
+
   const coins = await Coin.findAll(options)
 
-  res.send(serializer.serializeFilter(coins, currencyRate, exchanges))
+  res.send(serializer.serializeFilter(coins, currencyRate, indicators, coinRanks, listedOnWE))
 }
 
 exports.list = async ({ currencyRate }, res, next) => {

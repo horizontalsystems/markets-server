@@ -117,7 +117,7 @@ exports.serializeCoins = (coins, fields, currencyRate) => {
   })
 }
 
-exports.serializeFilter = (coins, currencyRate, whitelisted) => {
+exports.serializeFilter = (coins, currencyRate, indicators, coinRanks, listedOnWE) => {
   const fields = [
     'price',
     'market_cap',
@@ -133,29 +133,15 @@ exports.serializeFilter = (coins, currencyRate, whitelisted) => {
     'atl_percentage'
   ]
 
-  const isListedOnTopExchanges = tickers => {
-    let isListed = false
-    for (let i = 0; i < tickers.length; i += 1) {
-      const exchange = tickers[i]
-      if (whitelisted[exchange.market_uid]) {
-        isListed = true
-        break
-      }
-    }
-
-    return isListed
-  }
-
   return coins.map(item => {
-    const { result } = item.CoinIndicators[0] || {}
-    const { rank } = item.CoinStats[0] || { rank: {} }
+    const rank = coinRanks[item.id] || {}
     const coin = {
       uid: item.uid,
-      listed_on_top_exchanges: isListedOnTopExchanges(item.CoinMarkets),
+      listed_on_top_exchanges: !!listedOnWE[item.id],
       solid_cex: rank.cex_volume_week_rating === 'excellent',
       solid_dex: rank.dex_volume_week_rating === 'excellent',
       good_distribution: rank.holders_rating === 'excellent',
-      indicators_result: result
+      indicators_result: indicators[item.id]
     }
 
     for (let i = 0; i < fields.length; i += 1) {

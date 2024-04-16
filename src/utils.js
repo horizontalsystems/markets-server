@@ -81,6 +81,21 @@ exports.reduceMap = (items, keyField, valField) => {
   }, {})
 }
 
+exports.mapToField = (items, keyField, valField) => {
+  const map = {}
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i]
+    const key = item[keyField]
+    if (!key) {
+      continue
+    }
+
+    map[key] = valField ? item[valField] : item
+  }
+
+  return map
+}
+
 exports.stringToHex = str => {
   let result = ''
   for (let i = 0; i < str.length; i += 1) {

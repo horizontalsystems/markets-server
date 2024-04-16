@@ -1,4 +1,5 @@
 const SequelizeModel = require('./SequelizeModel')
+const { mapToField } = require('../../utils')
 
 class CoinStats extends SequelizeModel {
 
@@ -66,6 +67,11 @@ class CoinStats extends SequelizeModel {
           OR treasuries > 0
           OR reports > 0
     `)
+  }
+
+  static async getCoinRanksMap() {
+    const records = await CoinStats.query('select coin_id, rank from coin_stats')
+    return mapToField(records, 'coin_id', 'rank')
   }
 
 }

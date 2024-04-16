@@ -1,4 +1,5 @@
 const SequelizeModel = require('./SequelizeModel')
+const { mapToField } = require('../../utils')
 
 class CoinIndicator extends SequelizeModel {
 
@@ -29,6 +30,11 @@ class CoinIndicator extends SequelizeModel {
     CoinIndicator.belongsTo(models.Coin, {
       foreignKey: 'coin_id'
     })
+  }
+
+  static async getResultsMap() {
+    const records = await CoinIndicator.query('select coin_id, result from coin_indicators')
+    return mapToField(records, 'coin_id', 'result')
   }
 
   static async getByCoin(id) {
