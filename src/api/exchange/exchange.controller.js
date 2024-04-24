@@ -7,7 +7,7 @@ exports.index = async (req, res) => {
   res.send(serializer.serialize(exchanges))
 }
 
-exports.tickers = async ({ query, coin }, res) => {
+exports.tickers = async ({ query, coin, currencyRate }, res) => {
   const { limit = 100, page = 1 } = query
   const options = {
     where: {
@@ -27,7 +27,7 @@ exports.tickers = async ({ query, coin }, res) => {
   const whitelist = await Exchange.getUids()
   const tickers = await CoinTicker.findAll(options)
 
-  res.send(serializer.serializeTickers(tickers, whitelist))
+  res.send(serializer.serializeTickers(tickers, whitelist, currencyRate))
 }
 
 exports.topPairs = async ({ query, currencyRate }, res) => {

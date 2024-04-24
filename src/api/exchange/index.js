@@ -52,7 +52,7 @@ router.get('/', controller.index)
  *
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  */
-router.get('/tickers/:uid', requireCoin, controller.tickers)
+router.get('/tickers/:uid', requireCoin, setCurrencyRate, controller.tickers)
 
 /**
  * @api {get} /v1/exchanges/whitelist List of whitelisted exchanges

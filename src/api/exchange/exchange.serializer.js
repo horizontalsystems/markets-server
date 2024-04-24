@@ -28,14 +28,14 @@ exports.serializeTopPairs = (markets, currencyRate) => {
   })
 }
 
-exports.serializeTickers = (exchanges, whitelist) => {
+exports.serializeTickers = (exchanges, whitelist, currencyRate) => {
   return exchanges.map(item => {
     return {
       base: item.base,
       target: item.target,
       price: item.price,
       volume: item.volume,
-      volume_usd: item.volume_usd,
+      volume_in_currency: valueInCurrency(item.volume_usd, currencyRate),
       market_uid: item.market_uid,
       market_name: item.market_name,
       market_logo: item.market_logo,
