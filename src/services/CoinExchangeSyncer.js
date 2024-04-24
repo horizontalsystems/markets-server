@@ -1,8 +1,8 @@
 const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
 const Coin = require('../db/models/Coin')
-const CoinMarket = require('../db/models/CoinMarket')
 const CoinPriceHistorySyncer = require('./CoinPriceHistorySyncer')
+const CoinTicker = require('../db/models/CoinTicker')
 
 class CoinExchangeSyncer extends CoinPriceHistorySyncer {
 
@@ -25,14 +25,14 @@ class CoinExchangeSyncer extends CoinPriceHistorySyncer {
 
     for (let i = 0; i < coinsList.length; i += 1) {
       const coin = coinsList[i];
-      coinsMap[coin.coingecko_id] = { name: coin.name, code: coin.code }
+      coinsMap[coin.coingecko_id] = { id: coin.id, name: coin.name, code: coin.code }
     }
 
     console.log(`Coins to sync exchanges ${syncCoins.length}`)
 
     for (let i = 0; i < syncCoins.length; i += 1) {
       const coin = syncCoins[i]
-      console.log(`Syncing coin ${coin.uid} (${i + 1})`)
+      console.log(`Syncing coin ${coin.coingecko_id} (${i + 1})`)
       await this.syncCoinTickers(coin, coinsMap)
     }
   }
@@ -65,49 +65,53 @@ class CoinExchangeSyncer extends CoinPriceHistorySyncer {
 
     for (let i = 0; i < data.length; i += 1) {
       const ticker = data[i]
-      const base = coin.code.toUpperCase()
 
-      let target = ticker.target.toUpperCase()
-      let { volume, last: price } = ticker
-
-      if (price <= 0 || volume <= 0) {
-        continue
-      }
-
-      if (ticker.coin_id !== coin.coingecko_id) {
-        const targetCoin = coinsMap[ticker.coin_id]
-        if (!targetCoin) continue
-
-        target = targetCoin.name.toUpperCase()
-
-        volume *= price
-        price = 1 / price
-      } else if (ticker.target_coin_id !== coin.coingecko_id) {
-        const targetCoin = coinsMap[ticker.target_coin_id]
-        if (!targetCoin) continue
-        target = targetCoin.code.toUpperCase()
-      }
-
-      markets.push({
-        base,
-        target,
-        price,
-        volume,
+      const pair = {
+        base: ticker.base.toUpperCase(),
+        target: ticker.target.toUpperCase(),
+        price: ticker.last,
+        volume: ticker.volume,
         volume_usd: ticker.converted_volume.usd,
         market_uid: ticker.market.identifier,
         market_logo: ticker.market.logo,
         market_name: ticker.market.name,
-        trade_url: ticker.trade_url,
-        coin_id: coin.id,
-      })
+        trade_url: ticker.trade_url
+      }
+
+      if (pair.price <= 0 || pair.volume <= 0) {
+        continue
+      }
+
+      const baseCoin = coinsMap[ticker.coin_id]
+      if (baseCoin) {
+        pair.base_coin_id = baseCoin.id
+        const code = baseCoin.code.toUpperCase()
+
+        if (code !== pair.base) {
+          pair.base = code
+        }
+      } else {
+        continue
+      }
+
+      const targetCoin = coinsMap[ticker.target_coin_id]
+      if (targetCoin) {
+        pair.target_coin_id = targetCoin.id
+        const code = targetCoin.code.toUpperCase()
+        if (code !== pair.target) {
+          pair.target = code
+        }
+      }
+
+      markets.push(pair)
     }
 
     if (!markets.length) {
       return
     }
 
-    await CoinMarket.deleteAll(coin.id)
-    await CoinMarket.bulkCreate(markets)
+    await CoinTicker.deleteAll(coin.id)
+    await CoinTicker.bulkCreate(markets)
       .then(records => {
         console.log(`Inserted tickers ${records.length} for coin ${coin.coingecko_id}`)
       })

@@ -8,6 +8,7 @@ const CoinPrice = require('./models/CoinPrice')
 const CoinStats = require('./models/CoinStats')
 const CoinAudit = require('./models/CoinAudit')
 const CoinMarket = require('./models/CoinMarket')
+const CoinTicker = require('./models/CoinTicker')
 const Exchange = require('./models/Exchange')
 const DefiProtocol = require('./models/DefiProtocol')
 const DefiProtocolTvl = require('./models/DefiProtocolTvl')
@@ -59,6 +60,7 @@ const db = {
   CoinHolder: CoinHolder.init(sequelize, Sequelize),
   CoinHolderStats: CoinHolderStats.init(sequelize, Sequelize),
   CoinMarket: CoinMarket.init(sequelize, Sequelize),
+  CoinTicker: CoinTicker.init(sequelize, Sequelize),
   CoinPrice: CoinPrice.init(sequelize, Sequelize),
   CoinStats: CoinStats.init(sequelize, Sequelize),
   CoinAudit: CoinAudit.init(sequelize, Sequelize),

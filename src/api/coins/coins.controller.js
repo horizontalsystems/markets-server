@@ -3,9 +3,8 @@ const Platform = require('../../db/models/Platform')
 const CoinStats = require('../../db/models/CoinStats')
 const CoinPrice = require('../../db/models/CoinPrice')
 const serializer = require('./coins.serializer')
-const Exchange = require('../../db/models/Exchange')
-const CoinMarket = require('../../db/models/CoinMarket')
 const CoinIndicator = require('../../db/models/CoinIndicator')
+const CoinTicker = require('../../db/models/CoinTicker')
 
 exports.index = async ({ query, currencyRate }, res) => {
   const { limit = 1500, page = 1 } = query
@@ -61,7 +60,7 @@ exports.filter = async ({ query, currencyRate }, res) => {
 
   const indicators = await CoinIndicator.getResultsMap()
   const coinRanks = await CoinStats.getCoinRanksMap()
-  const listedOnWE = await CoinMarket.getCoinsListedOnWE()
+  const listedOnWE = await CoinTicker.getCoinsListedOnWE()
 
   const coins = await Coin.findAll(options)
 

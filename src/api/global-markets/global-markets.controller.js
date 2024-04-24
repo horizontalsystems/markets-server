@@ -5,7 +5,7 @@ const Chain = require('../../db/models/Chain')
 const Category = require('../../db/models/Category')
 const GlobalMarket = require('../../db/models/GlobalMarket')
 const NftCollection = require('../../db/models/NftCollection')
-const CoinMarket = require('../../db/models/CoinMarket')
+const CoinTicker = require('../../db/models/CoinTicker')
 
 exports.index = async (req, res) => {
   const markets = await GlobalMarket.getList(req.dateFrom, req.dateInterval)
@@ -21,7 +21,7 @@ exports.overview = async ({ currencyRate, query }, res, next) => {
     const global = await GlobalMarket.getList(dateFrom, '30m')
     const categories = await Category.getTopMovers(['blockchains', 'stablecoins', 'exchange_tokens', 'dexes', 'lending'])
     const platforms = await Chain.getList(5)
-    const pairs = await CoinMarket.getTopPairs(5)
+    const pairs = await CoinTicker.getTopPairs(5)
 
     res.status(200)
     res.json(serializeOverview({ global, categories, nft, platforms, pairs, simplified: query.simplified }, currencyRate))
