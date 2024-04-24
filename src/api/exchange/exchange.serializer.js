@@ -33,7 +33,6 @@ exports.serializeTickers = (exchanges, whitelist, currencyRate) => {
     return {
       base: item.base,
       target: item.target,
-      price: item.price,
       volume: item.volume,
       volume_in_currency: valueInCurrency(item.volume_usd, currencyRate),
       market_uid: item.market_uid,
