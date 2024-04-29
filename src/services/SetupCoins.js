@@ -67,7 +67,7 @@ class SetupCoins {
     console.log(matchCoins)
   }
 
-  async setupCoins(ids) {
+  async setupCoins(ids, force) {
     const exchanges = await Exchange.getUids()
     const coinIds = ids || (await coingecko.getCoinList()).map(coin => coin.id)
     const coins = await this.syncCoins(coinIds, !ids)
@@ -78,7 +78,7 @@ class SetupCoins {
     console.log(`Synced new coins ${coins.length}`)
 
     for (let i = 0; i < coins.length; i += 1) {
-      await this.syncCoinInfo(coins[i], languages, exchanges)
+      await this.syncCoinInfo(coins[i], languages, exchanges, force)
       await sleep(20000)
     }
 
@@ -243,7 +243,7 @@ class SetupCoins {
     return result
   }
 
-  async syncCoinInfo(coin, languages, exchanges) {
+  async syncCoinInfo(coin, languages, exchanges, force) {
     try {
       console.log('Fetching info for', coin.uid)
 
@@ -252,7 +252,6 @@ class SetupCoins {
       const values = {
         links: coinInfo.links,
         is_defi: coinInfo.is_defi,
-        description: cached.description || await this.syncDescriptions(coin.name, coinInfo.description, languages),
         genesis_date: cached.genesis_date || coin.genesis_date,
         security: cached.security || coin.security
       }
@@ -265,7 +264,9 @@ class SetupCoins {
         }
       }
 
-      if (volume >= this.MIN_24_VOLUME_TRUSTED) {
+      if (volume >= this.MIN_24_VOLUME_TRUSTED || force) {
+        values.description = cached.description || await this.syncDescriptions(coin.name, coinInfo.description, languages)
+
         await coin.update(values)
         await this.syncPlatforms(coin, Object.entries(coinInfo.detail_platforms))
       }

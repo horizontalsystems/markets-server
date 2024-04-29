@@ -8,16 +8,17 @@ const sequelize = require('../src/db/sequelize')
 const program = new Command()
   .option('-a --all', 'setup all coins')
   .option('-f --fetch', 'fetch news coins')
-  .option('-o --orphaned', 'fetch orphaned coins')
+  .option('-o --orphaned', 'fetch coins without gecko id')
   .option('-c --coins <coins>', 'setup only given coins')
   .option('--address-decimals <address>', 'force sync decimals for given address')
   .option('--chain-decimals <chain>', 'force sync decimals for given chain')
   .option('--coin-decimals <coin>', 'force sync decimals for given coin')
   .option('--token-type-decimals <type>', 'force sync decimals for given token type')
   .option('--chains [coins]', 'sync with chains')
+  .option('--force', 'force sync')
   .parse(process.argv)
 
-async function start({ all, fetch, coins, tokenTypeDecimals, addressDecimals, chainDecimals, coinDecimals, chains, orphaned }) {
+async function start({ all, fetch, coins, tokenTypeDecimals, addressDecimals, chainDecimals, coinDecimals, chains, orphaned, force }) {
   await sequelize.sync()
   const setupCoins = new SetupCoins()
 
@@ -25,7 +26,7 @@ async function start({ all, fetch, coins, tokenTypeDecimals, addressDecimals, ch
     if (fetch) {
       await setupCoins.fetchCoins()
     } else if (coins) {
-      await setupCoins.setupCoins(coins.split(','))
+      await setupCoins.setupCoins(coins.split(','), force)
     } else if (addressDecimals) {
       await setupCoins.forceSyncDecimals({ address: addressDecimals.split(',') })
     } else if (chainDecimals) {
