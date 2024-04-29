@@ -1,5 +1,5 @@
 const TurndownService = require('turndown')
-const { chunk, difference, intersection } = require('lodash')
+const { chunk, difference, intersection, isObject } = require('lodash')
 const { sleep } = require('../utils')
 const Coin = require('../db/models/Coin')
 const Chain = require('../db/models/Chain')
@@ -8,9 +8,7 @@ const Platform = require('../db/models/Platform')
 const Exchange = require('../db/models/Exchange')
 const Language = require('../db/models/Language')
 const coingecko = require('../providers/coingecko')
-const binanceDex = require('../providers/binance-dex')
 const web3Provider = require('../providers/web3')
-const solscan = require('../providers/solscan')
 const gpt = require('../providers/chat-gpt')
 const coinsJoin = require('../db/seeders/coins.json')
 
@@ -71,7 +69,6 @@ class SetupCoins {
 
   async setupCoins(ids) {
     const exchanges = await Exchange.getUids()
-    const bep2tokens = await binanceDex.getBep2Tokens()
     const coinIds = ids || (await coingecko.getCoinList()).map(coin => coin.id)
     const coins = await this.syncCoins(coinIds, !ids)
     const languages = await Language.findAll({
@@ -81,7 +78,7 @@ class SetupCoins {
     console.log(`Synced new coins ${coins.length}`)
 
     for (let i = 0; i < coins.length; i += 1) {
-      await this.syncCoinInfo(coins[i], languages, bep2tokens, exchanges)
+      await this.syncCoinInfo(coins[i], languages, exchanges)
       await sleep(20000)
     }
 
@@ -151,130 +148,75 @@ class SetupCoins {
     return newRecords.concat(await this.syncCoins(coinIds, returnOnlyNew))
   }
 
-  async syncPlatforms(coin, platforms, bep2tokens) {
+  async syncPlatforms(coin, platforms) {
     if (this.ignorePlatforms.includes(coin.uid)) {
       return
     }
 
-    const upsertPlatform = async (chain, oldType, values) => {
-      await this.upsertChain(chain, chain === coin.uid ? coin.name : chain)
-      await this.upsertPlatform({ ...values, coin_id: coin.id, chain_uid: chain }, oldType)
-    }
-
-    switch (coin.uid) {
-      case 'bitcoin':
-      case 'bitcoin-cash':
-      case 'litecoin':
-      case 'dash':
-      case 'zcash':
-        return upsertPlatform(coin.uid, coin.uid, { type: 'native', decimals: 8 })
-      case 'ethereum':
-        await upsertPlatform('ethereum', 'ethereum', { type: 'native', decimals: 18 })
-        await upsertPlatform('arbitrum-one', 'arbitrum-one', { type: 'native', decimals: 18 })
-        await upsertPlatform('optimistic-ethereum', 'optimistic-ethereum', { type: 'native', decimals: 18 })
-        return
-      case 'binancecoin':
-        await upsertPlatform('binance-smart-chain', 'binance-smart-chain', { type: 'native', decimals: 18 })
-        await upsertPlatform('binancecoin', 'binancecoin', { type: 'native', decimals: 18, symbol: 'BNB' })
-        return
-      case 'matic-network':
-        await upsertPlatform('polygon-pos', 'polygon-pos', { type: 'native', decimals: 18 })
-        break
-      case 'avalanche':
-      case 'avalanche-2':
-        await upsertPlatform('avalanche', 'avalanche', { type: 'native', decimals: 18 })
-        break
-      default:
-        break
-    }
-
     for (let i = 0; i < platforms.length; i += 1) {
-      const [platform, address] = platforms[i]
+      const [platform, details] = platforms[i]
 
-      let oldType = platform
+      if (!platform) {
+        await Chain.findOrCreate({
+          where: { uid: coin.uid },
+          defaults: { name: coin.name }
+        })
+        continue
+      }
+
+      if (!isObject(details) || !details.contract_address) {
+        continue
+      }
+
       let newType = platform
-      let decimals
+      let decimals = details.decimal_place
       let provider = web3Provider.getProvider(platform)
       let symbol
-      let mapper = data => {
-        decimals = data
+
+      const mapper = number => {
+        decimals = number
       }
 
       switch (platform) {
         case 'ethereum':
-          newType = 'eip20'
-          oldType = 'erc20'
-          break
-
-        case 'binance-smart-chain':
-          newType = 'eip20'
-          oldType = 'bep20'
-          break
-
         case 'polygon-pos':
-          newType = 'eip20'
-          break
-
         case 'optimistic-ethereum':
-          newType = 'eip20'
-          break
-
         case 'arbitrum-one':
-          newType = 'eip20'
-          break
-
         case 'avalanche':
+        case 'binance-smart-chain':
           newType = 'eip20'
           break
 
         case 'binancecoin': {
           newType = 'bep2'
           provider = null
-          const token = bep2tokens[coin.code.toUpperCase()]
-          if (token) {
-            decimals = token.contract_decimals
-            symbol = token.symbol
-          }
+          symbol = details.contract_address
           break
         }
 
         case 'solana': {
           newType = 'spl'
-          provider = { getDecimals: solscan.getMeta }
-          mapper = data => {
-            decimals = data.decimals
-            symbol = data.symbol
-          }
+          provider = null
           break
         }
         default:
       }
 
-      const platformOld = await Platform.findOne({
-        where: {
-          coin_id: coin.id,
-          type: oldType
-        }
-      })
-
-      if (provider && !platformOld) {
+      if (provider) {
         try {
-          mapper(await provider.getDecimals(address))
+          mapper(await provider.getDecimals(details.contract_address))
         } catch ({ message }) {
           console.log(message)
 
           if (message.match(/^Returned values aren't valid/) || message.match(/^Provided address [\s\S]+ is invalid/)) {
-            console.log('Skipped adding platform', address)
+            console.log('Skipped adding platform', details.contract_address)
             continue
           }
         }
       }
 
-      if (platform) {
-        await upsertPlatform(platform, oldType, { type: newType, decimals, address, symbol })
-      } else if (!address) {
-        await upsertPlatform(coin.uid, oldType, { type: 'native', decimals, address })
-      }
+      const values = { type: newType, decimals, address: details.contract_address, symbol, coin_id: coin.id, chain_uid: platform }
+      await this.upsertPlatform(values, platform)
     }
   }
 
@@ -301,7 +243,7 @@ class SetupCoins {
     return result
   }
 
-  async syncCoinInfo(coin, languages, bep2tokens, exchanges) {
+  async syncCoinInfo(coin, languages, exchanges) {
     try {
       console.log('Fetching info for', coin.uid)
 
@@ -316,9 +258,8 @@ class SetupCoins {
       }
 
       let volume = 0
-      for (let i = 0; i < coinInfo.tickers.length; i++) {
+      for (let i = 0; i < coinInfo.tickers.length; i += 1) {
         const ticker = coinInfo.tickers[i];
-        console.log(ticker.market.identifier, exchanges[ticker.market.identifier])
         if (exchanges[ticker.market.identifier]) {
           volume += ticker.converted_volume.usd
         }
@@ -326,7 +267,7 @@ class SetupCoins {
 
       if (volume >= this.MIN_24_VOLUME_TRUSTED) {
         await coin.update(values)
-        await this.syncPlatforms(coin, Object.entries(coinInfo.platforms), bep2tokens)
+        await this.syncPlatforms(coin, Object.entries(coinInfo.detail_platforms))
       }
     } catch (err) {
       await this.handleError(err)
@@ -334,7 +275,6 @@ class SetupCoins {
   }
 
   async syncChains(uid) {
-    const bep2tokens = await binanceDex.getBep2Tokens()
     const coins = await Coin.findAll({
       attributes: ['id', 'uid', 'code', 'name', 'coingecko_id'],
       where: {
@@ -351,7 +291,7 @@ class SetupCoins {
       try {
         console.log(`Syncing chains for ${coin.coingecko_id}; (${i})`)
         const coinInfo = await coingecko.getCoinInfo(coin.coingecko_id)
-        await this.syncPlatforms(coin, Object.entries(coinInfo.platforms), bep2tokens)
+        await this.syncPlatforms(coin, Object.entries(coinInfo.detail_platforms))
         await sleep(2000)
       } catch (err) {
         await this.handleError(err)
@@ -385,11 +325,6 @@ class SetupCoins {
       .catch(err => {
         console.log('Error inserting platform', err)
       })
-  }
-
-  upsertChain(uid, name) {
-    return Chain.findOrCreate({ where: { uid }, defaults: { name } })
-      .catch(err => console.log('Error inserting chain', err.message, (err.parent || {}).message))
   }
 
   async handleError({ message, response = {} }) {
