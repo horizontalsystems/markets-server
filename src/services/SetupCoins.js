@@ -28,7 +28,7 @@ class SetupCoins {
       })
   }
 
-  async fetchCoins() {
+  async fetchNewCoinList() {
     const allCoins = await coingecko.getCoinList()
     const oldCoins = await Coin.findAll({ attributes: ['coingecko_id'] })
     const newCoins = difference(allCoins.map(coin => coin.id), oldCoins.map(coin => coin.coingecko_id))
@@ -70,12 +70,12 @@ class SetupCoins {
   async setupCoins(ids, force) {
     const exchanges = await Exchange.getUids()
     const coinIds = ids || (await coingecko.getCoinList()).map(coin => coin.id)
-    const coins = await this.syncCoins(coinIds, !ids)
+    const coins = await this.fetchCoinInfo(coinIds)
     const languages = await Language.findAll({
       where: { code: ['en'] }
     })
 
-    console.log(`Synced new coins ${coins.length}`)
+    console.log(`Syncing (${coins.length}) new coins`)
 
     for (let i = 0; i < coins.length; i += 1) {
       await this.syncCoinInfo(coins[i], languages, exchanges, force)
@@ -129,23 +129,16 @@ class SetupCoins {
     await UpdateState.reset('platforms')
   }
 
-  async syncCoins(coinIds, returnOnlyNew) {
+  async fetchCoinInfo(coinIds) {
     console.log(`Fetching coins ${coinIds.length}`)
     const coinIdsPerPage = coinIds.splice(0, 420)
-
     const coins = await coingecko.getMarkets(coinIdsPerPage)
-    const options = returnOnlyNew
-      ? { ignoreDuplicates: true }
-      : { updateOnDuplicate: ['price', 'price_change', 'last_updated'] }
-
-    const allRecords = await Coin.bulkCreate(coins, options)
-    const newRecords = allRecords.filter(record => record.id)
 
     if (coins.length >= (coinIdsPerPage.length + coinIds.length) || coinIds.length < 1) {
-      return newRecords
+      return coins
     }
 
-    return newRecords.concat(await this.syncCoins(coinIds, returnOnlyNew))
+    return coins.concat(await this.fetchCoinInfo(coinIds))
   }
 
   async syncPlatforms(coin, platforms) {
@@ -250,6 +243,7 @@ class SetupCoins {
       const coinInfo = await coingecko.getCoinInfo(coin.uid)
       const cached = this.coinsCache[coin.uid] || {}
       const values = {
+        ...coin,
         links: coinInfo.links,
         is_defi: coinInfo.is_defi,
         genesis_date: cached.genesis_date || coin.genesis_date,
@@ -266,9 +260,8 @@ class SetupCoins {
 
       if (volume >= this.MIN_24_VOLUME_TRUSTED || force) {
         values.description = cached.description || await this.syncDescriptions(coin.name, coinInfo.description, languages)
-
-        await coin.update(values)
-        await this.syncPlatforms(coin, Object.entries(coinInfo.detail_platforms))
+        const [record] = await Coin.upsert(values)
+        await this.syncPlatforms(record, Object.entries(coinInfo.detail_platforms))
       }
     } catch (err) {
       await this.handleError(err)
