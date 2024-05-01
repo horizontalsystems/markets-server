@@ -13,6 +13,7 @@ const solscan = require('../providers/solscan')
 const cronoscan = require('../providers/cronoscan')
 const ftmscan = require('../providers/ftmscan')
 const celoscan = require('../providers/celoscan')
+const geckoterminal = require('../providers/geckoterminal')
 
 class CoinCirculatingSupplySyncer extends Syncer {
 
@@ -24,12 +25,8 @@ class CoinCirculatingSupplySyncer extends Syncer {
     for (let i = 0; i < platforms.length; i += 1) {
       const platform = platforms[i]
 
-      if (!platform.csupply) { // circulation supply from coingecko
-        continue
-      }
-
       let supply = platform.csupply
-      if (platform.multi_chain_id) {
+      if (platform.multi_chain_id || !supply) {
         supply = await this.getSupply(platform, stablecoins)
         await utils.sleep(100)
       }
@@ -99,9 +96,10 @@ class CoinCirculatingSupplySyncer extends Syncer {
         }
         break
       default:
+        supply = await this.fetchSupplyByNetwork(platform.chain_uid, platform.address)
     }
 
-    if (supply > platform.csupply) {
+    if (supply > platform.csupply && platform.csupply > 0) {
       supply = platform.csupply
     }
 
@@ -151,6 +149,27 @@ class CoinCirculatingSupplySyncer extends Syncer {
     }
 
     return token.supply / 10 ** token.decimals
+  }
+
+  async fetchSupplyByNetwork(chain, address) {
+    if (!chain || !address) {
+      return null
+    }
+
+    const network = geckoterminal.mapChainToNetwork(chain)
+    if (!network) {
+      return null
+    }
+
+    const token = await geckoterminal.getTokenInfo(network, address)
+
+    if (!token.market_cap_usd || !token.price_usd) {
+      return null
+    }
+
+    await utils.sleep(300)
+
+    return token.market_cap_usd / token.price_usd
   }
 
   update(values) {
