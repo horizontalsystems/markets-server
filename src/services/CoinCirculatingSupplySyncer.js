@@ -14,6 +14,7 @@ const cronoscan = require('../providers/cronoscan')
 const ftmscan = require('../providers/ftmscan')
 const celoscan = require('../providers/celoscan')
 const geckoterminal = require('../providers/geckoterminal')
+const { chunk } = require('lodash')
 
 class CoinCirculatingSupplySyncer extends Syncer {
 
@@ -28,7 +29,7 @@ class CoinCirculatingSupplySyncer extends Syncer {
       let supply = platform.csupply
       if (platform.multi_chain_id || !supply) {
         supply = await this.getSupply(platform, stablecoins)
-        await utils.sleep(100)
+        await utils.sleep(500)
       }
 
       if (supply) {
@@ -36,7 +37,10 @@ class CoinCirculatingSupplySyncer extends Syncer {
       }
     }
 
-    await this.update(Object.entries(map))
+    const chunks = chunk(Object.entries(map), 1000)
+    for (let i = 0; i < chunks.length; i += 1) {
+      await this.update(chunks[i])
+    }
   }
 
   async getSupply(platform, stablecoins) {
@@ -175,7 +179,7 @@ class CoinCirculatingSupplySyncer extends Syncer {
   update(values) {
     return Platform.updateCSupplies(values)
       .then(() => {
-        console.log('Updated platforms circulating supplies')
+        console.log('Updated platforms circulating supplies', values.length)
       })
       .catch(e => {
         console.log(e)
