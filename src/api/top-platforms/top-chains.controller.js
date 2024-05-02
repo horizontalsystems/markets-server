@@ -1,16 +1,14 @@
-const utils = require('../../utils')
 const Chain = require('../../db/models/Chain')
 const serializer = require('./top-chains.serializer')
 const ChainMarketCap = require('../../db/models/ChainMarketCap')
-const CoinPrice = require('../../db/models/CoinPrice')
 
 exports.index = async ({ currencyRate }, res) => {
   const stats = await Chain.getList()
   res.send(serializer.serialize(stats, currencyRate))
 }
 
-exports.protocols = async ({ params, currencyRate }, res) => {
-  const stats = await Chain.getPlatforms(params.chain)
+exports.chainProtocols = async ({ params, currencyRate }, res) => {
+  const stats = await Chain.getChainProtocols(params.chain)
   res.send(serializer.serializePlatforms(stats, currencyRate))
 }
 

@@ -51,7 +51,7 @@ router.get('/', setCurrencyRate, controller.index)
  *    "total_volume": "5923465567"
  *  }]
  */
-router.get('/:chain/list', setCurrencyRate, controller.protocols)
+router.get('/:chain/list', setCurrencyRate, controller.chainProtocols)
 
 /**
  * @api {get} /v1/top-platforms/:chain/chart Platforms market chart

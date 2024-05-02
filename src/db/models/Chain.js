@@ -49,9 +49,8 @@ class Chain extends SequelizeModel {
         select uid, name, stats, (stats->>'market_cap')::numeric as mcap
         from chains
       )
-      SELECT *
-      FROM list
-      WHERE mcap > 0
+      SELECT * FROM list
+      WHERE mcap > 100000000
       ORDER BY mcap DESC
       ${limit ? 'LIMIT :limit' : ''}
     `
@@ -72,7 +71,7 @@ class Chain extends SequelizeModel {
     return Chain.query(query)
   }
 
-  static getPlatforms(chain) {
+  static getChainProtocols(chain) {
     const query = `
       SELECT
         c.uid,
