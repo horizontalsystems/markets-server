@@ -25,6 +25,10 @@ class CoinTicker extends SequelizeModel {
       {
         sequelize,
         tableName: 'coin_tickers',
+        indexes: [{
+          unique: true,
+          fields: ['base', 'target', 'market_uid']
+        }],
         timestamps: false
       }
     )
