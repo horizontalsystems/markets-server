@@ -76,6 +76,15 @@ exports.list = async ({ currencyRate }, res, next) => {
   }
 }
 
+exports.signals = async ({ query }, res, next) => {
+  try {
+    const indicators = await CoinIndicator.getCoinsSignals(query.uids.split(','))
+    res.send(serializer.serializeSignals(indicators))
+  } catch (e) {
+    next(e)
+  }
+}
+
 exports.show = async ({ params, query, currencyRate }, res) => {
   const coin = await Coin.getCoinInfo(params.uid)
 

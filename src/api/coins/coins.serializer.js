@@ -163,6 +163,13 @@ exports.serializeList = coins => {
   }))
 }
 
+exports.serializeSignals = indicators => {
+  return indicators.map(item => ({
+    uid: item.uid,
+    signal: item.result
+  }))
+}
+
 exports.serializeShow = (coin, language, currencyRate) => {
   const market = coin.market_data || {}
   const categories = coin.Categories || []

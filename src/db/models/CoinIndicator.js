@@ -37,6 +37,10 @@ class CoinIndicator extends SequelizeModel {
     return mapToField(records, 'coin_id', 'result')
   }
 
+  static async getCoinsSignals(uids) {
+    return CoinIndicator.query('select uid, result from coin_indicators i, coins c where c.id = i.coin_id and c.uid in (:uids)', { uids })
+  }
+
   static async getByCoin(id) {
     const indicator = await CoinIndicator.findOne({
       where: {

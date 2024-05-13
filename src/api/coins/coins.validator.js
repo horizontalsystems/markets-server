@@ -40,6 +40,13 @@ module.exports = {
     })
   }, options),
 
+  // GET /v1/coins/indicators
+  validateIndicators: validate({
+    query: Joi.object({
+      uids: Joi.string().required()
+    })
+  }, options),
+
   // GET /v1/coins/:uid
   validateShow: validate({
     query: Joi.object({
