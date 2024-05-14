@@ -14,14 +14,8 @@ class CoinTicker extends SequelizeModel {
           type: DataTypes.STRING,
           allowNull: false
         },
-        base_uid: {
-          type: DataTypes.STRING,
-          allowNull: false
-        },
-        target_uid: {
-          type: DataTypes.STRING,
-          allowNull: false
-        },
+        base_uid: DataTypes.STRING,
+        target_uid: DataTypes.STRING,
         price: DataTypes.DECIMAL,
         volume: DataTypes.DECIMAL,
         volume_usd: DataTypes.DECIMAL,

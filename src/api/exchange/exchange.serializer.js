@@ -33,7 +33,9 @@ exports.serializeTopMarketPairs = (markets, currencyRate) => {
     return {
       rank: index + 1,
       base: item.base,
+      base_uid: item.base_uid,
       target: item.target,
+      target_uid: item.target_uid,
       price: nullOrString(item.price),
       volume: valueInCurrency(item.volume_usd, currencyRate),
       market_name: item.market_name,

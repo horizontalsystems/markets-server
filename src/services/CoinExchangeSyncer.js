@@ -113,7 +113,7 @@ class CoinExchangeSyncer extends CoinPriceHistorySyncer {
     }
 
     await CoinTicker.deleteAll(coin.id)
-    await CoinTicker.bulkCreate(markets)
+    await CoinTicker.bulkCreate(markets, { ignoreDuplicates: true })
       .then(records => {
         console.log(`Inserted tickers ${records.length} for coin ${coin.coingecko_id}`)
       })
