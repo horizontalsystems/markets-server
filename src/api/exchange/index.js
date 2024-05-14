@@ -91,6 +91,6 @@ router.get('/whitelist', controller.whitelist)
  */
 router.get('/top-market-pairs', validateTopPairs, setCurrencyRate, controller.topMarketPairs)
 // @deprecated
-router.get('/top-pairs', controller.topPairs)
+router.get('/top-pairs', validateTopPairs, setCurrencyRate, controller.topPairs)
 
 module.exports = router

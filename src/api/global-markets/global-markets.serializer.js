@@ -32,7 +32,7 @@ const serializeOverview = ({ global, categories, nft, platforms, pairs, marketPa
     sectors: serializeCategories(categories, currencyRate),
     platforms: serializePlatforms(platforms, currencyRate),
     nft: serializeNft(nft, simplified),
-    pairs: serializeTopPairs(pairs),
+    pairs: serializeTopPairs(pairs, currencyRate),
     market_pairs: serializeTopMarketPairs(marketPairs, currencyRate),
   }
 }
