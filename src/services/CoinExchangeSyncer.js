@@ -68,7 +68,9 @@ class CoinExchangeSyncer extends CoinPriceHistorySyncer {
 
       const pair = {
         base: ticker.base.toUpperCase(),
+        base_uid: ticker.coin_id,
         target: ticker.target.toUpperCase(),
+        target_uid: ticker.target_coin_id,
         price: ticker.last,
         volume: ticker.volume,
         volume_usd: ticker.converted_volume.usd,
