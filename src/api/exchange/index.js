@@ -89,6 +89,8 @@ router.get('/whitelist', controller.whitelist)
  *  }]
  * @apiError (Bad Request 400)  ValidationError   Some parameters may contain invalid values
  */
-router.get('/top-pairs', validateTopPairs, setCurrencyRate, controller.topPairs)
+router.get('/top-market-pairs', validateTopPairs, setCurrencyRate, controller.topMarketPairs)
+// @deprecated
+router.get('/top-pairs', controller.topPairs)
 
 module.exports = router
