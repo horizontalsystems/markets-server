@@ -41,6 +41,8 @@ const UpdateState = require('./models/UpdateState')
 const EvmMethodLabel = require('./models/EvmMethodLabel')
 const AddressLabel = require('./models/AddressLabel')
 const Block = require('./models/Block')
+const Etf = require('./models/Etf')
+const EtfInflow = require('./models/EtfInflow')
 const config = require('./config')
 
 const sequelize = new Sequelize(
@@ -93,6 +95,8 @@ const db = {
   AuthKey: AuthKey.init(sequelize, Sequelize),
   EvmMethodLabel: EvmMethodLabel.init(sequelize, Sequelize),
   Block: Block.init(sequelize, Sequelize),
+  Etf: Etf.init(sequelize, Sequelize),
+  EtfInflow: EtfInflow.init(sequelize, Sequelize),
   UpdateState: UpdateState.init(sequelize, Sequelize)
 }
 
