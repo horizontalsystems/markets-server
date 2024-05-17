@@ -1,8 +1,8 @@
 const cheerio = require('cheerio')
 const { get } = require('lodash')
-const { utcDate } = require('../utils')
-const Syncer = require('./Syncer')
+const { getPrevWeekday } = require('../utils')
 const sosovalue = require('../providers/sosovalue')
+const Syncer = require('./Syncer')
 const Etf = require('../db/models/Etf')
 const EtfInflow = require('../db/models/EtfInflow')
 
@@ -16,24 +16,39 @@ class EtfSyncer extends Syncer {
   }
 
   async sync() {
-    const dateFrom = utcDate({}, 'yyyy-MM-dd')
-    console.log('Sync ETF data of', dateFrom)
-    const etfs = await Etf.expiredItems(dateFrom)
-    if (!etfs.length) {
-      console.log('ETF data already synced')
-      return
+    const date = getPrevWeekday()
+    const etfs = await Etf.findAll({ attributes: ['date', 'ticker'], raw: true })
+
+    console.log('Syncing ETF data for', date)
+
+    if (etfs.length) {
+      const expired = etfs.filter(item => item.date < date)
+      if (expired.length) {
+        console.log('ETF data expired for', expired)
+      } else {
+        console.log('ETF data already synced')
+        return
+      }
     }
 
+    try {
+      await this.syncSpotETF(date)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  async syncSpotETF(date) {
     const {
       data = [],
       lastData = [],
       historyData = []
     } = this.parseData(await sosovalue.getSpotEtf())
 
+    const totalNavMap = get(lastData, '[0].totalNavMap', {})
     const netInflowMap = get(lastData, '[0].netInflowMap', {})
     const cumNetInflowMap = get(lastData, '[0].cumNetInflowMap', {})
     const volumeTradedMap = get(lastData, '[0].volumeTradedMap', {})
-    const date = Object.keys(netInflowMap)[0]
 
     const etfRecords = []
     const etfInflows = []
@@ -46,6 +61,7 @@ class EtfSyncer extends Syncer {
         name: item.name,
         uid: item.id,
         price: item.mktPrice,
+        totalAssets: (totalNavMap[date] || {})[item.id],
         totalInflow: (cumNetInflowMap[date] || {})[item.id],
         dailyInflow: (netInflowMap[date] || {})[item.id],
         dailyVolume: (volumeTradedMap[date] || {})[item.id],
@@ -72,7 +88,7 @@ class EtfSyncer extends Syncer {
 
   async storeEtf(records) {
     await Etf.bulkCreate(records, {
-      updateOnDuplicate: ['price', 'totalInflow', 'dailyInflow', 'dailyVolume',]
+      updateOnDuplicate: ['price', 'totalAssets', 'totalInflow', 'dailyInflow', 'dailyVolume']
     })
       .then((data) => {
         console.log('Inserted ETF', data.length)

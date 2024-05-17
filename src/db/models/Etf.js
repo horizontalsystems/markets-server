@@ -13,9 +13,15 @@ class Etf extends SequelizeModel {
         uid: DataTypes.STRING,
         name: DataTypes.STRING,
         price: DataTypes.DECIMAL,
+        totalAssets: DataTypes.DECIMAL,
         totalInflow: DataTypes.DECIMAL,
         dailyInflow: DataTypes.DECIMAL,
         dailyVolume: DataTypes.DECIMAL,
+        changes: DataTypes.JSONB,
+        // {
+        //   1d: 10%,
+        //   1w: 20%
+        // }
         date: DataTypes.DATEONLY
       },
       {
