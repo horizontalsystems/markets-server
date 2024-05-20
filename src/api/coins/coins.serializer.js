@@ -258,7 +258,7 @@ exports.serializeMoversBy = (data, currencyRate) => {
     uid: item.uid,
     name: item.name, // @deprecated
     code: item.code,
-    market_cap: item.market_cap,
+    market_cap: nullOrString(item.market_cap),
     market_cap_rank: item.market_cap_rank,
     price: valueInCurrency(item.price, currencyRate),
     price_change_24h: nullOrString(item.price_change_24h),
