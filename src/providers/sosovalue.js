@@ -37,7 +37,15 @@ exports.getEftFlow = function getEftFlow() {
     })
 }
 
-exports.getSpotEtf = function findPage() {
+exports.findListByIdsOrNames = function findListByIdsOrNames(nameList) {
+  return api
+    .post('/data/s-indicator-data-do/findListByIdsOrNames', { nameList })
+    .then(({ data: resp }) => {
+      return resp.data
+    })
+}
+
+exports.getSpotEtf = function getSpotEtf() {
   return web
     .get('/assets/etf/us-btc-spot')
     .then(res => {

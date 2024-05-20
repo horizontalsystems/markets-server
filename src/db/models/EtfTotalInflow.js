@@ -1,6 +1,6 @@
 const SequelizeModel = require('./SequelizeModel')
 
-class EtfInflow extends SequelizeModel {
+class EtfTotalInflow extends SequelizeModel {
 
   static init(sequelize, DataTypes) {
     return super.init(
@@ -17,16 +17,16 @@ class EtfInflow extends SequelizeModel {
       },
       {
         sequelize,
-        tableName: 'etf_inflow',
+        tableName: 'etf_total_inflow',
         timestamps: false
       }
     )
   }
 
   static async exists() {
-    return !!await EtfInflow.findOne()
+    return !!await EtfTotalInflow.findOne()
   }
 
 }
 
-module.exports = EtfInflow
+module.exports = EtfTotalInflow

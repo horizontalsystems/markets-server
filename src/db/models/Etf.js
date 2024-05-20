@@ -12,6 +12,8 @@ class Etf extends SequelizeModel {
         },
         uid: DataTypes.STRING,
         name: DataTypes.STRING,
+        exchange: DataTypes.STRING,
+        institution: DataTypes.STRING,
         price: DataTypes.DECIMAL,
         totalAssets: DataTypes.DECIMAL,
         totalInflow: DataTypes.DECIMAL,
@@ -30,6 +32,10 @@ class Etf extends SequelizeModel {
         timestamps: false
       }
     )
+  }
+
+  static associate(models) {
+    Etf.hasMany(models.EtfDailyInflow)
   }
 
   static async exists() {
