@@ -21,8 +21,14 @@ class Etf extends SequelizeModel {
         dailyVolume: DataTypes.DECIMAL,
         changes: DataTypes.JSONB,
         // {
-        //   1d: 10%,
-        //   1w: 20%
+        //  1d_assets: 10,
+        //  1d_inflow: 10,
+        //  1w_assets: 10,
+        //  1w_inflow: 10,
+        //  1m_assets: 10,
+        //  1m_inflow: 10,
+        //  3m_assets: 10,
+        //  3m_inflow: 10'
         // }
         date: DataTypes.DATEONLY
       },
@@ -43,7 +49,7 @@ class Etf extends SequelizeModel {
   }
 
   static async expiredItems(dateFrom) {
-    return Etf.query('select ticker from etf where date < :dateFrom', { dateFrom })
+    return Etf.query('select date, ticker from etf where date < :dateFrom', { dateFrom })
   }
 
 }

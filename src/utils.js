@@ -23,17 +23,24 @@ exports.utcStartOfDay = (duration = {}, inSeconds = false) => {
   return inSeconds ? dateTime.toSeconds() : dateTime.toFormat('yyyy-MM-dd')
 }
 
-exports.getPrevWeekday = () => {
+exports.getPrevWeekday = (prev) => {
   const today = DateTime.utc()
   const format = 'yyyy-MM-dd 00:00:00'
 
+  let day = -1
   if (today.weekday === 1) {
-    return today.plus({ day: -3 }).toFormat(format)
-  } else if (today.weekday === 7) {
-    return today.plus({ day: -2 }).toFormat(format)
-  } else {
-    return today.plus({ day: -1 }).toFormat(format)
+    day = -3
   }
+
+  if (today.weekday === 7) {
+    day = -2
+  }
+
+  if (prev) {
+    day -= 1
+  }
+
+  return today.plus({ day }).toFormat(format)
 }
 
 exports.requireFile = file => {
