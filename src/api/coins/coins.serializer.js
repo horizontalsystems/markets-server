@@ -253,14 +253,18 @@ exports.serializeMovers = (data, currencyRate) => {
   }
 }
 
-exports.serializeGainers = (data, currencyRate) => {
+exports.serializeMoversBy = (data, currencyRate) => {
   const mapper = items => items.map(item => ({
     uid: item.uid,
-    name: item.name,
+    name: item.name, // @deprecated
     code: item.code,
+    market_cap: item.market_cap,
     market_cap_rank: item.market_cap_rank,
     price: valueInCurrency(item.price, currencyRate),
-    price_change_24h: nullOrString(item.price_change_24h)
+    price_change_24h: nullOrString(item.price_change_24h),
+    price_change_1w: nullOrString(item.price_change_1w),
+    price_change_1m: nullOrString(item.price_change_1m),
+    price_change_3m: nullOrString(item.price_change_3m),
   }))
 
   return mapper(data)

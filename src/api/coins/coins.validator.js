@@ -78,7 +78,7 @@ module.exports = {
 
   validateGainers: validate({
     params: Joi.object({
-      field: Joi.string().valid('price', 'volume', 'mcap').required(),
+      field: Joi.string().valid('price', 'price_change_24h', 'price_change_1w', 'price_change_1m', 'price_change_3m', 'volume', 'mcap').required(),
     }),
     query: Joi.object({
       uids: Joi.string(),

@@ -120,7 +120,7 @@ exports.moversBy = async ({ params, query, currencyRate }, res, next) => {
   try {
     const uids = query.uids ? query.uids.split(',') : null
     const data = await Coin.getTopMoversBy(params.field, uids, query.order, query.limit)
-    res.send(serializer.serializeGainers(data, currencyRate))
+    res.send(serializer.serializeMoversBy(data, currencyRate))
   } catch (e) {
     next(e)
   }

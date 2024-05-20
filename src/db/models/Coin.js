@@ -241,6 +241,12 @@ class Coin extends SequelizeModel {
       orderField = 'total_volume'
     } else if (field === 'mcap') {
       orderField = 'market_cap'
+    } else if (field === 'price_change_1w') {
+      orderField = `price_change_1w`
+    } else if (field === 'price_change_1m') {
+      orderField = `price_change_1m`
+    } else if (field === 'price_change_3m') {
+      orderField = `price_change_3m`
     }
 
     const result = await Coin.query(`
@@ -251,8 +257,11 @@ class Coin extends SequelizeModel {
           code,
           price,
           price_change->'24h' price_change_24h,
+          price_change->'7d' price_change_1w,
+          price_change->'30d' price_change_1m,
+          price_change->'30d' price_change_3m,
           market_data->'market_cap' as market_cap,
-          market_data->'total_volume' as total_volume
+          market_data->'market_cap_rank' as market_cap_rank
         FROM coins ${uids ? 'where uid in(:uids)' : ''}
         ORDER BY market_data->'market_cap' desc nulls last
         LIMIT 100
