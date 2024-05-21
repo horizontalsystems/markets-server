@@ -191,7 +191,7 @@ class EtfSyncer extends Syncer {
 
   async storeEtf(records) {
     await Etf.bulkCreate(records, {
-      updateOnDuplicate: ['price', 'totalAssets', 'totalInflow', 'dailyInflow', 'dailyVolume', 'changes']
+      updateOnDuplicate: ['price', 'totalAssets', 'totalInflow', 'dailyInflow', 'dailyVolume', 'changes', 'date']
     })
       .then((data) => {
         console.log('Inserted ETF', data.length)

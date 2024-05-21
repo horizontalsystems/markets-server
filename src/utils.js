@@ -27,20 +27,25 @@ exports.getPrevWeekday = (prev) => {
   const today = DateTime.utc()
   const format = 'yyyy-MM-dd 00:00:00'
 
-  let day = -1
-  if (today.weekday === 1) {
-    day = -3
+  const prevDayDuration = date => {
+    let day = -1
+    if (date.weekday === 1) {
+      day = -3
+    }
+
+    if (date.weekday === 7) {
+      day = -2
+    }
+
+    return day
   }
 
-  if (today.weekday === 7) {
-    day = -2
-  }
-
+  let prevDay = today.plus({ day: prevDayDuration(today) })
   if (prev) {
-    day -= 1
+    prevDay = prevDay.plus({ day: prevDayDuration(prevDay) })
   }
 
-  return today.plus({ day }).toFormat(format)
+  return prevDay.toFormat(format)
 }
 
 exports.requireFile = file => {
