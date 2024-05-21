@@ -30,5 +30,6 @@ router.use('/blockchair', require('../api/blockchair'))
 router.use('/ethereum-rpc', require('../api/infura'))
 router.use('/stats', require('../api/stats'))
 router.use('/status', require('../api/status'))
+router.use('/etfs', require('../api/etf'))
 
 module.exports = router
