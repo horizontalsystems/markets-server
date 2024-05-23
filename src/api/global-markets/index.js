@@ -43,6 +43,7 @@ router.get('/', validateGlobalMarkets, setCurrencyRate, setDateInterval, control
  *  }
  */
 router.get('/overview', setDateInterval, setCurrencyRate, controller.overview)
+router.get('/overview-simple', setDateInterval, setCurrencyRate, controller.overviewSimple)
 
 /**
  * @api {get} /v1/global-markets/tvls List chain tvls

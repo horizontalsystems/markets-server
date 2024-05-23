@@ -1,3 +1,4 @@
+const utils = require('../../utils')
 const SequelizeModel = require('./SequelizeModel')
 
 class GlobalMarket extends SequelizeModel {
@@ -52,6 +53,49 @@ class GlobalMarket extends SequelizeModel {
       dateTo
     })
   }
+
+  static async getOverview(dateFrom) {
+    const result = {}
+
+    const [yesterday] = await GlobalMarket.query(`
+      select market_cap, btc_dominance, defi_market_cap, tvl, volume
+        from global_markets
+       where date <= :dateFrom
+       order by date desc
+       limit 1
+    `, { dateFrom })
+
+    const [today] = await GlobalMarket.query(`
+      select market_cap, btc_dominance, defi_market_cap, tvl, volume
+        from global_markets
+       order by date desc
+       limit 1
+    `)
+
+    result.market_cap = today.market_cap
+    result.market_cap_change = utils.percentageBetweenNumber(yesterday.market_cap, today.market_cap)
+    result.btc_dominance = today.btc_dominance
+    result.btc_dominance_change = utils.percentageBetweenNumber(yesterday.btc_dominance, today.btc_dominance)
+    result.defi_market_cap = today.defi_market_cap
+    result.defi_market_cap_change = utils.percentageBetweenNumber(yesterday.defi_market_cap, today.defi_market_cap)
+    result.tvl = today.tvl
+    result.tvl_change = utils.percentageBetweenNumber(yesterday.tvl, today.tvl)
+    result.volume = today.volume
+    result.volume_change = utils.percentageBetweenNumber(yesterday.volume, today.volume)
+
+    const [etf] = await GlobalMarket.query(`
+      select total_inflow, total_daily_inflow
+        from etf_total_inflow
+        order by date desc
+        limit 1
+    `)
+
+    result.etf_total_inflow = etf.total_inflow
+    result.etf_daily_inflow = etf.total_daily_inflow
+
+    return result
+  }
+
 
   static getList(dateFrom, window) {
     const query = (`

@@ -29,3 +29,4 @@ jsconfig.json
 
 # adminjs components
 .adminjs
+.vscode

@@ -1,5 +1,5 @@
 const { capitalizeFirstLetter, utcDate } = require('../../utils')
-const { serializeList, serializeTvls, serializeOverview } = require('./global-markets.serializer')
+const { serializeList, serializeTvls, serializeOverview, serializeOverviewSimple } = require('./global-markets.serializer')
 
 const Chain = require('../../db/models/Chain')
 const Category = require('../../db/models/Category')
@@ -27,6 +27,18 @@ exports.overview = async ({ currencyRate, query }, res, next) => {
 
     res.status(200)
     res.json(serializeOverview({ global, categories, nft, platforms, pairs, marketPairs, simplified: query.simplified }, currencyRate))
+  } catch (e) {
+    next(e)
+  }
+}
+
+exports.overviewSimple = async ({ currencyRate }, res, next) => {
+  try {
+    const dateFrom = utcDate({ hours: -24 })
+    const global = await GlobalMarket.getOverview(dateFrom)
+
+    res.status(200)
+    res.json(serializeOverviewSimple(global, currencyRate))
   } catch (e) {
     next(e)
   }
