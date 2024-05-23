@@ -41,15 +41,15 @@ const serializeOverview = ({ global, categories, nft, platforms, pairs, marketPa
 exports.serializeOverviewSimple = (item, currencyRate) => {
   return {
     market_cap: valueInCurrency(item.market_cap, currencyRate),
-    market_cap_change: item.market_cap_change,
+    market_cap_change: nullOrString(item.market_cap_change),
     defi_market_cap: valueInCurrency(item.defi_market_cap, currencyRate),
-    defi_market_cap_change: item.defi_market_cap_change,
+    defi_market_cap_change: nullOrString(item.defi_market_cap_change),
     volume: valueInCurrency(item.volume, currencyRate),
-    volume_change: item.volume_change,
+    volume_change: nullOrString(item.volume_change),
     btc_dominance: nullOrString(item.btc_dominance),
-    btc_dominance_change: item.btc_dominance_change,
+    btc_dominance_change: nullOrString(item.btc_dominance_change),
     tvl: valueInCurrency(item.tvl, currencyRate),
-    tvl_change: item.tvl_change,
+    tvl_change: nullOrString(item.tvl_change),
     etf_total_inflow: valueInCurrency(item.etf_total_inflow, currencyRate),
     etf_daily_inflow: valueInCurrency(item.etf_daily_inflow, currencyRate)
   }
