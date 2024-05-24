@@ -2,6 +2,11 @@ const { DateTime } = require('luxon')
 
 exports.normalizeMarkets = markets => {
   const updatedDate = DateTime.now().toISO()
+  const getImagePath = image => {
+    const url = new URL(image)
+    return url.pathname.replace('/coins/images', '')
+  }
+
   return markets.map(coin => ({
     uid: coin.id,
     name: coin.name,
@@ -36,6 +41,8 @@ exports.normalizeMarkets = markets => {
       fully_diluted_valuation: coin.fully_diluted_valuation,
       total_value_locked: (coin.total_value_locked || {}).usd
     },
+
+    img_path: getImagePath(coin.image),
 
     last_updated: updatedDate
   }))

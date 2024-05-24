@@ -86,6 +86,13 @@ function mapCoinAttribute(coin, field, currencyRate) {
       return marketData.market_cap_rank
     case 'total_volume':
       return valueInCurrency(marketData.total_volume, currencyRate)
+    case 'image': {
+      if (!coin.img_path) {
+        return null
+      }
+
+      return `https://assets.coingecko.com/coins/images${coin.img_path}`
+    }
     case 'last_updated':
       return Math.round(new Date(coin.last_updated).getTime() / 1000)
     case 'platforms':

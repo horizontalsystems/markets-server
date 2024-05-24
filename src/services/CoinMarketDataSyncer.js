@@ -49,19 +49,20 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
 
   async updateCoins(coins, idsMap) {
     const values = []
-    const mapMarket = (id, item) => [
+    const mapMarketData = (id, item) => [
       id,
       JSON.stringify(item.price_change),
-      JSON.stringify(item.market_data)
+      JSON.stringify(item.market_data),
+      item.img_path
     ]
 
     for (let i = 0; i < coins.length; i += 1) {
-      const coin = coins[i];
+      const coin = coins[i]
       const coinIds = idsMap[coin.coingecko_id]
 
       if (coinIds && coin.price) {
         coinIds.forEach(id => {
-          values.push(mapMarket(id, coin))
+          values.push(mapMarketData(id, coin))
         })
       }
     }
@@ -76,8 +77,9 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
       const query = `
         UPDATE coins AS c set
           price_change = v.price_change::json,
-          market_data = v.market_data::json
-        FROM (values :values) as v(id, price_change, market_data)
+          market_data = v.market_data::json,
+          img_path = v.img_path::text
+        FROM (values :values) as v(id, price_change, market_data, img_path)
         WHERE c.id = v.id`
 
       await Coin.queryUpdate(query, { values })
