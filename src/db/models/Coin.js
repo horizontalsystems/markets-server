@@ -34,6 +34,8 @@ class Coin extends SequelizeModel {
         //    telegram: http://domain.com
         //  }
 
+        img_path: DataTypes.STRING,
+
         price: DataTypes.DECIMAL,
         price_change_24h: DataTypes.DECIMAL,
         price_change: DataTypes.JSONB,
