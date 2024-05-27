@@ -3,6 +3,7 @@ const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
 const Platform = require('../db/models/Platform')
 const Coin = require('../db/models/Coin')
+const CoinPrice = require('../db/models/CoinPrice')
 const CoinPriceHistorySyncer = require('./CoinPriceHistorySyncer')
 
 const debug = msg => {
@@ -27,34 +28,43 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
   }
 
   async sync(uid) {
-    const coins = await this.getCoins(uid)
+    const coins = await this.getCoinsWithPrice(uid)
     const chunks = chunk(Array.from(coins.uids), 250)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await this.syncMarketData(chunks[i], coins.map)
+      await this.syncMarketData(chunks[i], coins.map, coins.priceMap)
     }
   }
 
-  async syncMarketData(coinUids, idsMap) {
+  async syncMarketData(coinUids, idsMap, priceMap) {
     debug(`Syncing coins ${coinUids.length}`)
 
     try {
       const coins = await coingecko.getMarkets(coinUids, 1, 250)
-      await this.updateCoins(coins, idsMap)
+      await this.updateCoins(coins, idsMap, priceMap)
       await utils.sleep(20000)
     } catch (e) {
       await this.handleHttpError(e)
     }
   }
 
-  async updateCoins(coins, idsMap) {
+  async updateCoins(coins, idsMap, priceMap) {
     const values = []
-    const mapMarketData = (id, item) => [
-      id,
-      JSON.stringify(item.price_change),
-      JSON.stringify(item.market_data),
-      item.img_path
-    ]
+    const mapMarketData = (id, item) => {
+      const priceChange = item.price_change
+      const price3Month = priceMap[id]
+
+      if (price3Month) {
+        priceChange['90d'] = utils.percentageBetweenNumber(price3Month, item.price)
+      }
+
+      return [
+        id,
+        JSON.stringify(priceChange),
+        JSON.stringify(item.market_data),
+        item.img_path
+      ]
+    }
 
     for (let i = 0; i < coins.length; i += 1) {
       const coin = coins[i]
@@ -116,6 +126,38 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
 
     await Coin.destroy({ where: { id: ids } })
     await Platform.destroy({ where: { coin_id: Platform.literal('coin_id IS NULL') } })
+  }
+
+  async getCoinsWithPrice(uid) {
+    const coins = await Coin.findAll({
+      attributes: ['id', 'coingecko_id'],
+      where: {
+        ...(uid && { uid }),
+        coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
+      }
+    })
+
+    const uids = new Set()
+    const map = {}
+    const priceMap = {}
+
+    for (let i = 0; i < coins.length; i += 1) {
+      const coin = coins[i]
+      const cid = coin.coingecko_id
+      const ids = map[cid] || (map[cid] = [])
+
+      uids.add(encodeURIComponent(cid))
+      ids.push(coin.id)
+    }
+
+    const prices = await CoinPrice.get3MonthPrices(Object.values(map).flat())
+
+    for (let i = 0; i < prices.length; i += 1) {
+      const item = prices[i];
+      priceMap[item.coin_id] = item.price
+    }
+
+    return { uids, map, priceMap }
   }
 }
 
