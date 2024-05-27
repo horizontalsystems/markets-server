@@ -50,7 +50,6 @@ class EtfSyncer extends Syncer {
     const netInflowMap = get(lastData, '[0].netInflowMap', {})
     const cumNetInflowMap = get(lastData, '[0].cumNetInflowMap', {})
     const volumeTradedMap = get(lastData, '[0].volumeTradedMap', {})
-    const datePrev = getPrevWeekday(true)
 
     const etfRecords = []
     const etfInflows = []
@@ -61,7 +60,7 @@ class EtfSyncer extends Syncer {
       const dailyInflow = (netInflowMap[date] || {})[item.id]
       const totalAssets = (totalNavMap[date] || {})[item.id]
 
-      const etf = {
+      const etfRecord = {
         ticker: item.ticker,
         name: item.name,
         uid: item.id,
@@ -79,29 +78,30 @@ class EtfSyncer extends Syncer {
       const m1Sum = await EtfDailyInflow.getSum(utcDate({ day: -60 }, 'yyyy-MM-dd'), item.ticker, '1m')
       const m3Sum = await EtfDailyInflow.getSum(utcDate({ day: -90 }, 'yyyy-MM-dd'), item.ticker, '3m')
 
-      etf.changes = {
+      etfRecord.changes = {
         ...w1Sum,
         ...m1Sum,
         ...m3Sum,
         '1d_inflow': dailyInflow
       }
 
-      const prevDay = await EtfDailyInflow.getByDate(datePrev, item.ticker)
-      if (prevDay) {
-        const dailyAssets = totalAssets - prevDay.assets
-        etf.changes['1d_assets'] = dailyAssets
+      const etf = await Etf.findOne({
+        where: {
+          ticker: item.ticker,
+        }
+      })
 
+      if (etf) {
         const eftHistory = {
-          etf_id: prevDay.etf_id,
+          etf_id: etf.id,
           dailyInflow,
-          dailyAssets,
           date
         }
 
         await this.storeDailyEtfInflow([eftHistory])
       }
 
-      etfRecords.push(etf)
+      etfRecords.push(etfRecord)
     }
 
     for (let i = 0; i < historyData.list.length; i += 1) {
