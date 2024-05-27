@@ -28,11 +28,12 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
   }
 
   async sync(uid) {
-    const coins = await this.getCoinsWithPrice(uid)
+    const coins = await this.getCoins(uid)
     const chunks = chunk(Array.from(coins.uids), 250)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await this.syncMarketData(chunks[i], coins.map, coins.priceMap)
+      const priceMap = await this.getPricesMap(Object.values(coins.map).flat())
+      await this.syncMarketData(chunks[i], coins.map, priceMap)
     }
   }
 
@@ -128,36 +129,16 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
     await Platform.destroy({ where: { coin_id: Platform.literal('coin_id IS NULL') } })
   }
 
-  async getCoinsWithPrice(uid) {
-    const coins = await Coin.findAll({
-      attributes: ['id', 'coingecko_id'],
-      where: {
-        ...(uid && { uid }),
-        coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
-      }
-    })
-
-    const uids = new Set()
-    const map = {}
+  async getPricesMap(ids) {
+    const prices = await CoinPrice.get3MonthPrices(ids)
     const priceMap = {}
-
-    for (let i = 0; i < coins.length; i += 1) {
-      const coin = coins[i]
-      const cid = coin.coingecko_id
-      const ids = map[cid] || (map[cid] = [])
-
-      uids.add(encodeURIComponent(cid))
-      ids.push(coin.id)
-    }
-
-    const prices = await CoinPrice.get3MonthPrices(Object.values(map).flat())
 
     for (let i = 0; i < prices.length; i += 1) {
       const item = prices[i];
       priceMap[item.coin_id] = item.price
     }
 
-    return { uids, map, priceMap }
+    return priceMap
   }
 }
 
