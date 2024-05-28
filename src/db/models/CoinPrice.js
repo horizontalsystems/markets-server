@@ -133,6 +133,26 @@ class CoinPrice extends SequelizeModel {
     return price
   }
 
+  static async get3MonthPrices(ids) {
+    return CoinPrice.query(`
+      SELECT
+        t1.coin_id,
+        t1.price,
+        t1.date
+      FROM coin_prices t1
+      JOIN (
+        SELECT
+          coin_id,
+          MAX(id) AS max_id,
+          MAX(date) AS max_date
+        FROM coin_prices
+        WHERE date < (CURRENT_DATE - INTERVAL '90 days')
+          AND coin_id IN (:ids)
+        GROUP BY coin_id
+      ) t2 ON t1.id = t2.max_id AND t1.date = t2.max_date AND t1.coin_id = t2.coin_id
+      `, { ids })
+  }
+
   static deleteExpired(dateFrom, dateTo) {
     return CoinPrice.query('DELETE FROM coin_prices WHERE date > :dateFrom AND date < :dateTo', {
       dateFrom,

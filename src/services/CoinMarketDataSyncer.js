@@ -3,6 +3,7 @@ const utils = require('../utils')
 const coingecko = require('../providers/coingecko')
 const Platform = require('../db/models/Platform')
 const Coin = require('../db/models/Coin')
+const CoinPrice = require('../db/models/CoinPrice')
 const CoinPriceHistorySyncer = require('./CoinPriceHistorySyncer')
 
 const debug = msg => {
@@ -31,30 +32,42 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
     const chunks = chunk(Array.from(coins.uids), 250)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await this.syncMarketData(chunks[i], coins.map)
+      const chunkUids = chunks[i]
+      const chunkIds = chunkUids.map(item => coins.map[item])
+      const priceMap = await this.getPricesMap(chunkIds.flat())
+      await this.syncMarketData(chunkUids, coins.map, priceMap)
     }
   }
 
-  async syncMarketData(coinUids, idsMap) {
+  async syncMarketData(coinUids, idsMap, priceMap) {
     debug(`Syncing coins ${coinUids.length}`)
 
     try {
       const coins = await coingecko.getMarkets(coinUids, 1, 250)
-      await this.updateCoins(coins, idsMap)
+      await this.updateCoins(coins, idsMap, priceMap)
       await utils.sleep(20000)
     } catch (e) {
       await this.handleHttpError(e)
     }
   }
 
-  async updateCoins(coins, idsMap) {
+  async updateCoins(coins, idsMap, priceMap) {
     const values = []
-    const mapMarketData = (id, item) => [
-      id,
-      JSON.stringify(item.price_change),
-      JSON.stringify(item.market_data),
-      item.img_path
-    ]
+    const mapMarketData = (id, item) => {
+      const priceChange = item.price_change
+      const price3Month = priceMap[id]
+
+      if (price3Month) {
+        priceChange['90d'] = utils.percentageBetweenNumber(price3Month, item.price)
+      }
+
+      return [
+        id,
+        JSON.stringify(priceChange),
+        JSON.stringify(item.market_data),
+        item.img_path
+      ]
+    }
 
     for (let i = 0; i < coins.length; i += 1) {
       const coin = coins[i]
@@ -116,6 +129,18 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
 
     await Coin.destroy({ where: { id: ids } })
     await Platform.destroy({ where: { coin_id: Platform.literal('coin_id IS NULL') } })
+  }
+
+  async getPricesMap(ids) {
+    const prices = await CoinPrice.get3MonthPrices(ids)
+    const priceMap = {}
+
+    for (let i = 0; i < prices.length; i += 1) {
+      const item = prices[i];
+      priceMap[item.coin_id] = item.price
+    }
+
+    return priceMap
   }
 }
 

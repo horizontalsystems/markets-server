@@ -3,8 +3,12 @@ const { DateTime } = require('luxon')
 exports.normalizeMarkets = markets => {
   const updatedDate = DateTime.now().toISO()
   const getImagePath = image => {
-    const url = new URL(image)
-    return url.pathname.replace('/coins/images', '')
+    try {
+      const url = new URL(image)
+      return url.pathname.replace('/coins/images', '')
+    } catch (e) {
+      return ''
+    }
   }
 
   return markets.map(coin => ({
