@@ -60,6 +60,13 @@ class EtfSyncer extends Syncer {
       const dailyInflow = (netInflowMap[date] || {})[item.id]
       const totalAssets = (totalNavMap[date] || {})[item.id]
 
+      if (!dailyInflow || !totalAssets) {
+        console.log(`There is no dailyInflow or totalAssets data for ${item.ticker} at (${date})`)
+        console.log('netInflowMap', JSON.stringify(netInflowMap))
+        console.log('totalAssets', JSON.stringify(totalAssets))
+        continue
+      }
+
       const etfRecord = {
         ticker: item.ticker,
         name: item.name,
@@ -91,7 +98,7 @@ class EtfSyncer extends Syncer {
         }
       })
 
-      if (etf) {
+      if (etf && dailyInflow) {
         const eftHistory = {
           etf_id: etf.id,
           dailyInflow,
@@ -190,6 +197,10 @@ class EtfSyncer extends Syncer {
   }
 
   async storeEtf(records) {
+    if (!records.length) {
+      return
+    }
+
     await Etf.bulkCreate(records, {
       updateOnDuplicate: ['price', 'totalAssets', 'totalInflow', 'dailyInflow', 'dailyVolume', 'changes', 'date']
     })
@@ -202,6 +213,10 @@ class EtfSyncer extends Syncer {
   }
 
   async storeTotalEtfInflow(records) {
+    if (!records.length) {
+      return
+    }
+
     await EtfTotalInflow.bulkCreate(records, {
       updateOnDuplicate: ['totalAssets', 'totalInflow', 'totalDailyInflow', 'totalDailyVolume'],
       returning: false
@@ -215,6 +230,10 @@ class EtfSyncer extends Syncer {
   }
 
   async storeDailyEtfInflow(records) {
+    if (!records.length) {
+      return
+    }
+
     await EtfDailyInflow.bulkCreate(records, {
       updateOnDuplicate: ['dailyInflow', 'dailyAssets', 'etf_id'],
       returning: false
