@@ -135,21 +135,32 @@ class CoinPrice extends SequelizeModel {
 
   static async get3MonthPrices(ids) {
     return CoinPrice.query(`
-      SELECT
-        t1.coin_id,
-        t1.price,
-        t1.date
-      FROM coin_prices t1
-      JOIN (
+      WITH latest_dates AS (
         SELECT
           coin_id,
-          MAX(id) AS max_id,
           MAX(date) AS max_date
         FROM coin_prices
-        WHERE date < (CURRENT_DATE - INTERVAL '90 days')
+        WHERE date BETWEEN (CURRENT_DATE - INTERVAL '95 days') AND (CURRENT_DATE - INTERVAL '90 days')
           AND coin_id IN (:ids)
         GROUP BY coin_id
-      ) t2 ON t1.id = t2.max_id AND t1.date = t2.max_date AND t1.coin_id = t2.coin_id
+      ),
+      latest_ids AS (
+        SELECT
+          cp.coin_id,
+          cp.id,
+          ld.max_date
+        FROM coin_prices cp
+        JOIN latest_dates ld
+          ON cp.coin_id = ld.coin_id AND cp.date = ld.max_date
+      )
+      SELECT
+        cp.coin_id,
+        cp.price,
+        cp.date
+      FROM coin_prices cp
+      JOIN latest_ids li
+        ON cp.id = li.id
+      WHERE cp.coin_id IN (:ids)
       `, { ids })
   }
 
