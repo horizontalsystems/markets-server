@@ -32,8 +32,10 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
     const chunks = chunk(Array.from(coins.uids), 250)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      const priceMap = await this.getPricesMap(Object.values(coins.map).flat())
-      await this.syncMarketData(chunks[i], coins.map, priceMap)
+      const chunkUids = chunks[i]
+      const chunkIds = chunkUids.map(item => coins.map[item])
+      const priceMap = await this.getPricesMap(chunkIds.flat())
+      await this.syncMarketData(chunkUids, coins.map, priceMap)
     }
   }
 
