@@ -101,6 +101,7 @@ class Coin extends SequelizeModel {
         name,
         code,
         coingecko_id,
+        img_path,
         market_data->'market_cap_rank' as market_cap_rank
       FROM coins
       ORDER BY id

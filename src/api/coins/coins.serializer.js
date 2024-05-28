@@ -161,13 +161,21 @@ exports.serializeFilter = (coins, currencyRate, indicators, coinRanks, listedOnW
 }
 
 exports.serializeList = coins => {
-  return coins.map(coin => ({
-    uid: coin.uid,
-    name: coin.name,
-    code: coin.code,
-    coingecko_id: coin.coingecko_id,
-    market_cap_rank: coin.market_cap_rank
-  }))
+  return coins.map(item => {
+    const coin = {
+      uid: item.uid,
+      name: item.name,
+      code: item.code,
+      coingecko_id: item.coingecko_id,
+      market_cap_rank: item.market_cap_rank
+    }
+
+    if (item.img_path) {
+      coin.image = `https://assets.coingecko.com/coins/images${item.img_path}`
+    }
+
+    return coin
+  })
 }
 
 exports.serializeSignals = indicators => {
