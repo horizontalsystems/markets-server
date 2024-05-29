@@ -159,7 +159,8 @@ class DefiProtocolSyncer extends Syncer {
           change_1y: utils.percentageChange(prevTvl['1y'], protocol.tvl)
         },
         chain_tvls: protocol.chainTvls,
-        chains: protocol.chains
+        chains: protocol.chains,
+        coin_id: null
       }
 
       if (coinId) {
