@@ -43,6 +43,44 @@ const router = express.Router()
 router.get('/', validateCoins, setCurrencyRate, controller.index)
 
 /**
+ * @api {get} /v1/defi-protocols/list List DeFi protocols
+ * @apiDescription Get a list of defi-protocols
+ * @apiVersion 1.0.0
+ * @apiGroup DefiProtocols
+ *
+ * @apiUse    Currencies
+ *
+ * @apiSuccess  {String}    protocol.name               Protocol's name
+ * @apiSuccess  {String}    protocol.logo               Protocol's logo
+ * @apiSuccess  {String}    [protocol.uid]              Protocol's uid
+ * @apiSuccess  {String}    [protocol.tvl]              Protocol's tvl
+ * @apiSuccess  {Number}    [protocol.tvl_rank]         Protocol's tvl rank
+ * @apiSuccess  {String}    [protocol.tvl_change_1d]    Protocol's daily tvl change percentage
+ * @apiSuccess  {String}    [protocol.tvl_change_7d]    Protocol's weekly tvl change percentage
+ * @apiSuccess  {String}    [protocol.tvl_change_30d]   Protocol's monthly tvl change percentage
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [{
+ *    "uid": "aave",
+ *    "coin_uid": "aave",
+ *    "name": "aave",
+ *    "logo": "https://domain.com/aave.png",
+ *    "chains": ["Ethereum", "Polygon"],
+ *    "chain_tvls": {
+ *      "Ethereum": 123,
+ *      "Polygon": 123
+ *    }
+ *    "tvl": "16721109202.863",
+ *    "tvl_rank": 1,
+ *    "tvl_change_1d": "2.871",
+ *    "tvl_change_7d": "0.434",
+ *    "tvl_change_30d": "0.042",
+ *  }]
+ */
+router.get('/list', validateCoins, setCurrencyRate, controller.list)
+
+/**
  * @api {get} /v1/defi-protocols/:uid/tvls Get coin tvls
  * @apiDescription Get defi-protocol's tvl chart
  * @apiVersion 1.0.0

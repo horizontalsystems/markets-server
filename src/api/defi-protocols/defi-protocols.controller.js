@@ -3,8 +3,13 @@ const DefiProtocol = require('../../db/models/DefiProtocol')
 const serializer = require('./defi-protocols.serializer')
 
 exports.index = async (req, res) => {
-  const coins = await DefiProtocol.getList()
-  res.send(serializer.serializeList(coins, req.currencyRate))
+  const protocols = await DefiProtocol.getList()
+  res.send(serializer.serializeIndex(protocols, req.currencyRate))
+}
+
+exports.list = async (req, res) => {
+  const protocols = await DefiProtocol.getList()
+  res.send(serializer.serializeList(protocols, req.currencyRate))
 }
 
 exports.tvls = async ({ params, dateInterval, dateFrom, currencyRate }, res) => {
