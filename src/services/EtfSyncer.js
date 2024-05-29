@@ -61,12 +61,14 @@ class EtfSyncer extends Syncer {
       const totalAssets = (totalNavMap[date] || {})[item.id]
 
       if (!dailyInflow || !totalAssets) {
-        console.log(`There is no dailyInflow or totalAssets data for ${item.ticker} at (${date})`)
-        console.log('netInflowMap', JSON.stringify(netInflowMap))
-        console.log('totalAssets', JSON.stringify(totalAssets))
+        console.log(`[${item.ticker}] There is no dailyInflow or totalAssets data for (${date})`)
+        console.log(`[${item.ticker}] netInflowMap`, JSON.stringify(netInflowMap))
+        console.log(`[${item.ticker}] totalAssets`, JSON.stringify(totalAssets))
         continue
       }
 
+      const totalInflow = (cumNetInflowMap[date] || {})[item.id]
+      const dailyVolume = (volumeTradedMap[date] || {})[item.id]
       const etfRecord = {
         ticker: item.ticker,
         name: item.name,
@@ -75,11 +77,12 @@ class EtfSyncer extends Syncer {
         exchange: item.exchangeName,
         institution: item.inst,
         totalAssets,
-        totalInflow: (cumNetInflowMap[date] || {})[item.id],
         dailyInflow,
-        dailyVolume: (volumeTradedMap[date] || {})[item.id],
         date
       }
+
+      if (totalInflow) etfRecord.totalInflow = totalInflow
+      if (dailyVolume) etfRecord.dailyVolume = dailyVolume
 
       const w1Sum = await EtfDailyInflow.getSum(utcDate({ day: -7 }, 'yyyy-MM-dd'), item.ticker, '1w')
       const m1Sum = await EtfDailyInflow.getSum(utcDate({ day: -60 }, 'yyyy-MM-dd'), item.ticker, '1m')
@@ -88,8 +91,7 @@ class EtfSyncer extends Syncer {
       etfRecord.changes = {
         ...w1Sum,
         ...m1Sum,
-        ...m3Sum,
-        '1d_inflow': dailyInflow
+        ...m3Sum
       }
 
       const etf = await Etf.findOne({
