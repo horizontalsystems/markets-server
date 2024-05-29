@@ -138,29 +138,19 @@ class CoinPrice extends SequelizeModel {
       WITH latest_dates AS (
         SELECT
           coin_id,
-          MAX(date) AS max_date
+          MAX(id) AS max_id
         FROM coin_prices
         WHERE date BETWEEN (CURRENT_DATE - INTERVAL '95 days') AND (CURRENT_DATE - INTERVAL '90 days')
           AND coin_id IN (:ids)
         GROUP BY coin_id
-      ),
-      latest_ids AS (
-        SELECT
-          cp.coin_id,
-          cp.id,
-          ld.max_date
-        FROM coin_prices cp
-        JOIN latest_dates ld
-          ON cp.coin_id = ld.coin_id AND cp.date = ld.max_date
       )
       SELECT
         cp.coin_id,
-        cp.price,
-        cp.date
+        ld.max_id,
+        cp.price
       FROM coin_prices cp
-      JOIN latest_ids li
-        ON cp.id = li.id
-      WHERE cp.coin_id IN (:ids)
+      JOIN latest_dates ld
+        ON cp.coin_id = ld.coin_id AND cp.id = ld.max_id
       `, { ids })
   }
 
