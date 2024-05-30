@@ -34,8 +34,8 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
     for (let i = 0; i < chunks.length; i += 1) {
       const chunkUids = chunks[i]
       const chunkIds = chunkUids.map(item => coins.map[item])
-      const priceMap = await this.getPricesMap(chunkIds.flat())
-      await this.syncMarketData(chunkUids, coins.map, priceMap)
+      const { map3M } = await this.getPricesMap(chunkIds.flat())
+      await this.syncMarketData(chunkUids, coins.map, map3M)
     }
   }
 
@@ -132,15 +132,23 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
   }
 
   async getPricesMap(ids) {
-    const prices = await CoinPrice.get3MonthPrices(ids)
-    const priceMap = {}
+    const prices1d = [] // await CoinPrice.getLastPricesInRange(ids, '1d')
+    const prices3M = await CoinPrice.getLastPricesInRange(ids, '90d')
 
-    for (let i = 0; i < prices.length; i += 1) {
-      const item = prices[i];
-      priceMap[item.coin_id] = item.price
+    const map1d = {}
+    const map3M = {}
+
+    for (let i = 0; i < prices1d.length; i += 1) {
+      const item = prices1d[i];
+      map1d[item.coin_id] = item.price
     }
 
-    return priceMap
+    for (let i = 0; i < prices3M.length; i += 1) {
+      const item = prices3M[i];
+      map3M[item.coin_id] = item.price
+    }
+
+    return { map1d, map3M }
   }
 }
 
