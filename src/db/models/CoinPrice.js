@@ -160,7 +160,6 @@ class CoinPrice extends SequelizeModel {
       )
       SELECT
         cp.coin_id,
-        ld.max_id,
         cp.price
       FROM coin_prices cp
       JOIN latest_dates ld

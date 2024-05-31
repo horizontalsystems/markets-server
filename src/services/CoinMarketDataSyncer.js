@@ -15,6 +15,7 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
   async start() {
     this.adjustHistoryGaps()
     this.cron('0 0 */3 * *', this.syncUids)
+    this.cron('0 0 * * *', this.reset1dChange) // runs at 00:00 every day
 
     const running = true
     while (running) {
@@ -105,6 +106,16 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
     } catch (e) {
       debug(e)
     }
+  }
+
+  async reset1dChange() {
+    await Coin.queryUpdate('update coins set price_change = jsonb_set(price_change, \'{1d}\', \'0\', false)')
+      .then(() => {
+        console.log('Price 1d reset')
+      })
+      .catch((e) => {
+        console.log(e)
+      })
   }
 
   async syncUids() {
