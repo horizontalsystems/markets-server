@@ -133,14 +133,28 @@ class CoinPrice extends SequelizeModel {
     return price
   }
 
-  static async get3MonthPrices(ids) {
-    return CoinPrice.query(`
+  static async getLastPricesInRange(ids, interval) {
+    let from
+    let to
+
+    if (interval === '90d') {
+      from = 'CURRENT_DATE - INTERVAL \'93 days\''
+      to = 'CURRENT_DATE - INTERVAL \'90 days\''
+    } else if (interval === '1d') {
+      const starOfDay = 'date_trunc(\'day\', current_date::timestamp AT TIME ZONE \'utc\')'
+      from = `${starOfDay} - INTERVAL '1 hours'`
+      to = starOfDay
+    } else {
+      return []
+    }
+
+    const query = `
       WITH latest_dates AS (
         SELECT
           coin_id,
-          MAX(id) AS max_id
+          MAX(date) AS max_date
         FROM coin_prices
-        WHERE date BETWEEN (CURRENT_DATE - INTERVAL '95 days') AND (CURRENT_DATE - INTERVAL '90 days')
+        WHERE date BETWEEN ${from} AND ${to}
           AND coin_id IN (:ids)
         GROUP BY coin_id
       )
@@ -151,7 +165,9 @@ class CoinPrice extends SequelizeModel {
       FROM coin_prices cp
       JOIN latest_dates ld
         ON cp.coin_id = ld.coin_id AND cp.id = ld.max_id
-      `, { ids })
+    `
+
+    return CoinPrice.query(query, { ids })
   }
 
   static deleteExpired(dateFrom, dateTo) {
