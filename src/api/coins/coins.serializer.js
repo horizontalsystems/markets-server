@@ -66,6 +66,8 @@ function mapCoinAttribute(coin, field, currencyRate) {
       return valueInCurrency(coin.price, currencyRate)
     case 'price_change_24h':
       return nullOrString(coin.price_change_24h || priceChange['24h'])
+    case 'price_change_1d':
+      return nullOrString(priceChange['1d'])
     case 'price_change_7d':
       return nullOrString(priceChange['7d'])
     case 'price_change_14d':
@@ -132,6 +134,7 @@ exports.serializeFilter = (coins, currencyRate, indicators, coinRanks, listedOnW
     'market_cap',
     'market_cap_rank',
     'total_volume',
+    'price_change_1d',
     'price_change_24h',
     'price_change_7d',
     'price_change_14d',
