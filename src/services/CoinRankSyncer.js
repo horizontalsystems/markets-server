@@ -515,10 +515,10 @@ class CoinRankSyncer extends Syncer {
 
     if (isFull) {
       const ethPlatforms = await this.getPlatforms('ethereum')
-      const ethAddresses = await flipsidecrypto.getMonthlyAddressStats('938fee7b-5b2c-4961-a026-3df6694445f4')
+      const ethAddresses = await flipsidecrypto.getMonthlyAddressStats('02752bfd-7fdf-4c96-9fbc-a8b771c7dfeb') // logic, ...
 
       const bscPlatforms = await this.getPlatforms('binance-smart-chain')
-      const bscAddresses = await flipsidecrypto.getMonthlyAddressStats('f76359bb-e5eb-4eee-91b6-6632974501d2')
+      const bscAddresses = await flipsidecrypto.getMonthlyAddressStats('8f4fb153-707e-4faa-bac6-8bf9af12fa92') // home, ...
 
       const { weekly, monthly } = this.mapCoinAddress(
         ethAddresses,
