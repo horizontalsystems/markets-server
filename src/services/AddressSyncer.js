@@ -58,13 +58,13 @@ class AddressSyncer extends Syncer {
 
       if (chain === 'ethereum') {
         platforms = await this.getPlatforms(chain, true, false)
-        addressStats = await flipsidecrypto.getActiveAddresses('999954b1-cb9c-4db0-817a-9316a46a9d84')
+        addressStats = await flipsidecrypto.getActiveAddresses('11978be2-3ca3-4e2e-90a1-50913e4c2c59') // fossil, ...
       } else if (chain === 'bitcoin') {
         platforms = await this.getPlatforms(['bitcoin', 'bitcoin-cash', 'dash', 'dogecoin', 'litecoin', 'zcash'], true, false)
         addressStats = await bigquery.getAddressStatsBtcBased(dateFrom)
       } else if (chain === 'binance-smart-chain') {
         platforms = await this.getPlatforms(chain, true, false)
-        addressStats = await flipsidecrypto.getActiveAddresses('3dda0c7d-041e-45a2-ab70-bf646c74f617')
+        addressStats = await flipsidecrypto.getActiveAddresses('7e01c1ed-75d0-4130-87ac-bcb3f2b138fa') // afford, ...
       }
 
       const chunks = chunk(addressStats, 200000)
