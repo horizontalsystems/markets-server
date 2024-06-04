@@ -2,6 +2,10 @@ const { valueInCurrency, nullOrString } = require('../../utils')
 
 const getImageURL = path => {
   if (path.startsWith('http')) {
+    if (path.startsWith('https://coin-images')) {
+      return path.replace('coin-images', 'assets')
+    }
+
     return path
   }
 
