@@ -47,7 +47,7 @@ exports.serializeTopMarketPairs = (markets, currencyRate) => {
       price: nullOrString(item.price),
       volume: valueInCurrency(item.volume_usd, currencyRate),
       market_name: item.market_name,
-      market_logo: item.market_logo,
+      market_logo: getImageURL(item.market_logo),
       trade_url: item.trade_url
     }
   })
