@@ -61,6 +61,15 @@ class CoinExchangeSyncer extends CoinPriceHistorySyncer {
   }
 
   async upsertTickers(data, coin, coinsMap) {
+    const getImagePath = image => {
+      try {
+        const url = new URL(image)
+        return url.pathname.replace('/markets/images', '')
+      } catch (e) {
+        return ''
+      }
+    }
+
     const markets = []
 
     for (let i = 0; i < data.length; i += 1) {
@@ -75,7 +84,7 @@ class CoinExchangeSyncer extends CoinPriceHistorySyncer {
         volume: ticker.volume,
         volume_usd: ticker.converted_volume.usd,
         market_uid: ticker.market.identifier,
-        market_logo: ticker.market.logo,
+        market_logo: getImagePath(ticker.market.logo),
         market_name: ticker.market.name,
         trade_url: ticker.trade_url
       }
