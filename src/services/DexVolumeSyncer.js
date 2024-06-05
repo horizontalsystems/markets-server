@@ -121,7 +121,7 @@ class DexVolumeSyncer extends Syncer {
     const chunks = chunk(items, 300000)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await DexVolume.bulkCreate(items, { ignoreDuplicates: true })
+      await DexVolume.bulkCreate(items, { updateOnDuplicate: ['volume'] })
         .then(data => {
           console.log('Inserted dex volumes', data.length)
         })

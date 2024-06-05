@@ -62,7 +62,7 @@ class DexLiquidity extends SequelizeModel {
         WHERE platform_id IN(:platformIds)
           AND date >= :dateFrom
           AND date < :dateTo
-          ${showAll ? '' : 'AND (exchange = \'uniswap-v2\' OR exchange = \'uniswap-v3\' OR exchange = \'pancakeswap\')'}
+          ${showAll ? '' : 'AND (exchange = \'uniswap_v2\' OR exchange = \'uniswap_v3\' OR exchange = \'pancakeswap\')'}
         GROUP by trunc, exchange, platform_id
       ) t2 ON (t1.id = t2.max_id)
       GROUP by 1
@@ -93,7 +93,7 @@ class DexLiquidity extends SequelizeModel {
         WHERE platform_id IN(:platformIds)
           AND date >= :dateFrom
           AND date < :dateTo
-          AND (exchange = 'uniswap-v2' OR exchange = 'uniswap-v3' OR exchange = 'pancakeswap')
+          AND (exchange = 'uniswap_v2' OR exchange = 'uniswap_v3' OR exchange = 'pancakeswap')
         GROUP by trunc, exchange
       ) t2 ON (t1.id = t2.max_id)
       WHERE t2.trunc >= :dateFromInt
