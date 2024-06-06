@@ -9,6 +9,11 @@ const Platform = require('../db/models/Platform')
 const Syncer = require('./Syncer')
 
 class DexLiquiditySyncer extends Syncer {
+  constructor() {
+    super()
+
+    this.spamThreshold = 20000000000 // 20_000_000_000
+  }
 
   async start() {
     await this.syncHistorical()
@@ -135,13 +140,15 @@ class DexLiquiditySyncer extends Syncer {
     const liquidity = []
 
     for (let i = 0; i < records.length; i += 1) {
-      const item = records[i];
+      const item = records[i]
       const date = isHistory ? (item.date * 1000) : dateTo
       const platform = platformMap[item.address.toLowerCase()] || {}
 
-      liquidity.push({ date, exchange, volume: item.liquidityUSD, platform_id: platform.id })
+      if (item.liquidityUSD < this.spamThreshold) {
+        liquidity.push({ date, exchange, volume: item.liquidityUSD, platform_id: platform.id })
+      }
 
-      if (isHistory) {
+      if (isHistory && item.volumeUSD < this.spamThreshold) {
         volumes.push({ date, exchange, volume: item.volumeUSD, platform_id: platform.id })
       }
     }
