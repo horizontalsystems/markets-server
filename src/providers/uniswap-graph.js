@@ -9,7 +9,6 @@ class UniswapGraph {
     console.log(`Fetching dex liquidity from uniswap-${isV3 ? 'v3' : 'v2'}`)
 
     const liquidityField = isV3 ? 'totalValueLockedUSD' : 'totalLiquidity'
-    const subgraph = isV3 ? 'uniswap-v3' : 'uniswap-v2'
 
     const query = {
       variables: {
@@ -26,7 +25,7 @@ class UniswapGraph {
       `
     }
 
-    return axios.post(`/uniswap/${subgraph}`, query)
+    return axios.post(`/uniswap/uniswap-${isV3 ? 'v3' : 'v2'}`, query)
       .then(({ data }) => data)
       .then(({ data }) => {
         if (!data || !data.tokens) {
@@ -43,8 +42,6 @@ class UniswapGraph {
 
   async getLiquidityHistory(dateFrom, tokens, isV3 = true) {
     console.log(`Fetching dex liquidity history from uniswap-${isV3 ? 'v3' : 'v2'}`)
-
-    const subgraph = isV3 ? 'uniswap-v3' : 'uniswap-v2'
 
     // const volume = isV3 ? 'volume' : 'dailyVolumeToken'
     const volumeUSD = isV3 ? 'volumeUSD' : 'dailyVolumeUSD'
@@ -67,7 +64,7 @@ class UniswapGraph {
       query: `query tokenDayDatas($startTime: Int!, $skip: Int!) { ${queries} }`
     }
 
-    return axios.post(`/uniswap/${subgraph}`, query)
+    return axios.post(`/uniswap/uniswap-${isV3 ? 'v3' : 'v2'}`, query)
       .then(({ data }) => data)
       .then(({ data }) => {
         if (!data) {
@@ -84,8 +81,6 @@ class UniswapGraph {
 
   async getLiquidityNow(tokens, isV3 = true) {
     console.log(`Fetching dex liquidity from uniswap-${isV3 ? 'v3' : 'v2'}`)
-
-    const subgraph = isV3 ? 'uniswap-v3' : 'uniswap-v2'
 
     // const volume = isV3 ? 'volume' : 'dailyVolumeToken'
     const volumeUSD = isV3 ? 'volumeUSD' : 'dailyVolumeUSD'
@@ -107,7 +102,7 @@ class UniswapGraph {
       query: `query tokenDayDatas($skip: Int!) { ${queries} }`
     }
 
-    return axios.post(`/uniswap/${subgraph}`, query)
+    return axios.post(`/uniswap/uniswap-${isV3 ? 'v3' : 'v2'}`, query)
       .then(({ data }) => data)
       .then(({ data }) => {
         if (!data) {

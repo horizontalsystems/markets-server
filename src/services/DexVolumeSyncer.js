@@ -7,6 +7,11 @@ const Platform = require('../db/models/Platform')
 const Syncer = require('./Syncer')
 
 class DexVolumeSyncer extends Syncer {
+  constructor() {
+    super()
+
+    this.spamThreshold = 20000000000 // 20_000_000_000
+  }
 
   async start() {
     // await this.syncHistorical()
@@ -113,7 +118,7 @@ class DexVolumeSyncer extends Syncer {
   }
 
   async bulkCreate(records) {
-    const items = records.filter(item => item.platform_id && item.volume > 0)
+    const items = records.filter(item => item.platform_id && item.volume > 0 && item.volume < this.spamThreshold)
     if (!items.length) {
       return
     }
@@ -121,7 +126,7 @@ class DexVolumeSyncer extends Syncer {
     const chunks = chunk(items, 300000)
 
     for (let i = 0; i < chunks.length; i += 1) {
-      await DexVolume.bulkCreate(items, { ignoreDuplicates: true })
+      await DexVolume.bulkCreate(items, { updateOnDuplicate: ['volume'] })
         .then(data => {
           console.log('Inserted dex volumes', data.length)
         })

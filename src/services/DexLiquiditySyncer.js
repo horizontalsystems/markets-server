@@ -9,6 +9,11 @@ const Platform = require('../db/models/Platform')
 const Syncer = require('./Syncer')
 
 class DexLiquiditySyncer extends Syncer {
+  constructor() {
+    super()
+
+    this.spamThreshold = 20000000000 // 20_000_000_000
+  }
 
   async start() {
     await this.syncHistorical()
@@ -22,10 +27,10 @@ class DexLiquiditySyncer extends Syncer {
 
     const dateFrom = utcStartOfDay({ month: -12 }, true)
 
-    if (source === 'uniswap-v3') {
+    if (source === 'uniswap_v3') {
       return this.syncUniswap(dateFrom, true, true, uids)
     }
-    if (source === 'uniswap-v2') {
+    if (source === 'uniswap_v2') {
       return this.syncUniswap(dateFrom, false, true, uids)
     }
     if (source === 'pancakeswap') {
@@ -89,10 +94,10 @@ class DexLiquiditySyncer extends Syncer {
           data = await uniswapGraph.getLiquidityNow(chunks[i], isV3)
         }
 
-        const exchange = isV3 ? 'uniswap-v3' : 'uniswap-v2'
+        const exchange = isV3 ? 'uniswap_v3' : 'uniswap_v2'
         await this.upsertHistoryData(data, platforms.map, exchange, dateFrom, isHistory)
       } catch (e) {
-        console.log(`Error syncing chunk of uniswap-v2/v3 data: ${e}, Ignoring error`, (e.parent || {}).message)
+        console.log(`Error syncing chunk of uniswap_v2/v3 data: ${e}, Ignoring error`, (e.parent || {}).message)
       }
     }
   }
@@ -135,13 +140,15 @@ class DexLiquiditySyncer extends Syncer {
     const liquidity = []
 
     for (let i = 0; i < records.length; i += 1) {
-      const item = records[i];
+      const item = records[i]
       const date = isHistory ? (item.date * 1000) : dateTo
       const platform = platformMap[item.address.toLowerCase()] || {}
 
-      liquidity.push({ date, exchange, volume: item.liquidityUSD, platform_id: platform.id })
+      if (item.liquidityUSD < this.spamThreshold) {
+        liquidity.push({ date, exchange, volume: item.liquidityUSD, platform_id: platform.id })
+      }
 
-      if (isHistory) {
+      if (isHistory && item.volumeUSD < this.spamThreshold) {
         volumes.push({ date, exchange, volume: item.volumeUSD, platform_id: platform.id })
       }
     }
