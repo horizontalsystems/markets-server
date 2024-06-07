@@ -244,6 +244,8 @@ class Coin extends SequelizeModel {
       orderField = 'total_volume'
     } else if (field === 'mcap') {
       orderField = 'market_cap'
+    } else if (field === 'price_change_1d') {
+      orderField = 'price_change_1d'
     } else if (field === 'price_change_1w') {
       orderField = 'price_change_1w'
     } else if (field === 'price_change_1m') {
@@ -259,6 +261,7 @@ class Coin extends SequelizeModel {
           name,
           code,
           price,
+          price_change->'1d' price_change_1d,
           price_change->'24h' price_change_24h,
           price_change->'7d' price_change_1w,
           price_change->'30d' price_change_1m,
