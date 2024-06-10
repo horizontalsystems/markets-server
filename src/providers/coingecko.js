@@ -178,6 +178,28 @@ exports.getCoinInfo = function getMarketInfo(id, options = {}) {
     .then(resp => normalizeCoin(resp.data))
 }
 
+exports.getCoinCategories = id => {
+  const query = querystring.stringify({
+    tickers: false,
+    market_data: false,
+    community_data: false,
+    developer_data: false,
+    localization: false
+  })
+
+  return axios
+    .get(`/coins/${id}?${query}`)
+    .then(({ data }) => {
+      return data.categories
+    })
+}
+
+exports.getCategories = () => {
+  return axios
+    .get('/coins/categories')
+    .then(({ data }) => data)
+}
+
 exports.getTickers = function getTickers(id, page = 1) {
   const query = querystring.stringify({
     include_exchange_logo: true,
