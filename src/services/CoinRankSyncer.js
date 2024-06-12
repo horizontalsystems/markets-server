@@ -469,8 +469,8 @@ class CoinRankSyncer extends Syncer {
     if (isFull) {
       this.setRatings(data, {
         excellent: 100000,
-        good: 500000,
-        fair: 300000
+        good: 50000,
+        fair: 30000
       })
     }
 
