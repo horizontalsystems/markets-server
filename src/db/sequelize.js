@@ -41,6 +41,7 @@ const UpdateState = require('./models/UpdateState')
 const EvmMethodLabel = require('./models/EvmMethodLabel')
 const AddressLabel = require('./models/AddressLabel')
 const Block = require('./models/Block')
+const TokenUnlock = require('./models/TokenUnlock')
 const Etf = require('./models/Etf')
 const EtfDailyInflow = require('./models/EtfDailyInflow')
 const EtfTotalInflow = require('./models/EtfTotalInflow')
@@ -99,6 +100,7 @@ const db = {
   Etf: Etf.init(sequelize, Sequelize),
   EtfDailyInflow: EtfDailyInflow.init(sequelize, Sequelize),
   EtfTotalInflow: EtfTotalInflow.init(sequelize, Sequelize),
+  TokenUnlock: TokenUnlock.init(sequelize, Sequelize),
   UpdateState: UpdateState.init(sequelize, Sequelize)
 }
 
