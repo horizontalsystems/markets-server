@@ -9,6 +9,7 @@ router.use('/coins', require('../api/coins'))
 router.use('/chain', require('../api/blockchains')) // @deprecated
 router.use('/blockchains', require('../api/blockchains'))
 router.use('/tokens', require('../api/tokens'))
+router.use('/token-unlocks', require('../api/token-unlocks'))
 router.use('/token_info', require('../api/token_info'))
 router.use('/top-platforms', require('../api/top-platforms'))
 router.use('/nft', require('../api/nft'))

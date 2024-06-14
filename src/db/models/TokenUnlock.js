@@ -16,6 +16,10 @@ class TokenUnlock extends SequelizeModel {
             deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
           }
         },
+        date: {
+          type: DataTypes.DATE,
+          allowNull: false,
+        },
         circulation: DataTypes.DECIMAL,
         locked: DataTypes.DECIMAL,
         locked_percent: DataTypes.DECIMAL,
@@ -23,7 +27,6 @@ class TokenUnlock extends SequelizeModel {
         unlocked_percent: DataTypes.DECIMAL,
         next_unlock: DataTypes.JSONB,
         next_unlock_percent: DataTypes.DECIMAL,
-        date: DataTypes.DATE,
       },
       {
         timestamps: false,
@@ -42,17 +45,6 @@ class TokenUnlock extends SequelizeModel {
       foreignKey: 'coin_uid'
     })
   }
-
-  static getListCoins() {
-    return TokenUnlock.query(`
-      select
-        p.*,
-        c.uid as coin_uid
-      from platforms p, coins c
-      where c.id = p.coin_id
-    `)
-  }
-
 }
 
 module.exports = TokenUnlock
