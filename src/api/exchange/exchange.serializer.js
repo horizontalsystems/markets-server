@@ -63,6 +63,8 @@ exports.serializeTickers = (exchanges, whitelist, currencyRate) => {
       base: item.base,
       target: item.target,
       volume: item.volume,
+      price: item.price, // @deprecated
+      volume_usd: item.volume_usd, // @deprecated
       volume_in_currency: valueInCurrency(item.volume_usd, currencyRate),
       market_uid: item.market_uid,
       market_name: item.market_name,
