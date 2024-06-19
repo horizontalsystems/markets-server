@@ -50,8 +50,28 @@ class ChainlistSyncer {
   }
 
   async syncChainNames() {
+    const mapName = uid => {
+      switch (uid) {
+        case 'ordinals':
+          return 'Ordinals'
+        case 'the-open-network':
+          return 'The Open Network'
+        case 'arbitrum-one':
+          return 'Arbitrum'
+        default:
+          return uid
+      }
+    }
+
     const chains = await coingecko.getPlatformList()
-    await Chain.updateNames(chains.map(i => [i.id, i.name]))
+    const values = chains
+      .map(i => ({
+        uid: mapName(i.id),
+        name: i.name,
+      }))
+      .map(i => [i.uid, i.name])
+
+    await Chain.updateNames(values)
       .then(() => {
         console.log('Updated names')
       })
