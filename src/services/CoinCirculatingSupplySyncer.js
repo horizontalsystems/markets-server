@@ -167,13 +167,13 @@ class CoinCirculatingSupplySyncer extends Syncer {
 
     const token = await geckoterminal.getTokenInfo(network, address)
 
-    if (!token.market_cap_usd || !token.price_usd) {
+    if (!token.market_cap_usd || !token.token_price_usd) {
       return null
     }
 
     await utils.sleep(300)
 
-    return token.market_cap_usd / token.price_usd
+    return token.market_cap_usd / token.token_price_usd
   }
 
   update(values) {
