@@ -49,6 +49,15 @@ class ChainlistSyncer {
     console.log(`${chainsMainnet.length} chains synced`)
   }
 
+  async syncChainNames() {
+    const chains = await coingecko.getPlatformList()
+    await Chain.updateNames(chains.map(i => [i.id, i.name]))
+      .then(() => {
+        console.log('Updated names')
+      })
+      .catch(console.error)
+  }
+
   getProviders({ chainId, rpc }) {
     const extra = chainlist.extraRpcs[chainId]
 

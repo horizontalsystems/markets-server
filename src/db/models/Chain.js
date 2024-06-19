@@ -115,6 +115,17 @@ class Chain extends SequelizeModel {
     return Chain.queryUpdate(query, { values })
   }
 
+  static updateNames(values) {
+    const query = `
+      UPDATE chains AS c 
+        set name = v.name::text
+      FROM (values :values) as v(uid, name)
+      WHERE c.uid = v.uid
+    `
+
+    return Chain.queryUpdate(query, { values })
+  }
+
 }
 
 module.exports = Chain
