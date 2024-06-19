@@ -127,7 +127,7 @@ class Coin extends SequelizeModel {
       include: [Platform, Category],
       where: {
         uid
-      }
+      },
     })
 
     if (!coin) {
@@ -137,7 +137,7 @@ class Coin extends SequelizeModel {
     const priceChange = coin.price_change || {}
     return {
       ...coin.dataValues,
-      performance: await Coin.getPerformance(priceChange['7d'], priceChange['30d'])
+      performance: await Coin.getPerformance(coin.uid, priceChange['7d'], priceChange['30d'])
     }
   }
 
@@ -165,7 +165,7 @@ class Coin extends SequelizeModel {
     return coin
   }
 
-  static async getPerformance(price7d, price30d) {
+  static async getPerformance(uid, price7d, price30d) {
     const [bitcoin, ethereum] = await Coin.query(`
       SELECT price_change
         FROM coins
@@ -173,27 +173,34 @@ class Coin extends SequelizeModel {
        ORDER BY id
     `)
 
+    const btcPriceChange = bitcoin.price_change || {}
+    const ethPriceChange = ethereum.price_change || {}
     const roi = (price1, price2) => {
       return ((100 + price1) / (100 + price2) - 1) * 100
     }
 
-    const btcPriceChange = bitcoin.price_change || {}
-    const ethPriceChange = ethereum.price_change || {}
-
-    return {
+    const performance = {
       usd: {
         '7d': utils.nullOrString(price7d),
         '30d': utils.nullOrString(price30d)
-      },
-      btc: {
+      }
+    }
+
+    if (uid !== 'bitcoin') {
+      performance.btc = {
         '7d': utils.nullOrString(roi(price7d, btcPriceChange['7d'])),
-        '30d': utils.nullOrString(roi(price30d, btcPriceChange['30d'])),
-      },
-      eth: {
+        '30d': utils.nullOrString(roi(price30d, btcPriceChange['30d']))
+      }
+    }
+
+    if (uid !== 'ethereum') {
+      performance.eth = {
         '7d': utils.nullOrString(roi(price7d, ethPriceChange['7d'])),
         '30d': utils.nullOrString(roi(price30d, ethPriceChange['30d'])),
       }
     }
+
+    return performance
   }
 
   static async getTopMovers() {
