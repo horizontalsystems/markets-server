@@ -1,6 +1,7 @@
+const { chunk } = require('lodash')
 const Syncer = require('./Syncer')
-const utils = require('../utils')
 const Platform = require('../db/models/Platform')
+const utils = require('../utils')
 const defillama = require('../providers/defillama')
 const etherscan = require('../providers/etherscan')
 const optimistic = require('../providers/etherscan-optimistic')
@@ -14,7 +15,6 @@ const cronoscan = require('../providers/cronoscan')
 const ftmscan = require('../providers/ftmscan')
 const celoscan = require('../providers/celoscan')
 const geckoterminal = require('../providers/geckoterminal')
-const { chunk } = require('lodash')
 
 class CoinCirculatingSupplySyncer extends Syncer {
 

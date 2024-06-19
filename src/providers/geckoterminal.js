@@ -15,9 +15,9 @@ exports.mapChainToNetwork = chain => {
   }
 }
 
-exports.getTokenInfo = function getTokenInfo(chain, address) {
+exports.getTokenInfo = (chain, address) => {
   return axios
-    .get(`/ton/tokens/${address}`)
+    .get(`/${chain}/tokens/${address}`)
     .then(({ data: res }) => {
       if (!res.data || !res.data.attributes) {
         return {}
