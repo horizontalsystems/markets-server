@@ -8,7 +8,7 @@ const utils = require('../utils')
 
 class TokenUnlockSyncer extends Syncer {
   async start() {
-    this.cron('1d', this.sync)
+    this.cron('4h', this.sync)
   }
 
   async sync() {
