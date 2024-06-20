@@ -1,5 +1,6 @@
 const express = require('express')
 const controller = require('./token-unlocks.controller')
+const { validateDates } = require('./token-unlocks.validator')
 
 const router = express.Router()
 
@@ -28,5 +29,20 @@ const router = express.Router()
  *  }]
  */
 router.get('/', controller.index)
+
+/**
+ * @api {GET} /v1/token-unlocks/dates Token unlocks dates
+ * @apiDescription Token unlock dates
+ * @apiVersion 1.0.0
+ * @apiGroup Unlock
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  [{
+ *    "uid": "dappradar",
+ *    "date": "2024-06-13T00:00:00.000Z",
+ *  }]
+ */
+router.get('/dates', validateDates, controller.dates)
 
 module.exports = router

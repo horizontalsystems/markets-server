@@ -14,3 +14,12 @@ exports.serializeIndex = items => {
     }
   })
 }
+
+exports.serializeDates = items => {
+  return items.map(item => {
+    return {
+      uid: item.coin_uid,
+      date: item.date
+    }
+  })
+}
