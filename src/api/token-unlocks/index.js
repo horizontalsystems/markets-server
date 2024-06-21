@@ -31,8 +31,8 @@ const router = express.Router()
 router.get('/', controller.index)
 
 /**
- * @api {GET} /v1/token-unlocks/dates Token unlocks dates
- * @apiDescription Token unlock dates
+ * @api {GET} /v1/token-unlocks/upcoming Token upcoming unlocks
+ * @apiDescription Token upcoming unlocks
  * @apiVersion 1.0.0
  * @apiGroup Unlock
  *
@@ -43,6 +43,6 @@ router.get('/', controller.index)
  *    "date": "2024-06-13T00:00:00.000Z",
  *  }]
  */
-router.get('/dates', validateDates, controller.dates)
+router.get('/upcoming', validateDates, controller.upcoming)
 
 module.exports = router

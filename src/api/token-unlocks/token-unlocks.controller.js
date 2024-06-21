@@ -6,7 +6,7 @@ exports.index = async (req, res) => {
   res.send(serializer.serializeIndex(unlocks))
 }
 
-exports.dates = async ({ query }, res) => {
+exports.upcoming = async ({ query }, res) => {
   const uids = query.uids.split(',')
   const unlocks = await TokenUnlock.query(
     'select coin_uid, date from token_unlocks where date >= NOW() and coin_uid in (:uids) order by date asc',
