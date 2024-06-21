@@ -50,7 +50,7 @@ module.exports = {
   // GET /v1/coins/:uid
   validateShow: validate({
     query: Joi.object({
-      language: Joi.string().valid('en', 'de', 'es', 'fa', 'fr', 'ko', 'ru', 'tr', 'zh', 'pt', 'inr'),
+      language: Joi.string(),
       currency: Joi.string()
     })
   }, options),
