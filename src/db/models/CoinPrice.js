@@ -163,7 +163,7 @@ class CoinPrice extends SequelizeModel {
         cp.price
       FROM coin_prices cp
       JOIN latest_dates ld
-        ON cp.coin_id = ld.coin_id AND cp.id = ld.max_id
+        ON cp.coin_id = ld.coin_id AND cp.date = ld.max_date
     `
 
     return CoinPrice.query(query, { ids })
