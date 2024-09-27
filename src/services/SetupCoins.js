@@ -294,11 +294,11 @@ class SetupCoins {
     }
   }
 
-  async upsertPlatform(values, oldType) {
+  async upsertPlatform(values, platformChainName) {
     const platform = await Platform.findOne({
       where: {
         coin_id: values.coin_id,
-        type: oldType
+        type: platformChainName
       }
     })
 
@@ -314,7 +314,7 @@ class SetupCoins {
 
     return Platform.bulkCreate([values], { ignoreDuplicates: true })
       .then(([{ id, type, chain_uid: chain }]) => {
-        console.log(JSON.stringify({ type, chain, id }))
+        console.log('Platform inserted', JSON.stringify({ type, chain, id }))
       })
       .catch(err => {
         console.log('Error inserting platform', err)
