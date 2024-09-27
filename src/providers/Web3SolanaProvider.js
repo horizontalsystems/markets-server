@@ -3,6 +3,7 @@ const Web3Solana = require('@solana/web3.js')
 class Web3SolanaProvider {
   constructor(url) {
     this.web3 = new Web3Solana.Connection(url)
+    this.type = 'spl'
   }
 
   getDecimals(address) {
