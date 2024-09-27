@@ -60,11 +60,11 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
       const price1d = map1d[id]
 
       if (price3M) {
-        priceChange['90d'] = utils.percentageBetweenNumber(price3M, item.price)
+        priceChange['90d'] = utils.percentageChange(price3M, item.price)
       }
 
       if (price1d) {
-        priceChange['1d'] = utils.percentageBetweenNumber(price1d, item.price)
+        priceChange['1d'] = utils.percentageChange(price1d, item.price)
       }
 
       return [

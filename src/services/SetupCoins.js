@@ -13,7 +13,6 @@ const gpt = require('../providers/chat-gpt')
 const coinsJoin = require('../db/seeders/coins.json')
 
 class SetupCoins {
-
   constructor() {
     this.MIN_24_VOLUME = 200000
     this.MIN_24_VOLUME_TRUSTED = 500000
@@ -112,7 +111,7 @@ class SetupCoins {
         console.log(`Fetched decimals (${decimals}) for ${platform.address} ${i + 1}`)
 
         if (decimals > 0) {
-          await platform.update({ decimals, type: 'eip20' })
+          await platform.update({ decimals, type: provider.type })
         }
       } catch ({ message }) {
         console.log(`Failed to fetch decimals for ${platform.address}; i: ${i + 1}`)
@@ -176,6 +175,7 @@ class SetupCoins {
         case 'optimistic-ethereum':
         case 'arbitrum-one':
         case 'avalanche':
+        case 'base':
         case 'binance-smart-chain':
           newType = 'eip20'
           break
@@ -294,11 +294,11 @@ class SetupCoins {
     }
   }
 
-  async upsertPlatform(values, oldType) {
+  async upsertPlatform(values, platformChainName) {
     const platform = await Platform.findOne({
       where: {
         coin_id: values.coin_id,
-        type: oldType
+        type: platformChainName
       }
     })
 
@@ -314,7 +314,7 @@ class SetupCoins {
 
     return Platform.bulkCreate([values], { ignoreDuplicates: true })
       .then(([{ id, type, chain_uid: chain }]) => {
-        console.log(JSON.stringify({ type, chain, id }))
+        console.log('Platform inserted', JSON.stringify({ type, chain, id }))
       })
       .catch(err => {
         console.log('Error inserting platform', err)

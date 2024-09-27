@@ -9,6 +9,7 @@ class Web3EvmProvider {
     }
 
     this.abi = abi
+    this.type = 'eip20'
     this.web3 = new Web3(rpc)
     this.Contract = this.web3.eth.Contract
   }

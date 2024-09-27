@@ -5,6 +5,7 @@ const abi = require('./abi/trc20-abi.json')
 class Web3TronProvider {
   constructor(url) {
     this.abi = abi
+    this.type = 'eip20'
     this.web3 = new Web3(url)
     this.Contract = this.web3.eth.Contract
   }
