@@ -24,5 +24,3 @@ router.get('/', controller.getStats)
 router.get('/keys', controller.getKeys)
 
 module.exports = router
-
-
