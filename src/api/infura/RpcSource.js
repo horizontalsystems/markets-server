@@ -8,6 +8,7 @@ class RpcSource {
       { baseURL: `https://${mode}.infura.io/v3/${env.INFURA_2_ID}`, secret: env.INFURA_2_SECRET },
       { baseURL: `https://${mode}.infura.io/v3/${env.INFURA_3_ID}`, secret: env.INFURA_3_SECRET },
       { baseURL: `https://${mode}.infura.io/v3/${env.INFURA_4_ID}`, secret: env.INFURA_4_SECRET },
+      { baseURL: `https://${mode}.infura.io/v3/${env.INFURA_5_ID}`, secret: env.INFURA_5_SECRET },
     ]
     this.currentSourceIndex = 0
     this.axios = this.createAxios()
