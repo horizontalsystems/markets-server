@@ -3,6 +3,7 @@ const util = require('ethereumjs-util')
 const { v4: uuidv4 } = require('uuid')
 const AuthKey = require('../../db/models/AuthKey')
 const Subscription = require('../../db/models/Subscription')
+const ApiKey = require('../../db/models/ApiKey')
 const CryptoSubscription = require('../../providers/crypto-subscription')
 const { utcDate, signingMessage } = require('../../utils')
 const { handleError } = require('../middlewares')
@@ -129,5 +130,23 @@ exports.subscribed = async ({ query }, res) => {
     console.log(e)
     res.status(500)
     res.send({ error: 'Internal server error' })
+  }
+}
+
+exports.apiKeys = async (req, res) => {
+  try {
+    const keys = await ApiKey.getRandomList()
+    res.json(keys)
+  } catch (e) {
+    handleError(res, 403)
+  }
+}
+
+exports.apiKeysByResource = async (req, res) => {
+  try {
+    const keys = await ApiKey.getRandomByResource(req.params.id)
+    res.json(keys)
+  } catch (e) {
+    handleError(res, 403)
   }
 }

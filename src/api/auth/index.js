@@ -43,5 +43,8 @@ router.post('/authenticate', validateAuthenticate, controller.authenticate)
 
 router.get('/subscribed', controller.subscribed)
 
+router.get('/api-keys', controller.apiKeys)
+router.get('/api-keys/:resource', controller.apiKeysByResource)
+
 module.exports = router
 module.exports.requireAuth = controller.requireAuth
