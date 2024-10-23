@@ -3,8 +3,8 @@ const util = require('ethereumjs-util')
 const { v4: uuidv4 } = require('uuid')
 const AuthKey = require('../../db/models/AuthKey')
 const Subscription = require('../../db/models/Subscription')
-const ApiKey = require('../../db/models/ApiKey')
 const CryptoSubscription = require('../../providers/crypto-subscription')
+const apiKeys = require('./api-keys.json')
 const { utcDate, signingMessage } = require('../../utils')
 const { handleError } = require('../middlewares')
 
@@ -135,17 +135,7 @@ exports.subscribed = async ({ query }, res) => {
 
 exports.apiKeys = async (req, res) => {
   try {
-    const keys = await ApiKey.getRandomList()
-    res.json(keys)
-  } catch (e) {
-    handleError(res, 403)
-  }
-}
-
-exports.apiKeysByResource = async (req, res) => {
-  try {
-    const keys = await ApiKey.getRandomByResource(req.params.id)
-    res.json(keys)
+    res.json(apiKeys)
   } catch (e) {
     handleError(res, 403)
   }
