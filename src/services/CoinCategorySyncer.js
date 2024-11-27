@@ -9,37 +9,37 @@ class CoinCategorySyncer extends Syncer {
   constructor() {
     super()
 
-    this.whitelisted = [
-      'Layer 1 (L1)',
-      'Centralized Exchange (CEX)',
-      'Decentralized Exchange (DEX)',
-      'Stablecoins',
-      'Meme',
-      'NFT',
-      'Liquid Staking Tokens',
-      'Artificial Intelligence (AI)',
-      'Governance',
-      'Zero Knowledge (ZK)',
-      'Gaming (GameFi)',
-      'Storage',
-      'Metaverse',
-      'Yield Farming',
-      'Oracle',
-      'Privacy',
-      'Lending/Borrowing',
-      'Sports',
-      'Identity',
-      'Wallets',
-      'Launchpad',
-      'BRC-20',
-      'Cross-chain Communication',
-      'Tokenized Gold',
-      'Options',
-      'Yield Aggregator',
-      'Rebase Tokens',
-      'Fan Token',
-      'Music'
-    ].reduce((res, key) => ({ ...res, [key]: 1 }), {})
+    this.categoriesMap = {
+      'Centralized Exchange (CEX) Token': 'Centralized Exchange (CEX)',
+      'Decentralized Exchange (DEX)': 'Decentralized Exchange (DEX)',
+      Stablecoins: 'Stablecoins',
+      Meme: 'Meme',
+      NFT: 'NFT',
+      'Liquid Staking Tokens': 'Liquid Staking Tokens',
+      'Artificial Intelligence (AI)': 'Artificial Intelligence (AI)',
+      Governance: 'Governance',
+      'Zero Knowledge (ZK)': 'Zero Knowledge (ZK)',
+      'Gaming (GameFi)': 'Gaming (GameFi)',
+      Storage: 'Storage',
+      Metaverse: 'Metaverse',
+      'Yield Farming': 'Yield Farming',
+      Oracle: 'Oracle',
+      'Privacy Coins': 'Privacy Coins',
+      'Lending/Borrowing': 'Lending/Borrowing',
+      Sports: 'Sports',
+      'Decentralized Identifier (DID)': 'Identity',
+      Wallets: 'Wallets',
+      Launchpad: 'Launchpad',
+      'BRC-20': 'BRC-20',
+      'Cross-chain Communication': 'Cross-chain',
+      'Tokenized Gold': 'Tokenized Gold',
+      Options: 'Options',
+      'Yield Aggregator': 'Yield Aggregator',
+      'Rebase Tokens': 'Rebase Tokens',
+      'Fan Token': 'Fan Token',
+      Music: 'Music',
+      'RWA Protocol': 'RWA (Real World Assets)',
+    }
   }
 
   async start() {
@@ -111,7 +111,7 @@ class CoinCategorySyncer extends Syncer {
     for (let i = 0; i < categories.length; i += 1) {
       const category = categories[i]
 
-      if (this.whitelisted[category.name]) {
+      if (this.categoriesMap[category.name]) {
         const [record] = await Category.findOrCreate({
           where: { uid: category.id },
           defaults: {
