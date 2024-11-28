@@ -1,11 +1,11 @@
-const Syncer = require('./Syncer')
 const Category = require('../db/models/Category')
+const CoinPriceHistorySyncer = require('./CoinPriceHistorySyncer')
 const Coin = require('../db/models/Coin')
 const CoinCategory = require('../db/models/CoinCategories')
 const coingecko = require('../providers/coingecko')
 const utils = require('../utils')
 
-class CoinCategorySyncer extends Syncer {
+class CoinCategorySyncer extends CoinPriceHistorySyncer {
   constructor() {
     super()
 
