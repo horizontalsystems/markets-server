@@ -2,16 +2,13 @@ const { create: createAxios } = require('axios')
 
 class RpcSource {
   constructor(mode) {
-    const { env } = process
-    this.sources = [
-      { baseURL: `https://${mode}.infura.io/v3/${env.INFURA_1_ID}`, secret: env.INFURA_1_SECRET },
-      { baseURL: `https://${mode}.infura.io/v3/${env.INFURA_2_ID}`, secret: env.INFURA_2_SECRET },
-      { baseURL: `https://${mode}.infura.io/v3/${env.INFURA_3_ID}`, secret: env.INFURA_3_SECRET },
-      { baseURL: `https://${mode}.infura.io/v3/${env.INFURA_4_ID}`, secret: env.INFURA_4_SECRET },
-      { baseURL: `https://${mode}.infura.io/v3/${env.INFURA_5_ID}`, secret: env.INFURA_5_SECRET },
-      { baseURL: `https://${mode}.infura.io/v3/${env.INFURA_6_ID}`, secret: env.INFURA_6_SECRET },
-    ]
+    const keys = (process.env.INFURA_KEYS || '').split(',')
+
     this.currentSourceIndex = 0
+    this.sources = keys.map(item => {
+      const [id, secret] = item.split(':')
+      return { baseURL: `https://${mode}.infura.io/v3/${id}`, secret }
+    })
     this.axios = this.createAxios()
   }
 
