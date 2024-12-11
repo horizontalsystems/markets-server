@@ -8,6 +8,11 @@ exports.index = async ({ currencyRate }, res) => {
   res.send(serializer.serialize(categories, currencyRate))
 }
 
+exports.topCoins = async ({ currencyRate }, res) => {
+  const categories = await Category.getTopCoins()
+  res.send(serializer.serializeTopCoins(categories, currencyRate))
+}
+
 exports.coins = async ({ params, currencyRate }, res) => {
   const coins = await Category.getCoins(params.uid)
   const coinFields = [

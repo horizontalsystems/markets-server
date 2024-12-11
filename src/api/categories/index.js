@@ -34,6 +34,8 @@ const router = express.Router()
  */
 router.get('/', setCurrencyRate, controller.index)
 
+router.get('/with-top-coins', setCurrencyRate, controller.topCoins)
+
 /**
  * @api {get} /v1/categories/:uid/coins List coins
  * @apiDescription Get category's coins

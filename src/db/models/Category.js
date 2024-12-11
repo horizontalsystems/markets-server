@@ -56,6 +56,29 @@ class Category extends SequelizeModel {
     return Category.query(query, { uid })
   }
 
+  static getTopCoins(uid) {
+    const query = (`
+      WITH ranked_coins AS (
+        SELECT
+          c.uid AS coin_uid,
+          cat.*,
+          ROW_NUMBER() OVER (
+            PARTITION BY cat.id 
+            ORDER BY (c.market_data->>'market_cap')::numeric DESC
+          ) AS rank
+        FROM coin_categories cc
+        JOIN coins c ON c.id = cc.coin_id AND c.market_data->>'market_cap' IS NOT NULL
+        JOIN categories cat ON cat.id = cc.category_id
+      )
+      SELECT uid, name, market_cap, description, ARRAY_AGG(coin_uid ORDER BY rank) AS top_coins
+      FROM ranked_coins
+      WHERE rank <= 3
+      GROUP BY uid, name, market_cap, description
+    `)
+
+    return Category.query(query, { uid })
+  }
+
   static getMarketCaps() {
     const query = (`
       SELECT
