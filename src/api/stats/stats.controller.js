@@ -11,7 +11,7 @@ exports.getStats = async ({ query }, res) => {
 }
 
 exports.getKeys = async (req, res) => {
-  const [keys] = await mongo.getKeys()
+  const keys = await mongo.getKeys()
   res.send(serializer.serializeKeys(keys))
 }
 

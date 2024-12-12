@@ -1,7 +1,5 @@
-exports.serializeKeys = ({ keys }) => {
-  return keys.map(item => {
-    return item
-  })
+exports.serializeKeys = keys => {
+  return keys
 }
 
 exports.serializeResources = items => {

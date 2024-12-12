@@ -1,6 +1,7 @@
 const { MongoClient } = require('mongodb')
 
 const mongo = {}
+const THRESHOLD = 24 * 60 * 60 * 1000 // 24 hours in milliseconds
 
 mongo.getStats = async (match, groupBy) => {
   const logs = mongo.collection('logs')
@@ -15,7 +16,7 @@ mongo.getStats = async (match, groupBy) => {
   return logs.aggregate(pipeline).toArray()
 }
 
-mongo.getKeys = async () => {
+const getKeysAndUpdateCache = async (keysCache) => {
   const logs = mongo.collection('logs')
 
   const pipeline = [
@@ -26,7 +27,33 @@ mongo.getKeys = async () => {
     { $project: { _id: 0, keys: 1 } }
   ]
 
-  return logs.aggregate(pipeline).toArray()
+  const keysResult = await logs.aggregate(pipeline).toArray()
+  const keys = keysResult.length > 0 ? keysResult[0].keys : []
+
+  await keysCache.updateOne(
+    { _id: 'cached-logs-keys' },
+    { $set: { keys, updatedAt: new Date() } },
+    { upsert: true }
+  )
+
+  return keys
+}
+
+mongo.getKeys = async () => {
+  const logKeys = mongo.collection('logs-keys')
+  const cachedResult = await logKeys.findOne({ _id: 'cached-logs-keys' })
+  const now = new Date()
+
+  if (cachedResult) {
+    if (now - cachedResult.updatedAt <= THRESHOLD) {
+      return cachedResult.keys
+    }
+
+    getKeysAndUpdateCache(logKeys).catch(console.error)
+    return cachedResult.keys
+  }
+
+  return getKeysAndUpdateCache(logKeys)
 }
 
 mongo.collection = (name) => {
