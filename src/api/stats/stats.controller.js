@@ -1,13 +1,32 @@
+const { DateTime } = require('luxon')
+const { isNumber } = require('lodash')
 const morgan = require('morgan')
 const mongo = require('../../db/mongo')
 const serializer = require('./stats.serializer')
+const { handleError } = require('../middlewares')
 
 const logs = mongo.collection('logs')
 
 exports.getStats = async ({ query }, res) => {
-  const { group_by: groupBy, ...match } = query
-  const events = await mongo.getStats(match, groupBy)
-  res.send(events)
+  try {
+    const { group_by: groupBy, start, end, ...match } = query
+
+    const dateRange = {
+      start: start || DateTime.now({ days: -1 }).toUnixInteger(),
+      end: end || DateTime.now().toUnixInteger(),
+    }
+
+    if (!isNumber(dateRange.start) || !isNumber(dateRange.end)) {
+      return handleError(res, 400, 'Invalid start and end of date')
+    }
+
+    const events = await mongo.getStats(match, groupBy, dateRange)
+
+    res.send(events)
+  } catch (e) {
+    console.error(e)
+    handleError(res, 500, 'Internal server error')
+  }
 }
 
 exports.getKeys = async (req, res) => {

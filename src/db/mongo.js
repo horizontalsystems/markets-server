@@ -3,11 +3,19 @@ const { MongoClient } = require('mongodb')
 const mongo = {}
 const THRESHOLD = 24 * 60 * 60 * 1000 // 24 hours in milliseconds
 
-mongo.getStats = async (match, groupBy) => {
+mongo.getStats = async (match, groupBy, dateRange) => {
   const logs = mongo.collection('logs')
 
   const pipeline = [
-    { $match: match },
+    {
+      $match: {
+        time: {
+          $gte: dateRange.start,
+          $lte: dateRange.end
+        },
+        ...match
+      }
+    },
     { $group: { _id: `$${groupBy}`, requestCount: { $sum: 1 }, uniqueCount: { $addToSet: '$appId' } } },
     { $project: { requestCount: 1, uniqueUsers: { $size: '$uniqueCount' } } },
     { $sort: { requestCount: -1 } }
