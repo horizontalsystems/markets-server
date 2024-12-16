@@ -1,5 +1,4 @@
 const { DateTime } = require('luxon')
-const { isNumber } = require('lodash')
 const morgan = require('morgan')
 const mongo = require('../../db/mongo')
 const serializer = require('./stats.serializer')
@@ -12,12 +11,8 @@ exports.getStats = async ({ query }, res) => {
     const { group_by: groupBy, start, end, ...match } = query
 
     const dateRange = {
-      start: start || DateTime.now({ days: -1 }).toUnixInteger(),
-      end: end || DateTime.now().toUnixInteger(),
-    }
-
-    if (!isNumber(dateRange.start) || !isNumber(dateRange.end)) {
-      return handleError(res, 400, 'Invalid start and end of date')
+      start: parseInt(start || DateTime.now().plus({ days: -1 }).toUnixInteger(), 10),
+      end: parseInt(end || DateTime.now().toUnixInteger(), 10),
     }
 
     const events = await mongo.getStats(match, groupBy, dateRange)
