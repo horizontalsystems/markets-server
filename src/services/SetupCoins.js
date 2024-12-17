@@ -1,6 +1,7 @@
 const TurndownService = require('turndown')
 const { chunk, difference, intersection, isObject } = require('lodash')
 const { sleep } = require('../utils')
+const Syncer = require('./Syncer')
 const Coin = require('../db/models/Coin')
 const Chain = require('../db/models/Chain')
 const UpdateState = require('../db/models/UpdateState')
@@ -12,8 +13,10 @@ const web3Provider = require('../providers/web3')
 const gpt = require('../providers/chat-gpt')
 const coinsJoin = require('../db/seeders/coins.json')
 
-class SetupCoins {
+class SetupCoins extends Syncer {
   constructor() {
+    super()
+
     this.MIN_24_VOLUME = 200000
     this.MIN_24_VOLUME_TRUSTED = 500000
     this.MIN_MCAP = 10000000
@@ -25,6 +28,16 @@ class SetupCoins {
         filter: node => node.nodeName === 'A' && node.getAttribute('href'),
         replacement: content => content
       })
+  }
+
+  async sync() {
+    console.log('Started syncing new coins once a day')
+    this.cron('1d', async () => {
+      const newCoins = await this.fetchNewCoinList()
+      if (newCoins.length) {
+        await this.setupCoins(newCoins)
+      }
+    })
   }
 
   async fetchNewCoinList() {
@@ -51,8 +64,11 @@ class SetupCoins {
       return coin.market_data.total_volume >= this.MIN_24_VOLUME && coin.market_data.market_cap >= this.MIN_MCAP
     })
 
+    const filteredNewCoins = filtered.map(coin => coin.uid)
     console.log(`Coins with market data ${coins.length}; ${filtered.length} coins with volume >= ${this.MIN_24_VOLUME}`)
-    console.log(filtered.map(coin => coin.uid).join(','))
+    console.log(filteredNewCoins.join(','))
+
+    return filteredNewCoins
   }
 
   async orphanedCoins() {
@@ -66,9 +82,8 @@ class SetupCoins {
     console.log(matchCoins)
   }
 
-  async setupCoins(ids, force) {
+  async setupCoins(coinIds, force) {
     const exchanges = await Exchange.getUids()
-    const coinIds = ids || (await coingecko.getCoinList()).map(coin => coin.id)
     const coins = await this.fetchCoinInfo(coinIds)
     const languages = await Language.findAll({
       where: { code: ['en'] }

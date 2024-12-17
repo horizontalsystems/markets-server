@@ -38,6 +38,8 @@ async function start({ fetch, coins, tokenTypeDecimals, addressDecimals, chainDe
       await setupCoins.syncChains(isString(chains) && chains.split(','))
     } else if (orphaned) {
       await setupCoins.orphanedCoins()
+    } else {
+      await setupCoins.sync()
     }
   } catch (e) {
     console.log(e)
