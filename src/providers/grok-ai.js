@@ -1,24 +1,27 @@
-const OpenAI = require('openai')
+const axios = require('axios')
 const utils = require('../utils')
 
-const { chat } = new OpenAI({
-  organization: process.env.CHAT_GPT_ORG,
-  apiKey: process.env.CHAT_GPT_KEY
+const api = axios.create({
+  baseURL: 'https://api.x.ai/v1/chat/completions',
+  headers: {
+    Authorization: `Bearer ${process.env.X_AI_KEY}`
+  }
 })
 
 exports.getCoinDescription = async (content, language) => {
-  console.log('Fetching data from GPT')
+  console.log('Fetching data from Grok')
 
   try {
     const prompt = utils.getGptPrompt(language)
 
-    const { choices = [] } = await chat.completions.create({
-      model: 'gpt-3.5-turbo',
+    const { choices } = await api.post('', {
+      model: 'grok-2-1212',
+      stream: false,
       messages: [
         { role: 'system', content: prompt },
         { role: 'user', content }
       ]
-    })
+    }).then(res => res.data)
 
     const { message = {} } = choices[0] || {}
 

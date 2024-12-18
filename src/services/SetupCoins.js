@@ -11,6 +11,8 @@ const Language = require('../db/models/Language')
 const coingecko = require('../providers/coingecko')
 const web3Provider = require('../providers/web3')
 const gpt = require('../providers/chat-gpt')
+const grok = require('../providers/grok-ai')
+const gemini = require('../providers/gemini-ai')
 const coinsJoin = require('../db/seeders/coins.json')
 
 class SetupCoins extends Syncer {
@@ -232,15 +234,17 @@ class SetupCoins extends Syncer {
     const result = {}
     for (let i = 0; i < languages.length; i += 1) {
       const language = languages[i];
-      const message = await gpt.getCoinDescription(descriptions[language.code] || coin, language)
+      const oldDescription = descriptions[language.code]
 
-      let description
-      if (message) {
-        description = message.content
+      let description = await gpt.getCoinDescription(oldDescription || coin, language)
+      if (!description) {
+        description = await grok.getCoinDescription(oldDescription || coin, language)
       }
-
-      if (!description && descriptions[language.code]) {
-        description = this.turndownService.turndown(descriptions[language.code])
+      if (!description) {
+        description = await gemini.getCoinDescription(oldDescription || coin, language)
+      }
+      if (!description && oldDescription) {
+        description = this.turndownService.turndown(oldDescription)
       }
 
       if (description) {
@@ -273,10 +277,10 @@ class SetupCoins extends Syncer {
         }
       }
 
+      values.description = await this.syncDescriptions(coin.name, coinInfo.description, languages)
       if (volume >= this.MIN_24_VOLUME_TRUSTED || force) {
-        values.description = cached.description || await this.syncDescriptions(coin.name, coinInfo.description, languages)
-        const [record] = await Coin.upsert(values)
-        await this.syncPlatforms(record, Object.entries(coinInfo.detail_platforms))
+        // const [record] = await Coin.upsert(values)
+        // await this.syncPlatforms(record, Object.entries(coinInfo.detail_platforms))
       }
     } catch (err) {
       await this.handleError(err)

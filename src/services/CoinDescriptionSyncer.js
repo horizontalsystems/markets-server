@@ -1,6 +1,6 @@
 const utils = require('../utils')
 const gpt = require('../providers/chat-gpt')
-const bard = require('../providers/palm')
+const gemini = require('../providers/gemini-ai')
 const Coin = require('../db/models/Coin')
 
 class CoinDescriptionSyncer {
@@ -37,7 +37,7 @@ class CoinDescriptionSyncer {
     }
 
     if (!coinDesc) {
-      coinDesc = await bard.getCoinDescription(content, language)
+      coinDesc = await gemini.getCoinDescription(content, language)
     }
 
     if (this.force) {
