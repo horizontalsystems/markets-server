@@ -1,12 +1,11 @@
 const utils = require('../utils')
 const gpt = require('../providers/chat-gpt')
+const grok = require('../providers/grok-ai')
 const gemini = require('../providers/gemini-ai')
 const Coin = require('../db/models/Coin')
 
 class CoinDescriptionSyncer {
-
-  constructor(syncFromBard, reference, force) {
-    this.bard = syncFromBard
+  constructor(reference, force) {
     this.ref = reference
     this.force = force
   }
@@ -29,15 +28,16 @@ class CoinDescriptionSyncer {
   async syncDescription(uid, coin, language) {
     console.log(`Syncing descriptions for ${uid}`, language ? language.name : null)
 
-    const content = JSON.stringify({ [coin.code]: coin.descriptionReference })
+    const content = JSON.stringify({
+      [coin.code]: coin.descriptionReference
+    })
 
-    let coinDesc
-    if (!this.bard) {
-      coinDesc = await gpt.getCoinDescription(content, language)
-    }
-
+    let coinDesc = await gpt.getCoinDescription(content, language)
     if (!coinDesc) {
       coinDesc = await gemini.getCoinDescription(content, language)
+    }
+    if (!coinDesc) {
+      coinDesc = await grok.getCoinDescription(content, language)
     }
 
     if (this.force) {
