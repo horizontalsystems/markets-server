@@ -279,8 +279,8 @@ class SetupCoins extends Syncer {
 
       values.description = await this.syncDescriptions(coin.name, coinInfo.description, languages)
       if (volume >= this.MIN_24_VOLUME_TRUSTED || force) {
-        // const [record] = await Coin.upsert(values)
-        // await this.syncPlatforms(record, Object.entries(coinInfo.detail_platforms))
+        const [record] = await Coin.upsert(values)
+        await this.syncPlatforms(record, Object.entries(coinInfo.detail_platforms))
       }
     } catch (err) {
       await this.handleError(err)
