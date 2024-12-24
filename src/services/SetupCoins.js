@@ -47,13 +47,15 @@ class SetupCoins extends Syncer {
     const oldCoins = await Coin.findAll({ attributes: ['coingecko_id'] })
     const newCoins = difference(allCoins.map(coin => coin.id), oldCoins.map(coin => coin.coingecko_id))
 
-    console.log('Fetched new coins', newCoins.length)
+    console.log(`All gecko coins ${allCoins.length}; New coins ${newCoins.length}`)
 
     const chunks = chunk(newCoins, 250)
     const coins = []
 
     for (let i = 0; i < chunks.length; i += 1) {
-      const data = await coingecko.getMarkets(chunks[i])
+      console.log(`======> ${chunks[i].length}`)
+      const data = await coingecko.getMarkets(chunks[i], 1, 250)
+      console.log(`<====== ${data.length}`)
       await sleep(20000)
       coins.push(...data)
     }
@@ -67,7 +69,7 @@ class SetupCoins extends Syncer {
     })
 
     const filteredNewCoins = filtered.map(coin => coin.uid)
-    console.log(`Coins with market data ${coins.length}; ${filtered.length} coins with volume >= ${this.MIN_24_VOLUME}`)
+    console.log(`Fetched coins ${coins.length}; Without marked data ${coins.filter(i => !i.market_data)}; ${filtered.length} market_cap >= ${this.MIN_MCAP}`)
     console.log(filteredNewCoins.join(','))
 
     return filteredNewCoins
@@ -147,8 +149,8 @@ class SetupCoins extends Syncer {
 
   async fetchCoinInfo(coinIds) {
     console.log(`Fetching coins ${coinIds.length}`)
-    const coinIdsPerPage = coinIds.splice(0, 420)
-    const coins = await coingecko.getMarkets(coinIdsPerPage)
+    const coinIdsPerPage = coinIds.splice(0, 250)
+    const coins = await coingecko.getMarkets(coinIdsPerPage, 1, 250)
 
     if (coins.length >= (coinIdsPerPage.length + coinIds.length) || coinIds.length < 1) {
       return coins
