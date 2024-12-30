@@ -90,7 +90,7 @@ class SetupCoins extends Syncer {
       where: { coingecko_id: Coin.literal('coingecko_id is null') }
     })
     console.log(`All coins: ${allCoins.length}; old coins: ${oldCoins.length}`)
-    const matchCoins = intersection(allCoins.map(coin => coin.id), oldCoins.map(coin => coin.coingecko_id))
+    const matchCoins = intersection(allCoins.map(coin => coin.id), oldCoins.map(coin => coin.uid))
     console.log(matchCoins)
   }
 
