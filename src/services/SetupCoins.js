@@ -21,7 +21,7 @@ class SetupCoins extends Syncer {
 
     this.MIN_24_VOLUME = 200000
     this.MIN_24_VOLUME_TRUSTED = 500000
-    this.MIN_MCAP = 10000000
+    this.MIN_MCAP = 5000000
 
     this.ignorePlatforms = ['ankr-reward-earning-staked-eth', 'binance-peg-ethereum']
     this.coinsCache = coinsJoin.reduce((result, item) => ({ ...result, [item.uid]: item }), {})
@@ -32,14 +32,21 @@ class SetupCoins extends Syncer {
       })
   }
 
-  async sync() {
-    console.log('Started syncing new coins once a day')
-    this.cron('1d', async () => {
+  async sync(force) {
+    const syncNewCoins = async () => {
       const newCoins = await this.fetchNewCoinList()
       if (newCoins.length) {
         await this.setupCoins(newCoins)
       }
-    })
+    }
+
+    if (force) {
+      return syncNewCoins()
+    }
+
+    console.log('Started syncing new coins once a day')
+
+    this.cron('1d', syncNewCoins)
   }
 
   async fetchNewCoinList() {
@@ -65,7 +72,8 @@ class SetupCoins extends Syncer {
         return false
       }
 
-      return coin.market_data.total_volume >= this.MIN_24_VOLUME && coin.market_data.market_cap >= this.MIN_MCAP
+      // return coin.market_data.total_volume >= this.MIN_24_VOLUME && coin.market_data.market_cap >= this.MIN_MCAP
+      return coin.market_data.market_cap >= this.MIN_MCAP
     })
 
     const filteredNewCoins = filtered.map(coin => coin.uid)
@@ -271,16 +279,16 @@ class SetupCoins extends Syncer {
         security: cached.security || coin.security
       }
 
-      let volume = 0
-      for (let i = 0; i < coinInfo.tickers.length; i += 1) {
-        const ticker = coinInfo.tickers[i];
-        if (exchanges[ticker.market.identifier]) {
-          volume += ticker.converted_volume.usd
-        }
-      }
+      const volume = 0
+      // for (let i = 0; i < coinInfo.tickers.length; i += 1) {
+      //   const ticker = coinInfo.tickers[i];
+      //   if (exchanges[ticker.market.identifier]) {
+      //     volume += ticker.converted_volume.usd
+      //   }
+      // }
 
       values.description = await this.syncDescriptions(coin.name, coinInfo.description, languages)
-      if (volume >= this.MIN_24_VOLUME_TRUSTED || force) {
+      if (volume >= 0 || force) {
         const [record] = await Coin.upsert(values)
         await this.syncPlatforms(record, Object.entries(coinInfo.detail_platforms))
       }
