@@ -86,6 +86,7 @@ class Coin extends SequelizeModel {
 
   static associate(models) {
     Coin.belongsToMany(models.Category, { through: models.CoinCategories })
+    Coin.hasMany(models.CoinCategories)
     Coin.hasMany(models.Platform)
     Coin.hasMany(models.FundsInvested)
     Coin.hasMany(models.CoinPrice)

@@ -5,6 +5,7 @@ const CoinPrice = require('../../db/models/CoinPrice')
 const serializer = require('./coins.serializer')
 const CoinIndicator = require('../../db/models/CoinIndicator')
 const CoinTicker = require('../../db/models/CoinTicker')
+const CoinCategory = require('../../db/models/CoinCategories')
 
 exports.index = async ({ query, currencyRate }, res) => {
   const { limit = 1500, page = 1 } = query
@@ -56,6 +57,16 @@ exports.filter = async ({ query, currencyRate }, res) => {
   if (query.order_by_rank === 'true') {
     options.where.coingecko_id = Coin.literal('coingecko_id IS NOT NULL')
     options.order = [Coin.literal('market_data->\'market_cap\' DESC')]
+  }
+  if (query.category_id) {
+    options.include = [{
+      model: CoinCategory,
+      where: {
+        category_id: query.category_id
+      },
+      attributes: [],
+      required: true
+    }]
   }
 
   const indicators = await CoinIndicator.getResultsMap()
