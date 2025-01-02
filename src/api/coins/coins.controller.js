@@ -42,7 +42,7 @@ exports.index = async ({ query, currencyRate }, res) => {
 }
 
 exports.filter = async ({ query, currencyRate }, res) => {
-  const { limit = 1500, page = 1 } = query
+  const { limit = 2500, page = 1 } = query
   const options = {
     where: {},
     order: ['id'],
