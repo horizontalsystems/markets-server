@@ -126,7 +126,8 @@ class CoinHolderSyncer extends Syncer {
         case 'solana': {
           const requests = [
             solscan.getHolders(address),
-            solscan.getTokenInfo(address)
+            solscan.getTokenInfo(address),
+            solscan.getTokenTotal(address),
           ]
 
           return resolve(Promise.all(requests), this.mapSolanaHolders())
@@ -282,8 +283,8 @@ class CoinHolderSyncer extends Syncer {
   }
 
   mapSolanaHolders() {
-    return ([data, token]) => {
-      const items = data.result.map(holder => {
+    return ([data, token, total]) => {
+      const items = data.map(holder => {
         if (!token || !token.decimals || !token.supply) {
           return null
         }
@@ -302,7 +303,7 @@ class CoinHolderSyncer extends Syncer {
 
       return {
         items,
-        total: data.total
+        total
       }
     }
   }
