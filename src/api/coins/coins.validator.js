@@ -29,7 +29,7 @@ module.exports = {
     query: Joi.object({
       limit: Joi.number()
         .min(1)
-        .max(1500),
+        .max(2500),
       page: Joi.number()
         .min(1),
       indicator: Joi.string()

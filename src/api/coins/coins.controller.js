@@ -42,11 +42,15 @@ exports.index = async ({ query, currencyRate }, res) => {
 }
 
 exports.filter = async ({ query, currencyRate }, res) => {
-  const { limit = 2500, page = 1 } = query
+  const { limit = 250, page = 1 } = query
   const options = {
     where: {},
     order: ['id'],
-    attributes: ['id', 'uid', 'price', 'price_change_24h', 'price_change', 'market_data']
+    attributes: ['id', 'uid', 'price', 'price_change_24h', 'price_change', 'market_data'],
+    include: [{
+      model: CoinCategory,
+      attributes: ['category_id']
+    }]
   }
 
   if (limit) {
@@ -57,16 +61,6 @@ exports.filter = async ({ query, currencyRate }, res) => {
   if (query.order_by_rank === 'true') {
     options.where.coingecko_id = Coin.literal('coingecko_id IS NOT NULL')
     options.order = [Coin.literal('market_data->\'market_cap\' DESC')]
-  }
-  if (query.category_id) {
-    options.include = [{
-      model: CoinCategory,
-      where: {
-        category_id: query.category_id
-      },
-      attributes: [],
-      required: true
-    }]
   }
 
   const indicators = await CoinIndicator.getResultsMap()
