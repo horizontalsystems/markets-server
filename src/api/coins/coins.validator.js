@@ -36,8 +36,7 @@ module.exports = {
         .valid('neutral', 'buy', 'sell', 'buy_signal', 'sell_signal', 'overbought', 'oversold'),
       order_by_rank: Joi.boolean()
         .sensitive(true),
-      currency: Joi.string(),
-      category_id: Joi.number(),
+      currency: Joi.string()
     })
   }, options),
 
