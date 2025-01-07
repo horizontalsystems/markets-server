@@ -139,6 +139,17 @@ class TransactionSyncer extends Syncer {
     return this.bulkCreate(records, network)
   }
 
+  async showPlatforms(chain) {
+    const platforms = await this.getPlatforms(chain, true, false)
+    const platformsStr = platforms.list
+      .map(item => {
+        return `('${item.address}')`
+      })
+      .join(',')
+
+    console.log(platformsStr)
+  }
+
   async getPlatforms(chains, withDecimals, withAddress = true) {
     const platforms = await Platform.getByChain(chains, withDecimals, withAddress)
     const list = []

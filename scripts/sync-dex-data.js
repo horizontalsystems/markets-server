@@ -43,12 +43,12 @@ async function start({ tx, volume, liquidity, address, coins, source, print, def
   }
 
   const mapper = s => {
-    if (coins) {
-      return s.syncHistorical(coins.split(','), source)
-    }
-
     if (print) {
       return s.showPlatforms(print)
+    }
+
+    if (coins) {
+      return s.syncHistorical(coins.split(','), source)
     }
 
     return s.start()
