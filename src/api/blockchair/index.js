@@ -10,9 +10,7 @@ const proxyMiddleware = createProxyMiddleware({
     const baseUrl = `${proxyReq.protocol}//${proxyReq.host}`;
     const url = new URL(proxyReq.path, baseUrl);
 
-    if (proxyReq.path !== '/litecoin/push/transaction') {
-      url.searchParams.append('key', process.env.BLOCKCHAIR_KEY);
-    }
+    url.searchParams.append('key', process.env.BLOCKCHAIR_KEY);
 
     // eslint-disable-next-line no-param-reassign
     proxyReq.path = url.pathname + url.search;
