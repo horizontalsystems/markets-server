@@ -21,7 +21,7 @@ class SetupCoins extends Syncer {
 
     this.MIN_24_VOLUME = 200000
     this.MIN_24_VOLUME_TRUSTED = 500000
-    this.MIN_MCAP = 10000000
+    this.MIN_MCAP = 5000000
 
     this.ignorePlatforms = ['ankr-reward-earning-staked-eth', 'binance-peg-ethereum']
     this.coinsCache = coinsJoin.reduce((result, item) => ({ ...result, [item.uid]: item }), {})
@@ -32,14 +32,21 @@ class SetupCoins extends Syncer {
       })
   }
 
-  async sync() {
-    console.log('Started syncing new coins once a day')
-    this.cron('1d', async () => {
+  async sync(force) {
+    const syncNewCoins = async () => {
       const newCoins = await this.fetchNewCoinList()
       if (newCoins.length) {
         await this.setupCoins(newCoins)
       }
-    })
+    }
+
+    if (force) {
+      return syncNewCoins()
+    }
+
+    console.log('Started syncing new coins once a day')
+
+    this.cron('1d', syncNewCoins)
   }
 
   async fetchNewCoinList() {
@@ -47,13 +54,15 @@ class SetupCoins extends Syncer {
     const oldCoins = await Coin.findAll({ attributes: ['coingecko_id'] })
     const newCoins = difference(allCoins.map(coin => coin.id), oldCoins.map(coin => coin.coingecko_id))
 
-    console.log('Fetched new coins', newCoins.length)
+    console.log(`All gecko coins ${allCoins.length}; New coins ${newCoins.length}`)
 
     const chunks = chunk(newCoins, 250)
     const coins = []
 
     for (let i = 0; i < chunks.length; i += 1) {
-      const data = await coingecko.getMarkets(chunks[i])
+      console.log(`======> ${chunks[i].length}`)
+      const data = await coingecko.getMarkets(chunks[i], 1, 250)
+      console.log(`<====== ${data.length}`)
       await sleep(20000)
       coins.push(...data)
     }
@@ -63,11 +72,12 @@ class SetupCoins extends Syncer {
         return false
       }
 
-      return coin.market_data.total_volume >= this.MIN_24_VOLUME && coin.market_data.market_cap >= this.MIN_MCAP
+      // return coin.market_data.total_volume >= this.MIN_24_VOLUME && coin.market_data.market_cap >= this.MIN_MCAP
+      return coin.market_data.market_cap >= this.MIN_MCAP
     })
 
     const filteredNewCoins = filtered.map(coin => coin.uid)
-    console.log(`Coins with market data ${coins.length}; ${filtered.length} coins with volume >= ${this.MIN_24_VOLUME}`)
+    console.log(`Fetched coins ${coins.length}; Without marked data ${coins.filter(i => !i.market_data)}; ${filtered.length} market_cap >= ${this.MIN_MCAP}`)
     console.log(filteredNewCoins.join(','))
 
     return filteredNewCoins
@@ -80,7 +90,7 @@ class SetupCoins extends Syncer {
       where: { coingecko_id: Coin.literal('coingecko_id is null') }
     })
     console.log(`All coins: ${allCoins.length}; old coins: ${oldCoins.length}`)
-    const matchCoins = intersection(allCoins.map(coin => coin.id), oldCoins.map(coin => coin.coingecko_id))
+    const matchCoins = intersection(allCoins.map(coin => coin.id), oldCoins.map(coin => coin.uid))
     console.log(matchCoins)
   }
 
@@ -147,8 +157,8 @@ class SetupCoins extends Syncer {
 
   async fetchCoinInfo(coinIds) {
     console.log(`Fetching coins ${coinIds.length}`)
-    const coinIdsPerPage = coinIds.splice(0, 420)
-    const coins = await coingecko.getMarkets(coinIdsPerPage)
+    const coinIdsPerPage = coinIds.splice(0, 250)
+    const coins = await coingecko.getMarkets(coinIdsPerPage, 1, 250)
 
     if (coins.length >= (coinIdsPerPage.length + coinIds.length) || coinIds.length < 1) {
       return coins
@@ -269,18 +279,18 @@ class SetupCoins extends Syncer {
         security: cached.security || coin.security
       }
 
-      let volume = 0
-      for (let i = 0; i < coinInfo.tickers.length; i += 1) {
-        const ticker = coinInfo.tickers[i];
-        if (exchanges[ticker.market.identifier]) {
-          volume += ticker.converted_volume.usd
-        }
-      }
+      const volume = 0
+      // for (let i = 0; i < coinInfo.tickers.length; i += 1) {
+      //   const ticker = coinInfo.tickers[i];
+      //   if (exchanges[ticker.market.identifier]) {
+      //     volume += ticker.converted_volume.usd
+      //   }
+      // }
 
       values.description = await this.syncDescriptions(coin.name, coinInfo.description, languages)
-      if (volume >= this.MIN_24_VOLUME_TRUSTED || force) {
-        // const [record] = await Coin.upsert(values)
-        // await this.syncPlatforms(record, Object.entries(coinInfo.detail_platforms))
+      if (volume >= 0 || force) {
+        const [record] = await Coin.upsert(values)
+        await this.syncPlatforms(record, Object.entries(coinInfo.detail_platforms))
       }
     } catch (err) {
       await this.handleError(err)

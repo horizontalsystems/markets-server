@@ -39,7 +39,7 @@ async function start({ fetch, coins, tokenTypeDecimals, addressDecimals, chainDe
     } else if (orphaned) {
       await setupCoins.orphanedCoins()
     } else {
-      await setupCoins.sync()
+      await setupCoins.sync(force)
     }
   } catch (e) {
     console.log(e)

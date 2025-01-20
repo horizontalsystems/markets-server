@@ -283,7 +283,7 @@ class CoinHolderSyncer extends Syncer {
 
   mapSolanaHolders() {
     return ([data, token]) => {
-      const items = data.result.map(holder => {
+      const items = data.map(holder => {
         if (!token || !token.decimals || !token.supply) {
           return null
         }
@@ -302,7 +302,7 @@ class CoinHolderSyncer extends Syncer {
 
       return {
         items,
-        total: data.total
+        total: token.holders
       }
     }
   }

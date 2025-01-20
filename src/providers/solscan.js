@@ -1,6 +1,9 @@
+const axios = require('axios')
 const querystring = require('querystring')
-const axios = require('axios').create({
-  baseURL: 'https://api.solscan.io/v2',
+const { scanURL } = require('../utils')
+
+const api = axios.create({
+  baseURL: scanURL('solana') || 'https://api-v2.solscan.io/v2',
   timeout: 180000,
   headers: {
     'Sec-Fetch-Site': 'same-site',
@@ -17,20 +20,26 @@ const axios = require('axios').create({
   }
 })
 
-exports.getMeta = address => {
-  return axios.get(`/token/meta?token=${address}`).then(res => res.data)
-}
-
 exports.getHolders = address => {
   const query = querystring.stringify({
-    token: address,
-    offset: 0,
-    size: 10
+    address,
+    page_size: 10,
+    page: 1
   })
 
-  return axios.get(`/token/holders?${query}`).then(({ data }) => data.data)
+  return api.get(`/token/holders?${query}`).then(({ data }) => data.data)
 }
 
 exports.getTokenInfo = address => {
-  return axios.get(`/account?address=${address}`).then(({ data }) => (data.data || {}).tokenInfo)
+  return api.get(`/account?address=${address}`).then(({ data }) => {
+    const info = (data.data || {}).tokenInfo
+    const tokens = (data.metadata || {}).tokens || {}
+    const token = tokens[address] || {}
+
+    return {
+      supply: info.supply,
+      decimals: info.decimals,
+      holders: token.holder
+    }
+  })
 }

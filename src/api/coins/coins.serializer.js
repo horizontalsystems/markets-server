@@ -51,6 +51,10 @@ function mapPlatforms(platforms, legacy) {
   })
 }
 
+function mapCategoryIds(coinCategories = []) {
+  return coinCategories.map(item => item.category_id)
+}
+
 function mapCoinAttribute(coin, field, currencyRate) {
   const priceChange = coin.price_change || {}
   const marketData = coin.market_data || {}
@@ -103,6 +107,8 @@ function mapCoinAttribute(coin, field, currencyRate) {
       return mapPlatforms(coin.Platforms, true)
     case 'all_platforms':
       return mapPlatforms(coin.Platforms)
+    case 'category_ids':
+      return mapCategoryIds(coin.CoinCategories)
 
     default:
       return undefined
@@ -143,7 +149,8 @@ exports.serializeFilter = (coins, currencyRate, indicators, coinRanks, listedOnW
     'price_change_200d',
     'price_change_1y',
     'ath_percentage',
-    'atl_percentage'
+    'atl_percentage',
+    'category_ids'
   ]
 
   return coins.map(item => {

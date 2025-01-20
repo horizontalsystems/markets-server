@@ -5,6 +5,7 @@ const CoinPrice = require('../../db/models/CoinPrice')
 const serializer = require('./coins.serializer')
 const CoinIndicator = require('../../db/models/CoinIndicator')
 const CoinTicker = require('../../db/models/CoinTicker')
+const CoinCategory = require('../../db/models/CoinCategories')
 
 exports.index = async ({ query, currencyRate }, res) => {
   const { limit = 1500, page = 1 } = query
@@ -41,11 +42,15 @@ exports.index = async ({ query, currencyRate }, res) => {
 }
 
 exports.filter = async ({ query, currencyRate }, res) => {
-  const { limit = 1500, page = 1 } = query
+  const { limit = 250, page = 1 } = query
   const options = {
     where: {},
     order: ['id'],
-    attributes: ['id', 'uid', 'price', 'price_change_24h', 'price_change', 'market_data']
+    attributes: ['id', 'uid', 'price', 'price_change_24h', 'price_change', 'market_data'],
+    include: [{
+      model: CoinCategory,
+      attributes: ['category_id']
+    }]
   }
 
   if (limit) {

@@ -7,6 +7,7 @@ module.exports = {
       const marketCap = category.market_cap || {}
 
       return {
+        id: category.id,
         uid: category.uid,
         name: category.name,
         order: category.order,
