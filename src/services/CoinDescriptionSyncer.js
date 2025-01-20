@@ -33,10 +33,10 @@ class CoinDescriptionSyncer {
     })
 
     let coinDesc = await gpt.getCoinDescription(content, language)
-    if (!coinDesc) {
+    if (!coinDesc || coinDesc === 'null') {
       coinDesc = await gemini.getCoinDescription(content, language)
     }
-    if (!coinDesc) {
+    if (!coinDesc || coinDesc === 'null') {
       coinDesc = await grok.getCoinDescription(content, language)
     }
 
