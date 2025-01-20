@@ -47,8 +47,8 @@ class CoinDescriptionSyncer {
     await this.updateDescription(coin, coinDesc, language)
   }
 
-  async updateDescription(coin, { content }, language) {
-    if (!content) {
+  async updateDescription(coin, content, language) {
+    if (!content || content === 'null') {
       return
     }
 
