@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./support.controller')
-const { validateChat } = require('./support.validator')
+const { validateChat, validateCreateGroup } = require('./support.validator')
 
 const router = express.Router()
 
@@ -19,5 +19,7 @@ const router = express.Router()
  * @apiError (Not Found 404)    NotFound          Coin does not exist
  */
 router.post('/start-chat', validateChat, controller.startChat)
+
+router.post('/create-group', validateCreateGroup, controller.createGroup)
 
 module.exports = router

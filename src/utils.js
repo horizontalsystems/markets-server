@@ -136,26 +136,11 @@ exports.scanURL = chain => (
 )
 
 exports.signingMessage = (address, salt) => {
-  return (`Welcome to Unstoppable Wallet Premium Features!
-
-You'll be able to access pro analytics data 
-
---------
-
-This is only a signature request to verify you are the owner of the address.
-There are no blockchain transactions, gas fees or approvals associated with this.
-
---------
-
-Wallet:
-${address}
-Salt:
-${salt}`)
+  return (`Welcome to Unstoppable Wallet Premium Features!\n\nYou'll be able to access pro analytics data\n--------\n\nThis is only a signature request to verify you are the owner of the address.\nThere are no blockchain transactions, gas fees or approvals associated with this.\n\n--------\n\nWallet:\n${address}\nSalt:\n${salt}`)
 }
 
 exports.telegramMessage = () => {
-  return (`Hi, this is Unstoppable wallet support chat. 
-What would you like to know?`)
+  return ('Hi, this is Unstoppable wallet support chat.\nWhat would you like to know?')
 }
 
 exports.telegramScamMessage = chatName => {

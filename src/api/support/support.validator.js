@@ -9,4 +9,11 @@ module.exports = {
     })
   }),
 
+  // POST /v1/support/create-group
+  validateCreateGroup: validate({
+    body: Joi.object({
+      username: Joi.string().required()
+    })
+  }),
+
 }

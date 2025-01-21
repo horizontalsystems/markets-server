@@ -20,6 +20,7 @@ exports.getCoinDescription = async (content, language) => {
       ]
     })
 
+    console.log(choices)
     const { message = {} } = choices[0] || {}
 
     return message.content
