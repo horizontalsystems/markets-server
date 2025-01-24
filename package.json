@@ -25,6 +25,7 @@
     "node"
   ],
   "dependencies": {
+    "@flipsidecrypto/sdk": "^2.1.0",
     "@google-ai/generativelanguage": "^1.1.0",
     "@google-cloud/bigquery": "^6.1.0",
     "@google/generative-ai": "^0.21.0",

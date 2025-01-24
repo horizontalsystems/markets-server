@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const { chunk } = require('lodash')
 const { utcDate, stringToHex } = require('../utils')
 const flipsidecrypto = require('../providers/flipsidecrypto')
@@ -26,9 +25,9 @@ class AddressSyncer extends Syncer {
       await this.syncStats('binance-smart-chain', this.syncParamsHistorical('6M'))
     }
 
-    // if (!await Address.existsForPlatforms('solana')) {
-    //   await this.syncStats('solana', this.syncParamsHistorical('1y'))
-    // }
+    if (!await Address.existsForPlatforms('solana')) {
+      await this.syncSolana(utcDate({ days: -30 }, 'yyyy-MM-dd'))
+    }
 
     console.log('Successfully synced historical address stats !!!')
   }
@@ -36,7 +35,48 @@ class AddressSyncer extends Syncer {
   async syncLatest() {
     this.cron('1d', this.syncDailyStats)
     this.cron('01:00', this.syncDailyStats)
+    this.cron('01:00', () => this.syncSolana(utcDate({ days: -1 }, 'yyyy-MM-dd')))
     this.cron('1d', this.adjustData) // todo: should be removed
+  }
+
+  async syncSolana(dateFrom) {
+    const platforms = await this.getPlatforms('solana', false, false)
+    const platformsStr = platforms.list.map(item => `('${item.address}')`).join(',')
+
+    const query = `
+      WITH tokens AS (SELECT address FROM (VALUES ${platformsStr}) t(address)),
+      token_entries AS (
+        SELECT
+          tx_to AS to_address,
+          tx_from AS from_address,
+          block_timestamp AS block_timestamp,
+          mint AS platform
+        FROM solana.core.fact_transfers, tokens
+        WHERE tx_from IS NOT NULL
+          AND tx_to IS NOT NULL
+          AND mint = tokens.address
+          AND BLOCK_TIMESTAMP >= '${dateFrom}'
+      ),
+      addresses_entry AS (
+        SELECT to_address AS address, platform, block_timestamp FROM token_entries
+        UNION ALL
+        SELECT from_address AS address, platform, block_timestamp FROM token_entries
+      ),
+      entries AS (
+        SELECT
+          platform, '1d' AS period,
+          DATE_TRUNC('day', block_timestamp) AS block_date,
+          COUNT(DISTINCT address) AS address_count
+        FROM addresses_entry
+        GROUP BY 1, 2, 3
+      )
+      SELECT *
+      FROM entries
+      ORDER BY block_date ASC`
+
+    const items = await flipsidecrypto.runQuery(query, '4cb40d6c-ca3a-4bdf-8c6c-f4a287ef643d')
+    const data = await this.mapAddressStats(items, platforms)
+    await this.bulkCreate(data)
   }
 
   async syncDailyStats() {

@@ -1,10 +1,24 @@
 const { create } = require('axios')
+const { Flipside } = require('@flipsidecrypto/sdk')
 
 const axios = create({
   baseURL: 'https://api.flipsidecrypto.com/api',
   timeout: 180000,
   headers: {}
 })
+
+exports.runQuery = async (query, key) => {
+  console.log('Running a flipsidecrypto query')
+
+  try {
+    const flipside = new Flipside(key, 'https://api-v2.flipsidecrypto.xyz')
+    const response = await flipside.query.run({ sql: query })
+    return response.records
+  } catch (e) {
+    console.log(e)
+    return []
+  }
+}
 
 exports.getBnbActiveStats = () => {
   const mapper = item => ({

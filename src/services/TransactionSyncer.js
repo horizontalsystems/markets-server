@@ -2,6 +2,7 @@ const { chunk } = require('lodash')
 const { utcDate } = require('../utils')
 const { bitquery } = require('../providers/bitquery')
 const bigquery = require('../providers/bigquery')
+const flipsidecrypto = require('../providers/flipsidecrypto')
 const Transaction = require('../db/models/Transaction')
 const Platform = require('../db/models/Platform')
 const Syncer = require('./Syncer')
@@ -26,9 +27,9 @@ class TransactionSyncer extends Syncer {
       await this.syncFromBitquery(this.syncParamsHistorical('1y'), 'binance-smart-chain', false, 30)
     }
 
-    // if (!await Transaction.existsForPlatforms('solana')) {
-    // await this.syncFromBitquery(this.syncParamsHistorical('1y'), 'solana', false, 30)
-    // }
+    if (!await Transaction.existsForPlatforms('solana')) {
+      await this.syncSolana(utcDate({ days: -30 }, 'yyyy-MM-dd'))
+    }
 
     console.log('Completed syncing historical transactions stats')
   }
@@ -36,6 +37,7 @@ class TransactionSyncer extends Syncer {
   async syncLatest() {
     this.cron('1d', this.syncDailyStats)
     this.cron('01:00', this.syncDailyStats)
+    this.cron('01:00', () => this.syncSolana(utcDate({ days: -1 }, 'yyyy-MM-dd')))
   }
 
   async syncDailyStats({ dateFrom, dateTo }) {
@@ -51,6 +53,38 @@ class TransactionSyncer extends Syncer {
     await Transaction.deleteExpired(dateFrom, dateTo)
 
     console.log('Completed syncing daily transactions stats')
+  }
+
+  async syncSolana(dateFrom) {
+    const platforms = await this.getPlatformsWithPrice('solana')
+    const platformsStr = platforms.list.map(item => `('${item.address}')`).join(',')
+
+    const query = `
+      WITH tokens AS (SELECT address FROM (VALUES ${platformsStr}) t(address))
+      SELECT
+        mint as address,
+        DATE (block_timestamp) AS transfer_date,
+        COUNT(*) AS transfer_count,
+        SUM (amount) AS transfer_amount
+       FROM solana.core.fact_transfers, tokens
+      WHERE mint = tokens.address
+        AND block_timestamp >= '${dateFrom}'
+      GROUP BY transfer_date, mint
+      ORDER BY transfer_date DESC, mint`
+
+    const items = await flipsidecrypto.runQuery(query, '4cb40d6c-ca3a-4bdf-8c6c-f4a287ef643d')
+    const recs = items.map(item => {
+      const platform = platforms.map[item.address] || {}
+      const price = platform.price || 1
+      return {
+        date: item.transfer_date,
+        count: item.transfer_count,
+        volume: item.transfer_amount * price,
+        platform_id: platform.id
+      }
+    })
+
+    await this.bulkCreate(recs, 'solana')
   }
 
   async syncFromBigquery({ dateFrom, dateTo }, datePeriod, isBtcBaseCoins = false) {
@@ -168,6 +202,21 @@ class TransactionSyncer extends Syncer {
         } else if (decimals) {
           list.push({ address, decimals })
         }
+      }
+    })
+
+    return { list, map }
+  }
+
+  async getPlatformsWithPrice(chain, uids) {
+    const platforms = await Platform.getByChainWithPrice(chain, uids)
+    const list = []
+    const map = {}
+
+    platforms.forEach(({ id, address, decimals, price }) => {
+      if (address) {
+        map[address] = { id, price }
+        list.push({ address, decimals })
       }
     })
 
