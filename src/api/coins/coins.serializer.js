@@ -210,6 +210,7 @@ exports.serializeShow = (coin, language, currencyRate) => {
 
     categoryUids.push(category.uid)
     categoryMap.push({
+      id: category.id,
       uid: category.uid,
       name: category.name,
       description: category.description
