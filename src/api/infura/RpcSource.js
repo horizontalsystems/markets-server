@@ -8,14 +8,16 @@ class RpcSource {
     this.currentSourceIndex = 0
     this.sources = []
 
+    // eslint-disable-next-line no-restricted-syntax
     for (const key of drpcKeys) {
-      const mode = isMainnet ? 'mainnet' : 'sepolia'
+      const mode = isMainnet ? 'eth' : 'sepolia'
       this.sources.push({ key, resource: 'drpc', url: `https://${mode}.drpc.org` })
     }
 
+    // eslint-disable-next-line no-restricted-syntax
     for (const item of infuraKeys) {
       const [id, key] = item.split(':')
-      const mode = isMainnet ? 'eth' : 'sepolia'
+      const mode = isMainnet ? 'mainnet' : 'sepolia'
 
       this.sources.push({ key, resource: 'infura', url: `https://${mode}.infura.io/v3/${id}` })
     }
