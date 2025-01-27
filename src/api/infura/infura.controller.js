@@ -1,7 +1,7 @@
 const RpcSource = require('./RpcSource')
 
-const mainnet = new RpcSource('mainnet')
-const sepolia = new RpcSource('sepolia')
+const mainnet = new RpcSource(true)
+const sepolia = new RpcSource(false)
 
 exports.mainnetProxy = async (req, res) => {
   try {
