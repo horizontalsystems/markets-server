@@ -31,13 +31,11 @@ class Telegram {
     return this.client.connect()
   }
 
-  async createGroup(member) {
+  async createGroup() {
     try {
-      const users = (process.env.TELEGRAM_SUPPORT_USERS || '').split(',').filter(a => a)
-
-      if (member) {
-        users.push(member)
-      }
+      const users = (process.env.TELEGRAM_SUPPORT_USERS || '')
+        .split(',')
+        .filter(a => a)
 
       const telegram = this.client
       const result = await telegram.invoke(
@@ -52,11 +50,14 @@ class Telegram {
         new Api.messages.ExportChatInvite({
           peer: `-${chatId.toString()}`,
           // expireDate: 10,
-          usageLimit: 10
+          // usageLimit: 10
         })
       )
-      console.log('Invite Link:', inviteLink.link)
-      return inviteLink.link
+
+      return {
+        id: chatId,
+        link: inviteLink.link
+      }
     } catch (e) {
       console.log(e)
       return null

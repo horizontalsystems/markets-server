@@ -12,7 +12,8 @@ module.exports = {
   // POST /v1/support/create-group
   validateCreateGroup: validate({
     body: Joi.object({
-      username: Joi.string().required()
+      subscription_id: Joi.string().required(),
+      subscription_deadline: Joi.number().required()
     })
   }),
 

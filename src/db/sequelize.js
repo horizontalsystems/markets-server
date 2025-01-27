@@ -36,6 +36,7 @@ const NftAsset = require('./models/NftAsset')
 const NftMarket = require('./models/NftMarket')
 const NftHolder = require('./models/NftHolder')
 const Subscription = require('./models/Subscription')
+const VipSupportGroup = require('./models/VipSupportGroup')
 const AuthKey = require('./models/AuthKey')
 const UpdateState = require('./models/UpdateState')
 const EvmMethodLabel = require('./models/EvmMethodLabel')
@@ -94,6 +95,7 @@ const db = {
   NftMarket: NftMarket.init(sequelize, Sequelize),
   NftHolder: NftHolder.init(sequelize, Sequelize),
   Subscription: Subscription.init(sequelize, Sequelize),
+  VipSupportGroup: VipSupportGroup.init(sequelize, Sequelize),
   AuthKey: AuthKey.init(sequelize, Sequelize),
   EvmMethodLabel: EvmMethodLabel.init(sequelize, Sequelize),
   Block: Block.init(sequelize, Sequelize),
