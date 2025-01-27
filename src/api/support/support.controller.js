@@ -34,9 +34,9 @@ exports.createGroup = async ({ body }, res) => {
     }
 
     const group = await telegram.createGroup(body.username)
-    const newGroup = await VipSupportGroup.create({
+    await VipSupportGroup.create({
       subscription_id: body.subscription_id,
-      subscription_deadline: body.subscription_deadline,
+      subscription_deadline: new Date(body.subscription_deadline * 1000),
       group_id: group.id,
       group_link: group.link,
     })
