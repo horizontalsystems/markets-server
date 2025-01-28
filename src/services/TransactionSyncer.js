@@ -72,7 +72,7 @@ class TransactionSyncer extends Syncer {
       GROUP BY transfer_date, mint
       ORDER BY transfer_date DESC, mint`
 
-    const items = await flipsidecrypto.runQuery(query, '4cb40d6c-ca3a-4bdf-8c6c-f4a287ef643d')
+    const items = await flipsidecrypto.runQuery(query, '440ebb4b-2b0f-4d4e-a3b3-a5c79480c416')
     const recs = items.map(item => {
       const platform = platforms.map[item.address] || {}
       const price = platform.price || 1

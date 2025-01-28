@@ -74,7 +74,7 @@ class AddressSyncer extends Syncer {
       FROM entries
       ORDER BY block_date ASC`
 
-    const items = await flipsidecrypto.runQuery(query, '4cb40d6c-ca3a-4bdf-8c6c-f4a287ef643d')
+    const items = await flipsidecrypto.runQuery(query, '062f471b-8054-44cf-b927-99f977f29759')
     const data = await this.mapAddressStats(items, platforms)
     await this.bulkCreate(data)
   }
