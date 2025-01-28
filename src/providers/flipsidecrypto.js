@@ -1,3 +1,9 @@
+const fetch = require('node-fetch')
+const FormData = require('form-data')
+
+global.FormData = FormData
+global.fetch = fetch
+
 const { create } = require('axios')
 const { Flipside } = require('@flipsidecrypto/sdk')
 
