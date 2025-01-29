@@ -19,8 +19,8 @@ exports.startChat = async ({ body }, res) => {
 
 exports.createGroup = async ({ body }, res) => {
   try {
-    if (!body.subscription_id || !body.subscription_deadline) {
-      return handleError(res, 403, 'Subscription_id and subscription_deadline are required')
+    if (!body.subscription_id) {
+      return handleError(res, 403, 'Subscription_id is required')
     }
 
     const oldGroup = await VipSupportGroup.findOne({
@@ -33,10 +33,15 @@ exports.createGroup = async ({ body }, res) => {
       return res.json({ group_link: oldGroup.group_link, })
     }
 
+    let deadline = new Date()
+    if (body.subscription_deadline) {
+      deadline = new Date(body.subscription_deadline * 1000)
+    }
+
     const group = await telegram.createGroup(body.username)
     await VipSupportGroup.create({
       subscription_id: body.subscription_id,
-      subscription_deadline: new Date(body.subscription_deadline * 1000),
+      subscription_deadline: deadline,
       group_id: group.id,
       group_link: group.link,
     })

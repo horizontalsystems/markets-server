@@ -13,7 +13,7 @@ module.exports = {
   validateCreateGroup: validate({
     body: Joi.object({
       subscription_id: Joi.string().required(),
-      subscription_deadline: Joi.number().required()
+      subscription_deadline: Joi.number()
     })
   }),
 
