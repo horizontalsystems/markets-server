@@ -200,6 +200,7 @@ exports.serializeSignals = indicators => {
 
 exports.serializeShow = (coin, language, currencyRate) => {
   const market = coin.market_data || {}
+  const priceChange = coin.price_change || {}
   const categories = coin.Categories || []
   const description = coin.description || {}
 
@@ -226,6 +227,7 @@ exports.serializeShow = (coin, language, currencyRate) => {
     links: coin.links || {},
     price: valueInCurrency(coin.price, currencyRate),
     market_data: {
+      max_supply: nullOrString(market.max_supply),
       total_supply: nullOrString(market.total_supply),
       total_volume: valueInCurrency(market.total_volume, currencyRate),
       market_cap: valueInCurrency(market.market_cap, currencyRate),
@@ -233,6 +235,12 @@ exports.serializeShow = (coin, language, currencyRate) => {
       circulating_supply: nullOrString(market.circulating_supply),
       fully_diluted_valuation: valueInCurrency(market.fully_diluted_valuation, currencyRate),
       total_value_locked: valueInCurrency(market.total_value_locked, currencyRate)
+    },
+    price_change: {
+      ath: priceChange.ath,
+      ath_date: priceChange.ath_date,
+      atl: priceChange.atl,
+      atl_date: priceChange.atl_date
     },
     performance: coin.performance,
     categories: categoryMap,
