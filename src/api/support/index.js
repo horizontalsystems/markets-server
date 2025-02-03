@@ -26,7 +26,7 @@ router.post('/start-chat', validateChat, controller.startChat)
  * @apiGroup Support
  *
  * @apiParam {String=ios/android} platform Platform name
- * @apiParam {String} subscription_deadline Subscription expire timestamp
+ * @apiParam {String} subscription_id Subscription id
  * @apiParam {String} subscription_deadline Subscription expire timestamp
  *
  * @apiSuccessExample {json} Success-Response:
