@@ -6,7 +6,7 @@ class VipSupportGroup extends SequelizeModel {
     return super.init(
       {
         subscription_id: {
-          type: DataTypes.STRING,
+          type: DataTypes.STRING(3000),
           allowNull: false,
           primaryKey: true
         },
