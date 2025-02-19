@@ -15,6 +15,7 @@ const solana = new Web3SolanaProvider('https://rpc.ankr.com/solana')
 const celo = new Web3EvmProvider('https://rpc.ankr.com/celo')
 const gnosis = new Web3EvmProvider('https://rpc.ankr.com/gnosis')
 const tron = new Web3TronProvider('https://rpc.ankr.com/tron_jsonrpc')
+const zksync = new Web3TronProvider('https://mainnet.era.zksync.io') // https://rpc.ankr.com/zksync_era
 
 const getProvider = chainOrType => {
   switch (chainOrType) {
@@ -49,6 +50,8 @@ const getProvider = chainOrType => {
       return solana
     case 'tron':
       return tron
+    case 'zksync':
+      return zksync
     default:
       return null
   }

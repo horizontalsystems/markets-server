@@ -203,6 +203,7 @@ class SetupCoins extends Syncer {
         case 'arbitrum-one':
         case 'avalanche':
         case 'base':
+        case 'zksync':
         case 'binance-smart-chain':
           newType = 'eip20'
           break
