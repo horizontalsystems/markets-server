@@ -16,6 +16,7 @@ const celo = new Web3EvmProvider('https://rpc.ankr.com/celo')
 const gnosis = new Web3EvmProvider('https://rpc.ankr.com/gnosis')
 const tron = new Web3TronProvider('https://rpc.ankr.com/tron_jsonrpc')
 const zksync = new Web3TronProvider('https://mainnet.era.zksync.io') // https://rpc.ankr.com/zksync_era
+const kaia = new Web3TronProvider('https://rpc.ankr.com/klaytn')
 
 const getProvider = chainOrType => {
   switch (chainOrType) {
@@ -52,6 +53,8 @@ const getProvider = chainOrType => {
       return tron
     case 'zksync':
       return zksync
+    case 'kaia':
+      return kaia
     default:
       return null
   }
