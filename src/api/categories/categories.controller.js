@@ -4,7 +4,11 @@ const coinsSerializer = require('../coins/coins.serializer')
 const CategoryMarketCap = require('../../db/models/CategoryMarketCap')
 
 exports.index = async ({ currencyRate }, res) => {
-  const categories = await Category.findAll()
+  const categories = await Category.findAll({
+    where: {
+      enabled: true
+    }
+  })
   res.send(serializer.serialize(categories, currencyRate))
 }
 
