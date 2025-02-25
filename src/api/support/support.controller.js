@@ -1,7 +1,7 @@
 const telegram = require('../../providers/telegram')
-const VipSupportGroup = require('../../db/models/VipSupportGroup')
 const { handleError } = require('../middlewares')
 const { telegramMessage } = require('../../utils')
+const { createVipGroupLink } = require('./telegram-vip-support-bot')
 
 exports.startChat = async ({ body }, res) => {
   try {
@@ -23,30 +23,8 @@ exports.createGroup = async ({ body }, res) => {
       return handleError(res, 403, 'Subscription_id is required')
     }
 
-    const oldGroup = await VipSupportGroup.findOne({
-      where: {
-        subscription_id: body.subscription_id
-      }
-    })
-
-    if (oldGroup) {
-      return res.json({ group_link: oldGroup.group_link, })
-    }
-
-    let deadline = new Date()
-    if (body.subscription_deadline) {
-      deadline = new Date(body.subscription_deadline * 1000)
-    }
-
-    const group = await telegram.createGroup(body.username)
-    await VipSupportGroup.create({
-      subscription_id: body.subscription_id,
-      subscription_deadline: deadline,
-      group_id: group.id,
-      group_link: group.link,
-    })
-
-    res.json({ group_link: group.link, })
+    const groupLink = await createVipGroupLink()
+    res.json({ group_link: groupLink })
   } catch (e) {
     console.log(e)
     handleError(res, 500, 'Internal server error')
