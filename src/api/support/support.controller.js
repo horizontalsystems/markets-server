@@ -1,7 +1,7 @@
 const telegram = require('../../providers/telegram')
 const { handleError } = require('../middlewares')
 const { telegramMessage } = require('../../utils')
-const { createVipGroupLink } = require('./telegram-vip-support-bot')
+const { createVipGroupLink } = require('./support-bot')
 
 exports.startChat = async ({ body }, res) => {
   try {
