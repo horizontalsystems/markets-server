@@ -69,6 +69,7 @@ class Category extends SequelizeModel {
         FROM coin_categories cc
         JOIN coins c ON c.id = cc.coin_id AND c.market_data->>'market_cap' IS NOT NULL
         JOIN categories cat ON cat.id = cc.category_id
+        WHERE cat.enabled = true
       )
       SELECT uid, name, market_cap, description, ARRAY_AGG(coin_uid ORDER BY rank) AS top_coins
       FROM ranked_coins
