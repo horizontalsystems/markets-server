@@ -271,7 +271,7 @@ class Coin extends SequelizeModel {
           price,
           img_path,
           price_change->'1d' price_change_1d,
-          price_change->'24h' price_change_24h,
+          price_change_24h,
           price_change->'7d' price_change_1w,
           price_change->'30d' price_change_1m,
           price_change->'90d' price_change_3m,
