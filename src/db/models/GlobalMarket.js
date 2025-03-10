@@ -73,15 +73,15 @@ class GlobalMarket extends SequelizeModel {
     `)
 
     result.market_cap = today.market_cap
-    result.market_cap_change = utils.percentageBetweenNumber(yesterday.market_cap, today.market_cap)
+    result.market_cap_change = utils.percentageChange(yesterday.market_cap, today.market_cap)
     result.btc_dominance = today.btc_dominance
-    result.btc_dominance_change = utils.percentageBetweenNumber(yesterday.btc_dominance, today.btc_dominance)
+    result.btc_dominance_change = utils.percentageChange(yesterday.btc_dominance, today.btc_dominance)
     result.defi_market_cap = today.defi_market_cap
-    result.defi_market_cap_change = utils.percentageBetweenNumber(yesterday.defi_market_cap, today.defi_market_cap)
+    result.defi_market_cap_change = utils.percentageChange(yesterday.defi_market_cap, today.defi_market_cap)
     result.tvl = today.tvl
-    result.tvl_change = utils.percentageBetweenNumber(yesterday.tvl, today.tvl)
+    result.tvl_change = utils.percentageChange(yesterday.tvl, today.tvl)
     result.volume = today.volume
-    result.volume_change = utils.percentageBetweenNumber(yesterday.volume, today.volume)
+    result.volume_change = utils.percentageChange(yesterday.volume, today.volume)
 
     const [etf] = await GlobalMarket.query(`
       select total_inflow, total_daily_inflow
@@ -95,7 +95,6 @@ class GlobalMarket extends SequelizeModel {
 
     return result
   }
-
 
   static getList(dateFrom, window) {
     const query = (`
