@@ -1,6 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api')
 
-const bot = new TelegramBot(process.env.TELEGRAM_SUPPORT_BOT, { polling: true })
+const bot = new TelegramBot(process.env.TELEGRAM_SUPPORT_BOT)
 const chatId = process.env.TELEGRAM_SUPPORT_CHAT
 
 exports.createVipGroupLink = async () => {
