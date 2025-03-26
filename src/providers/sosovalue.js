@@ -1,4 +1,5 @@
 const createAxios = require('axios').create
+const jsonData = require('./sosovalue.json')
 
 const api = createAxios({
   baseURL: 'https://gw.sosovalue.com',
@@ -51,4 +52,8 @@ exports.getSpotEtf = function getSpotEtf() {
     .then(res => {
       return res.data
     })
+}
+
+exports.getSpotEtfJSON = function getSpotEtf() {
+  return jsonData
 }

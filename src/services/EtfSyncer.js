@@ -8,6 +8,11 @@ const EtfTotalInflow = require('../db/models/EtfTotalInflow')
 const EtfDailyInflow = require('../db/models/EtfDailyInflow')
 
 class EtfSyncer extends Syncer {
+  constructor(json) {
+    super()
+    this.json = json
+  }
+
   async start() {
     await this.syncLatest()
   }
@@ -40,11 +45,15 @@ class EtfSyncer extends Syncer {
   }
 
   async syncSpotETF(date) {
+    const parsedData = this.json
+      ? sosovalue.getSpotEtfJSON()
+      : this.parseData(await sosovalue.getSpotEtf())
+
     const {
       data = [],
       lastData = [],
       historyData = []
-    } = this.parseData(await sosovalue.getSpotEtf())
+    } = parsedData
 
     const totalNavMap = get(lastData, '[0].totalNavMap', {})
     const netInflowMap = get(lastData, '[0].netInflowMap', {})
