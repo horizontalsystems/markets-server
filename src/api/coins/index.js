@@ -69,7 +69,11 @@ router.get('/', validateCoins, setCurrencyRate, controller.index)
  *    "price_change_14d": "-0.1624767611860633",
  *    "price_change_30d": "-0.15759086529524444",
  *    "price_change_200d": "-0.12591627186560053",
- *    "price_change_1y": "-0.1492893697449219",
+ *    "price_change_1y": "-0.149289",
+ *    "price_change_2y": "-0.149289",
+ *    "price_change_3y": "-0.149289",
+ *    "price_change_4y": "-0.149289",
+ *    "price_change_5y": "-0.149289",
  *    "ath_percentage": "-24.28061",
  *    "atl_percentage": "74.98742"
  *  }]

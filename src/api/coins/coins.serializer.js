@@ -148,6 +148,10 @@ exports.serializeFilter = (coins, currencyRate, indicators, coinRanks, listedOnW
     'price_change_90d',
     'price_change_200d',
     'price_change_1y',
+    'price_change_2y',
+    'price_change_3y',
+    'price_change_4y',
+    'price_change_5y',
     'ath_percentage',
     'atl_percentage',
     'category_ids'
