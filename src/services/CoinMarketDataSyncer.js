@@ -35,36 +35,35 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
     for (let i = 0; i < chunks.length; i += 1) {
       const chunkUids = chunks[i]
       const chunkIds = chunkUids.map(item => coins.map[item])
-      const { map1d, map3M } = await this.getPricesMap(chunkIds.flat())
-      await this.syncMarketData(chunkUids, coins.map, map3M, map1d)
+      const priceMap = await this.getPricesMap(chunkIds.flat())
+      await this.syncMarketData(chunkUids, coins.map, priceMap)
     }
   }
 
-  async syncMarketData(coinUids, idsMap, map3M, map1d) {
+  async syncMarketData(coinUids, idsMap, priceMap) {
     debug(`Syncing coins ${coinUids.length}`)
 
     try {
       const coins = await coingecko.getMarkets(coinUids, 1, 250)
-      await this.updateCoins(coins, idsMap, map3M, map1d)
+      await this.updateCoins(coins, idsMap, priceMap)
       await utils.sleep(20000)
     } catch (e) {
       await this.handleHttpError(e)
     }
   }
 
-  async updateCoins(coins, idsMap, map3M, map1d) {
+  async updateCoins(coins, idsMap, priceMap) {
     const values = []
+    const intervals = ['1d', '90d', '2y', '3y', '4y', '5y']
+
     const mapMarketData = (id, item) => {
-      const priceChange = item.price_change
-      const price3M = map3M[id]
-      const price1d = map1d[id]
-
-      if (price3M) {
-        priceChange['90d'] = utils.percentageChange(price3M, item.price)
-      }
-
-      if (price1d) {
-        priceChange['1d'] = utils.percentageChange(price1d, item.price)
+      const priceChange = item.price_change;
+      for (let i = 0; i < intervals.length; i += 1) {
+        const interval = intervals[i]
+        const oldPrice = (priceMap[interval] || {})[id]
+        if (oldPrice) {
+          priceChange[interval] = utils.percentageChange(oldPrice, item.price)
+        }
       }
 
       return [
@@ -148,23 +147,27 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
   }
 
   async getPricesMap(ids) {
-    const prices1d = await CoinPrice.getLastPricesInRange(ids, '1d')
-    const prices3M = await CoinPrice.getLastPricesInRange(ids, '90d')
+    const intervals = ['1d', '90d', '2y', '3y', '4y', '5y']
+    const results = await Promise.all(
+      intervals.map(interval => CoinPrice.getLastPricesInRange(ids, interval))
+    )
 
-    const map1d = {}
-    const map3M = {}
+    const pricesMap = {};
 
-    for (let i = 0; i < prices1d.length; i += 1) {
-      const item = prices1d[i];
-      map1d[item.coin_id] = item.price
+    for (let i = 0; i < intervals.length; i += 1) {
+      const interval = intervals[i]
+      const prices = results[i]
+
+      const map = {};
+      for (let p = 0; p < prices.length; p += 1) {
+        const item = prices[p]
+        map[item.coin_id] = item.price
+      }
+
+      pricesMap[interval] = map
     }
 
-    for (let i = 0; i < prices3M.length; i += 1) {
-      const item = prices3M[i];
-      map3M[item.coin_id] = item.price
-    }
-
-    return { map1d, map3M }
+    return pricesMap
   }
 }
 

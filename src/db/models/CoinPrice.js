@@ -137,9 +137,13 @@ class CoinPrice extends SequelizeModel {
     let from
     let to
 
-    if (interval === '90d') {
-      from = 'CURRENT_DATE - INTERVAL \'93 days\''
-      to = 'CURRENT_DATE - INTERVAL \'90 days\''
+    if (interval === '2y' || interval === '3y' || interval === '4y' || interval === '5y') {
+      const year = parseInt(interval, 10)
+      from = `CURRENT_DATE - INTERVAL '${year} year 2 weeks'`
+      to = `CURRENT_DATE - INTERVAL '${year} year'`
+    } else if (interval === '90d') {
+      from = `CURRENT_DATE - INTERVAL '${93} days'`
+      to = `CURRENT_DATE - INTERVAL '${90} days'`
     } else if (interval === '1d') {
       const starOfDay = 'date_trunc(\'day\', current_date::timestamp AT TIME ZONE \'utc\')'
       from = `${starOfDay} - INTERVAL '1 hours'`
