@@ -7,12 +7,13 @@ const EtfSyncer = require('../src/services/EtfSyncer')
 const program = new Command()
   .option('-f --force', 'Force sync ETF data')
   .option('-h --history', 'Sync history')
+  .option('-j --json', 'Sync from json file')
   .option('-t --ticker <ticker>', 'Specify ETF to sync history')
   .parse(process.argv)
 
-async function start({ force, ticker, history }) {
+async function start({ force, ticker, history, json }) {
   await sequelize.sync()
-  const etfSyncer = new EtfSyncer()
+  const etfSyncer = new EtfSyncer(json)
 
   if (history) {
     await etfSyncer.syncHistory()
