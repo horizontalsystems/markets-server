@@ -84,6 +84,14 @@ function mapCoinAttribute(coin, field, currencyRate) {
       return nullOrString(priceChange['200d'])
     case 'price_change_1y':
       return nullOrString(priceChange['1y'])
+    case 'price_change_2y':
+      return nullOrString(priceChange['2y'])
+    case 'price_change_3y':
+      return nullOrString(priceChange['3y'])
+    case 'price_change_4y':
+      return nullOrString(priceChange['4y'])
+    case 'price_change_5y':
+      return nullOrString(priceChange['5y'])
     case 'ath_percentage':
       return nullOrString(priceChange.ath_change_percentage)
     case 'atl_percentage':
