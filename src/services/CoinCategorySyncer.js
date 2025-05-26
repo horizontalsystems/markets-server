@@ -38,7 +38,11 @@ class CoinCategorySyncer extends CoinPriceHistorySyncer {
       'Rebase Tokens': 'Rebase Tokens',
       'Fan Token': 'Fan Token',
       Music: 'Music',
-      'RWA Protocol': 'RWA (Real World Assets)',
+      'RWA Protocol': 'RWA Protocol',
+      'Real World Assets (RWA)': 'Real World Assets (RWA)',
+      Analytics: 'Analytics',
+      'AI Agent Launchpad': 'AI Agent Launchpad',
+      'Liquid Staking': 'Liquid Staking',
     }
   }
 
