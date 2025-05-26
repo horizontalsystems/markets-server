@@ -19,7 +19,7 @@ exports.serializeIndex = (items) => {
 }
 
 exports.serializeTotal = items => {
-  return items.map(item => {
+  return items.filter(i => i.totalDailyInflow).map(item => {
     return {
       date: item.date,
       total_assets: nullOrString(item.totalAssets),
