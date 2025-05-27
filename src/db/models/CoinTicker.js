@@ -52,7 +52,7 @@ class CoinTicker extends SequelizeModel {
   static getTopPairs(limit, offset = 0) {
     return CoinTicker.query(`
       SELECT m.*
-        FROM coin_tickers m, exchanges e
+        FROM coin_tickers m, verified_exchanges e
        WHERE m.market_uid = e.uid
        ORDER by m.volume_usd desc
        LIMIT :limit
@@ -63,9 +63,9 @@ class CoinTicker extends SequelizeModel {
   static async getCoinsListedOnWE() {
     const records = await CoinTicker.query(`
       WITH tickers AS (
-        SELECT m.base_coin_id as coin_id FROM coin_tickers m, exchanges e WHERE m.market_uid = e.uid
+        SELECT m.base_coin_id as coin_id FROM coin_tickers m, verified_exchanges e WHERE m.market_uid = e.uid
         UNION ALL
-        SELECT m.target_coin_id as coin_id FROM coin_tickers m, exchanges e WHERE m.market_uid = e.uid
+        SELECT m.target_coin_id as coin_id FROM coin_tickers m, verified_exchanges e WHERE m.market_uid = e.uid
       )
       SELECT distinct coin_id FROM tickers;
     `)

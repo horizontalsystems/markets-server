@@ -12,8 +12,8 @@ const getImageURL = path => {
   return `https://assets.coingecko.com/markets/images${path}`
 }
 
-exports.serialize = exchanges => {
-  return exchanges.map(item => {
+exports.serialize = verifiedExchanges => {
+  return verifiedExchanges.map(item => {
     return {
       uid: item.uid,
       name: item.name
@@ -21,8 +21,8 @@ exports.serialize = exchanges => {
   })
 }
 
-exports.serializeWhitelist = exchanges => {
-  return exchanges.map(item => item.uid)
+exports.serializeWhitelist = verifiedExchanges => {
+  return verifiedExchanges.map(item => item.uid)
 }
 
 exports.serializeTopPairs = (markets, currencyRate) => {
@@ -57,8 +57,8 @@ exports.serializeTopMarketPairs = (markets, currencyRate) => {
   })
 }
 
-exports.serializeTickers = (exchanges, whitelist, currencyRate) => {
-  return exchanges.map(item => {
+exports.serializeTickers = (tickers, whitelist, currencyRate) => {
+  return tickers.map(item => {
     return {
       base: item.base,
       target: item.target,

@@ -43,7 +43,7 @@ class CoinMarket extends SequelizeModel {
   static getTopPairs(limit, offset = 0) {
     return CoinMarket.query(`
       SELECT m.*
-        FROM coin_markets m, exchanges e
+        FROM coin_markets m, verified_exchanges e
        WHERE m.market_uid = e.uid
        ORDER by m.volume_usd desc
        LIMIT :limit
@@ -52,7 +52,7 @@ class CoinMarket extends SequelizeModel {
   }
 
   static async getCoinsListedOnWE() {
-    const records = await CoinMarket.query('SELECT distinct m.coin_id FROM coin_markets m, exchanges e WHERE m.market_uid = e.uid')
+    const records = await CoinMarket.query('SELECT distinct m.coin_id FROM coin_markets m, verified_exchanges e WHERE m.market_uid = e.uid')
     return mapToField(records, 'coin_id', 'coin_id')
   }
 

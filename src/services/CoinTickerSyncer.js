@@ -4,7 +4,7 @@ const Coin = require('../db/models/Coin')
 const CoinPriceHistorySyncer = require('./CoinPriceHistorySyncer')
 const CoinTicker = require('../db/models/CoinTicker')
 
-class CoinExchangeSyncer extends CoinPriceHistorySyncer {
+class CoinTickerSyncer extends CoinPriceHistorySyncer {
 
   async start() {
     const running = true
@@ -28,7 +28,7 @@ class CoinExchangeSyncer extends CoinPriceHistorySyncer {
       coinsMap[coin.coingecko_id] = { id: coin.id, name: coin.name, code: coin.code }
     }
 
-    console.log(`Coins to sync exchanges ${syncCoins.length}`)
+    console.log(`Coins to sync tickers ${syncCoins.length}`)
 
     for (let i = 0; i < syncCoins.length; i += 1) {
       const coin = syncCoins[i]
@@ -143,4 +143,4 @@ class CoinExchangeSyncer extends CoinPriceHistorySyncer {
   }
 }
 
-module.exports = CoinExchangeSyncer
+module.exports = CoinTickerSyncer

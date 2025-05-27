@@ -14,7 +14,7 @@ const Fund = require('../db/models/Fund')
 const FundsInvested = require('../db/models/FundsInvested')
 const Report = require('../db/models/Report')
 const AddressLabel = require('../db/models/AddressLabel')
-const Exchange = require('../db/models/Exchange')
+const VerifiedExchange = require('../db/models/VerifiedExchange')
 const EvmMethodLabel = require('../db/models/EvmMethodLabel')
 const UpdateState = require('../db/models/UpdateState')
 
@@ -106,7 +106,7 @@ router.use(
   crud('/funds_invested', opts(FundsInvested, ['id', 'coin_id', 'funds', 'amount', 'round', 'date'])),
   crud('/reports', opts(Report, ['id', 'coin_id', 'title', 'author', 'url', 'date', 'body'])),
   crud('/address_labels', opts(AddressLabel, ['id', 'address', 'label'])),
-  crud('/exchanges', opts(Exchange, ['id', 'uid', 'name'])),
+  crud('/verified_exchanges', opts(VerifiedExchange, ['id', 'uid', 'name'])),
   crud('/evm_method_labels', opts(EvmMethodLabel, ['id', 'method_id', 'label'])),
   crud('/update_states', opts(UpdateState, ['id', 'name', 'date']))
 )

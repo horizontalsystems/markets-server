@@ -1,7 +1,7 @@
 const SequelizeModel = require('./SequelizeModel')
 const { reduceMap } = require('../../utils')
 
-class Exchange extends SequelizeModel {
+class VerifiedExchange extends SequelizeModel {
 
   static init(sequelize, DataTypes) {
     return super.init(
@@ -18,17 +18,16 @@ class Exchange extends SequelizeModel {
       },
       {
         timestamps: false,
-        tableName: 'exchanges',
+        tableName: 'verified_exchanges',
         sequelize
       }
     )
   }
 
   static async getUids() {
-    const records = await Exchange.query('select id, uid from exchanges')
+    const records = await VerifiedExchange.query('select id, uid from verified_exchanges')
     return reduceMap(records, 'uid', 'id')
   }
-
 }
 
-module.exports = Exchange
+module.exports = VerifiedExchange

@@ -1,18 +1,18 @@
-const Exchange = require('../../db/models/Exchange')
+const VerifiedExchange = require('../../db/models/VerifiedExchange')
 const serializer = require('./exchange.serializer')
 const CoinTicker = require('../../db/models/CoinTicker')
 const CoinMarket = require('../../db/models/CoinMarket')
 
 exports.index = async (req, res) => {
-  const exchanges = await Exchange.findAll()
-  res.send(serializer.serialize(exchanges))
+  const verifiedExchanges = await VerifiedExchange.findAll()
+  res.send(serializer.serialize(verifiedExchanges))
 }
 
 exports.tickers = async ({ query, coin, currencyRate }, res) => {
   const { limit = 100, page = 1 } = query
   const options = {
     where: {
-      [Exchange.Op.or]: [
+      [VerifiedExchange.Op.or]: [
         { base_coin_id: coin.id },
         { target_coin_id: coin.id }
       ]
@@ -25,7 +25,7 @@ exports.tickers = async ({ query, coin, currencyRate }, res) => {
     options.offset = limit * (page - 1)
   }
 
-  const whitelist = await Exchange.getUids()
+  const whitelist = await VerifiedExchange.getUids()
   const tickers = await CoinTicker.findAll(options)
 
   res.send(serializer.serializeTickers(tickers, whitelist, currencyRate))
@@ -47,6 +47,6 @@ exports.topMarketPairs = async ({ query, currencyRate }, res) => {
 }
 
 exports.whitelist = async (req, res) => {
-  const exchanges = await Exchange.findAll()
-  res.send(serializer.serializeWhitelist(exchanges))
+  const verifiedExchanges = await VerifiedExchange.findAll()
+  res.send(serializer.serializeWhitelist(verifiedExchanges))
 }

@@ -9,7 +9,7 @@ const CoinStats = require('./models/CoinStats')
 const CoinAudit = require('./models/CoinAudit')
 const CoinMarket = require('./models/CoinMarket')
 const CoinTicker = require('./models/CoinTicker')
-const Exchange = require('./models/Exchange')
+const VerifiedExchange = require('./models/VerifiedExchange')
 const DefiProtocol = require('./models/DefiProtocol')
 const DefiProtocolTvl = require('./models/DefiProtocolTvl')
 const Language = require('./models/Language')
@@ -69,7 +69,7 @@ const db = {
   CoinPrice: CoinPrice.init(sequelize, Sequelize),
   CoinStats: CoinStats.init(sequelize, Sequelize),
   CoinAudit: CoinAudit.init(sequelize, Sequelize),
-  Exchange: Exchange.init(sequelize, Sequelize),
+  VerifiedExchange: VerifiedExchange.init(sequelize, Sequelize),
   Chain: Chain.init(sequelize, Sequelize),
   ChainMarketCap: ChainMarketCap.init(sequelize, Sequelize),
   DefiProtocol: DefiProtocol.init(sequelize, Sequelize),

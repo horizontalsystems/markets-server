@@ -6,7 +6,7 @@ const Coin = require('../db/models/Coin')
 const Chain = require('../db/models/Chain')
 const UpdateState = require('../db/models/UpdateState')
 const Platform = require('../db/models/Platform')
-const Exchange = require('../db/models/Exchange')
+const VerifiedExchange = require('../db/models/VerifiedExchange')
 const Language = require('../db/models/Language')
 const coingecko = require('../providers/coingecko')
 const web3Provider = require('../providers/web3')
@@ -95,7 +95,7 @@ class SetupCoins extends Syncer {
   }
 
   async setupCoins(coinIds, force) {
-    const exchanges = await Exchange.getUids()
+    const verifiedExchanges = await VerifiedExchange.getUids()
     const coins = await this.fetchCoinInfo(coinIds)
     const languages = await Language.findAll({
       where: { code: ['en'] }
@@ -104,7 +104,7 @@ class SetupCoins extends Syncer {
     console.log(`Syncing (${coins.length}) new coins`)
 
     for (let i = 0; i < coins.length; i += 1) {
-      await this.syncCoinInfo(coins[i], languages, exchanges, force)
+      await this.syncCoinInfo(coins[i], languages, verifiedExchanges, force)
       await sleep(20000)
     }
 
@@ -267,7 +267,7 @@ class SetupCoins extends Syncer {
     return result
   }
 
-  async syncCoinInfo(coin, languages, exchanges, force) {
+  async syncCoinInfo(coin, languages, verifiedExchanges, force) {
     try {
       console.log('Fetching info for', coin.uid)
 
@@ -284,7 +284,7 @@ class SetupCoins extends Syncer {
       const volume = 0
       // for (let i = 0; i < coinInfo.tickers.length; i += 1) {
       //   const ticker = coinInfo.tickers[i];
-      //   if (exchanges[ticker.market.identifier]) {
+      //   if (verifiedExchanges[ticker.market.identifier]) {
       //     volume += ticker.converted_volume.usd
       //   }
       // }
