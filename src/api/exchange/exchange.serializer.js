@@ -57,7 +57,7 @@ exports.serializeTopMarketPairs = (markets, currencyRate) => {
   })
 }
 
-exports.serializeTickers = (tickers, whitelistMap, centralizedMap, currencyRate) => {
+exports.serializeTickers = (tickers, whitelistMap, currencyRate) => {
   return tickers.map(item => {
     return {
       base: item.base,
@@ -70,8 +70,7 @@ exports.serializeTickers = (tickers, whitelistMap, centralizedMap, currencyRate)
       market_name: item.market_name,
       market_logo: getImageURL(item.market_logo),
       trade_url: item.trade_url,
-      whitelisted: !!whitelistMap[item.market_uid],
-      centralized: centralizedMap[item.market_uid] === true
+      whitelisted: !!whitelistMap[item.market_uid]
     }
   })
 }

@@ -27,11 +27,9 @@ exports.tickers = async ({ query, coin, currencyRate }, res) => {
   }
 
   const tickers = await CoinTicker.findAll(options)
-  const ids = new Set(tickers.map(item => item.market_uid))
   const whitelistMap = await VerifiedExchange.getUids()
-  const centralizedMap = await Exchange.getMappedCentralized([...ids])
 
-  res.send(serializer.serializeTickers(tickers, whitelistMap, centralizedMap, currencyRate))
+  res.send(serializer.serializeTickers(tickers, whitelistMap, currencyRate))
 }
 
 // @deprecated
