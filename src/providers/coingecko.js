@@ -200,6 +200,16 @@ exports.getCategories = () => {
     .then(({ data }) => data)
 }
 
+exports.getExchanges = (page = 1, perPage = 250) => {
+  return axios
+    .get(`/exchanges?${querystring.stringify({ page, per_page: perPage })}`)
+    .then(({ data }) => data)
+}
+
+exports.getExchange = (id) => {
+  return axios.get(`/exchanges/${id}`).then(({ data }) => data)
+}
+
 exports.getTickers = function getTickers(id, page = 1) {
   const query = querystring.stringify({
     include_exchange_logo: true,

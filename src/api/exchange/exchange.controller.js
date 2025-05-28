@@ -1,3 +1,4 @@
+const Exchange = require('../../db/models/Exchange')
 const VerifiedExchange = require('../../db/models/VerifiedExchange')
 const serializer = require('./exchange.serializer')
 const CoinTicker = require('../../db/models/CoinTicker')
@@ -25,10 +26,12 @@ exports.tickers = async ({ query, coin, currencyRate }, res) => {
     options.offset = limit * (page - 1)
   }
 
-  const whitelist = await VerifiedExchange.getUids()
   const tickers = await CoinTicker.findAll(options)
+  const ids = new Set(tickers.map(item => item.market_uid))
+  const whitelistMap = await VerifiedExchange.getUids()
+  const centralizedMap = await Exchange.getMappedCentralized([...ids])
 
-  res.send(serializer.serializeTickers(tickers, whitelist, currencyRate))
+  res.send(serializer.serializeTickers(tickers, whitelistMap, centralizedMap, currencyRate))
 }
 
 // @deprecated
