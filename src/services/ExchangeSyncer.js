@@ -53,7 +53,6 @@ class ExchangeSyncer extends CoinPriceHistorySyncer {
 
       try {
         const exchange = await coingecko.getExchange(id)
-        console.log(exchange)
         await Exchange.update(
           {
             centralized: exchange.centralized,
