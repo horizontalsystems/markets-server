@@ -22,6 +22,9 @@ exports.coins = async ({ params, currencyRate }, res) => {
   const coinFields = [
     'price',
     'price_change_24h',
+    'price_change_7d',
+    'price_change_30d',
+    'price_change_90d',
     'market_cap',
     'market_cap_rank',
     'total_volume'

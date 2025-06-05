@@ -32,6 +32,9 @@ module.exports = {
         uid: item.uid,
         price: valueInCurrency(item.price, currencyRate),
         price_change_24h: nullOrString(item.price_change_24h),
+        price_change_7d: nullOrString(item.price_change['7d']),
+        price_change_30d: nullOrString(item.price_change['30d']),
+        price_change_90d: nullOrString(item.price_change['90d']),
         market_cap: valueInCurrency(item.mcap, currencyRate),
         market_cap_rank: index + 1,
         total_volume: valueInCurrency(item.total_volume, currencyRate)
