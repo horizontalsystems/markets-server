@@ -71,7 +71,7 @@ exports.serializeTickers = (tickers, whitelistMap, centralizedMap, currencyRate)
       market_logo: getImageURL(item.market_logo),
       trade_url: item.trade_url,
       whitelisted: !!whitelistMap[item.market_uid],
-      centralized: centralizedMap[item.market_uid] !== true
+      centralized: centralizedMap[item.market_uid] !== false
     }
   })
 }
