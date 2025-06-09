@@ -21,6 +21,7 @@ exports.coins = async ({ params, currencyRate }, res) => {
   const coins = await Category.getCoins(params.uid)
   const coinFields = [
     'price',
+    'price_change_1d',
     'price_change_24h',
     'price_change_7d',
     'price_change_30d',

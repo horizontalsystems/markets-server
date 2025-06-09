@@ -31,6 +31,7 @@ module.exports = {
       return {
         uid: item.uid,
         price: valueInCurrency(item.price, currencyRate),
+        price_change_1d: nullOrString(item.price_change['1d']),
         price_change_24h: nullOrString(item.price_change_24h),
         price_change_7d: nullOrString(item.price_change['7d']),
         price_change_30d: nullOrString(item.price_change['30d']),
