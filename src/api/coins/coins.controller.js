@@ -6,6 +6,7 @@ const serializer = require('./coins.serializer')
 const CoinIndicator = require('../../db/models/CoinIndicator')
 const CoinTicker = require('../../db/models/CoinTicker')
 const CoinCategory = require('../../db/models/CoinCategories')
+const { handleError } = require('../middlewares')
 
 exports.index = async ({ query, currencyRate }, res) => {
   const { limit = 1500, page = 1 } = query
@@ -91,13 +92,20 @@ exports.signals = async ({ query }, res, next) => {
 }
 
 exports.show = async ({ params, query, currencyRate }, res) => {
-  const coin = await Coin.getCoinInfo(params.uid)
+  try {
+    const coin = await Coin.getCoinInfo(params.uid)
 
-  if (coin) {
-    res.send(serializer.serializeShow(coin, query.language, currencyRate))
-  } else {
-    res.status(404)
-    res.send({ error: 'Coin not found' })
+    if (!coin) {
+      return handleError(res, 404, 'Coin not found')
+    }
+
+    const priceChange = coin.price_change || {}
+    const performance = await Coin.getPerformance(coin.uid, query.roi_coins, priceChange['7d'], priceChange['30d'])
+
+    res.send(serializer.serializeShow(coin, performance, query.language, currencyRate))
+  } catch (e) {
+    console.log(e)
+    handleError(res, 500, 'Internal Server Error')
   }
 }
 

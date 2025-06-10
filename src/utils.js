@@ -84,6 +84,10 @@ exports.percentageChange = (oldNumber, newNumber) => {
   return -((oldNumber - newNumber) / oldNumber) * 100
 }
 
+exports.roi = (price1, price2) => {
+  return ((100 + price1) / (100 + price2) - 1) * 100
+}
+
 exports.reduceMap = (items, keyField, valField) => {
   return items.reduce((res, item) => {
     const key = item[keyField]

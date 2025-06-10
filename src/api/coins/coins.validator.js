@@ -51,7 +51,8 @@ module.exports = {
   validateShow: validate({
     query: Joi.object({
       language: Joi.string(),
-      currency: Joi.string()
+      currency: Joi.string(),
+      roi_coins: Joi.string()
     })
   }, options),
 
@@ -78,7 +79,9 @@ module.exports = {
 
   validateGainers: validate({
     params: Joi.object({
-      field: Joi.string().valid('price', 'price_change_1d', 'price_change_24h', 'price_change_1w', 'price_change_1m', 'price_change_3m', 'volume', 'mcap').required(),
+      field: Joi.string()
+        .valid('price', 'price_change_1d', 'price_change_24h', 'price_change_1w', 'price_change_1m', 'price_change_3m', 'volume', 'mcap')
+        .required(),
     }),
     query: Joi.object({
       uids: Joi.string(),

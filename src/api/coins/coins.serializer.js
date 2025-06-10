@@ -210,7 +210,7 @@ exports.serializeSignals = indicators => {
   }))
 }
 
-exports.serializeShow = (coin, language, currencyRate) => {
+exports.serializeShow = (coin, performance, language, currencyRate) => {
   const market = coin.market_data || {}
   const priceChange = coin.price_change || {}
   const categories = coin.Categories || []
@@ -254,7 +254,7 @@ exports.serializeShow = (coin, language, currencyRate) => {
       atl: priceChange.atl,
       atl_date: priceChange.atl_date
     },
-    performance: coin.performance,
+    performance,
     categories: categoryMap,
     category_uids: categoryUids, // @deprecated
     platforms: mapPlatforms(coin.Platforms)

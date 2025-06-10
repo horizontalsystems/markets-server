@@ -2,6 +2,7 @@ const SequelizeModel = require('./SequelizeModel')
 const Category = require('./Category')
 const Platform = require('./Platform')
 const utils = require('../../utils')
+const Stock = require('./Stock')
 
 class Coin extends SequelizeModel {
 
@@ -124,22 +125,11 @@ class Coin extends SequelizeModel {
   }
 
   static async getCoinInfo(uid) {
-    const coin = await Coin.findOne({
+    return Coin.findOne({
+      attributes: ['uid', 'name', 'code', 'price', 'price_change', 'genesis_date', 'market_data', 'description', 'links'],
       include: [Platform, Category],
-      where: {
-        uid
-      },
+      where: { uid }
     })
-
-    if (!coin) {
-      return null
-    }
-
-    const priceChange = coin.price_change || {}
-    return {
-      ...coin.dataValues,
-      performance: await Coin.getPerformance(coin.uid, priceChange['7d'], priceChange['30d'])
-    }
   }
 
   static async getCoinDetails(uid) {
@@ -166,38 +156,28 @@ class Coin extends SequelizeModel {
     return coin
   }
 
-  static async getPerformance(uid, price7d, price30d) {
-    const [bitcoin, ethereum] = await Coin.query(`
-      SELECT price_change
-        FROM coins
-       WHERE coins.uid IN ('bitcoin', 'ethereum')
-       ORDER BY id
-    `)
+  static async getPerformance(coinUid, roiCoinUids, price7d, price30d) {
+    let uids = ['bitcoin', 'ethereum']
+    let stocks = []
 
-    const btcPriceChange = bitcoin.price_change || {}
-    const ethPriceChange = ethereum.price_change || {}
-    const roi = (price1, price2) => {
-      return ((100 + price1) / (100 + price2) - 1) * 100
-    }
-
-    const performance = {
-      usd: {
-        '7d': utils.nullOrString(price7d),
-        '30d': utils.nullOrString(price30d)
+    if (roiCoinUids && roiCoinUids.length > 0) {
+      uids = roiCoinUids.split(',')
+      if (uids.indexOf('snp') > -1) {
+        stocks = await Stock.query('SELECT uid as code, price_change FROM stocks WHERE uid = :uid', { uid: 'snp' })
       }
     }
 
-    if (uid !== 'bitcoin') {
-      performance.btc = {
-        '7d': utils.nullOrString(roi(price7d, btcPriceChange['7d'])),
-        '30d': utils.nullOrString(roi(price30d, btcPriceChange['30d']))
-      }
-    }
+    const coins = await Coin.query('SELECT uid, code, price_change FROM coins WHERE coins.uid IN (:uids) ORDER BY id', { uids })
+    const items = [...coins, ...stocks]
+    const performance = {}
 
-    if (uid !== 'ethereum') {
-      performance.eth = {
-        '7d': utils.nullOrString(roi(price7d, ethPriceChange['7d'])),
-        '30d': utils.nullOrString(roi(price30d, ethPriceChange['30d'])),
+    for (let i = 0; i < items.length; i += 1) {
+      const item = items[i]
+      if (coinUid !== item.uid) {
+        performance[item.code] = {
+          '7d': utils.nullOrString(utils.roi(price7d, item.price_change['7d'])),
+          '30d': utils.nullOrString(utils.roi(price30d, item.price_change['30d']))
+        }
       }
     }
 

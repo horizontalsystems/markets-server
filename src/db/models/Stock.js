@@ -8,6 +8,10 @@ class Stock extends SequelizeModel {
           type: DataTypes.STRING,
           primaryKey: true
         },
+        uid: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
         name: {
           type: DataTypes.STRING,
           allowNull: false
@@ -23,9 +27,12 @@ class Stock extends SequelizeModel {
         }
       },
       {
+        sequelize,
         timestamps: false,
         tableName: 'stocks',
-        sequelize
+        indexes: [{
+          fields: ['uid']
+        }]
       }
     )
   }
