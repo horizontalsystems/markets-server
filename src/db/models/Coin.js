@@ -185,7 +185,7 @@ class Coin extends SequelizeModel {
         const periodMap = {}
         for (let p = 0; p < periods.length; p += 1) {
           const period = periods[p]
-          periodMap[period] = utils.roi(priceChange[period], item.price_change[period])
+          periodMap[period] = utils.nullOrString(utils.roi(priceChange[period], item.price_change[period]))
         }
 
         performance[item[mapKey]] = periodMap
