@@ -52,7 +52,8 @@ module.exports = {
     query: Joi.object({
       language: Joi.string(),
       currency: Joi.string(),
-      roi_coins: Joi.string()
+      roi_uids: Joi.string(),
+      roi_periods: Joi.string()
     })
   }, options),
 

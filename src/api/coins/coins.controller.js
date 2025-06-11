@@ -99,8 +99,7 @@ exports.show = async ({ params, query, currencyRate }, res) => {
       return handleError(res, 404, 'Coin not found')
     }
 
-    const priceChange = coin.price_change || {}
-    const performance = await Coin.getPerformance(coin.uid, query.roi_coins, priceChange['7d'], priceChange['30d'])
+    const performance = await Coin.getPerformance(coin.uid, query.roi_uids, query.roi_periods, coin.price_change)
 
     res.send(serializer.serializeShow(coin, performance, query.language, currencyRate))
   } catch (e) {

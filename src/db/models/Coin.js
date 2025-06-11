@@ -156,14 +156,21 @@ class Coin extends SequelizeModel {
     return coin
   }
 
-  static async getPerformance(coinUid, roiCoinUids, price7d, price30d) {
+  static async getPerformance(coinUid, roiUids, roiPeriods, priceChange = {}) {
     let uids = ['bitcoin', 'ethereum']
+    let periods = ['7d', '30d']
+    let mapKey = 'code'
     let stocks = []
 
-    if (roiCoinUids && roiCoinUids.length > 0) {
-      uids = roiCoinUids.split(',')
+    if (roiPeriods && roiPeriods.length > 0) {
+      periods = roiPeriods.split(',')
+    }
+
+    if (roiUids && roiUids.length > 0) {
+      mapKey = 'uid'
+      uids = roiUids.split(',')
       if (uids.indexOf('snp') > -1) {
-        stocks = await Stock.query('SELECT uid as code, price_change FROM stocks WHERE uid = :uid', { uid: 'snp' })
+        stocks = await Stock.query('SELECT uid, uid as code, price_change FROM stocks WHERE uid = :uid', { uid: 'snp' })
       }
     }
 
@@ -173,11 +180,15 @@ class Coin extends SequelizeModel {
 
     for (let i = 0; i < items.length; i += 1) {
       const item = items[i]
+
       if (coinUid !== item.uid) {
-        performance[item.code] = {
-          '7d': utils.nullOrString(utils.roi(price7d, item.price_change['7d'])),
-          '30d': utils.nullOrString(utils.roi(price30d, item.price_change['30d']))
+        const periodMap = {}
+        for (let p = 0; p < periods.length; p += 1) {
+          const period = periods[p]
+          periodMap[period] = utils.roi(priceChange[period], item.price_change[period])
         }
+
+        performance[item[mapKey]] = periodMap
       }
     }
 
