@@ -178,17 +178,26 @@ class Coin extends SequelizeModel {
     const items = [...coins, ...stocks]
     const performance = {}
 
+    const mapPeriods = (item, isUsd) => {
+      return periods.reduce((memo, period) => {
+        return {
+          ...memo,
+          [period]: utils.nullOrString(isUsd
+            ? priceChange[period]
+            : utils.roi(priceChange[period], item.price_change[period]))
+        }
+      }, {})
+    }
+
+    if (mapKey === 'code') {
+      performance.usd = mapPeriods(null, true)
+    }
+
     for (let i = 0; i < items.length; i += 1) {
       const item = items[i]
 
       if (coinUid !== item.uid) {
-        const periodMap = {}
-        for (let p = 0; p < periods.length; p += 1) {
-          const period = periods[p]
-          periodMap[period] = utils.nullOrString(utils.roi(priceChange[period], item.price_change[period]))
-        }
-
-        performance[item[mapKey]] = periodMap
+        performance[item[mapKey]] = mapPeriods(item)
       }
     }
 
