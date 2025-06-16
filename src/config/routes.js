@@ -30,5 +30,6 @@ router.use('/exchanges', require('../api/exchange'))
 router.use('/stats', require('../api/stats'))
 router.use('/status', require('../api/status'))
 router.use('/etfs', require('../api/etf'))
+router.use('/vaults', require('../api/vaults'))
 
 module.exports = router

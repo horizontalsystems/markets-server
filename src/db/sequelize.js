@@ -48,6 +48,7 @@ const Etf = require('./models/Etf')
 const EtfDailyInflow = require('./models/EtfDailyInflow')
 const EtfTotalInflow = require('./models/EtfTotalInflow')
 const Stock = require('./models/Stock')
+const Vault = require('./models/Vault')
 const config = require('./config')
 
 const sequelize = new Sequelize(
@@ -106,6 +107,7 @@ const db = {
   EtfDailyInflow: EtfDailyInflow.init(sequelize, Sequelize),
   EtfTotalInflow: EtfTotalInflow.init(sequelize, Sequelize),
   Stock: Stock.init(sequelize, Sequelize),
+  Vault: Vault.init(sequelize, Sequelize),
   TokenUnlock: TokenUnlock.init(sequelize, Sequelize),
   UpdateState: UpdateState.init(sequelize, Sequelize)
 }
