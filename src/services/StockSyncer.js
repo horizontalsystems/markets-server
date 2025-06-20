@@ -10,7 +10,7 @@ class StockSyncer extends CoinPriceHistorySyncer {
 
   async sync() {
     const stocks = await Stock.findAll({ raw: true })
-    const periodFrom = utcStartOfDay({ days: -30 }, true)
+    const periodFrom = utcStartOfDay({ days: -365 }, true)
     const periodTo = utcStartOfDay({}, true)
 
     for (let i = 0; i < stocks.length; i += 1) {
@@ -18,16 +18,35 @@ class StockSyncer extends CoinPriceHistorySyncer {
       console.log('Fetching stock price for', stock.name)
 
       try {
-        const { price, prices } = await yahoo.getPriceByRange(stock.symbol, periodFrom, periodTo)
+        const { price, prices, timestamps } = await yahoo.getPriceByRange(stock.symbol, periodFrom, periodTo)
 
-        const price30d = prices[0]
-        const price7d = prices[prices.length - 7]
-        const price1d = prices[prices.length - 1]
+        const periodsMap = {}
+        const periodTime = {
+          '7d': utcStartOfDay({ days: -7 }, true),
+          '30d': utcStartOfDay({ days: -30 }, true),
+          '90d': utcStartOfDay({ days: -90 }, true),
+          '200d': utcStartOfDay({ days: -200 }, true),
+          '1y': utcStartOfDay({ days: -360 }, true)
+        }
+
+        for (let t = 0; t < timestamps.length; t += 1) {
+          const timestamp = timestamps[t]
+          const currPrice = prices[t]
+
+          if (!timestamp || !currPrice) continue
+          if (timestamp <= periodTime['7d']) periodsMap['7d'] = currPrice
+          if (timestamp <= periodTime['30d']) periodsMap['30d'] = currPrice
+          if (timestamp <= periodTime['90d']) periodsMap['90d'] = currPrice
+          if (timestamp <= periodTime['200d']) periodsMap['200d'] = currPrice
+          if (timestamp <= periodTime['1y']) periodsMap['1y'] = currPrice
+        }
 
         const priceChange = {
-          '30d': percentageChange(price30d.price, price),
-          '7d': percentageChange(price7d.price, price),
-          '1d': percentageChange(price1d.price, price)
+          '7d': percentageChange(periodsMap['7d'], price),
+          '30d': percentageChange(periodsMap['30d'], price),
+          '90d': percentageChange(periodsMap['90d'], price),
+          '200d': percentageChange(periodsMap['200d'], price),
+          '1y': percentageChange(periodsMap['1y'], price),
         }
 
         await this.upsert(stock.symbol, price, priceChange)

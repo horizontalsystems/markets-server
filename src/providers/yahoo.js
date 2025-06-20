@@ -16,23 +16,10 @@ exports.getPriceByRange = (symbol, periodFrom, periodTo) => {
   return axios
     .get(`/chart/${symbol}?period1=${periodFrom}&period2=${periodTo}&interval=1d`)
     .then(resp => {
-      const price = get(resp.data, 'chart.result[0].meta.regularMarketPrice')
+      const marketPrice = get(resp.data, 'chart.result[0].meta.regularMarketPrice')
       const timestamps = get(resp.data, 'chart.result[0].timestamp') || []
-      const closePrice = get(resp.data, 'chart.result[0].indicators.quote[0].close') || []
-      const prices = []
+      const prices = get(resp.data, 'chart.result[0].indicators.quote[0].close') || []
 
-      for (let i = 0; i < timestamps.length; i += 1) {
-        const timestamp = timestamps[i]
-        const price = closePrice[i]
-
-        if (timestamp && price) {
-          prices.push({
-            timestamp,
-            price
-          })
-        }
-      }
-
-      return { price, prices }
+      return { prices, timestamps, price: marketPrice }
     })
 }
