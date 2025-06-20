@@ -2,7 +2,7 @@ version: '3'
 
 services:
   base: &base
-    image: chatwoot/chatwoot:latest
+    image: chatwoot/chatwoot:v3.2.0
     env_file: .env
     volumes:
       - storage:/app/storage
@@ -13,7 +13,7 @@ services:
       - postgres
       - redis
     ports:
-      - '127.0.0.1:3000:3000'
+      - '127.0.0.1:3008:3000'
     environment:
       - NODE_ENV=production
       - RAILS_ENV=production
