@@ -4,7 +4,7 @@ module.exports = {
   // GET /v1/etf/all
   validateEtfAll: validate({
     query: Joi.object({
-      category: Joi.string().valid('btc', 'eth'),
+      category: Joi.string().required().valid('btc', 'eth'),
     })
   }),
 
