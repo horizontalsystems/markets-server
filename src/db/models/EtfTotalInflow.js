@@ -7,18 +7,26 @@ class EtfTotalInflow extends SequelizeModel {
       {
         date: {
           type: DataTypes.DATEONLY,
-          unique: true,
           allowNull: false
         },
         totalAssets: DataTypes.DECIMAL,
         totalInflow: DataTypes.DECIMAL,
         totalDailyInflow: DataTypes.DECIMAL,
-        totalDailyVolume: DataTypes.DECIMAL
+        totalDailyVolume: DataTypes.DECIMAL,
+        category: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          defaultValue: 'btc'
+        },
       },
       {
         sequelize,
         tableName: 'etf_total_inflow',
-        timestamps: false
+        timestamps: false,
+        indexes: [{
+          unique: true,
+          fields: ['date', 'category']
+        }]
       }
     )
   }

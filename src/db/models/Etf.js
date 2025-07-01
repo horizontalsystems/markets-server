@@ -12,6 +12,7 @@ class Etf extends SequelizeModel {
         },
         uid: DataTypes.STRING,
         name: DataTypes.STRING,
+        category: DataTypes.STRING,
         exchange: DataTypes.STRING,
         institution: DataTypes.STRING,
         price: DataTypes.DECIMAL,

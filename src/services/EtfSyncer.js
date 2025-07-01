@@ -18,12 +18,21 @@ class EtfSyncer extends Syncer {
   }
 
   async syncLatest() {
-    this.cron('1h', this.sync)
+    this.cron('1h', () => {
+      this.sync('btc')
+      this.sync('eth')
+    })
   }
 
-  async sync() {
+  async sync(category) {
     const date = getPrevWeekday()
-    const etfs = await Etf.findAll({ attributes: ['date', 'ticker'], raw: true })
+    const etfs = await Etf.findAll({
+      attributes: ['date', 'ticker', 'category'],
+      raw: true,
+      where: {
+        ...(category && { category }),
+      },
+    })
 
     console.log('Syncing ETF data for', date)
 
@@ -38,16 +47,16 @@ class EtfSyncer extends Syncer {
     }
 
     try {
-      await this.syncSpotETF(date)
+      await this.syncSpotETF(date, category)
     } catch (e) {
       console.log(e)
     }
   }
 
-  async syncSpotETF(date) {
+  async syncSpotETF(date, category) {
     const parsedData = this.json
       ? sosovalue.getSpotEtfJSON()
-      : this.parseData(await sosovalue.getSpotEtf())
+      : this.parseData(await sosovalue.getSpotEtf(category))
 
     const {
       data = [],
@@ -79,6 +88,7 @@ class EtfSyncer extends Syncer {
       const totalInflow = (cumNetInflowMap[date] || {})[item.id]
       const dailyVolume = (volumeTradedMap[date] || {})[item.id]
       const etfRecord = {
+        category,
         ticker: item.ticker,
         name: item.name,
         uid: item.id,
@@ -125,6 +135,7 @@ class EtfSyncer extends Syncer {
     for (let i = 0; i < historyData.list.length; i += 1) {
       const item = historyData.list[i]
       etfInflows.push({
+        category,
         date: item.dataDate,
         totalAssets: item.totalNetAssets,
         totalInflow: item.cumNetInflow,
@@ -160,6 +171,7 @@ class EtfSyncer extends Syncer {
     }
 
     if (!nameList.length) {
+      console.log('nameList is empty')
       return
     }
 
@@ -213,7 +225,7 @@ class EtfSyncer extends Syncer {
     }
 
     await Etf.bulkCreate(records, {
-      updateOnDuplicate: ['price', 'totalAssets', 'totalInflow', 'dailyInflow', 'dailyVolume', 'changes', 'date']
+      updateOnDuplicate: ['price', 'totalAssets', 'totalInflow', 'dailyInflow', 'dailyVolume', 'changes', 'date', 'category']
     })
       .then((data) => {
         console.log('Inserted ETF', data.length)
@@ -229,7 +241,7 @@ class EtfSyncer extends Syncer {
     }
 
     await EtfTotalInflow.bulkCreate(records, {
-      updateOnDuplicate: ['totalAssets', 'totalInflow', 'totalDailyInflow', 'totalDailyVolume'],
+      updateOnDuplicate: ['totalAssets', 'totalInflow', 'totalDailyInflow', 'totalDailyVolume', 'category'],
       returning: false
     })
       .then((data) => {

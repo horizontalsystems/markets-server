@@ -1,5 +1,6 @@
 const express = require('express')
 const controller = require('./etf.controller')
+const { validateEtfAll, validateEtfChart } = require('./etf.validator')
 
 const router = express.Router()
 
@@ -29,6 +30,9 @@ const router = express.Router()
  * }]
  */
 router.get('/', controller.index)
+
+router.get('/all', validateEtfAll, controller.all)
+router.get('/chart', validateEtfChart, controller.chart)
 
 /**
  * @api {GET} /v1/etfs/total ETF total chart

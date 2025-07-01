@@ -38,7 +38,7 @@ exports.getEftFlow = function getEftFlow() {
     })
 }
 
-exports.findListByIdsOrNames = function findListByIdsOrNames(nameList) {
+exports.findListByIdsOrNames = nameList => {
   return api
     .post('/data/s-indicator-data-do/findListByIdsOrNames', { nameList })
     .then(({ data: resp }) => {
@@ -46,9 +46,9 @@ exports.findListByIdsOrNames = function findListByIdsOrNames(nameList) {
     })
 }
 
-exports.getSpotEtf = function getSpotEtf() {
+exports.getSpotEtf = (coin = 'btc') => {
   return web
-    .get('/assets/etf/us-btc-spot')
+    .get(`/assets/etf/us-${coin}-spot`)
     .then(res => {
       return res.data
     })
