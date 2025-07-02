@@ -58,7 +58,7 @@ function mapChartPoints(history, rangeInterval) {
   return chart
 }
 
-exports.serializeShow = (item, rangeInterval = '1d') => {
+exports.serializeShow = (item, rangeInterval = '6m') => {
   let points = []
   if (rangeInterval === '1d' || rangeInterval === '1w' || rangeInterval === '2w') {
     points = mapChartPoints(item.apy_history_hourly, rangeInterval)
