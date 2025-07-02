@@ -1,4 +1,3 @@
-const { get } = require('lodash')
 const { stringify } = require('querystring')
 const { create } = require('axios')
 
@@ -26,7 +25,6 @@ exports.getAllVaults = (page, perPage = 5000) => {
 exports.getHistory = (address, params) => {
   const query = {
     ...params,
-    address,
     perPage: 20000
   }
 
