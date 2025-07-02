@@ -2,11 +2,16 @@ const { get } = require('lodash')
 const { utcStartOfDay, utcDate } = require('../utils')
 const vaultsfyi = require('../providers/vaultsfyi')
 const Vault = require('../db/models/Vault')
-const CoinPriceHistorySyncer = require('./CoinPriceHistorySyncer')
+const Syncer = require('./Syncer')
 
-class VaultsSyncer extends CoinPriceHistorySyncer {
+class VaultsSyncer extends Syncer {
   async start() {
-    this.cron('1d', () => this.sync())
+    this.cron('1d', this.syncDaily)
+  }
+
+  async syncDaily() {
+    await this.sync()
+    await this.syncHistory(null, true)
   }
 
   async sync() {
