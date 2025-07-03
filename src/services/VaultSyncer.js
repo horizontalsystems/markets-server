@@ -93,7 +93,8 @@ class VaultsSyncer extends Syncer {
     }
 
     await Vault.bulkCreate(values, {
-      updateOnDuplicate: ['apy', 'tvl', 'chain', 'asset_symbol', 'protocol_name', 'protocol_logo', 'holders', 'url']
+      updateOnDuplicate: ['apy', 'tvl', 'chain', 'asset_symbol', 'protocol_name', 'protocol_logo', 'holders', 'url'],
+      returning: false
     })
       .then(() => {
         console.log(`Upserted ${values.length} vaults`)

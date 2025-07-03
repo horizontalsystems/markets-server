@@ -13,7 +13,7 @@ exports.getAllVaults = (page, perPage = 5000) => {
   const params = {
     page,
     perPage,
-    minTvl: 100000,
+    minTvl: 1000000,
     onlyAppFeatured: true
   }
 
