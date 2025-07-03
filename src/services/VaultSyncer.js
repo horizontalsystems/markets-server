@@ -57,7 +57,7 @@ class VaultsSyncer extends Syncer {
       }
     }
 
-    const values = data.map(item => {
+    const rawValues = data.map(item => {
       let chainName = item.network.name
       if (chainName === 'mainnet') {
         chainName = mapChain(item.network)
@@ -81,7 +81,20 @@ class VaultsSyncer extends Syncer {
       }
     })
 
-    await Vault.bulkCreate(values, { updateOnDuplicate: ['apy', 'tvl', 'chain', 'asset_symbol', 'protocol_name', 'protocol_logo', 'holders'] })
+    const seen = new Map()
+    const values = []
+    // eslint-disable-next-line no-restricted-syntax
+    for (const row of rawValues) {
+      const key = `${row.address}_${row.chain}`
+      if (!seen.has(key)) {
+        seen.set(key, true)
+        values.push(row)
+      }
+    }
+
+    await Vault.bulkCreate(values, {
+      updateOnDuplicate: ['apy', 'tvl', 'chain', 'asset_symbol', 'protocol_name', 'protocol_logo', 'holders', 'url']
+    })
       .then(() => {
         console.log(`Upserted ${values.length} vaults`)
       }).catch(err => {
