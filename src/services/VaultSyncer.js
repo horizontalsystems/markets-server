@@ -77,7 +77,7 @@ class VaultsSyncer extends Syncer {
         protocol_name: item.protocol.name,
         protocol_logo: get(item, 'protocol.protocolLogo'),
         holders: get(item, 'holdersData.totalCount'),
-        url: item.lendUrl
+        url: item.protocolVaultUrl
       }
     })
 
