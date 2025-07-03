@@ -1,5 +1,5 @@
 const { get } = require('lodash')
-const { utcStartOfDay, utcDate } = require('../utils')
+const { utcStartOfDay, utcDate, sleep } = require('../utils')
 const vaultsfyi = require('../providers/vaultsfyi')
 const Vault = require('../db/models/Vault')
 const Syncer = require('./Syncer')
@@ -42,6 +42,8 @@ class VaultsSyncer extends Syncer {
       await (isHourly
         ? this.upsertApyHourly(vault, data)
         : this.upsertApyHistory(vault, data))
+
+      await sleep(1000)
     }
   }
 
