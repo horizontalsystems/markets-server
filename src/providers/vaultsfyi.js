@@ -2,10 +2,10 @@ const { stringify } = require('querystring')
 const { create } = require('axios')
 
 const axios = create({
-  baseURL: 'https://api.vaults.fyi',
+  baseURL: 'https://app.vaults.fyi/api/proxy',
   timeout: 180000 * 3,
   headers: {
-    'x-api-key': process.env.VAULTSFYI_KEY
+    // 'x-api-key': process.env.VAULTSFYI_KEY
   }
 })
 
