@@ -37,13 +37,17 @@ class VaultsSyncer extends Syncer {
       const vault = vaults[i];
       console.log(`Syncing vaults for ${vault.address}`)
 
-      const data = await vaultsfyi.getHistory(vault.address, params)
+      try {
+        const data = await vaultsfyi.getHistory(vault.address, params)
 
-      await (isHourly
-        ? this.upsertApyHourly(vault, data)
-        : this.upsertApyHistory(vault, data))
+        await (isHourly
+          ? this.upsertApyHourly(vault, data)
+          : this.upsertApyHistory(vault, data))
 
-      await sleep(1000)
+        await sleep(1000)
+      } catch (e) {
+        console.log('Error syncing vaults history', vault.address)
+      }
     }
   }
 
