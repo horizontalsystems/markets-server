@@ -82,16 +82,12 @@ class VaultsSyncer extends Syncer {
     })
 
     const seen = new Map()
-    const values = []
-    // eslint-disable-next-line no-restricted-syntax
-    for (const row of rawValues) {
-      const key = `${row.address}_${row.chain}`
-      if (!seen.has(key)) {
-        seen.set(key, true)
-        values.push(row)
-      }
+    for (let i = 0; i < rawValues.length; i += 1) {
+      const row = rawValues[i]
+      seen.set(row.address, row) // latest wins
     }
 
+    const values = Array.from(seen.values())
     await Vault.bulkCreate(values, {
       updateOnDuplicate: ['apy', 'tvl', 'chain', 'asset_symbol', 'protocol_name', 'protocol_logo', 'holders', 'url'],
       returning: false
