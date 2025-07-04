@@ -38,7 +38,8 @@ class VaultsSyncer extends Syncer {
       console.log(`Syncing vaults for ${vault.address}`)
 
       try {
-        const data = await vaultsfyi.getHistory(vault.address, params)
+        const chain = this.mapChainToNetwork(vault.chain)
+        const data = await vaultsfyi.getHistory(vault.address, chain, params)
 
         await (isHourly
           ? this.upsertApyHourly(vault, data)
@@ -52,19 +53,10 @@ class VaultsSyncer extends Syncer {
   }
 
   async upsert(data) {
-    const mapChain = (network) => {
-      switch (network.chainId) {
-        case 1:
-          return 'ethereum'
-        default:
-          return network.name
-      }
-    }
-
     const rawValues = data.map(item => {
       let chainName = item.network.name
       if (chainName === 'mainnet') {
-        chainName = mapChain(item.network)
+        chainName = this.mapChainIdToChain(item.network)
       }
 
       return {
@@ -157,6 +149,24 @@ class VaultsSyncer extends Syncer {
       console.log(`Updated vaults historical and hourly data ${data.length}`)
     } catch (e) {
       console.log(e)
+    }
+  }
+
+  mapChainIdToChain(network) {
+    switch (network.chainId) {
+      case 1:
+        return 'ethereum'
+      default:
+        return network.name
+    }
+  }
+
+  mapChainToNetwork(chain) {
+    switch (chain) {
+      case 'ethereum':
+        return 'mainnet'
+      default:
+        return chain
     }
   }
 }

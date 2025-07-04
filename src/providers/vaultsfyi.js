@@ -22,13 +22,13 @@ exports.getAllVaults = (page, perPage = 5000) => {
     .then(res => res.data)
 }
 
-exports.getHistory = (address, params) => {
+exports.getHistory = (address, chain, params) => {
   const query = {
     ...params,
     perPage: 20000
   }
 
-  return axios.get(`/v2/historical/mainnet/${address}?${stringify(query)}`)
+  return axios.get(`/v2/historical/${chain}/${address}?${stringify(query)}`)
     .then(res => res.data)
     .then(res => res.data)
 }
