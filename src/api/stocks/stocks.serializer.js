@@ -10,6 +10,7 @@ exports.serializeIndex = (items) => {
       price_change: {
         '1d': nullOrString(item.price_change['1d']),
         '7d': nullOrString(item.price_change['7d']),
+        '14d': nullOrString(item.price_change['14d']),
         '30d': nullOrString(item.price_change['30d']),
         '90d': nullOrString(item.price_change['90d']),
         '200d': nullOrString(item.price_change['200d']),

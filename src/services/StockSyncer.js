@@ -24,6 +24,7 @@ class StockSyncer extends CoinPriceHistorySyncer {
         const periodTime = {
           '1d': utcStartOfDay({ days: -1 }, true),
           '7d': utcStartOfDay({ days: -7 }, true),
+          '14d': utcStartOfDay({ days: -14 }, true),
           '30d': utcStartOfDay({ days: -30 }, true),
           '90d': utcStartOfDay({ days: -90 }, true),
           '200d': utcStartOfDay({ days: -200 }, true),
@@ -41,6 +42,7 @@ class StockSyncer extends CoinPriceHistorySyncer {
           if (!timestamp || !currPrice) continue
           if (timestamp <= periodTime['1d']) periodsMap['1d'] = currPrice
           if (timestamp <= periodTime['7d']) periodsMap['7d'] = currPrice
+          if (timestamp <= periodTime['14d']) periodsMap['14d'] = currPrice
           if (timestamp <= periodTime['30d']) periodsMap['30d'] = currPrice
           if (timestamp <= periodTime['90d']) periodsMap['90d'] = currPrice
           if (timestamp <= periodTime['200d']) periodsMap['200d'] = currPrice
@@ -54,6 +56,7 @@ class StockSyncer extends CoinPriceHistorySyncer {
         const priceChange = {
           '1d': percentageChange(periodsMap['1d'], price),
           '7d': percentageChange(periodsMap['7d'], price),
+          '14d': percentageChange(periodsMap['14d'], price),
           '30d': percentageChange(periodsMap['30d'], price),
           '90d': percentageChange(periodsMap['90d'], price),
           '200d': percentageChange(periodsMap['200d'], price),
