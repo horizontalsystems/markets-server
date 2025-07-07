@@ -17,6 +17,7 @@ exports.serializeIndex = (items) => {
         '2y': nullOrString(item.price_change['2y']),
         '3y': nullOrString(item.price_change['3y']),
         '4y': nullOrString(item.price_change['4y']),
+        '5y': nullOrString(item.price_change['5y']),
       }
     }
   })
