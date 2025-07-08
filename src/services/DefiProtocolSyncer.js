@@ -144,6 +144,7 @@ class DefiProtocolSyncer extends Syncer {
       }
 
       const values = {
+        url: protocol.url,
         name: protocol.name,
         logo: protocol.logo,
         defillama_id: protocol.slug,
