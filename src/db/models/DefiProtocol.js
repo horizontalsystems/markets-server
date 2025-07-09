@@ -7,6 +7,7 @@ class DefiProtocol extends SequelizeModel {
       {
         name: DataTypes.STRING,
         logo: DataTypes.STRING,
+        url: DataTypes.STRING,
 
         coingecko_id: DataTypes.STRING,
         defillama_id: {
