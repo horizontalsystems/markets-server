@@ -16,7 +16,7 @@ exports.list = async (req, res) => {
 exports.dapps = async (req, res) => {
   try {
     const protocols = await DefiProtocol.findAll({
-      attributes: ['url', 'tvl_change'],
+      attributes: ['name', 'url', 'tvl_change'],
       raw: true,
       where: {
         url: DefiProtocol.literal('nullif(trim(url),\'\') is not null'),

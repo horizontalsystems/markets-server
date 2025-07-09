@@ -57,14 +57,18 @@ exports.serializeDapps = protocols => {
   for (let i = 0; i < protocols.length; i += 1) {
     const protocol = protocols[i]
 
-    if (!protocol.url || !protocol.url.length || !protocol.tvl_change.change_1w) {
+    if (!protocol.url || !protocol.url.length || !protocol.tvl_change.change_1y) {
       continue
     }
 
     try {
       const url = new URL(protocol.url)
       const host = url.host.replace(/^www\./, '')
-      items.push({ url: host })
+
+      items.push({
+        name: protocol.name,
+        url: host
+      })
     } catch (e) {
       console.log(`${protocol.defillama_id}`, e.message)
     }
