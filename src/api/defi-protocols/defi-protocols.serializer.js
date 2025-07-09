@@ -57,7 +57,7 @@ exports.serializeDapps = protocols => {
   for (let i = 0; i < protocols.length; i += 1) {
     const protocol = protocols[i]
 
-    if (!protocol.url || !protocol.url.length || !protocol.tvl_change.change_1y) {
+    if (!protocol.url || !protocol.url.length || !protocol.tvl_change.change_1w) {
       continue
     }
 
