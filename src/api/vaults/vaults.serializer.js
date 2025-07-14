@@ -13,6 +13,7 @@ exports.serializeIndex = (items) => {
       tvl: nullOrString(item.tvl),
       chain: item.chain,
       asset_symbol: item.asset_symbol,
+      asset_logo: item.asset_logo,
       protocol_name: item.protocol_name,
       protocol_logo: item.protocol_logo,
       holders: nullOrInteger(item.holders),

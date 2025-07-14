@@ -13,6 +13,7 @@ exports.index = async (req, res) => {
         'tvl',
         'chain',
         'asset_symbol',
+        'asset_logo',
         'protocol_name',
         'protocol_logo',
         'holders',
