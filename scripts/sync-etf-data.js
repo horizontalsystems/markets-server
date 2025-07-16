@@ -10,9 +10,10 @@ const program = new Command()
   .option('-c --category <category>', 'Sync ETF data for a specific category')
   .option('-j --json', 'Sync from json file')
   .option('-t --ticker <ticker>', 'Specify ETF to sync history')
+  .option('--treasuries', 'Sync treasuries')
   .parse(process.argv)
 
-async function start({ force, ticker, history, json, category }) {
+async function start({ force, ticker, history, json, category, treasuries }) {
   await sequelize.sync()
   const etfSyncer = new EtfSyncer(json)
 
@@ -24,6 +25,8 @@ async function start({ force, ticker, history, json, category }) {
     await etfSyncer.syncHistory()
   } else if (ticker) {
     await etfSyncer.syncHistory(ticker.split(','))
+  } else if (treasuries) {
+    await etfSyncer.syncTreasuries()
   } else if (force) {
     await etfSyncer.sync(category)
   } else {

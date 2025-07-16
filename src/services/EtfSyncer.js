@@ -1,11 +1,13 @@
 const cheerio = require('cheerio')
-const { get } = require('lodash')
+const { get, snakeCase } = require('lodash')
 const { getPrevWeekday, utcDate } = require('../utils')
 const sosovalue = require('../providers/sosovalue')
+const bTreasuries = require('../providers/bitcointreasuries')
 const Syncer = require('./Syncer')
 const Etf = require('../db/models/Etf')
 const EtfTotalInflow = require('../db/models/EtfTotalInflow')
 const EtfDailyInflow = require('../db/models/EtfDailyInflow')
+const TreasuryCompany = require('../db/models/TreasuryCompany')
 
 class EtfSyncer extends Syncer {
   constructor(json) {
@@ -219,6 +221,34 @@ class EtfSyncer extends Syncer {
     }
   }
 
+  async syncTreasuries() {
+    try {
+      const publicCompanies = await this.fetchTreasuries(false)
+      const privateCompanies = await this.fetchTreasuries(true)
+      await this.storeTreasuryCompanies(publicCompanies, false)
+      await this.storeTreasuryCompanies(privateCompanies, true)
+    } catch (e) {
+      console.log('Error syncing treasuries', e.message)
+    }
+  }
+
+  async fetchTreasuries(isPrivate) {
+    const title = isPrivate
+      ? 'Private Companies Holding Bitcoin'
+      : 'Publicly Traded Bitcoin Treasury Companies'
+
+    const data = await bTreasuries.getCompanies(isPrivate)
+    const $ = cheerio.load(data)
+
+    const header = $('h1')
+      .filter((i, el) => $(el).text().includes(title))
+
+    const section = header.parents('section')
+    const items = $(section).find('table > tbody > tr')
+
+    return this.parseTreasuries(items, $)
+  }
+
   async storeEtf(records) {
     if (!records.length) {
       return
@@ -269,6 +299,36 @@ class EtfSyncer extends Syncer {
       })
   }
 
+  async storeTreasuryCompanies(values, isPrivate) {
+    if (!values.length) {
+      return
+    }
+
+    const records = values.map(item => {
+      return {
+        uid: snakeCase(item.name),
+        name: item.name,
+        amount: item.bitcoin,
+        country: item.country,
+        coin_uid: 'bitocin',
+        is_private: isPrivate
+      }
+    })
+
+    console.log(records)
+
+    await TreasuryCompany.bulkCreate(records, {
+      updateOnDuplicate: ['name', 'amount', 'country', 'coin_uid', 'is_private'],
+      returning: false
+    })
+      .then((data) => {
+        console.log('Inserted treasuries', data.length)
+      })
+      .catch(err => {
+        console.error(err)
+      })
+  }
+
   parseData(data) {
     const $ = cheerio.load(data)
     const element = $('script#__NEXT_DATA__')[0]
@@ -280,6 +340,25 @@ class EtfSyncer extends Syncer {
 
     const { props: { pageProps } } = JSON.parse(children.data)
     return pageProps
+  }
+
+  async parseTreasuries(items, $) {
+    const companies = []
+    for (let i = 0; i < items.length; i += 1) {
+      const item = items[i]
+
+      const child = item.children.filter(c => c.type !== 'comment')
+      const childTitle = child[2].children.filter(c => c.type !== 'comment')
+      const country = $(child[1]).find('a').prop('href').replace('/countries/', '')
+
+      const code = $(childTitle).find('span').text()
+      const name = $(childTitle).find('a').text()
+      const bitcoin = $(child[3]).text().replace(/[₿,]/g, '').trim()
+
+      companies.push({ name, code, bitcoin, country })
+    }
+
+    return companies
   }
 
 }

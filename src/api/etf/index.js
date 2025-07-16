@@ -59,5 +59,6 @@ router.get('/chart', validateEtfChart, controller.chart)
  */
 
 router.get('/total', controller.total)
+router.get('/treasury-companies', controller.treasuryCompanies)
 
 module.exports = router

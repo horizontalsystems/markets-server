@@ -1,6 +1,7 @@
 const serializer = require('./etf.serializer')
 const Etf = require('../../db/models/Etf')
 const EtfTotalInflow = require('../../db/models/EtfTotalInflow')
+const TreasuryCompany = require('../../db/models/TreasuryCompany')
 
 exports.index = async (req, res) => {
   const etfs = await Etf.findAll({
@@ -41,6 +42,14 @@ exports.chart = async ({ query }, res) => {
   })
 
   res.send(serializer.serializeTotal(data))
+}
+
+exports.treasuryCompanies = async (req, res) => {
+  const data = await TreasuryCompany.findAll({
+    raw: true,
+  })
+
+  res.send(serializer.serializeTreasuryCompanies(data))
 }
 
 exports.total = async (req, res) => {
