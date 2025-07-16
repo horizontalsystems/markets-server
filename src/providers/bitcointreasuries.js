@@ -5,8 +5,8 @@ const api = create({
   timeout: 180000,
 })
 
-exports.getCompanies = (isPrivate) => {
+exports.getCompanies = (type) => {
   return api
-    .get(isPrivate ? '/private-companies' : '/')
+    .get(type === 'public-companies' ? '/' : type)
     .then(resp => resp.data)
 }

@@ -1,6 +1,6 @@
 const express = require('express')
 const controller = require('./etf.controller')
-const { validateEtfAll, validateEtfChart } = require('./etf.validator')
+const { validateEtfAll, validateEtfChart, validateEtfTreasuries } = require('./etf.validator')
 
 const router = express.Router()
 
@@ -59,6 +59,6 @@ router.get('/chart', validateEtfChart, controller.chart)
  */
 
 router.get('/total', controller.total)
-router.get('/treasury-companies', controller.treasuryCompanies)
+router.get('/treasuries', validateEtfTreasuries, controller.treasuries)
 
 module.exports = router

@@ -10,10 +10,11 @@ class TreasuryCompany extends SequelizeModel {
           primaryKey: true,
         },
         name: DataTypes.STRING,
+        code: DataTypes.STRING,
         amount: DataTypes.DECIMAL,
         country: DataTypes.STRING,
         coin_uid: DataTypes.STRING,
-        is_private: DataTypes.BOOLEAN,
+        type: DataTypes.STRING
       },
       {
         timestamps: false,

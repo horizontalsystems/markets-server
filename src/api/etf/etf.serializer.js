@@ -29,15 +29,16 @@ exports.serializeTotal = items => {
   })
 }
 
-exports.serializeTreasuryCompanies = items => {
+exports.serializeTreasuries = items => {
   return items.map(item => {
     return {
       uid: item.uid,
-      name: item.name,
+      name: nullOrString(item.name),
+      code: nullOrString(item.code),
       amount: nullOrString(item.amount),
-      country: item.country,
-      coin_uid: item.coin_uid,
-      is_private: item.is_private
+      country: nullOrString(item.country),
+      coin_uid: nullOrString(item.coin_uid),
+      type: nullOrString(item.type)
     }
   })
 }

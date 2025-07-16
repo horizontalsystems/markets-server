@@ -44,12 +44,19 @@ exports.chart = async ({ query }, res) => {
   res.send(serializer.serializeTotal(data))
 }
 
-exports.treasuryCompanies = async (req, res) => {
+exports.treasuries = async ({ query }, res) => {
+  const where = {}
+
+  if (query.type) {
+    where.type = query.type
+  }
+
   const data = await TreasuryCompany.findAll({
     raw: true,
+    where
   })
 
-  res.send(serializer.serializeTreasuryCompanies(data))
+  res.send(serializer.serializeTreasuries(data))
 }
 
 exports.total = async (req, res) => {

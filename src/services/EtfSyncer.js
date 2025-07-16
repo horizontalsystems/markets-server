@@ -1,13 +1,11 @@
 const cheerio = require('cheerio')
-const { get, snakeCase } = require('lodash')
+const { get } = require('lodash')
 const { getPrevWeekday, utcDate } = require('../utils')
 const sosovalue = require('../providers/sosovalue')
-const bTreasuries = require('../providers/bitcointreasuries')
 const Syncer = require('./Syncer')
 const Etf = require('../db/models/Etf')
 const EtfTotalInflow = require('../db/models/EtfTotalInflow')
 const EtfDailyInflow = require('../db/models/EtfDailyInflow')
-const TreasuryCompany = require('../db/models/TreasuryCompany')
 
 class EtfSyncer extends Syncer {
   constructor(json) {
@@ -221,34 +219,6 @@ class EtfSyncer extends Syncer {
     }
   }
 
-  async syncTreasuries() {
-    try {
-      const publicCompanies = await this.fetchTreasuries(false)
-      const privateCompanies = await this.fetchTreasuries(true)
-      await this.storeTreasuryCompanies(publicCompanies, false)
-      await this.storeTreasuryCompanies(privateCompanies, true)
-    } catch (e) {
-      console.log('Error syncing treasuries', e.message)
-    }
-  }
-
-  async fetchTreasuries(isPrivate) {
-    const title = isPrivate
-      ? 'Private Companies Holding Bitcoin'
-      : 'Publicly Traded Bitcoin Treasury Companies'
-
-    const data = await bTreasuries.getCompanies(isPrivate)
-    const $ = cheerio.load(data)
-
-    const header = $('h1')
-      .filter((i, el) => $(el).text().includes(title))
-
-    const section = header.parents('section')
-    const items = $(section).find('table > tbody > tr')
-
-    return this.parseTreasuries(items, $)
-  }
-
   async storeEtf(records) {
     if (!records.length) {
       return
@@ -293,36 +263,6 @@ class EtfSyncer extends Syncer {
     })
       .then((data) => {
         console.log('Inserted daily ETF inflow', data.length)
-      })
-      .catch(err => {
-        console.error(err)
-      })
-  }
-
-  async storeTreasuryCompanies(values, isPrivate) {
-    if (!values.length) {
-      return
-    }
-
-    const records = values.map(item => {
-      return {
-        uid: snakeCase(item.name),
-        name: item.name,
-        amount: item.bitcoin,
-        country: item.country,
-        coin_uid: 'bitocin',
-        is_private: isPrivate
-      }
-    })
-
-    console.log(records)
-
-    await TreasuryCompany.bulkCreate(records, {
-      updateOnDuplicate: ['name', 'amount', 'country', 'coin_uid', 'is_private'],
-      returning: false
-    })
-      .then((data) => {
-        console.log('Inserted treasuries', data.length)
       })
       .catch(err => {
         console.error(err)
