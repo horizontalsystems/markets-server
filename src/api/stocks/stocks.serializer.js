@@ -1,12 +1,12 @@
-const { nullOrString } = require('../../utils')
+const { nullOrString, valueInCurrency } = require('../../utils')
 
-exports.serializeIndex = (items) => {
+exports.serializeIndex = (items, currencyRate) => {
   return items.map(item => {
     return {
       uid: item.uid,
       name: item.name,
       symbol: item.symbol,
-      market_price: nullOrString(item.market_price),
+      market_price: valueInCurrency(item.market_price, currencyRate),
       price_change: {
         '1d': nullOrString(item.price_change['1d']),
         '7d': nullOrString(item.price_change['7d']),
