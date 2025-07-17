@@ -5,6 +5,7 @@ module.exports = {
   validateEtfAll: validate({
     query: Joi.object({
       category: Joi.string().required().valid('btc', 'eth'),
+      currency: Joi.string(),
     })
   }),
 
@@ -12,6 +13,7 @@ module.exports = {
   validateEtfChart: validate({
     query: Joi.object({
       category: Joi.string().required().valid('btc', 'eth'),
+      currency: Joi.string(),
     })
   }),
 

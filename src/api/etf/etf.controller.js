@@ -14,7 +14,7 @@ exports.index = async (req, res) => {
   res.send(serializer.serializeIndex(etfs))
 }
 
-exports.all = async ({ query }, res) => {
+exports.all = async ({ query, currencyRate }, res) => {
   const where = {}
 
   if (query.category) {
@@ -26,10 +26,10 @@ exports.all = async ({ query }, res) => {
     where
   })
 
-  res.send(serializer.serializeIndex(etfs))
+  res.send(serializer.serializeIndex(etfs, currencyRate))
 }
 
-exports.chart = async ({ query }, res) => {
+exports.chart = async ({ query, currencyRate }, res) => {
   const where = {}
 
   if (query.category) {
@@ -41,7 +41,7 @@ exports.chart = async ({ query }, res) => {
     where
   })
 
-  res.send(serializer.serializeTotal(data))
+  res.send(serializer.serializeTotal(data, currencyRate))
 }
 
 exports.treasuries = async ({ query }, res) => {

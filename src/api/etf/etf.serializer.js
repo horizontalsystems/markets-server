@@ -1,6 +1,6 @@
-const { nullOrString } = require('../../utils')
+const { nullOrString, valueInCurrency } = require('../../utils')
 
-exports.serializeIndex = (items) => {
+exports.serializeIndex = (items, currencyRate) => {
   return items.map(item => {
     const { changes = {} } = item
 
@@ -8,9 +8,9 @@ exports.serializeIndex = (items) => {
       ticker: item.ticker,
       name: item.name,
       date: item.date,
-      total_assets: nullOrString(item.totalAssets),
-      total_inflow: nullOrString(item.totalInflow),
-      inflow_1d: nullOrString(item.dailyInflow),
+      total_assets: valueInCurrency(item.totalAssets, currencyRate),
+      total_inflow: valueInCurrency(item.totalInflow, currencyRate),
+      inflow_1d: valueInCurrency(item.dailyInflow, currencyRate),
       inflow_1w: nullOrString(changes['1w_inflow']),
       inflow_1m: nullOrString(changes['1m_inflow']),
       inflow_3m: nullOrString(changes['3m_inflow'])
@@ -25,6 +25,17 @@ exports.serializeTotal = items => {
       total_assets: nullOrString(item.totalAssets),
       total_inflow: nullOrString(item.totalInflow),
       daily_inflow: nullOrString(item.totalDailyInflow)
+    }
+  })
+}
+
+exports.serializeChart = (items, currencyRate) => {
+  return items.filter(i => i.totalDailyInflow).map(item => {
+    return {
+      date: item.date,
+      total_assets: valueInCurrency(item.totalAssets, currencyRate),
+      total_inflow: valueInCurrency(item.totalInflow, currencyRate),
+      daily_inflow: valueInCurrency(item.totalDailyInflow, currencyRate)
     }
   })
 }
