@@ -86,9 +86,10 @@ class GlobalMarket extends SequelizeModel {
     const [etf] = await GlobalMarket.query(`
       select total_inflow, total_daily_inflow
         from etf_total_inflow
-        order by date desc
-        limit 1
-    `)
+       where category = :category
+       order by date desc
+       limit 1
+    `, { category: 'btc' })
 
     result.etf_total_inflow = etf.total_inflow
     result.etf_daily_inflow = etf.total_daily_inflow

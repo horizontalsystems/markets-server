@@ -37,7 +37,6 @@ const serializeOverview = ({ global, categories, nft, platforms, pairs, marketPa
   }
 }
 
-
 exports.serializeOverviewSimple = (item, currencyRate) => {
   return {
     market_cap: valueInCurrency(item.market_cap, currencyRate),
