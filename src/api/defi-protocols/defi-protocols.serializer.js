@@ -51,6 +51,32 @@ exports.serializeList = (protocols, currencyRate) => {
   })
 }
 
+exports.serializeDapps = protocols => {
+  const items = []
+
+  for (let i = 0; i < protocols.length; i += 1) {
+    const protocol = protocols[i]
+
+    if (!protocol.url || !protocol.url.length || protocol.tvl_change.change_1w === null) {
+      continue
+    }
+
+    try {
+      const url = new URL(protocol.url)
+      const host = url.host.replace(/^www\./, '')
+
+      items.push({
+        name: protocol.name,
+        url: host
+      })
+    } catch (e) {
+      console.log(`${protocol.defillama_id}`, e.message)
+    }
+  }
+
+  return items
+}
+
 exports.serializeTvls = (tvls, currencyRate) => {
   return tvls.map(item => {
     return {

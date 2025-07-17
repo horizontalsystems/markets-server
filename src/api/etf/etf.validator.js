@@ -14,4 +14,17 @@ module.exports = {
       category: Joi.string().required().valid('btc', 'eth'),
     })
   }),
+
+  // GET /v1/etf/treasuries
+  validateEtfTreasuries: validate({
+    query: Joi.object({
+      type: Joi.string().valid(
+        'public-companies',
+        'private-companies',
+        'etfs-and-exchanges',
+        'governments',
+        'defi-and-other'
+      ),
+    })
+  }),
 }

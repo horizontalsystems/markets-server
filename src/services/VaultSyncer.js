@@ -70,6 +70,7 @@ class VaultsSyncer extends Syncer {
         tvl: item.tvl.usd,
         chain: chainName,
         asset_symbol: item.asset.symbol,
+        asset_logo: item.asset.assetLogo,
         protocol_name: item.protocol.name,
         protocol_logo: get(item, 'protocol.protocolLogo'),
         holders: get(item, 'holdersData.totalCount'),
@@ -85,7 +86,7 @@ class VaultsSyncer extends Syncer {
 
     const values = Array.from(seen.values())
     await Vault.bulkCreate(values, {
-      updateOnDuplicate: ['apy', 'tvl', 'chain', 'asset_symbol', 'protocol_name', 'protocol_logo', 'holders', 'url'],
+      updateOnDuplicate: ['apy', 'tvl', 'chain', 'asset_symbol', 'asset_logo', 'protocol_name', 'protocol_logo', 'holders', 'url'],
       returning: false
     })
       .then(() => {

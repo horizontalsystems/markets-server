@@ -282,6 +282,25 @@ class EtfSyncer extends Syncer {
     return pageProps
   }
 
+  async parseTreasuries(items, $) {
+    const companies = []
+    for (let i = 0; i < items.length; i += 1) {
+      const item = items[i]
+
+      const child = item.children.filter(c => c.type !== 'comment')
+      const childTitle = child[2].children.filter(c => c.type !== 'comment')
+      const country = $(child[1]).find('a').prop('href').replace('/countries/', '')
+
+      const code = $(childTitle).find('span').text()
+      const name = $(childTitle).find('a').text()
+      const bitcoin = $(child[3]).text().replace(/[₿,]/g, '').trim()
+
+      companies.push({ name, code, bitcoin, country })
+    }
+
+    return companies
+  }
+
 }
 
 module.exports = EtfSyncer

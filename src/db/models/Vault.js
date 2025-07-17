@@ -27,6 +27,7 @@ class Vault extends SequelizeModel {
         },
         chain: DataTypes.STRING,
         asset_symbol: DataTypes.STRING,
+        asset_logo: DataTypes.STRING,
         protocol_name: DataTypes.STRING,
         protocol_logo: DataTypes.STRING,
         holders: DataTypes.DECIMAL,

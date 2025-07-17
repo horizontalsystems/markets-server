@@ -80,6 +80,8 @@ router.get('/', validateCoins, setCurrencyRate, controller.index)
  */
 router.get('/list', validateCoins, setCurrencyRate, controller.list)
 
+router.get('/dapps', controller.dapps)
+
 /**
  * @api {get} /v1/defi-protocols/:uid/tvls Get coin tvls
  * @apiDescription Get defi-protocol's tvl chart
