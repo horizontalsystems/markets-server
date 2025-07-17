@@ -22,7 +22,8 @@ module.exports = {
         'public-companies',
         'private-companies',
         'etfs-and-exchanges',
-        'governments'
+        'governments',
+        'defi-and-other'
       ),
     })
   }),

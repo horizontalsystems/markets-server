@@ -11,7 +11,8 @@ class TreasuriesSyncer extends CoinPriceHistorySyncer {
       'public-companies',
       'private-companies',
       'etfs-and-exchanges',
-      'governments'
+      'governments',
+      'defi-and-other'
     ]
 
     try {
@@ -20,7 +21,7 @@ class TreasuriesSyncer extends CoinPriceHistorySyncer {
         await this.storeTreasuryCompanies(data)
       }
     } catch (e) {
-      console.log('Error syncing treasuries', e.message)
+      console.error(e)
     }
   }
 
@@ -45,6 +46,8 @@ class TreasuriesSyncer extends CoinPriceHistorySyncer {
         return 'Private Companies Holding Bitcoin'
       case 'etfs-and-exchanges':
         return 'Bitcoin ETFs, Exchanges, and Other Custodians'
+      case 'defi-and-other':
+        return 'DeFi and Similar Entities'
       case 'governments':
       default:
         return 'Government Entities Holding Bitcoin'
@@ -89,7 +92,12 @@ class TreasuriesSyncer extends CoinPriceHistorySyncer {
 
       const child = item.children.filter(c => c.type !== 'comment')
       const childTitle = child[2].children.filter(c => c.type !== 'comment')
-      const country = $(child[1]).find('a').prop('href').replace('/countries/', '')
+      const countryLink = $(child[1]).find('a').prop('href')
+
+      let country = ''
+      if (countryLink) {
+        country = countryLink.replace('/countries/', '')
+      }
 
       const code = $(childTitle).find('span').text()
       const name = $(childTitle).find('a').text()
