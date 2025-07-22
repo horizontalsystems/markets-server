@@ -2,7 +2,7 @@ const serializer = require('./vaults.serializer')
 const Vault = require('../../db/models/Vault')
 const { handleError } = require('../middlewares')
 
-exports.index = async (req, res) => {
+exports.index = async ({ currencyRate }, res) => {
   try {
     const vaults = await Vault.findAll({
       raw: true,
@@ -21,14 +21,14 @@ exports.index = async (req, res) => {
       ],
     })
 
-    res.send(serializer.serializeIndex(vaults))
+    res.send(serializer.serializeIndex(vaults, currencyRate))
   } catch (e) {
     console.log(e)
     return handleError(res, 500, 'Internal Server Error')
   }
 }
 
-exports.show = async ({ params, query }, res) => {
+exports.show = async ({ params, query, currencyRate }, res) => {
   try {
     const vault = await Vault.findOne({
       raw: true,
@@ -41,7 +41,7 @@ exports.show = async ({ params, query }, res) => {
       return handleError(res, 404, 'Vault not found')
     }
 
-    res.send(serializer.serializeShow(vault, query.range_interval))
+    res.send(serializer.serializeShow(vault, currencyRate, query.range_interval))
   } catch (e) {
     console.log(e)
     return handleError(res, 500, 'Internal Server Error')

@@ -12,6 +12,7 @@ module.exports = {
     }),
     query: Joi.object({
       range_interval: Joi.string().valid('1d', '1w', '2w', '1m', '2m', '3m'),
+      currency: Joi.string()
     })
   }, options)
 

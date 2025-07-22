@@ -1,6 +1,6 @@
-const { nullOrString, nullOrInteger, utcDate } = require('../../utils')
+const { nullOrString, nullOrInteger, utcDate, valueInCurrency } = require('../../utils')
 
-exports.serializeIndex = (items) => {
+exports.serializeIndex = (items, currencyRate) => {
   return items.map(item => {
     return {
       address: item.address,
@@ -10,7 +10,7 @@ exports.serializeIndex = (items) => {
         '7d': nullOrString(item.apy['7d']),
         '30d': nullOrString(item.apy['30d'])
       },
-      tvl: nullOrString(item.tvl),
+      tvl: valueInCurrency(item.tvl, currencyRate),
       chain: item.chain,
       asset_symbol: item.asset_symbol,
       asset_logo: item.asset_logo,
@@ -59,7 +59,7 @@ function mapChartPoints(history, rangeInterval) {
   return chart
 }
 
-exports.serializeShow = (item, rangeInterval = '3m') => {
+exports.serializeShow = (item, currencyRate, rangeInterval = '3m') => {
   let points = []
   if (rangeInterval === '1d' || rangeInterval === '1w' || rangeInterval === '2w') {
     points = mapChartPoints(item.apy_history_hourly, rangeInterval)
@@ -75,7 +75,7 @@ exports.serializeShow = (item, rangeInterval = '3m') => {
       '7d': nullOrString(item.apy['7d']),
       '30d': nullOrString(item.apy['30d'])
     },
-    tvl: nullOrString(item.tvl),
+    tvl: valueInCurrency(item.tvl, currencyRate),
     chain: item.chain,
     asset_symbol: item.asset_symbol,
     protocol_name: item.protocol_name,
