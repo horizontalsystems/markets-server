@@ -7,7 +7,7 @@ const axios = create({
 })
 
 const api = create({
-  baseURL: 'https://api.vaults.fyi/api',
+  baseURL: 'https://api.vaults.fyi',
   timeout: 180000 * 3,
   headers: {
     'x-api-key': process.env.VAULTSFYI_KEY
