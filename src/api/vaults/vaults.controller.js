@@ -19,6 +19,7 @@ exports.index = async ({ currencyRate }, res) => {
         'holders',
         'url',
       ],
+      order: [['tvl', 'DESC']]
     })
 
     res.send(serializer.serializeIndex(vaults, currencyRate))
