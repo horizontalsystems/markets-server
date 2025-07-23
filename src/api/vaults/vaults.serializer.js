@@ -2,8 +2,9 @@ const { nullOrString, nullOrInteger, valueInCurrency } = require('../../utils')
 const { mapChartPoints, mapChains } = require('./vaults.heper')
 
 exports.serializeIndex = (items, currencyRate) => {
-  return items.map(item => {
+  return items.map((item, i) => {
     return {
+      rank: i + 1,
       address: item.address,
       name: item.name,
       apy: {
