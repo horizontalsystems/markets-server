@@ -6,14 +6,6 @@ const axios = create({
   timeout: 180000 * 3
 })
 
-const api = create({
-  baseURL: 'https://api.vaults.fyi',
-  timeout: 180000 * 3,
-  headers: {
-    'x-api-key': process.env.VAULTSFYI_KEY
-  }
-})
-
 exports.getAllVaults = (page, perPage = 5000) => {
   const params = {
     page,
@@ -22,11 +14,7 @@ exports.getAllVaults = (page, perPage = 5000) => {
     onlyAppFeatured: true
   }
 
-  const chains = [
-    'mainnet', 'optimism', 'arbitrum', 'polygon', 'gnosis', 'base', 'unichain', 'swellchain', 'celo', 'worldchain', 'berachain', 'ink', 'bsc'
-  ].join('&allowedNetworks=')
-
-  return axios.get(`/v2/detailed-vaults?${stringify(params)}&allowedNetworks=${chains}`)
+  return axios.get(`/v2/detailed-vaults?${stringify(params)}&allowedNetworks=mainnet&allowedNetworks=optimism&allowedNetworks=arbitrum&allowedNetworks=polygon&allowedNetworks=gnosis&allowedNetworks=base&allowedNetworks=unichain&allowedNetworks=swellchain&allowedNetworks=celo&allowedNetworks=worldchain&allowedNetworks=berachain&allowedNetworks=ink&allowedNetworks=bsc`)
     .then(res => res.data)
     .then(res => res.data)
 }
