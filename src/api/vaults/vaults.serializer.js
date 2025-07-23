@@ -1,4 +1,5 @@
-const { nullOrString, nullOrInteger, utcDate, valueInCurrency } = require('../../utils')
+const { nullOrString, nullOrInteger, valueInCurrency } = require('../../utils')
+const { mapChartPoints } = require('./vaults.heper')
 
 exports.serializeIndex = (items, currencyRate) => {
   return items.map(item => {
@@ -20,43 +21,6 @@ exports.serializeIndex = (items, currencyRate) => {
       url: item.url
     }
   })
-}
-
-function intervalToDate(interval) {
-  switch (interval) {
-    case '1d':
-      return utcDate({ days: -2 }, null, true)
-    case '1w':
-      return utcDate({ days: -7 }, null, true)
-    case '2w':
-      return utcDate({ days: -14 }, null, true)
-    case '1m':
-      return utcDate({ days: -30 }, null, true)
-    case '3m':
-      return utcDate({ days: -90 }, null, true)
-    case '6m':
-    default:
-      return utcDate({ days: -180 }, null, true)
-  }
-}
-
-function mapChartPoints(history, rangeInterval) {
-  if (!history) {
-    return []
-  }
-  const from = parseInt(intervalToDate(rangeInterval), 10)
-  const entries = Object.entries(history)
-  const chart = []
-
-  for (let i = 0; i < entries.length; i += 1) {
-    const [timestamp, apy] = entries[i]
-
-    if (timestamp >= from) {
-      chart.push({ timestamp, apy: nullOrString(apy) })
-    }
-  }
-
-  return chart
 }
 
 exports.serializeShow = (item, currencyRate, rangeInterval = '3m') => {
