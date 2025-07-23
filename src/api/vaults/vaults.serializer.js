@@ -1,5 +1,5 @@
 const { nullOrString, nullOrInteger, valueInCurrency } = require('../../utils')
-const { mapChartPoints } = require('./vaults.heper')
+const { mapChartPoints, mapChains } = require('./vaults.heper')
 
 exports.serializeIndex = (items, currencyRate) => {
   return items.map(item => {
@@ -12,7 +12,7 @@ exports.serializeIndex = (items, currencyRate) => {
         '30d': nullOrString(item.apy['30d'])
       },
       tvl: valueInCurrency(item.tvl, currencyRate),
-      chain: item.chain,
+      chain: mapChains(item.chain),
       asset_symbol: item.asset_symbol,
       asset_logo: item.asset_logo,
       protocol_name: item.protocol_name,
@@ -40,7 +40,7 @@ exports.serializeShow = (item, currencyRate, rangeInterval = '3m') => {
       '30d': nullOrString(item.apy['30d'])
     },
     tvl: valueInCurrency(item.tvl, currencyRate),
-    chain: item.chain,
+    chain: mapChains(item.chain),
     asset_symbol: item.asset_symbol,
     protocol_name: item.protocol_name,
     protocol_logo: item.protocol_logo,

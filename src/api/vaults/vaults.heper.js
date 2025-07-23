@@ -37,7 +37,34 @@ const mapChartPoints = (history, rangeInterval) => {
   return chart
 }
 
+const mapChains = (chain) => {
+  switch (chain) {
+    case 'arbitrum':
+      return 'arbitrum-one'
+    case 'berachain':
+      return 'berachain-bera'
+    case 'bsc':
+      return 'binance-smart-chain'
+    case 'optimism':
+      return 'optimistic-ethereum'
+    case 'polygon':
+      return 'polygon-pos'
+    case 'worldchain':
+      return 'world-chain'
+
+    case 'base':
+    case 'celo':
+    case 'ethereum':
+    case 'gnosis':
+    case 'swellchain':
+    case 'unichain':
+    default:
+      return chain
+  }
+}
+
 module.exports = {
   intervalToDate,
-  mapChartPoints
+  mapChartPoints,
+  mapChains
 }
