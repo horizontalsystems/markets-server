@@ -42,8 +42,8 @@ class VaultsSyncer extends Syncer {
         const data = await vaultsfyi.getHistory(vault.address, chain, params)
 
         await (isHourly
-          ? this.upsertApyHourly(vault, data)
-          : this.upsertApyHistory(vault, data))
+          ? this.upsertHourly(vault, data)
+          : this.upsertHistory(vault, data))
 
         await sleep(1000)
       } catch (e) {
@@ -96,19 +96,29 @@ class VaultsSyncer extends Syncer {
       })
   }
 
-  async upsertApyHistory(vault, data) {
+  async upsertHistory(vault, data) {
     if (!data || !data.length) return
 
     try {
-      const values = data.reduce((acc, item) => {
-        return {
-          ...acc,
-          [item.timestamp]: item.apy.total
-        }
-      }, {})
+      const apyHistory = data.reduce((acc, item) => ({
+        ...acc,
+        [item.timestamp]: item.apy.total
+      }), {})
 
-      await Vault.queryUpdate('UPDATE vaults set apy_history = :values WHERE address = :address', {
-        values: JSON.stringify(values),
+      const tvlHistory = data.reduce((acc, item) => ({
+        ...acc,
+        [item.timestamp]: item.tvl.usd
+      }), {})
+
+      const sql = `
+        UPDATE vaults
+           set apy_history = :apy_history,
+               tvl_history = :tvl_history
+         WHERE address = :address
+      `
+      await Vault.queryUpdate(sql, {
+        apy_history: JSON.stringify(apyHistory),
+        tvl_history: JSON.stringify(tvlHistory),
         address: vault.address
       })
       console.log(`Updated vaults historical data ${data.length}`)
@@ -117,33 +127,37 @@ class VaultsSyncer extends Syncer {
     }
   }
 
-  async upsertApyHourly(vault, data) {
+  async upsertHourly(vault, data) {
     if (!data || !data.length) return
 
     try {
-      let lastApy = null
-      const values = data.reduce((acc, item) => {
-        lastApy = item
-        return {
-          ...acc,
-          [item.timestamp]: item.apy.total
-        }
+      let lastItem = null
+
+      const apyValues = data.reduce((acc, item) => {
+        lastItem = item
+        return { ...acc, [item.timestamp]: item.apy.total }
       }, {})
 
-      const history = {
-        ...vault.apy_history,
-        [lastApy.timestamp]: lastApy.apy.total
-      }
+      const tvlValues = data.reduce((acc, item) => {
+        return { ...acc, [item.timestamp]: item.tvl.usd }
+      }, {})
+
+      const apyHistory = { ...vault.apy_history, [lastItem.timestamp]: lastItem.apy.total }
+      const tvlHistory = { ...vault.tvl_history, [lastItem.timestamp]: lastItem.tvl.usd }
 
       const sql = `
         UPDATE vaults
-          set apy_history = :history,
-              apy_history_hourly = :values
+          set apy_history = :apy_history,
+              apy_history_hourly = :apy_values,
+              tvl_history = :tvl_history,
+              tvl_history_hourly = :tvl_values
         WHERE address = :address
       `
       await Vault.queryUpdate(sql, {
-        values: JSON.stringify(values),
-        history: JSON.stringify(history),
+        apy_values: JSON.stringify(apyValues),
+        apy_history: JSON.stringify(apyHistory),
+        tvl_values: JSON.stringify(tvlValues),
+        tvl_history: JSON.stringify(tvlHistory),
         address: vault.address
       })
 

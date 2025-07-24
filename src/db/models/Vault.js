@@ -25,6 +25,14 @@ class Vault extends SequelizeModel {
           type: DataTypes.JSONB,
           // { "1749513600": 0.0038, ... }
         },
+        tvl_history: {
+          type: DataTypes.JSONB,
+          // { "1749513600": 0.0038, ... }
+        },
+        tvl_history_hourly: {
+          type: DataTypes.JSONB,
+          // { "1749513600": 0.0038, ... }
+        },
         chain: DataTypes.STRING,
         asset_symbol: DataTypes.STRING,
         asset_logo: DataTypes.STRING,

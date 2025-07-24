@@ -25,11 +25,14 @@ exports.serializeIndex = (items, currencyRate) => {
 }
 
 exports.serializeShow = (item, currencyRate, rangeInterval = '3m') => {
-  let points = []
+  let apyChart = []
+  let tvlChart = []
   if (rangeInterval === '1d' || rangeInterval === '1w' || rangeInterval === '2w') {
-    points = mapChartPoints(item.apy_history_hourly, rangeInterval)
+    apyChart = mapChartPoints(item.apy_history_hourly, rangeInterval)
+    tvlChart = mapChartPoints(item.tvl_history_hourly, rangeInterval)
   } else {
-    points = mapChartPoints(item.apy_history, rangeInterval)
+    apyChart = mapChartPoints(item.apy_history, rangeInterval)
+    tvlChart = mapChartPoints(item.tvl_history, rangeInterval)
   }
 
   return {
@@ -47,6 +50,7 @@ exports.serializeShow = (item, currencyRate, rangeInterval = '3m') => {
     protocol_logo: item.protocol_logo,
     holders: nullOrInteger(item.holders),
     url: item.url,
-    apy_chart: points
+    apy_chart: apyChart,
+    tvl_chart: tvlChart
   }
 }
