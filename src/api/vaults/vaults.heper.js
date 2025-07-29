@@ -18,7 +18,7 @@ const intervalToDate = function intervalToDate(interval) {
   }
 }
 
-const mapChartPoints = (history, rangeInterval) => {
+const mapChartPoints = (history, rangeInterval, field) => {
   if (!history) {
     return []
   }
@@ -30,7 +30,7 @@ const mapChartPoints = (history, rangeInterval) => {
     const [timestamp, apy] = entries[i]
 
     if (timestamp >= from) {
-      chart.push({ timestamp: nullOrInteger(timestamp), apy: nullOrString(apy) })
+      chart.push({ timestamp: nullOrInteger(timestamp), [field]: nullOrString(apy) })
     }
   }
 

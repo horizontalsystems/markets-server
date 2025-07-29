@@ -28,11 +28,11 @@ exports.serializeShow = (item, currencyRate, rangeInterval = '3m') => {
   let apyChart = []
   let tvlChart = []
   if (rangeInterval === '1d' || rangeInterval === '1w' || rangeInterval === '2w') {
-    apyChart = mapChartPoints(item.apy_history_hourly, rangeInterval)
-    tvlChart = mapChartPoints(item.tvl_history_hourly, rangeInterval)
+    apyChart = mapChartPoints(item.apy_history_hourly, rangeInterval, 'apy')
+    tvlChart = mapChartPoints(item.tvl_history_hourly, rangeInterval, 'tvl')
   } else {
-    apyChart = mapChartPoints(item.apy_history, rangeInterval)
-    tvlChart = mapChartPoints(item.tvl_history, rangeInterval)
+    apyChart = mapChartPoints(item.apy_history, rangeInterval, 'apy')
+    tvlChart = mapChartPoints(item.tvl_history, rangeInterval, 'tvl')
   }
 
   return {
