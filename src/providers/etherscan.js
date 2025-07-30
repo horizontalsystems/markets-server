@@ -35,3 +35,16 @@ exports.getTokenSupply = address => {
       return 0
     })
 }
+
+exports.getBalance = address => {
+  const params = {
+    module: 'account',
+    action: 'balance',
+    address,
+    tag: 'latest',
+    apikey: 'A1C15S3AXQHQ7PVVDX63VVK2IBAECS448Z'
+  }
+
+  return api.get(`/api?${stringify(params)}`)
+    .then(res => res.data)
+}

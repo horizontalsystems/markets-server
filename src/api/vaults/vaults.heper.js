@@ -1,4 +1,4 @@
-const { nullOrString, nullOrInteger, utcDate } = require('../../utils')
+const { nullOrInteger, utcDate, valueInCurrency } = require('../../utils')
 
 const intervalToDate = function intervalToDate(interval) {
   switch (interval) {
@@ -18,19 +18,25 @@ const intervalToDate = function intervalToDate(interval) {
   }
 }
 
-const mapChartPoints = (history, rangeInterval, field) => {
-  if (!history) {
-    return []
-  }
+const mapChartPoints = (apyHistory, tvlHistory, rangeInterval, currencyRate) => {
+  if (!apyHistory) return []
+
   const from = parseInt(intervalToDate(rangeInterval), 10)
-  const entries = Object.entries(history)
+  const keys = Object.keys(apyHistory)
   const chart = []
 
-  for (let i = 0; i < entries.length; i += 1) {
-    const [timestamp, apy] = entries[i]
+  for (let i = 0; i < keys.length; i += 1) {
+    const timestamp = keys[i]
+    const apy = apyHistory[timestamp]
+    const tvl = tvlHistory[timestamp]
 
+    if (!apy) continue
     if (timestamp >= from) {
-      chart.push({ timestamp: nullOrInteger(timestamp), [field]: nullOrString(apy) })
+      chart.push({
+        timestamp: nullOrInteger(timestamp),
+        apy: valueInCurrency(apy, currencyRate),
+        tvl: valueInCurrency(tvl, currencyRate),
+      })
     }
   }
 
