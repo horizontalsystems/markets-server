@@ -1,4 +1,4 @@
-const { nullOrInteger, utcDate, valueInCurrency } = require('../../utils')
+const { nullOrInteger, utcDate, valueInCurrency, nullOrString } = require('../../utils')
 
 const intervalToDate = function intervalToDate(interval) {
   switch (interval) {
@@ -34,7 +34,7 @@ const mapChartPoints = (apyHistory, tvlHistory, rangeInterval, currencyRate) => 
     if (timestamp >= from) {
       chart.push({
         timestamp: nullOrInteger(timestamp),
-        apy: nullOrInteger(apy),
+        apy: nullOrString(apy),
         tvl: valueInCurrency(tvl, currencyRate),
       })
     }
