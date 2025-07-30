@@ -34,7 +34,7 @@ const mapChartPoints = (apyHistory, tvlHistory, rangeInterval, currencyRate) => 
     if (timestamp >= from) {
       chart.push({
         timestamp: nullOrInteger(timestamp),
-        apy: valueInCurrency(apy, currencyRate),
+        apy: nullOrInteger(apy),
         tvl: valueInCurrency(tvl, currencyRate),
       })
     }
