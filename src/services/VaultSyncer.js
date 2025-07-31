@@ -28,7 +28,7 @@ class VaultsSyncer extends Syncer {
     })
 
     const params = {
-      fromTimestamp: utcStartOfDay({ days: isHourly ? -7 : -6 * 30 }, true),
+      fromTimestamp: utcStartOfDay({ days: -(isHourly ? 14 : 6 * 30) }, true),
       toTimestamp: parseInt(utcDate({}, null, true), 10),
       granularity: isHourly ? '1hour' : '1day'
     }
