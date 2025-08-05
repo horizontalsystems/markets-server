@@ -1,6 +1,6 @@
 const { nullOrInteger, utcDate, valueInCurrency, nullOrString } = require('../../utils')
 
-const intervalToDate = function intervalToDate(interval) {
+function intervalToDate(interval) {
   switch (interval) {
     case '1d':
       return utcDate({ days: -2 }, null, true)
@@ -18,15 +18,37 @@ const intervalToDate = function intervalToDate(interval) {
   }
 }
 
-const mapChartPoints = (apyHistory, tvlHistory, rangeInterval, currencyRate) => {
+function truncateTimestamps(timestamps, key) {
+  let step
+  if (key === '1d') {
+    step = 3600 // 1 hour in seconds
+  } else if (key === '1w' || key === '2w') {
+    step = 14400 // 4 hours in seconds
+  } else {
+    return timestamps
+  }
+
+  const numericTimestamps = timestamps.map(Number)
+  const base = numericTimestamps[0]
+
+  return numericTimestamps.filter(ts => (ts - base) % step === 0)
+}
+
+function percentageNullOrString(value) {
+  const val = nullOrString(value)
+  return val ? (val * 100).toString() : val
+}
+
+function mapChartPoints(apyHistory, tvlHistory, rangeInterval, currencyRate) {
   if (!apyHistory) return []
 
   const from = parseInt(intervalToDate(rangeInterval), 10)
   const keys = Object.keys(apyHistory)
+  const keysFiltered = truncateTimestamps(keys, rangeInterval)
   const chart = []
 
-  for (let i = 0; i < keys.length; i += 1) {
-    const timestamp = keys[i]
+  for (let i = 0; i < keysFiltered.length; i += 1) {
+    const timestamp = keysFiltered[i]
     const apy = apyHistory[timestamp]
     const tvl = tvlHistory[timestamp]
 
@@ -34,7 +56,7 @@ const mapChartPoints = (apyHistory, tvlHistory, rangeInterval, currencyRate) => 
     if (timestamp >= from) {
       chart.push({
         timestamp: nullOrInteger(timestamp),
-        apy: nullOrString(apy),
+        apy: percentageNullOrString(apy),
         tvl: valueInCurrency(tvl, currencyRate),
       })
     }
@@ -70,7 +92,7 @@ const mapChains = (chain) => {
 }
 
 module.exports = {
-  intervalToDate,
+  percentageNullOrString,
   mapChartPoints,
   mapChains
 }

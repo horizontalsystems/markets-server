@@ -1,5 +1,5 @@
-const { nullOrString, nullOrInteger, valueInCurrency } = require('../../utils')
-const { mapChartPoints, mapChains } = require('./vaults.heper')
+const { nullOrInteger, valueInCurrency } = require('../../utils')
+const { mapChartPoints, mapChains, percentageNullOrString } = require('./vaults.heper')
 
 exports.serializeIndex = (items, currencyRate) => {
   return items.map((item, i) => {
@@ -8,9 +8,9 @@ exports.serializeIndex = (items, currencyRate) => {
       address: item.address,
       name: item.name,
       apy: {
-        '1d': nullOrString(item.apy['1d']),
-        '7d': nullOrString(item.apy['7d']),
-        '30d': nullOrString(item.apy['30d'])
+        '1d': percentageNullOrString(item.apy['1d']), // todo multiply by 100
+        '7d': percentageNullOrString(item.apy['7d']),
+        '30d': percentageNullOrString(item.apy['30d'])
       },
       tvl: valueInCurrency(item.tvl, currencyRate),
       chain: mapChains(item.chain),
@@ -36,9 +36,9 @@ exports.serializeShow = (item, currencyRate, rangeInterval = '3m') => {
     address: item.address,
     name: item.name,
     apy: {
-      '1d': nullOrString(item.apy['1d']),
-      '7d': nullOrString(item.apy['7d']),
-      '30d': nullOrString(item.apy['30d'])
+      '1d': percentageNullOrString(item.apy['1d']),
+      '7d': percentageNullOrString(item.apy['7d']),
+      '30d': percentageNullOrString(item.apy['30d'])
     },
     tvl: valueInCurrency(item.tvl, currencyRate),
     chain: mapChains(item.chain),
@@ -47,6 +47,6 @@ exports.serializeShow = (item, currencyRate, rangeInterval = '3m') => {
     protocol_logo: item.protocol_logo,
     holders: nullOrInteger(item.holders),
     url: item.url,
-    chart
+    chart // todo multiply by 100
   }
 }
