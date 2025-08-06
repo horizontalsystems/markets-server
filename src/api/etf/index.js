@@ -1,7 +1,7 @@
 const express = require('express')
 const controller = require('./etf.controller')
 const { validateEtfAll, validateEtfChart, validateEtfTreasuries } = require('./etf.validator')
-const { setCurrencyRate } = require('../middlewares')
+const { setCurrencyRate, setDailyInterval } = require('../middlewares')
 
 const router = express.Router()
 
@@ -33,7 +33,7 @@ const router = express.Router()
 router.get('/', controller.index)
 
 router.get('/all', validateEtfAll, setCurrencyRate, controller.all)
-router.get('/chart', validateEtfChart, setCurrencyRate, controller.chart)
+router.get('/chart', validateEtfChart, setCurrencyRate, setDailyInterval, controller.chart)
 
 /**
  * @api {GET} /v1/etfs/total ETF total chart

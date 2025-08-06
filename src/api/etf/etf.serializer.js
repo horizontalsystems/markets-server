@@ -30,12 +30,12 @@ exports.serializeTotal = items => {
 }
 
 exports.serializeChart = (items, currencyRate) => {
-  return items.filter(i => i.totalDailyInflow).map(item => {
+  return items.filter(i => i.total_daily_inflow).map(item => {
     return {
       date: item.date,
-      total_assets: valueInCurrency(item.totalAssets, currencyRate),
-      total_inflow: valueInCurrency(item.totalInflow, currencyRate),
-      daily_inflow: valueInCurrency(item.totalDailyInflow, currencyRate)
+      total_assets: valueInCurrency(item.total_assets, currencyRate),
+      total_inflow: valueInCurrency(item.total_inflow, currencyRate),
+      daily_inflow: valueInCurrency(item.total_daily_inflow, currencyRate)
     }
   })
 }

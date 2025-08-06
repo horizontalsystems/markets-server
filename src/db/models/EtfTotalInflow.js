@@ -35,6 +35,16 @@ class EtfTotalInflow extends SequelizeModel {
     return !!await EtfTotalInflow.findOne()
   }
 
+  static getListBy(category, dateFrom) {
+    const sql = `
+      SELECT * 
+        FROM etf_total_inflow
+       WHERE date >= DATE(:date_from)
+         AND category = :category
+       ORDER by date`
+
+    return EtfTotalInflow.query(sql, { date_from: dateFrom, category })
+  }
 }
 
 module.exports = EtfTotalInflow
