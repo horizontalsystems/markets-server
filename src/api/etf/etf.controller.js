@@ -12,7 +12,7 @@ exports.index = async (req, res) => {
     }
   })
 
-  res.send(serializer.serializeIndex(etfs))
+  res.send(serializer.serializeIndex(etfs, 1))
 }
 
 exports.all = async ({ query, currencyRate }, res) => {
@@ -26,6 +26,8 @@ exports.all = async ({ query, currencyRate }, res) => {
     raw: true,
     where
   })
+
+  console.log(etfs)
 
   res.send(serializer.serializeIndex(etfs, currencyRate))
 }
