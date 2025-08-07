@@ -27,8 +27,6 @@ exports.all = async ({ query, currencyRate }, res) => {
     where
   })
 
-  console.log(etfs)
-
   res.send(serializer.serializeIndex(etfs, currencyRate))
 }
 
