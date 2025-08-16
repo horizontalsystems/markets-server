@@ -1,11 +1,11 @@
 require('dotenv/config')
 
 const sequelize = require('./db/sequelize')
-// const mongo = require('./db/mongo')
+const mongo = require('./db/mongo')
 const app = require('./config/express')
 
 async function start() {
-  // await mongo.init()
+  await mongo.init()
   await sequelize.sync()
   const port = process.env.PORT || 3000
 
