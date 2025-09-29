@@ -1,4 +1,5 @@
 const { nullOrString, valueInCurrency } = require('../../utils')
+const customDappList = require('./custom-dapp-list.json')
 
 exports.serializeIndex = (protocols, currencyRate) => {
   return protocols.map(item => {
@@ -74,7 +75,7 @@ exports.serializeDapps = protocols => {
     }
   }
 
-  return items
+  return [...items, ...customDappList]
 }
 
 exports.serializeTvls = (tvls, currencyRate) => {
