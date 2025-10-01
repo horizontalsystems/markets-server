@@ -150,5 +150,17 @@
   {
     "name": "Bebop",
     "url": "bebop.xyz"
+  },
+  {
+    "name": "Opensea",
+    "url": "opensea.io"
+  },
+  {
+    "name": "Dappradar",
+    "url": "dappradar.com"
+  },
+  {
+    "name": "Defillama",
+    "url": "defillama.com"
   }
 ]
