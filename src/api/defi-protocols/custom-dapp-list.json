@@ -152,15 +152,15 @@
     "url": "bebop.xyz"
   },
   {
-    "name": "Opensea",
-    "url": "opensea.io"
-  },
-  {
     "name": "Dappradar",
     "url": "dappradar.com"
   },
   {
     "name": "Defillama",
     "url": "defillama.com"
+  },
+   {
+    "name": "1inch",
+    "url": "1inch.com"
   }
 ]
