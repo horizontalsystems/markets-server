@@ -1,5 +1,6 @@
 const createAxios = require('axios').create
 const jsonData = require('./sosovalue.json')
+const ethJsonData = require('./sosovalue-eth.json')
 
 const api = createAxios({
   baseURL: 'https://gw.sosovalue.com',
@@ -7,7 +8,7 @@ const api = createAxios({
 })
 
 const web = createAxios({
-  baseURL: 'https://sosovalue.xyz',
+  baseURL: 'https://sosovalue.com',
   timeout: 180000,
 })
 
@@ -54,6 +55,9 @@ exports.getSpotEtf = (coin = 'btc') => {
     })
 }
 
-exports.getSpotEtfJSON = function getSpotEtf() {
+exports.getSpotEtfJSON = function getSpotEtfJSON(category) {
+  if (category === 'eth') {
+    return ethJsonData
+  }
   return jsonData
 }
