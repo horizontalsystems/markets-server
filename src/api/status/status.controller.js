@@ -24,7 +24,7 @@ exports.appState = async ({ query }, res, next) => {
       0.47: false
     }
 
-    res.send({ swap_enabled: swapEnabledMap[query.version] || true, })
+    res.send({ swap_enabled: swapEnabledMap[query.version] ?? true, })
   } catch (e) {
     console.log(e)
     next()
