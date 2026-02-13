@@ -33,4 +33,18 @@ router.get('/', controller.index)
  */
 router.get('/updates', controller.updates)
 
+/**
+ * @api {get} /v1/status/app-state App state
+ * @apiDescription Get App state
+ * @apiVersion 1.0.0
+ * @apiGroup Status
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *    "swap_enabled": true
+ *  }
+ */
+router.get('/app-state', controller.appState)
+
 module.exports = router

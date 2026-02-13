@@ -17,3 +17,16 @@ exports.updates = async (req, res, next) => {
     next()
   }
 }
+
+exports.appState = async ({ query }, res, next) => {
+  try {
+    const swapEnabledMap = {
+      0.47: false
+    }
+
+    res.send({ swap_enabled: swapEnabledMap[query.version] || true, })
+  } catch (e) {
+    console.log(e)
+    next()
+  }
+}
