@@ -10,8 +10,8 @@ class RpcSource {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const key of drpcKeys) {
-      const mode = isMainnet ? 'eth' : 'sepolia'
-      this.sources.push({ key, resource: 'drpc', url: `https://${mode}.drpc.org` })
+      const mode = isMainnet ? 'mainnet' : 'sepolia'
+      this.sources.push({ key, resource: 'drpc', url: `https://lb.drpc.live/ogrpc?network=${mode}` })
     }
 
     // eslint-disable-next-line no-restricted-syntax
