@@ -45,7 +45,7 @@ class CoinPriceSyncer extends CoinPriceHistorySyncer {
     try {
       const data = await coingecko.getSimplePrices(uids)
       await this.storeSimplePrices(Object.entries(data), idsMap, mapVolumes)
-      await utils.sleep(12000)
+      await utils.sleep(14000)
     } catch (e) {
       await this.handleHttpError(e)
     }
