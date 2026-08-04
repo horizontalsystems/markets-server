@@ -6,22 +6,24 @@ const CoinMarketDataSyncer = require('../src/services/CoinMarketDataSyncer')
 
 const program = new Command()
   .option('-c --coins <coins>', 'sync given coins')
+  .option('-i --ignore <coins>', 'ignore given coins from sync')
   .option('-h --history', 'sync historical data')
   .option('-a --all', 'sync all historical data')
   .parse(process.argv)
 
-async function start({ coins, history, all }) {
+async function start({ coins, ignore, history, all }) {
   await sequelize.sync()
   const syncer = new CoinMarketDataSyncer()
   const uids = coins ? coins.split(',') : null
+  const ignoreUids = ignore ? ignore.split(',') : null
 
   if (coins && history) {
     return syncer.syncHistory(uids, all)
   }
 
   return coins
-    ? syncer.sync(uids)
-    : syncer.start()
+    ? syncer.sync(uids, ignoreUids)
+    : syncer.start(ignoreUids)
 }
 
 module.exports = start(program.opts())

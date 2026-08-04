@@ -21,11 +21,12 @@ class CoinPriceHistorySyncer extends Syncer {
     return CoinPrice.deleteExpired(dateFrom, dateTo)
   }
 
-  async getCoins(uid) {
+  async getCoins(uid, ignoreUids) {
     const coins = await Coin.findAll({
       attributes: ['id', 'coingecko_id'],
       where: {
         ...(uid && { uid }),
+        ...(ignoreUids && ignoreUids.length && { uid: { [Coin.Op.notIn]: ignoreUids } }),
         coingecko_id: Coin.literal('coingecko_id IS NOT NULL')
       }
     })

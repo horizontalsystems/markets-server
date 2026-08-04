@@ -16,7 +16,7 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
     this.prices = {}
   }
 
-  async start(storePrices) {
+  async start(storePrices, ignoreUids) {
     if (storePrices) {
       this.cron('10m', this.storeCoinPrices)
     }
@@ -24,7 +24,7 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
     const running = true
     while (running) {
       try {
-        await this.syncCoins()
+        await this.syncCoins(null, storePrices, ignoreUids)
       } catch (e) {
         debug(e)
         process.exit(1)
@@ -32,8 +32,8 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
     }
   }
 
-  async syncCoins(uid, storePrices) {
-    const coins = await this.getCoins(uid)
+  async syncCoins(uid, storePrices, ignoreUids) {
+    const coins = await this.getCoins(uid, ignoreUids)
     const chunk = 1000
     const array = Object.keys(coins).length / 1000
     const chunks = Array(Math.ceil(array)).fill(chunk)
@@ -70,11 +70,12 @@ class CoinStatsSyncer extends CoinPriceHistorySyncer {
     }
   }
 
-  async getCoins(uid) {
+  async getCoins(uid, ignoreUids) {
     const coins = await Coin.findAll({
       attributes: ['id', 'uid', 'coingecko_id'],
       where: {
-        ...(uid && { uid })
+        ...(uid && { uid }),
+        ...(ignoreUids && ignoreUids.length && { uid: { [Coin.Op.notIn]: ignoreUids } })
       }
     })
 

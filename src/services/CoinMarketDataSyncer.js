@@ -12,7 +12,7 @@ const debug = msg => {
 
 class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
 
-  async start() {
+  async start(ignoreUids) {
     this.adjustHistoryGaps()
     this.cron('0 0 */3 * *', this.syncUids)
     this.cron('0 0 * * *', this.reset1dChange) // runs at 00:00 every day
@@ -20,7 +20,7 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
     const running = true
     while (running) {
       try {
-        await this.sync()
+        await this.sync(null, ignoreUids)
       } catch (e) {
         debug(e)
         process.exit(1)
@@ -28,8 +28,8 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
     }
   }
 
-  async sync(uid) {
-    const coins = await this.getCoins(uid)
+  async sync(uid, ignoreUids) {
+    const coins = await this.getCoins(uid, ignoreUids)
     const chunks = chunk(Array.from(coins.uids), 250)
 
     for (let i = 0; i < chunks.length; i += 1) {
