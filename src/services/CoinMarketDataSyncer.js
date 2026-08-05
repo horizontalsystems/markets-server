@@ -10,6 +10,8 @@ const debug = msg => {
   console.log(new Date(), msg)
 }
 
+const IGNORED_UIDS = []
+
 class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
 
   async start(ignoreUids) {
@@ -29,7 +31,7 @@ class CoinMarketDataSyncer extends CoinPriceHistorySyncer {
   }
 
   async sync(uid, ignoreUids) {
-    const coins = await this.getCoins(uid, ignoreUids)
+    const coins = await this.getCoins(uid, [...IGNORED_UIDS, ...(ignoreUids || [])])
     const chunks = chunk(Array.from(coins.uids), 250)
 
     for (let i = 0; i < chunks.length; i += 1) {
