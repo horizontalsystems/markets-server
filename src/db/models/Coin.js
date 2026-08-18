@@ -179,12 +179,15 @@ class Coin extends SequelizeModel {
     const performance = {}
 
     const mapPeriods = (item, isUsd) => {
+      const coinChange = priceChange || {}
+      const itemChange = (item && item.price_change) || {}
+
       return periods.reduce((memo, period) => {
         return {
           ...memo,
           [period]: utils.nullOrString(isUsd
-            ? priceChange[period]
-            : utils.roi(priceChange[period], item.price_change[period]))
+            ? coinChange[period]
+            : utils.roi(coinChange[period], itemChange[period]))
         }
       }, {})
     }
