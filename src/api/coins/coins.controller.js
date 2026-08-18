@@ -8,6 +8,8 @@ const CoinTicker = require('../../db/models/CoinTicker')
 const CoinCategory = require('../../db/models/CoinCategories')
 const { handleError } = require('../middlewares')
 
+const IGNORED_UIDS = []
+
 exports.index = async ({ query, currencyRate }, res) => {
   const { limit = 1500, page = 1 } = query
   const options = {
@@ -27,7 +29,9 @@ exports.index = async ({ query, currencyRate }, res) => {
     options.offset = limit * (page - 1)
   }
   if (query.uids) {
-    options.where.uid = query.uids.split(',')
+    options.where.uid = query.uids.split(',').filter(uid => !IGNORED_UIDS.includes(uid))
+  } else if (IGNORED_UIDS.length) {
+    options.where.uid = { [Coin.Op.notIn]: IGNORED_UIDS }
   }
   if (query.defi === 'true') {
     options.where.is_defi = true
@@ -59,6 +63,10 @@ exports.filter = async ({ query, currencyRate }, res) => {
     options.offset = limit * (page - 1)
   }
 
+  if (IGNORED_UIDS.length) {
+    options.where.uid = { [Coin.Op.notIn]: IGNORED_UIDS }
+  }
+
   if (query.order_by_rank === 'true') {
     options.where.coingecko_id = Coin.literal('coingecko_id IS NOT NULL')
     options.order = [Coin.literal('market_data->\'market_cap\' DESC')]
@@ -76,7 +84,8 @@ exports.filter = async ({ query, currencyRate }, res) => {
 exports.list = async ({ currencyRate }, res, next) => {
   try {
     const coins = await Coin.getList()
-    res.send(serializer.serializeList(coins, currencyRate))
+    const listed = coins.filter(coin => !IGNORED_UIDS.includes(coin.uid))
+    res.send(serializer.serializeList(listed, currencyRate))
   } catch (e) {
     next(e)
   }
