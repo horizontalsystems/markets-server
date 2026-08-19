@@ -29,7 +29,7 @@ exports.index = async ({ query, currencyRate }, res) => {
     options.offset = limit * (page - 1)
   }
   if (query.uids) {
-    options.where.uid = query.uids.split(',').filter(uid => !IGNORED_UIDS.includes(uid))
+    options.where.uid = query.uids.split(',')
   } else if (IGNORED_UIDS.length) {
     options.where.uid = { [Coin.Op.notIn]: IGNORED_UIDS }
   }
