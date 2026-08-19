@@ -84,8 +84,7 @@ exports.filter = async ({ query, currencyRate }, res) => {
 exports.list = async ({ currencyRate }, res, next) => {
   try {
     const coins = await Coin.getList()
-    const listed = coins.filter(coin => !IGNORED_UIDS.includes(coin.uid))
-    res.send(serializer.serializeList(listed, currencyRate))
+    res.send(serializer.serializeList(coins, currencyRate))
   } catch (e) {
     next(e)
   }
