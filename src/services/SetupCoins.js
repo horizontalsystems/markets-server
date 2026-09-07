@@ -205,6 +205,7 @@ class SetupCoins extends Syncer {
         case 'base':
         case 'zksync':
         case 'kaia':
+        case 'robinhood':
         case 'binance-smart-chain':
           newType = 'eip20'
           break
