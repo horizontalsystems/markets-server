@@ -17,6 +17,7 @@ const AddressLabel = require('../db/models/AddressLabel')
 const VerifiedExchange = require('../db/models/VerifiedExchange')
 const EvmMethodLabel = require('../db/models/EvmMethodLabel')
 const UpdateState = require('../db/models/UpdateState')
+const AppState = require('../db/models/AppState')
 
 const router = express.Router()
 
@@ -37,6 +38,9 @@ async function search(q, limit, Model, attributes) {
   switch (Model.name) {
     case 'Platform':
       filter.push({ address: q })
+      break
+    case 'AppState':
+      filter.push({ version: q })
       break
     default:
       filter.push({ uid: q })
@@ -108,7 +112,8 @@ router.use(
   crud('/address_labels', opts(AddressLabel, ['id', 'address', 'label'])),
   crud('/verified_exchanges', opts(VerifiedExchange, ['id', 'uid', 'name'])),
   crud('/evm_method_labels', opts(EvmMethodLabel, ['id', 'method_id', 'label'])),
-  crud('/update_states', opts(UpdateState, ['id', 'name', 'date']))
+  crud('/update_states', opts(UpdateState, ['id', 'name', 'date'])),
+  crud('/app_states', opts(AppState, ['id', 'version', 'swap_enabled']))
 )
 
 module.exports = router

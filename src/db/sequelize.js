@@ -41,6 +41,7 @@ const Subscription = require('./models/Subscription')
 const VipSupportGroup = require('./models/VipSupportGroup')
 const AuthKey = require('./models/AuthKey')
 const UpdateState = require('./models/UpdateState')
+const AppState = require('./models/AppState')
 const EvmMethodLabel = require('./models/EvmMethodLabel')
 const AddressLabel = require('./models/AddressLabel')
 const Block = require('./models/Block')
@@ -111,7 +112,8 @@ const db = {
   Stock: Stock.init(sequelize, Sequelize),
   Vault: Vault.init(sequelize, Sequelize),
   TokenUnlock: TokenUnlock.init(sequelize, Sequelize),
-  UpdateState: UpdateState.init(sequelize, Sequelize)
+  UpdateState: UpdateState.init(sequelize, Sequelize),
+  AppState: AppState.init(sequelize, Sequelize)
 }
 
 // This creates relationships in the ORM

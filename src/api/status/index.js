@@ -39,6 +39,8 @@ router.get('/updates', controller.updates)
  * @apiVersion 1.0.0
  * @apiGroup Status
  *
+ * @apiParam {String} [version] App version
+ *
  * @apiSuccessExample {json} Success-Response:
  *  HTTP/1.1 200 OK
  *  {

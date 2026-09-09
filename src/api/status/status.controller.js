@@ -1,4 +1,5 @@
 const UpdateState = require('../../db/models/UpdateState')
+const AppState = require('../../db/models/AppState')
 const { serialize } = require('./status.serializer')
 
 exports.index = async (req, res) => {
@@ -20,11 +21,9 @@ exports.updates = async (req, res, next) => {
 
 exports.appState = async ({ query }, res, next) => {
   try {
-    const swapEnabledMap = {
-      0.47: false
-    }
+    const swapEnabled = await AppState.isSwapEnabled(query.version)
 
-    res.send({ swap_enabled: swapEnabledMap[query.version] ?? true, })
+    res.send({ swap_enabled: swapEnabled })
   } catch (e) {
     console.log(e)
     next()
