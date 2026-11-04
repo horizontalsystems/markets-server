@@ -1,16 +1,16 @@
 const RpcSource = require('./RpcSource')
 
-const mainnet = new RpcSource(true)
-const sepolia = new RpcSource(false)
+const mainnet = new RpcSource('mainnet')
+const sepolia = new RpcSource('sepolia')
 
-exports.mainnetProxy = async (req, res) => {
+const makeProxy = source => async (req, res) => {
   try {
-    res.send(await mainnet.post(req.body))
+    res.send(await source.post(req.body))
   } catch ({ response, message }) {
     if (response) {
-      mainnet.rotateSource()
+      source.rotateSource()
       try {
-        res.send(await mainnet.post(req.body))
+        res.send(await source.post(req.body))
       } catch (err) {
         res.status(response.status || 500).send('Internal server error')
       }
@@ -20,19 +20,6 @@ exports.mainnetProxy = async (req, res) => {
   }
 }
 
-exports.sepoliaProxy = async (req, res) => {
-  try {
-    res.send(await sepolia.post(req.body))
-  } catch ({ response, message }) {
-    if (response) {
-      sepolia.rotateSource()
-      try {
-        res.send(await sepolia.post(req.body))
-      } catch (err) {
-        res.status(response.status || 500).send('Internal server error')
-      }
-    } else {
-      res.status(500).send(message || 'Internal server error')
-    }
-  }
-}
+exports.makeProxy = makeProxy
+exports.mainnetProxy = makeProxy(mainnet)
+exports.sepoliaProxy = makeProxy(sepolia)

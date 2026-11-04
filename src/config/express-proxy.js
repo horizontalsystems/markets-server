@@ -5,6 +5,7 @@ const methodOverride = require('method-override')
 const cors = require('cors')
 const helmet = require('helmet')
 const middlewares = require('../api/middlewares')
+const rpcProxy = require('../api/rpc-proxy')
 
 // create an express application
 const app = express()
@@ -42,6 +43,10 @@ app.use('/status', (req, res) => {
 // mount API v1 routes
 app.use('/v1/blockchair', require('../api/blockchair'))
 app.use('/v1/ethereum-rpc', require('../api/infura'))
+
+app.use('/v1/tron-rpc', rpcProxy('tron'))
+app.use('/v1/base-rpc', rpcProxy('base'))
+app.use('/v1/optimism-rpc', rpcProxy('optimism'))
 
 app.use(middlewares.error404)
 app.use(middlewares.error500)
