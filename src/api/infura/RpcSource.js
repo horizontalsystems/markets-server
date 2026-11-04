@@ -1,21 +1,21 @@
 const { create: createAxios } = require('axios')
 
+const parseKeys = value => (value || '').split(',').map(it => it.trim()).filter(Boolean)
+
 class RpcSource {
   constructor(network) {
-    const infuraKeys = (process.env.INFURA_KEYS || '').split(',')
-    const drpcKeys = (process.env.DRPC_KEYS || '').split(',')
+    const infuraKeys = parseKeys(process.env.INFURA_KEYS)
+    const drpcKeys = parseKeys(process.env.DRPC_KEYS)
     const isEthereum = network === 'mainnet' || network === 'sepolia'
+    // dRPC's slug for ethereum mainnet is `ethereum` — `mainnet` answers 400
+    const drpcSlug = network === 'mainnet' ? 'ethereum' : network
 
     this.currentSourceIndex = 0
     this.sources = []
 
     // eslint-disable-next-line no-restricted-syntax
     for (const key of drpcKeys) {
-      const url = isEthereum
-        ? `https://lb.drpc.live/ogrpc?network=${network}`
-        : `https://lb.drpc.live/${network}/${key}`
-
-      this.sources.push({ key, resource: 'drpc', url })
+      this.sources.push({ key, resource: 'drpc', url: `https://lb.drpc.live/ogrpc?network=${drpcSlug}` })
     }
 
     if (isEthereum) {
@@ -28,7 +28,7 @@ class RpcSource {
     }
 
     if (network === 'tron') {
-      const tronGridKeys = (process.env.TRONGRID_KEYS || '').split(',').filter(key => key)
+      const tronGridKeys = parseKeys(process.env.TRONGRID_KEYS)
 
       // eslint-disable-next-line no-restricted-syntax
       for (const key of tronGridKeys) {
@@ -40,6 +40,8 @@ class RpcSource {
   }
 
   rotateSource() {
+    if (!this.sources.length) return
+
     this.currentSourceIndex = (this.currentSourceIndex + 1) % this.sources.length
     this.axios = this.createAxios()
   }
@@ -49,12 +51,17 @@ class RpcSource {
   }
 
   createAxios() {
-    const { url: baseURL } = this.getCurrentSource()
-    return createAxios({ baseURL, timeout: 180000 * 3 })
+    const { url: baseURL } = this.getCurrentSource() || {}
+    return createAxios({ baseURL, timeout: 30000 })
   }
 
   post(data) {
     const source = this.getCurrentSource()
+
+    if (!source) {
+      return Promise.reject(new Error('No upstream sources configured'))
+    }
+
     const headers = {
       'Content-Type': 'application/json'
     }
